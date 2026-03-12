@@ -154,11 +154,13 @@ class EmbeddedElementActivity :
             // Determine configuration based on layoutType
             val configuration = when (args.layoutType) {
                 PaymentMethodsLayoutType.TAB -> PaymentElementConfiguration.PaymentSheet(
-                    layout = PaymentMethodsLayoutType.TAB
+                    layout = PaymentMethodsLayoutType.TAB,
+                    showsGooglePayAsPrimaryButton = args.showsGooglePayAsPrimaryButton
                 )
 
                 PaymentMethodsLayoutType.ACCORDION -> PaymentElementConfiguration.PaymentSheet(
-                    layout = PaymentMethodsLayoutType.ACCORDION
+                    layout = PaymentMethodsLayoutType.ACCORDION,
+                    showsGooglePayAsPrimaryButton = args.showsGooglePayAsPrimaryButton
                 )
 
                 null -> PaymentElementConfiguration.Card(
@@ -255,7 +257,8 @@ class EmbeddedElementActivity :
     data class Args(
         val session: AirwallexSession,
         val layoutType: PaymentMethodsLayoutType? = null,
-        val supportedCardSchemes: List<CardScheme>? = null
+        val supportedCardSchemes: List<CardScheme>? = null,
+        val showsGooglePayAsPrimaryButton: Boolean = true
     ) : Parcelable
 
     companion object {
@@ -266,12 +269,14 @@ class EmbeddedElementActivity :
             context: Context,
             session: AirwallexSession,
             layoutType: PaymentMethodsLayoutType? = null,
-            supportedCardSchemes: List<CardScheme>? = null
+            supportedCardSchemes: List<CardScheme>? = null,
+            showsGooglePayAsPrimaryButton: Boolean = true
         ) {
             val args = Args(
                 session = session,
                 layoutType = layoutType,
-                supportedCardSchemes = supportedCardSchemes
+                supportedCardSchemes = supportedCardSchemes,
+                showsGooglePayAsPrimaryButton = showsGooglePayAsPrimaryButton
             )
             val intent = Intent(context, EmbeddedElementActivity::class.java).apply {
                 putExtra(EXTRA_BUNDLE, Bundle().apply {

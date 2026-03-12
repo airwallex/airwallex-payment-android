@@ -202,7 +202,7 @@ object AnalyticsLogger {
         expressCheckout: Boolean,
         layout: String? = null,
         paymentIntentId: String? = null,
-        showsGooglePayAsPrimaryButton : Boolean? = null
+        showsGooglePayAsPrimaryButton: Boolean? = null
     ) {
         this.paymentIntentId = paymentIntentId
         this.transactionMode = transactionMode
@@ -236,7 +236,7 @@ object AnalyticsLogger {
         session: AirwallexSession,
         launchType: String,
         layout: String? = null,
-        showsGooglePayAsPrimaryButton : Boolean? = null
+        showsGooglePayAsPrimaryButton: Boolean? = null
     ) {
         this.currentSession = session
         val expressCheckout = session.isExpressCheckout

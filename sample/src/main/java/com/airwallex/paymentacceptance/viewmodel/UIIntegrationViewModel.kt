@@ -285,16 +285,17 @@ class UIIntegrationViewModel : BaseViewModel() {
      */
     private fun launchEmbeddedElementExpressCheckout(activity: ComponentActivity) {
         val session = buildAirwallexPaymentSessionWithProvider(
+            googlePayOptions = googlePayOptions,
             returnUrl = DemoReturnUrl.EmbeddedElement
         )
         session.bindToActivity(activity)
-        // Express Checkout: use null layoutType (Card only) with all supported card schemes
-        val supportedCardSchemes = enumValues<AirwallexSupportedCard>().map { CardScheme(it.brandName) }
+        val layoutType = PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase())
         EmbeddedElementActivity.start(
             context = activity,
             session = session,
-            layoutType = null,
-            supportedCardSchemes = supportedCardSchemes
+            layoutType = layoutType,
+            supportedCardSchemes = null,
+            showsGooglePayAsPrimaryButton = true
         )
     }
 
@@ -307,13 +308,84 @@ class UIIntegrationViewModel : BaseViewModel() {
             googlePayOptions = googlePayOptions
         )
         session.bindToActivity(activity)
-        // Traditional flow: use layoutType from settings
         val layoutType = PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase())
         EmbeddedElementActivity.start(
             context = activity,
             session = session,
             layoutType = layoutType,
-            supportedCardSchemes = null
+            supportedCardSchemes = null,
+            showsGooglePayAsPrimaryButton = true
+        )
+    }
+
+    /**
+     * launch the embedded element page with inline Google Pay
+     */
+    fun launchEmbeddedElementInlineGPay(activity: ComponentActivity) = launch {
+        val session = createSession(
+            returnUrl = DemoReturnUrl.EmbeddedElement,
+            googlePayOptions = googlePayOptions
+        )
+        session.bindToActivity(activity)
+        val layoutType = PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase())
+        EmbeddedElementActivity.start(
+            context = activity,
+            session = session,
+            layoutType = layoutType,
+            supportedCardSchemes = null,
+            showsGooglePayAsPrimaryButton = false
+        )
+    }
+
+    /**
+     * launch the embedded element page with card only (no Google Pay)
+     */
+    fun launchEmbeddedElementCardOnly(activity: ComponentActivity) {
+        // Check if Express Checkout is enabled to determine loading strategy
+        if (Settings.expressCheckout == "Enabled" && Settings.checkoutMode == AirwallexCheckoutMode.PAYMENT) {
+            // Express Checkout: Create session immediately without API calls, no loading needed
+            launchEmbeddedElementCardOnlyExpressCheckout(activity)
+        } else {
+            // Traditional flow: Show loading for API calls
+            launchEmbeddedElementCardOnlyTraditional(activity)
+        }
+    }
+
+    /**
+     * Express Checkout: Launch embedded element card only immediately without loading
+     */
+    private fun launchEmbeddedElementCardOnlyExpressCheckout(activity: ComponentActivity) {
+        val session = buildAirwallexPaymentSessionWithProvider(
+            returnUrl = DemoReturnUrl.EmbeddedElement
+        )
+        session.bindToActivity(activity)
+        // Card only: use null layoutType with all supported card schemes
+        val supportedCardSchemes = enumValues<AirwallexSupportedCard>().map { CardScheme(it.brandName) }
+        EmbeddedElementActivity.start(
+            context = activity,
+            session = session,
+            layoutType = null,
+            supportedCardSchemes = supportedCardSchemes,
+            showsGooglePayAsPrimaryButton = true  // Not used for card-only mode
+        )
+    }
+
+    /**
+     * Traditional flow: Launch embedded element card only with loading for API calls
+     */
+    private fun launchEmbeddedElementCardOnlyTraditional(activity: ComponentActivity) = launch {
+        val session = createSession(
+            returnUrl = DemoReturnUrl.EmbeddedElement
+        )
+        session.bindToActivity(activity)
+        // Card only: use null layoutType with all supported card schemes
+        val supportedCardSchemes = enumValues<AirwallexSupportedCard>().map { CardScheme(it.brandName) }
+        EmbeddedElementActivity.start(
+            context = activity,
+            session = session,
+            layoutType = null,
+            supportedCardSchemes = supportedCardSchemes,
+            showsGooglePayAsPrimaryButton = true  // Not used for card-only mode
         )
     }
 
