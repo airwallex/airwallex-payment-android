@@ -3,6 +3,9 @@ package com.airwallex.android.view
 import android.content.Intent
 import android.os.Bundle
 import android.view.ViewGroup
+import androidx.compose.ui.graphics.toArgb
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.lifecycle.lifecycleScope
 import com.airwallex.android.R
 import com.airwallex.android.core.Airwallex
@@ -13,6 +16,7 @@ import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.TrackablePage
 import com.airwallex.android.databinding.ActivityPaymentMethodsBinding
 import com.airwallex.android.ui.checkout.AirwallexCheckoutBaseActivity
+import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.composables.AirwallexTheme
 import com.airwallex.android.ui.extension.getExtraArgs
 import com.airwallex.android.view.composables.PaymentElementConfiguration
@@ -20,6 +24,7 @@ import com.airwallex.android.view.composables.PaymentElement
 import com.airwallex.android.view.composables.PaymentScreen
 import com.airwallex.risk.AirwallexRisk
 import kotlinx.coroutines.launch
+import androidx.core.graphics.drawable.toDrawable
 
 @Suppress("LongMethod")
 class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
@@ -46,6 +51,23 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
     }
 
     override val paymentLaunchSubtype: String = "dropin"
+
+    override fun initView() {
+        super.initView()
+        viewBinding.root.setBackgroundColor(AirwallexColor.backgroundPrimary.toArgb())
+        supportActionBar?.let { actionBar ->
+            actionBar.setBackgroundDrawable(
+                AirwallexColor.backgroundPrimary.toArgb().toDrawable()
+            )
+        }
+        supportActionBar?.themedContext?.let { context ->
+            ContextCompat.getDrawable(context, homeAsUpIndicatorResId())?.let { drawable ->
+                val tintedDrawable = DrawableCompat.wrap(drawable.mutate())
+                DrawableCompat.setTint(tintedDrawable, AirwallexColor.iconPrimary.toArgb())
+                supportActionBar?.setHomeAsUpIndicator(tintedDrawable)
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

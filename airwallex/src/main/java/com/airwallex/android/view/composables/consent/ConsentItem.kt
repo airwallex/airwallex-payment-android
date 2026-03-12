@@ -9,11 +9,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.semantics
@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.airwallex.android.R
 import com.airwallex.android.core.CardBrand
 import com.airwallex.android.core.model.PaymentConsent
+import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardText
 import com.airwallex.android.view.composables.common.CardBrandIcon
@@ -49,7 +50,7 @@ internal fun ConsentItem(
             modifier = Modifier
                 .background(
                     shape = RoundedCornerShape(8.dp),
-                    color = MaterialTheme.colorScheme.surface,
+                    color = AirwallexColor.backgroundPrimary,
                 )
                 .padding(vertical = 12.dp)
                 .fillMaxWidth(),
@@ -75,6 +76,7 @@ internal fun ConsentItem(
                     card.last4,
                 ),
                 typography = AirwallexTypography.Body200,
+                color = AirwallexColor.textPrimary
             )
 
             Spacer(modifier = Modifier.weight(1f))
@@ -82,6 +84,7 @@ internal fun ConsentItem(
             Image(
                 painter = painterResource(id = R.drawable.airwallex_ic_three_dots_vertical),
                 contentDescription = "three dots",
+                colorFilter = ColorFilter.tint(AirwallexColor.theme),
                 modifier = Modifier.clickable(
                     onClick = {
                         onDeleteCard(consent)

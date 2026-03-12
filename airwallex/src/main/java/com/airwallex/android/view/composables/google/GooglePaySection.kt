@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.airwallex.android.R
 import com.airwallex.android.ui.composables.AirwallexColor
+import com.airwallex.android.ui.composables.AirwallexThemeConfig
 import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.ScreenView
 import com.airwallex.android.ui.composables.StandardText
@@ -41,7 +42,7 @@ internal fun GooglePaySection(
         PayButton(
             onClick = onClick,
             allowedPaymentMethods = allowedPaymentMethods,
-            theme = ButtonTheme.Dark,
+            theme = if (AirwallexThemeConfig.isDarkTheme) ButtonTheme.Light else ButtonTheme.Dark,
             type = ButtonType.Buy,
             radius = 8.dp,
             enabled = true,
@@ -60,11 +61,14 @@ internal fun GooglePaySection(
 
             StandardText(
                 textRes = R.string.airwallex_or_pay_with,
-                color = AirwallexColor.Gray60,
+                color = AirwallexColor.textSecondary,
                 typography = AirwallexTypography.Body200,
             )
 
-            HorizontalDivider(modifier = Modifier.weight(1f))
+            HorizontalDivider(
+                modifier = Modifier.weight(1f),
+                color = AirwallexColor.borderDecorative
+            )
         }
     }
 }
