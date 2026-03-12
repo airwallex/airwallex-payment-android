@@ -63,9 +63,7 @@ internal fun BankSelectRow(
                         BankItem(
                             bank = content,
                             isSelected = selectedValue == content.name,
-                            modifier = Modifier
-                                .padding(horizontal = 24.dp)
-                                .fillMaxWidth(),
+                            modifier = Modifier.fillMaxWidth(),
                             onClick = {
                                 sheetDetails.onDismissRequested {}
                                 selectedLabel = content.displayName

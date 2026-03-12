@@ -63,7 +63,6 @@ internal fun GooglePaySection(
                 textRes = R.string.airwallex_or_pay_with,
                 color = AirwallexColor.Gray60,
                 typography = AirwallexTypography.Body200,
-                modifier = Modifier.padding(horizontal = 24.dp),
             )
 
             HorizontalDivider(modifier = Modifier.weight(1f))
