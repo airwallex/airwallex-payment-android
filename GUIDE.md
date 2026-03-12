@@ -580,7 +580,7 @@ airwallex.confirmPaymentIntent(
     import com.airwallex.android.core.model.PaymentConsent
 
      airwallex.confirmPaymentIntent(
-        session = session as AirwallexPaymentSession,
+        session = session,
         paymentConsent = paymentConsent,
         listener = object : Airwallex.PaymentResultListener {
             override fun onCompleted(status: AirwallexPaymentStatus) {
