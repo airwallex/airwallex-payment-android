@@ -1,7 +1,7 @@
 package com.airwallex.android.view
 
 import android.annotation.SuppressLint
-import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import com.airwallex.android.R
 import com.airwallex.android.core.Airwallex
@@ -31,6 +32,7 @@ import com.airwallex.android.core.log.TrackablePage
 import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.databinding.DialogAddCardBinding
+import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.composables.AirwallexTheme
 import com.airwallex.android.view.composables.PaymentElementConfiguration
 import com.airwallex.android.view.composables.PaymentElement
@@ -102,14 +104,32 @@ class AirwallexAddPaymentDialog @JvmOverloads constructor(
 
     private fun initView() {
         AirwallexRisk.log(event = "show_create_card", screen = "page_create_card")
-        viewBinding.closeIcon.setColorFilter(Color.BLACK)
+
+        // Set background with rounded corners (12dp on top)
+        val cornerRadius = context.resources.displayMetrics.density * 12
+        viewBinding.root.background = GradientDrawable().apply {
+            setColor(AirwallexColor.backgroundPrimary.toArgb())
+            cornerRadii = floatArrayOf(
+                cornerRadius, cornerRadius,
+                cornerRadius, cornerRadius,
+                0f, 0f,
+                0f, 0f
+            )
+        }
+        viewBinding.cardLabel.setTextColor(AirwallexColor.textPrimary.toArgb())
+        viewBinding.closeIcon.setColorFilter(AirwallexColor.iconPrimary.toArgb())
         viewBinding.composeView.apply {
             setContent {
-                AirwallexTheme {
-                    Column(modifier = Modifier.padding(horizontal = 24.dp)) {
-                        PaymentElementContent()
-                    }
-                }
+                AddPaymentDialogContent()
+            }
+        }
+    }
+
+    @Composable
+    private fun AddPaymentDialogContent() {
+        AirwallexTheme {
+            Column(modifier = Modifier.padding(horizontal = 24.dp)) {
+                PaymentElementContent()
             }
         }
     }

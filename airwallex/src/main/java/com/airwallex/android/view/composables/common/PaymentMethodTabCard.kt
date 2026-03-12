@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,7 +36,7 @@ internal fun PaymentMethodTabCard(
     onClick: () -> Unit,
 ) {
     val borderColor =
-        if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiaryContainer
+        if (isSelected) AirwallexColor.borderInteractive else AirwallexColor.borderDecorative
 
     Card(
         shape = RoundedCornerShape(8.dp),
@@ -49,7 +48,7 @@ internal fun PaymentMethodTabCard(
                 .width(100.dp)
                 .height(75.dp)
                 .background(
-                    color = if (isSelected) MaterialTheme.colorScheme.surfaceContainer else MaterialTheme.colorScheme.primaryContainer
+                    color = if (isSelected) AirwallexColor.backgroundHighlight else AirwallexColor.backgroundPrimary
                 ),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
@@ -69,7 +68,7 @@ internal fun PaymentMethodTabCard(
 
             StandardText(
                 text = selectedType.displayName ?: selectedType.name,
-                color = if (isSelected) MaterialTheme.colorScheme.primary else AirwallexColor.TextPrimary,
+                color = if (isSelected) AirwallexColor.textLink else AirwallexColor.textPrimary,
                 typography = if (isSelected) AirwallexTypography.Caption300Bold else AirwallexTypography.Caption300,
                 textAlign = TextAlign.Center,
                 overflow = TextOverflow.Ellipsis,

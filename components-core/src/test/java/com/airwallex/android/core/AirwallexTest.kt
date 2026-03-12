@@ -31,6 +31,7 @@ import io.mockk.runs
 import io.mockk.slot
 import io.mockk.spyk
 import io.mockk.unmockkAll
+import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -1476,24 +1477,45 @@ class AirwallexTest {
     // Tests for companion object functions
     @Test
     fun `initialize calls all required static initializers`() {
+        val mockEnvironment = mockk<Environment> {
+            every { baseUrl() } returns "https://api.airwallex.com"
+            every { riskEnvironment } returns mockk(relaxed = true)
+        }
+
         val configuration = mockk<AirwallexConfiguration> {
             every { supportComponentProviders } returns emptyList()
             every { enableLogging } returns true
             every { saveLogToLocal } returns false
-            every { environment } returns mockk {
-                every { baseUrl() } returns "https://api.airwallex.com"
-                every { riskEnvironment } returns mockk(relaxed = true)
-            }
+            every { environment } returns mockEnvironment
         }
 
         Airwallex.initialize(mockApplication, configuration)
 
-        coVerify {
+        // Verify all static initializers are called
+        verify {
             PaymentIntentProviderRepository.initialize(mockApplication)
             AirwallexPlugins.initialize(configuration)
             AirwallexLogger.initialize(mockApplication, true, false)
-            AirwallexLogger.debug(any())
             AirwallexRisk.start(any(), any(), any())
+        }
+
+        // Verify AirwallexLogger.debug is called (for initialization messages)
+        verify(atLeast = 1) {
+            AirwallexLogger.debug(any())
+        }
+
+        // Verify configuration properties are accessed
+        verify {
+            configuration.supportComponentProviders
+            configuration.enableLogging
+            configuration.saveLogToLocal
+            configuration.environment
+        }
+
+        // Verify environment methods are called
+        verify {
+            mockEnvironment.baseUrl()
+            mockEnvironment.riskEnvironment
         }
     }
 

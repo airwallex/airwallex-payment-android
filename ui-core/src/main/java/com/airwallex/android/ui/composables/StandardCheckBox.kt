@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -41,7 +40,7 @@ fun StandardCheckBox(
             Checkbox(
                 checked = checked,
                 onCheckedChange = null,
-                colors = CheckboxDefaults.colors(uncheckedColor = MaterialTheme.colorScheme.tertiaryContainer),
+                colors = CheckboxDefaults.colors(uncheckedColor = AirwallexColor.borderPerceivable),
             )
 
             Spacer(modifier = Modifier.width(8.dp))
@@ -50,7 +49,7 @@ fun StandardCheckBox(
                 text = text,
                 textAlign = TextAlign.Left,
                 typography = AirwallexTypography.Caption100,
-                color = AirwallexColor.TextPrimary,
+                color = AirwallexColor.textPrimary,
                 modifier = Modifier
                     .padding(top = 2.dp)
                     .weight(1f),

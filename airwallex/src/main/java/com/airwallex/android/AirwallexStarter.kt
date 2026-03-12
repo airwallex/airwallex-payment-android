@@ -38,6 +38,9 @@ class AirwallexStarter {
     companion object {
         /**
          * Initialize some global configurations, better to be called on Application
+         *
+         * @param application Application instance
+         * @param configuration Airwallex SDK configuration
          */
         fun initialize(
             application: Application,
@@ -45,6 +48,7 @@ class AirwallexStarter {
         ) {
             initializeActivityLaunch(application)
             Airwallex.initialize(application, configuration)
+
         }
 
         /**

@@ -90,7 +90,7 @@ internal fun SchemaFieldsSection(
                     text = field.displayName,
                     textAlign = TextAlign.Left,
                     typography = AirwallexTypography.Body200,
-                    color = AirwallexColor.TextPrimary,
+                    color = AirwallexColor.textPrimary,
                     modifier = Modifier.padding(vertical = 12.dp),
                 )
 
@@ -132,7 +132,7 @@ internal fun SchemaFieldsSection(
                         text = field.displayName,
                         textAlign = TextAlign.Left,
                         typography = AirwallexTypography.Body200,
-                        color = AirwallexColor.TextPrimary,
+                        color = AirwallexColor.textPrimary,
                         modifier = Modifier.padding(vertical = 12.dp),
                     )
 

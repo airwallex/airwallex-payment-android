@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.runtime.Composable
@@ -121,7 +120,7 @@ internal fun PaymentMethodsAccordionSection(
                         .border(
                             border = BorderStroke(
                                 width = 1.dp,
-                                color = if (type == selectedOption) MaterialTheme.colorScheme.outline else Color.Transparent,
+                                color = if (type == selectedOption) AirwallexColor.borderDecorative else Color.Transparent,
                             ),
                             shape = RoundedCornerShape(8.dp),
                         ),
@@ -144,7 +143,7 @@ internal fun PaymentMethodsAccordionSection(
                             .border(
                                 border = BorderStroke(
                                     width = (0.5).dp,
-                                    color = if (type == selectedOption) Color.Transparent else MaterialTheme.colorScheme.outline,
+                                    color = if (type == selectedOption) Color.Transparent else AirwallexColor.borderDecorative,
                                 ),
                                 shape = RoundedCornerShape(
                                     topStart = if (index == selectedIndex + 1 || index == 0) 8.dp else 0.dp,
@@ -159,7 +158,7 @@ internal fun PaymentMethodsAccordionSection(
                         RadioButton(
                             selected = (type == selectedOption),
                             onClick = null, // null recommended for accessibility with screen readers
-                            colors = RadioButtonDefaults.colors(unselectedColor = MaterialTheme.colorScheme.onSurface),
+                            colors = RadioButtonDefaults.colors(unselectedColor = AirwallexColor.borderDecorativeStrong),
                         )
 
                         Spacer(modifier = Modifier.width(16.dp))
@@ -177,7 +176,7 @@ internal fun PaymentMethodsAccordionSection(
 
                         StandardText(
                             text = type.displayName ?: type.name,
-                            color = if (type == selectedOption) MaterialTheme.colorScheme.primary else AirwallexColor.TextPrimary,
+                            color = if (type == selectedOption) AirwallexColor.theme else AirwallexColor.textPrimary,
                             typography = if (type == selectedOption) AirwallexTypography.Body200Bold else AirwallexTypography.Body200,
                             textAlign = TextAlign.Left,
                             overflow = TextOverflow.Ellipsis,
