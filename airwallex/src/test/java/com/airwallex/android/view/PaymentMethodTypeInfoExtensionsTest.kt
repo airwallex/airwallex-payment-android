@@ -4,7 +4,7 @@ import com.airwallex.android.core.model.AirwallexPaymentRequestFlow
 import com.airwallex.android.core.model.DynamicSchemaFieldType
 import com.airwallex.android.core.model.PaymentMethodTypeInfo
 import com.airwallex.android.core.model.TransactionMode
-import com.airwallex.android.view.PaymentMethodsViewModel.Companion.COUNTRY_CODE
+import com.airwallex.android.view.PaymentFlowViewModel.Companion.COUNTRY_CODE
 import com.airwallex.android.view.util.filterRequiredFields
 import com.airwallex.android.view.util.needHiddenParam
 import com.airwallex.android.view.util.toPaymentFlow

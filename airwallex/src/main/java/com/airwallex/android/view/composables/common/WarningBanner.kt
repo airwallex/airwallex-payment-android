@@ -25,7 +25,6 @@ fun WarningBanner(message: String) {
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 24.dp)
             .background(
                 color = AirwallexColor.Yellow10,
                 shape = RoundedCornerShape(8.dp),

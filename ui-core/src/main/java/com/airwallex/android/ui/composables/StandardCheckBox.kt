@@ -26,7 +26,6 @@ fun StandardCheckBox(
 ) {
     Surface(
         modifier = modifier
-            .padding(horizontal = 24.dp)
             .clickable(
                 onClick = {
                     onCheckedChange?.let { it(!checked) }
