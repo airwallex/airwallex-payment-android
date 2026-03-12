@@ -1,5 +1,6 @@
 package com.airwallex.android.core
 
+import android.app.Application
 import android.content.Context
 import androidx.activity.ComponentActivity
 import com.airwallex.android.core.exception.AirwallexCheckoutException
@@ -10,6 +11,7 @@ import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.Page
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentIntentFixtures
+import com.airwallex.android.core.model.PaymentMethodFixtures
 import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.core.model.RetrieveAvailablePaymentConsentsParams
 import com.airwallex.android.core.model.RetrieveAvailablePaymentMethodParams
@@ -59,6 +61,9 @@ class AirwallexTest {
     @MockK
     private lateinit var mockApplicationContext: Context
 
+    @RelaxedMockK
+    private lateinit var mockApplication: Application
+
     // Mock sessions
     @RelaxedMockK
     private lateinit var mockPaymentSession: AirwallexPaymentSession
@@ -84,10 +89,15 @@ class AirwallexTest {
 
     // Test fixtures
     private val testPaymentIntent = PaymentIntentFixtures.PAYMENT_INTENT
+    private val testPaymentMethod = PaymentMethodFixtures.PAYMENT_METHOD
 
     // Test data
     private val testClientSecret = "test_client_secret_abc123"
     private val testCustomerId = "cus_test_customer_id"
+    private val testPaymentIntentId = "int_test_payment_intent_id"
+    private val testPaymentConsentId = "cst_test_consent_id"
+    private val testCurrency = "USD"
+    private val testCvc = "123"
 
     @Before
     fun setUp() {
@@ -1211,5 +1221,297 @@ class AirwallexTest {
         coEvery {
             spy["retrieveAvailablePaymentMethodsPaged"](mockPaymentSession, testPaymentIntent.clientSecret)
         } returns listOf(cardMethod)
+    }
+
+    @Test
+    fun `createPaymentMethod with listener calls paymentManager startOperation`() {
+        val params = mockk<com.airwallex.android.core.model.CreatePaymentMethodParams> {
+            every { clientSecret } returns testClientSecret
+            every { customerId } returns testCustomerId
+            every { card } returns mockk(relaxed = true)
+            every { billing } returns mockk(relaxed = true)
+        }
+        val listener = mockk<Airwallex.PaymentListener<com.airwallex.android.core.model.PaymentMethod>>(relaxed = true)
+
+        airwallex.createPaymentMethod(params, listener)
+
+        coVerify {
+            mockPaymentManager.startOperation(any(), eq(listener))
+        }
+    }
+
+    @Test
+    fun `createPaymentMethod suspend version calls paymentManager createPaymentMethod`() = runTest {
+        val params = mockk<com.airwallex.android.core.model.CreatePaymentMethodParams> {
+            every { clientSecret } returns testClientSecret
+            every { customerId } returns testCustomerId
+            every { card } returns mockk(relaxed = true)
+            every { billing } returns mockk(relaxed = true)
+        }
+
+        coEvery {
+            mockPaymentManager.createPaymentMethod(any())
+        } returns testPaymentMethod
+
+        val result = airwallex.createPaymentMethod(params)
+
+        assertEquals(testPaymentMethod, result)
+        coVerify {
+            mockPaymentManager.createPaymentMethod(any())
+        }
+    }
+
+    // Tests for retrievePaymentIntent
+    @Test
+    fun `retrievePaymentIntent calls paymentManager startOperation`() {
+        val params = mockk<com.airwallex.android.core.model.RetrievePaymentIntentParams> {
+            every { clientSecret } returns testClientSecret
+            every { paymentIntentId } returns testPaymentIntentId
+        }
+        val listener = mockk<Airwallex.PaymentListener<com.airwallex.android.core.model.PaymentIntent>>(relaxed = true)
+
+        airwallex.retrievePaymentIntent(params, listener)
+
+        coVerify {
+            mockPaymentManager.startOperation(any(), eq(listener))
+        }
+    }
+
+    // Tests for retrieveAvailablePaymentConsents (suspend)
+    @Test
+    fun `retrieveAvailablePaymentConsents suspend version calls paymentManager`() = runTest {
+        val params = mockk<RetrieveAvailablePaymentConsentsParams> {
+            every { clientSecret } returns testClientSecret
+            every { customerId } returns testCustomerId
+            every { merchantTriggerReason } returns null
+            every { nextTriggeredBy } returns null
+            every { status } returns null
+            every { pageNum } returns 0
+            every { pageSize } returns 20
+        }
+        val expectedResult = mockk<Page<PaymentConsent>>(relaxed = true)
+
+        coEvery {
+            mockPaymentManager.retrieveAvailablePaymentConsents(any())
+        } returns expectedResult
+
+        val result = airwallex.retrieveAvailablePaymentConsents(params)
+
+        assertEquals(expectedResult, result)
+        coVerify {
+            mockPaymentManager.retrieveAvailablePaymentConsents(any())
+        }
+    }
+
+    // Tests for verifyPaymentConsent
+    @Test
+    fun `verifyPaymentConsent with CARD type uses CardVerificationOptions`() {
+        val device = mockk<com.airwallex.android.core.model.Device>(relaxed = true)
+        val params = mockk<com.airwallex.android.core.model.VerifyPaymentConsentParams> {
+            every { paymentMethodType } returns PaymentMethodType.CARD.value
+            every { clientSecret } returns testClientSecret
+            every { paymentConsentId } returns testPaymentConsentId
+            every { amount } returns java.math.BigDecimal("100")
+            every { currency } returns testCurrency
+            every { cvc } returns testCvc
+            every { returnUrl } returns "https://test.com/return"
+        }
+        val listener = mockk<Airwallex.PaymentResultListener>(relaxed = true)
+
+        airwallex.verifyPaymentConsent(device, params, listener)
+
+        coVerify {
+            mockPaymentManager.startOperation(any(), any<Airwallex.PaymentListener<PaymentConsent>>())
+        }
+    }
+
+    @Test
+    fun `verifyPaymentConsent with GOOGLEPAY type uses CardVerificationOptions`() {
+        val device = mockk<com.airwallex.android.core.model.Device>(relaxed = true)
+        val params = mockk<com.airwallex.android.core.model.VerifyPaymentConsentParams> {
+            every { paymentMethodType } returns PaymentMethodType.GOOGLEPAY.value
+            every { clientSecret } returns testClientSecret
+            every { paymentConsentId } returns testPaymentConsentId
+            every { amount } returns java.math.BigDecimal("100")
+            every { currency } returns testCurrency
+            every { cvc } returns testCvc
+            every { returnUrl } returns "https://test.com/return"
+        }
+        val listener = mockk<Airwallex.PaymentResultListener>(relaxed = true)
+
+        airwallex.verifyPaymentConsent(device, params, listener)
+
+        coVerify {
+            mockPaymentManager.startOperation(any(), any<Airwallex.PaymentListener<PaymentConsent>>())
+        }
+    }
+
+    @Test
+    fun `verifyPaymentConsent with other payment type uses ThirdPartVerificationOptions`() {
+        val device = mockk<com.airwallex.android.core.model.Device>(relaxed = true)
+        val params = mockk<com.airwallex.android.core.model.VerifyPaymentConsentParams> {
+            every { paymentMethodType } returns "wechatpay"
+            every { clientSecret } returns testClientSecret
+            every { paymentConsentId } returns testPaymentConsentId
+            every { amount } returns null
+            every { currency } returns null
+            every { cvc } returns null
+            every { returnUrl } returns "https://test.com/return"
+        }
+        val listener = mockk<Airwallex.PaymentResultListener>(relaxed = true)
+
+        airwallex.verifyPaymentConsent(device, params, listener)
+
+        coVerify {
+            mockPaymentManager.startOperation(any(), any<Airwallex.PaymentListener<PaymentConsent>>())
+        }
+    }
+
+    // Tests for disablePaymentConsent
+    @Test
+    fun `disablePaymentConsent calls paymentManager startOperation`() {
+        val params = mockk<com.airwallex.android.core.model.DisablePaymentConsentParams> {
+            every { clientSecret } returns testClientSecret
+            every { paymentConsentId } returns testPaymentConsentId
+        }
+        val listener = mockk<Airwallex.PaymentListener<PaymentConsent>>(relaxed = true)
+
+        airwallex.disablePaymentConsent(params, listener)
+
+        coVerify {
+            mockPaymentManager.startOperation(any(), eq(listener))
+        }
+    }
+
+    // Tests for retrieveBanks
+    @Test
+    fun `retrieveBanks calls paymentManager startOperation`() {
+        val params = mockk<com.airwallex.android.core.model.RetrieveBankParams> {
+            every { clientSecret } returns testClientSecret
+            every { paymentMethodType } returns "online_banking"
+            every { flow } returns null
+            every { transactionMode } returns null
+            every { countryCode } returns "TH"
+            every { openId } returns null
+        }
+        val listener = mockk<Airwallex.PaymentListener<com.airwallex.android.core.model.BankResponse>>(relaxed = true)
+
+        airwallex.retrieveBanks(params, listener)
+
+        coVerify {
+            mockPaymentManager.startOperation(any(), eq(listener))
+        }
+    }
+
+    // Tests for retrievePaymentMethodTypeInfo
+    @Test
+    fun `retrievePaymentMethodTypeInfo calls paymentManager startOperation`() {
+        val params = mockk<com.airwallex.android.core.model.RetrievePaymentMethodTypeInfoParams> {
+            every { clientSecret } returns testClientSecret
+            every { paymentMethodType } returns "card"
+            every { flow } returns null
+            every { transactionMode } returns null
+            every { countryCode } returns null
+            every { openId } returns null
+        }
+        val listener = mockk<Airwallex.PaymentListener<com.airwallex.android.core.model.PaymentMethodTypeInfo>>(relaxed = true)
+
+        airwallex.retrievePaymentMethodTypeInfo(params, listener)
+
+        coVerify {
+            mockPaymentManager.startOperation(any(), eq(listener))
+        }
+    }
+
+    // Tests for confirmPaymentIntentWithDevice
+    @Test
+    fun `confirmPaymentIntentWithDevice with CARD type calls paymentManager startOperation`() {
+        val device = mockk<com.airwallex.android.core.model.Device>(relaxed = true)
+        val params = mockk<com.airwallex.android.core.model.ConfirmPaymentIntentParams>(relaxed = true) {
+            every { paymentMethodType } returns PaymentMethodType.CARD.value
+        }
+        val listener = mockk<Airwallex.PaymentResultListener>(relaxed = true)
+
+        every { AirwallexPlugins.environment.threeDsReturnUrl() } returns "https://test.com/return"
+
+        airwallex.confirmPaymentIntentWithDevice(device, params, listener)
+
+        coVerify {
+            mockPaymentManager.startOperation(any(), any<Airwallex.PaymentListener<com.airwallex.android.core.model.PaymentIntent>>())
+        }
+    }
+
+    @Test
+    fun `confirmPaymentIntentWithDevice with GOOGLEPAY type calls paymentManager startOperation`() {
+        val device = mockk<com.airwallex.android.core.model.Device>(relaxed = true)
+        val params = mockk<com.airwallex.android.core.model.ConfirmPaymentIntentParams>(relaxed = true) {
+            every { paymentMethodType } returns PaymentMethodType.GOOGLEPAY.value
+        }
+        val listener = mockk<Airwallex.PaymentResultListener>(relaxed = true)
+
+        every { AirwallexPlugins.environment.threeDsReturnUrl() } returns "https://test.com/return"
+
+        airwallex.confirmPaymentIntentWithDevice(device, params, listener)
+
+        coVerify {
+            mockPaymentManager.startOperation(any(), any<Airwallex.PaymentListener<com.airwallex.android.core.model.PaymentIntent>>())
+        }
+    }
+
+    @Test
+    fun `confirmPaymentIntentWithDevice with other payment type calls paymentManager startOperation`() {
+        val device = mockk<com.airwallex.android.core.model.Device>(relaxed = true)
+        val params = mockk<com.airwallex.android.core.model.ConfirmPaymentIntentParams>(relaxed = true) {
+            every { paymentMethodType } returns "wechatpay"
+        }
+        val listener = mockk<Airwallex.PaymentResultListener>(relaxed = true)
+
+        airwallex.confirmPaymentIntentWithDevice(device, params, listener)
+
+        coVerify {
+            mockPaymentManager.startOperation(any(), any<Airwallex.PaymentListener<com.airwallex.android.core.model.PaymentIntent>>())
+        }
+    }
+
+    // Tests for companion object functions
+    @Test
+    fun `initialize calls all required static initializers`() {
+        val configuration = mockk<AirwallexConfiguration> {
+            every { supportComponentProviders } returns emptyList()
+            every { enableLogging } returns true
+            every { saveLogToLocal } returns false
+            every { environment } returns mockk {
+                every { baseUrl() } returns "https://api.airwallex.com"
+                every { riskEnvironment } returns mockk(relaxed = true)
+            }
+        }
+
+        Airwallex.initialize(mockApplication, configuration)
+
+        coVerify {
+            PaymentIntentProviderRepository.initialize(mockApplication)
+            AirwallexPlugins.initialize(configuration)
+            AirwallexLogger.initialize(mockApplication, true, false)
+            AirwallexLogger.debug(any())
+            AirwallexRisk.start(any(), any(), any())
+        }
+    }
+
+    @Test
+    fun `initializeComponents initializes all component providers`() {
+        val componentProvider1 = mockk<ActionComponentProvider<out ActionComponent>>(relaxed = true)
+        val componentProvider2 = mockk<ActionComponentProvider<out ActionComponent>>(relaxed = true)
+        val component1 = mockk<ActionComponent>(relaxed = true)
+        val component2 = mockk<ActionComponent>(relaxed = true)
+
+        every { componentProvider1.get() } returns component1
+        every { componentProvider2.get() } returns component2
+
+        Airwallex.initializeComponents(mockApplication, listOf(componentProvider1, componentProvider2))
+
+        coVerify {
+            component1.initialize(mockApplication)
+            component2.initialize(mockApplication)
+        }
     }
 }
