@@ -15,7 +15,9 @@ sealed class PaymentElementConfiguration {
      * Configuration for standalone card payment element.
      * Shows only card input and saved cards (if available).
      *
-     * @param supportedCardBrands List of supported card brands/schemes. Must not be empty.
+     * @param supportedCardBrands List of supported card brands/schemes.
+     *                            Defaults to all cards from [AirwallexSupportedCard]
+     *                            (Visa, Amex, Mastercard, Discover, JCB, Diners Club, UnionPay).
      */
     data class Card(
         val supportedCardBrands: List<CardScheme> = enumValues<AirwallexSupportedCard>().map {
