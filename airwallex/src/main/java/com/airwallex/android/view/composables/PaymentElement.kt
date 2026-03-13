@@ -9,6 +9,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
+import com.airwallex.android.core.bindToActivity
 import com.airwallex.android.core.exception.InvalidParamsException
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.PaymentMethodType
@@ -81,6 +82,10 @@ class PaymentElement private constructor(
             if (configuration is PaymentElementConfiguration.Card && configuration.supportedCardBrands.isEmpty()) {
                 return Result.failure(InvalidParamsException("supportedCardBrands should not be empty"))
             }
+
+            // Bind session's PaymentIntentProvider to this Activity's lifecycle
+            session.bindToActivity(airwallex.activity)
+
             val viewModel = ViewModelProvider(
                 airwallex.activity,
                 PaymentFlowViewModel.Factory(
