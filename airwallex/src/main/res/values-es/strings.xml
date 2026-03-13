@@ -34,6 +34,7 @@
     <string name="airwallex_delete_consent_alert_title">¿Eliminar %s?</string>
     <string name="airwallex_delete_consent_alert_content">Esta opción se eliminará permanentemente de sus métodos de pago guardados.</string>
     <string name="airwallex_schema_payment_redirect_message">Serás redirigido para completar tu pago tras la confirmación.</string>
+    <string name="airwallex_google_payment_redirect_message">Haga clic en el botón de Google Pay a continuación para completar su compra de forma segura.</string>
     <string name="airwallex_invalid_scheme_message">Formato no válido</string>
     <string name="airwallex_empty_state">Por favor, introduce tu estado</string>
     <string name="airwallex_delete_payment_method_prompt_title">¿Deseas eliminar este consentimiento de pago?</string>

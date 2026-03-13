@@ -23,6 +23,7 @@ import com.airwallex.android.ui.extension.getExtraArgs
 import com.airwallex.android.view.composables.PaymentElementConfiguration
 import com.airwallex.android.view.composables.PaymentElement
 import com.airwallex.android.view.composables.PaymentScreen
+import com.airwallex.android.view.composables.PaymentScreenLoadingState
 import com.airwallex.risk.AirwallexRisk
 import kotlinx.coroutines.launch
 import androidx.core.graphics.drawable.toDrawable
@@ -71,13 +72,13 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setLoadingProgress(loading = true, cancelable = false)
+        PaymentScreenLoadingState.isLoading = true
 
         lifecycleScope.launch {
             PaymentElement.create(
                 session = session,
                 airwallex = airwallex,
-                configuration = PaymentElementConfiguration.PaymentSheet(layout = args.layoutType, prioritizeGooglePay = args.prioritizeGooglePay),
+                configuration = PaymentElementConfiguration.PaymentSheet(layout = args.layoutType, showsGooglePayAsPrimaryButton = args.showsGooglePayAsPrimaryButton),
                 launchType = AnalyticsLogger.LaunchType.HPP,
                 paymentFlowListener = object : PaymentFlowListener {
                     override fun onLoadingStateChanged(isLoading: Boolean, context: Context) {
@@ -90,7 +91,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                 }
             ).fold(
                 onSuccess = { state ->
-                    setLoadingProgress(loading = false, cancelable = false)
+                    PaymentScreenLoadingState.isLoading = false
                     initView(state)
                 },
                 onFailure = { error ->

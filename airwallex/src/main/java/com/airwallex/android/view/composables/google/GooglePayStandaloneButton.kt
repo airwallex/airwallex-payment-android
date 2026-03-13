@@ -15,7 +15,7 @@ import com.airwallex.android.view.PaymentFlowViewModel
 import org.json.JSONArray
 
 /**
- * GooglePay standalone button shown on top when prioritizeGooglePay is true.
+ * GooglePay standalone button shown on top when showsGooglePayAsPrimaryButton is true.
  * Includes the GooglePaySection and divider when button is visible.
  *
  * @param allowedPaymentMethods JSONArray of allowed payment methods for Google Pay

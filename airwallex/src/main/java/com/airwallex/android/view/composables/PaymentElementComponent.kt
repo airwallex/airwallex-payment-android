@@ -38,13 +38,6 @@ internal fun PaymentElementComponent(
     flowViewModel: PaymentFlowViewModel
 ) {
 
-    LaunchedEffect(Unit) {
-        flowViewModel.paymentResult.collect { event ->
-            paymentFlowListener.onLoadingStateChanged(false, airwallex.activity)
-            paymentFlowListener.onPaymentResult(event.status)
-        }
-    }
-
     Column(Modifier.background(AirwallexColor.backgroundPrimary)) {
         when (configuration) {
             is PaymentElementConfiguration.Card -> {
@@ -75,7 +68,7 @@ internal fun PaymentElementComponent(
                             session = session,
                             airwallex = airwallex,
                             paymentFlowListener = paymentFlowListener,
-                            prioritizeGooglePay = configuration.prioritizeGooglePay,
+                            showsGooglePayAsPrimaryButton = configuration.showsGooglePayAsPrimaryButton,
                         )
                     }
 
@@ -84,7 +77,7 @@ internal fun PaymentElementComponent(
                             session = session,
                             airwallex = airwallex,
                             paymentFlowListener = paymentFlowListener,
-                            prioritizeGooglePay = configuration.prioritizeGooglePay,
+                            showsGooglePayAsPrimaryButton = configuration.showsGooglePayAsPrimaryButton,
                         )
                     }
                 }
