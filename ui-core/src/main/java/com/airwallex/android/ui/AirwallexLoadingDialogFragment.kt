@@ -52,8 +52,27 @@ class AirwallexLoadingDialogFragment : DialogFragment() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        // Clear pending reference once dialog is actually shown
+        if (pendingDialog == this) {
+            pendingDialog = null
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        // Clear pending reference if dialog is destroyed
+        if (pendingDialog == this) {
+            pendingDialog = null
+        }
+    }
+
     companion object {
         const val TAG = "AirwallexLoadingDialog"
+
+        // Keep track of the pending dialog instance to handle race conditions
+        private var pendingDialog: AirwallexLoadingDialogFragment? = null
 
         /**
          * Show loading dialog. Automatically handles:
@@ -70,12 +89,19 @@ class AirwallexLoadingDialogFragment : DialogFragment() {
                 return
             }
 
+            // Check if there's a pending dialog
+            if (pendingDialog != null) {
+                return
+            }
+
             // Show new dialog
             try {
                 val newDialog = AirwallexLoadingDialogFragment()
+                pendingDialog = newDialog
                 newDialog.show(fragmentManager, TAG)
             } catch (_: IllegalStateException) {
                 // Fragment transaction after state saved - ignore
+                pendingDialog = null
                 AirwallexLogger.debug("AirwallexLoadingDialog: Cannot show dialog - fragment transaction after state saved")
             }
         }
@@ -85,10 +111,21 @@ class AirwallexLoadingDialogFragment : DialogFragment() {
          */
         fun hide(context: Context) {
             val fragmentManager = context.findFragmentManager() ?: return
-            val existingDialog = fragmentManager.findFragmentByTag(TAG) as? DialogFragment
-            if (existingDialog != null) {
-                existingDialog.dismissAllowingStateLoss()
+
+            // First, try to dismiss the pending dialog (handles race condition)
+            pendingDialog?.let { dialog ->
+                try {
+                    dialog.dismissAllowingStateLoss()
+                } catch (_: Exception) {
+                    // Ignore if dialog wasn't shown yet
+                }
+                pendingDialog = null
+                return
             }
+
+            // If no pending dialog, look for existing one in FragmentManager
+            val existingDialog = fragmentManager.findFragmentByTag(TAG) as? DialogFragment
+            existingDialog?.dismissAllowingStateLoss()
         }
 
         private fun Context.findFragmentManager(): FragmentManager? {
