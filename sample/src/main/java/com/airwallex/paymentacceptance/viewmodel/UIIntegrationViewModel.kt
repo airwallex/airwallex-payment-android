@@ -17,8 +17,9 @@ import com.airwallex.android.core.AirwallexSupportedCard
 import com.airwallex.android.core.BillingAddressParameters
 import com.airwallex.android.core.GooglePayOptions
 import com.airwallex.android.core.PaymentMethodsLayoutType
-import com.airwallex.android.core.model.CardScheme
+import com.airwallex.android.core.Session
 import com.airwallex.android.core.model.PaymentConsent
+import com.airwallex.android.core.model.PaymentConsentOptions
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.view.AirwallexAddPaymentDialog
 import com.airwallex.paymentacceptance.DemoPaymentIntentProvider
@@ -64,7 +65,27 @@ class UIIntegrationViewModel : BaseViewModel() {
      */
     private fun launchPaymentListExpressCheckout(activity: ComponentActivity) {
         //to perform a Google Pay transaction, you must provide an instance of GooglePayOptions
-        val session = buildAirwallexPaymentSessionWithProvider(googlePayOptions)
+        val session = if (Settings.useSession == "Enabled") {
+            // Use the new unified Session class
+            buildSessionForExpressCheckout(googlePayOptions)
+        } else {
+            // Use legacy session variants based on checkout mode
+            when (Settings.checkoutMode) {
+                AirwallexCheckoutMode.PAYMENT -> {
+                    buildAirwallexPaymentSessionWithProvider(googlePayOptions)
+                }
+                AirwallexCheckoutMode.RECURRING -> {
+                    // For recurring without intent, we need customerId synchronously
+                    // This doesn't support Express Checkout with legacy sessions
+                    throw IllegalStateException("Recurring mode requires traditional flow with legacy sessions")
+                }
+                AirwallexCheckoutMode.RECURRING_WITH_INTENT -> {
+                    // For recurring with intent, we need customerId synchronously
+                    // This doesn't support Express Checkout with legacy sessions
+                    throw IllegalStateException("Recurring with intent mode requires traditional flow with legacy sessions")
+                }
+            }
+        }
         AirwallexStarter.presentEntirePaymentFlow(
             activity = activity,
             session = session,
@@ -83,7 +104,13 @@ class UIIntegrationViewModel : BaseViewModel() {
      */
     private fun launchPaymentListTraditional(activity: ComponentActivity) = launch {
         //to perform a Google Pay transaction, you must provide an instance of GooglePayOptions
-        val session = createSession(googlePayOptions)
+        val session = if (Settings.useSession == "Enabled") {
+            // Use the new unified Session class
+            createSessionForTraditional(googlePayOptions)
+        } else {
+            // Use legacy session variants
+            createSession(googlePayOptions)
+        }
         AirwallexStarter.presentEntirePaymentFlow(
             activity = activity,
             session = session,
@@ -577,4 +604,101 @@ class UIIntegrationViewModel : BaseViewModel() {
         .setPaymentMethods(paymentMethods)
         .setShipping(shipping)
         .build()
+
+    /**
+     * Build Session for express checkout regardless of checkout mode
+     */
+    private fun buildSessionForExpressCheckout(
+        googlePayOptions: GooglePayOptions? = null,
+        paymentMethods: List<String>? = listOf(),
+        returnUrl: DemoReturnUrl = DemoReturnUrl.UIIntegration
+    ): Session {
+        // Determine amount and paymentConsentOptions based on checkout mode
+        val (amount, paymentConsentOptions) = when (Settings.checkoutMode) {
+            AirwallexCheckoutMode.PAYMENT -> {
+                // One-off: use default amount, no consent options
+                Settings.price.toBigDecimal() to null
+            }
+            AirwallexCheckoutMode.RECURRING -> {
+                // Recurring: amount = 0, fill paymentConsentOptions
+                BigDecimal.ZERO to PaymentConsentOptions(nextTriggeredBy = nextTriggerBy)
+            }
+            AirwallexCheckoutMode.RECURRING_WITH_INTENT -> {
+                // Recurring with intent: use default amount, fill paymentConsentOptions
+                Settings.price.toBigDecimal() to PaymentConsentOptions(nextTriggeredBy = nextTriggerBy)
+            }
+        }
+
+        // Build Session with common values
+        return Session.Builder(
+            paymentIntentSource = DemoPaymentIntentSource(
+                force3DS = force3DS,
+                customerId = Settings.cachedCustomerId,
+                returnUrl = returnUrl,
+                amount = amount
+            ),
+            countryCode = Settings.countryCode,
+            customerId = Settings.cachedCustomerId,
+            googlePayOptions = googlePayOptions
+        )
+            .setRequireBillingInformation(true)
+            .setRequireEmail(Settings.requiresEmail.toBoolean())
+            .setReturnUrl(returnUrl.fullUrl)
+            .setAutoCapture(autoCapture)
+            .setHidePaymentConsents(false)
+            .setPaymentMethods(paymentMethods)
+            .setShipping(shipping)
+            .setPaymentConsentOptions(paymentConsentOptions)
+            .build()
+    }
+
+    /**
+     * Build Session for traditional checkout regardless of checkout mode
+     */
+    private suspend fun createSessionForTraditional(
+        googlePayOptions: GooglePayOptions? = null,
+        paymentMethods: List<String>? = listOf(),
+        returnUrl: DemoReturnUrl = DemoReturnUrl.UIIntegration
+    ): Session {
+        val customerId = getCustomerIdFromServer()
+        // Determine amount and paymentConsentOptions based on checkout mode
+        val (amount, paymentConsentOptions) = when (Settings.checkoutMode) {
+            AirwallexCheckoutMode.PAYMENT -> {
+                // One-off: use default amount, no consent options
+                null to null
+            }
+            AirwallexCheckoutMode.RECURRING -> {
+                // Recurring: amount = 0, fill paymentConsentOptions
+                BigDecimal.ZERO to PaymentConsentOptions(nextTriggeredBy = nextTriggerBy)
+            }
+            AirwallexCheckoutMode.RECURRING_WITH_INTENT -> {
+                // Recurring with intent: use default amount, fill paymentConsentOptions
+                null to PaymentConsentOptions(nextTriggeredBy = nextTriggerBy)
+            }
+        }
+
+        // Get PaymentIntent from server with the determined parameters
+        val paymentIntent = getPaymentIntentFromServer(
+            force3DS = force3DS,
+            customerId = customerId,
+            returnUrl = returnUrl,
+            amount = amount
+        )
+
+        // Build Session with common values
+        return Session.Builder(
+            paymentIntent = paymentIntent,
+            countryCode = Settings.countryCode,
+            googlePayOptions = googlePayOptions
+        )
+            .setRequireBillingInformation(true)
+            .setRequireEmail(Settings.requiresEmail.toBoolean())
+            .setReturnUrl(returnUrl.fullUrl)
+            .setAutoCapture(autoCapture)
+            .setHidePaymentConsents(false)
+            .setPaymentMethods(paymentMethods)
+            .setShipping(shipping)
+            .setPaymentConsentOptions(paymentConsentOptions)
+            .build()
+    }
 }

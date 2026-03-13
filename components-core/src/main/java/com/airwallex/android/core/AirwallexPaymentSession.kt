@@ -10,7 +10,19 @@ import java.math.BigDecimal
 
 /**
  * For one-off payment
+ *
+ * @deprecated Use [Session] instead. AirwallexPaymentSession will be removed in a future version.
+ * Session provides a unified API for all payment scenarios with support for both static PaymentIntent
+ * and PaymentIntentProvider.
  */
+@Deprecated(
+    message = "Use Session instead. AirwallexPaymentSession will be removed in a future version.",
+    replaceWith = ReplaceWith(
+        "Session.Builder(paymentIntent, countryCode, googlePayOptions)",
+        "com.airwallex.android.core.Session"
+    ),
+    level = DeprecationLevel.WARNING
+)
 @Suppress("LongParameterList")
 @Parcelize
 class AirwallexPaymentSession internal constructor(
@@ -80,7 +92,7 @@ class AirwallexPaymentSession internal constructor(
      * Indicate if the payment shall be captured immediately after authorized. Only applicable to Card.
      * Default: true
      */
-    val autoCapture: Boolean = true,
+    override val autoCapture: Boolean = true,
 
     /**
      *  control whether saved cards are displayed on the list screen
@@ -96,6 +108,9 @@ class AirwallexPaymentSession internal constructor(
     @IgnoredOnParcel
     @Transient
     override var paymentIntentProvider: PaymentIntentProvider? = null
+
+    override val clientSecret: String?
+        get() = paymentIntent?.clientSecret
 
     class Builder : ObjectBuilder<AirwallexPaymentSession> {
         private var paymentIntent: PaymentIntent? = null

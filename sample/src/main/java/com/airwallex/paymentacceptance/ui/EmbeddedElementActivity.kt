@@ -19,8 +19,8 @@ import com.airwallex.android.core.PaymentMethodsLayoutType
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.AirwallexSupportedCard
 import com.airwallex.android.ui.composables.AirwallexColor
-import com.airwallex.android.view.composables.PaymentElementConfiguration
 import com.airwallex.android.view.composables.PaymentElement
+import com.airwallex.android.view.composables.PaymentElementConfiguration
 import com.airwallex.paymentacceptance.R
 import com.airwallex.paymentacceptance.databinding.ActivityEmbeddedElementBinding
 import com.airwallex.paymentacceptance.ui.base.BasePaymentActivity

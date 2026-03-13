@@ -161,6 +161,9 @@ class AirwallexTest {
         every { mockRecurringSession.clientSecret } returns testClientSecret
 
         every { mockRecurringWithIntentSession.paymentIntent } returns testPaymentIntent
+        val clientSecret = testPaymentIntent.clientSecret ?: ""
+        every { mockRecurringWithIntentSession.clientSecret } returns clientSecret
+        every { mockPaymentSession.clientSecret } returns clientSecret
 
         // Create Airwallex instance with mocked dependencies
         airwallex = Airwallex(
@@ -229,6 +232,7 @@ class AirwallexTest {
     @Test
     fun `getClientSecret returns null for unsupported session type`() {
         val unsupportedSession = mockk<AirwallexSession>()
+        every { unsupportedSession.clientSecret } returns null
         val result = airwallex.getClientSecret(unsupportedSession)
 
         assertEquals(null, result)
@@ -838,6 +842,7 @@ class AirwallexTest {
             every { paymentIntent } returns mockk {
                 every { clientSecret } returns null
             }
+            every { clientSecret } returns null
         }
 
         // Execute
@@ -857,6 +862,7 @@ class AirwallexTest {
             every { paymentIntent } returns mockk {
                 every { clientSecret } returns "   "
             }
+            every { clientSecret } returns "   "
         }
 
         // Execute
@@ -888,6 +894,193 @@ class AirwallexTest {
         assertEquals(true, result.isFailure)
         assertEquals(true, result.exceptionOrNull() is AirwallexException)
         assertEquals("Test error", result.exceptionOrNull()?.message)
+    }
+
+    // Tests for needRequestConsent scenarios
+    @Test
+    fun `fetchAvailablePaymentMethodsAndConsents requests consents for Session with customerId`() = runTest {
+        // Create spy to mock private methods
+        val airwallexSpy = spyk(airwallex)
+
+        // Create a Session mock with customerId
+        val mockSession = mockk<Session> {
+            every { customerId } returns testCustomerId
+            every { clientSecret } returns testPaymentIntent.clientSecret
+            every { paymentMethods } returns null
+            every { hidePaymentConsents } returns false
+        }
+
+        // Mock payment methods
+        val cardMethod = mockk<AvailablePaymentMethodType> {
+            every { name } returns PaymentMethodType.CARD.value
+        }
+        val paymentMethods = listOf(cardMethod)
+
+        // Mock payment consents
+        val consent = mockk<PaymentConsent> {
+            every { paymentMethod } returns mockk {
+                every { type } returns PaymentMethodType.CARD.value
+            }
+        }
+        val consents = listOf(consent)
+
+        // Mock the private methods - use specific instances like the working test
+        coEvery {
+            airwallexSpy["retrieveAvailablePaymentMethodsPaged"](mockSession, testPaymentIntent.clientSecret)
+        } returns paymentMethods
+
+        coEvery {
+            airwallexSpy["retrieveAvailablePaymentConsentsPaged"](testPaymentIntent.clientSecret, testCustomerId)
+        } returns consents
+
+        // Execute
+        val result = airwallexSpy.fetchAvailablePaymentMethodsAndConsents(mockSession)
+
+        // Verify - should request consents since Session with customerId
+        assertNotNull(result)
+        assertEquals(true, result.isSuccess)
+        val (_, returnedConsents) = result.getOrThrow()
+        assertEquals(1, returnedConsents.size)
+    }
+
+    @Test
+    fun `fetchAvailablePaymentMethodsAndConsents does not request consents for Session with empty customerId`() = runTest {
+        // Create spy to mock private methods
+        val airwallexSpy = spyk(airwallex)
+
+        // Create a Session mock with empty customerId
+        val mockSession = mockk<Session> {
+            every { customerId } returns ""
+            every { clientSecret } returns testPaymentIntent.clientSecret
+            every { paymentMethods } returns null
+        }
+
+        // Mock payment methods
+        val cardMethod = mockk<AvailablePaymentMethodType> {
+            every { name } returns PaymentMethodType.CARD.value
+        }
+        val paymentMethods = listOf(cardMethod)
+
+        // Mock the private method - use specific instances like the working test
+        coEvery {
+            airwallexSpy["retrieveAvailablePaymentMethodsPaged"](mockSession, testPaymentIntent.clientSecret)
+        } returns paymentMethods
+
+        // Execute
+        val result = airwallexSpy.fetchAvailablePaymentMethodsAndConsents(mockSession)
+
+        // Verify - should NOT request consents since customerId is empty
+        assertNotNull(result)
+        assertEquals(true, result.isSuccess)
+        val (_, consents) = result.getOrThrow()
+        assertEquals(0, consents.size) // No consents for empty customerId
+    }
+
+    @Test
+    fun `fetchAvailablePaymentMethodsAndConsents does not request consents for Session with hidePaymentConsents true`() = runTest {
+        // Create spy to mock private methods
+        val airwallexSpy = spyk(airwallex)
+
+        // Create a Session mock with customerId but hidePaymentConsents = true
+        val mockSession = mockk<Session> {
+            every { customerId } returns testCustomerId
+            every { clientSecret } returns testPaymentIntent.clientSecret
+            every { paymentMethods } returns null
+            every { hidePaymentConsents } returns true
+        }
+
+        // Mock payment methods
+        val cardMethod = mockk<AvailablePaymentMethodType> {
+            every { name } returns PaymentMethodType.CARD.value
+        }
+        val paymentMethods = listOf(cardMethod)
+
+        // Mock the private method - use specific instances like the working test
+        coEvery {
+            airwallexSpy["retrieveAvailablePaymentMethodsPaged"](mockSession, testPaymentIntent.clientSecret)
+        } returns paymentMethods
+
+        // Execute
+        val result = airwallexSpy.fetchAvailablePaymentMethodsAndConsents(mockSession)
+
+        // Verify - should NOT request consents since hidePaymentConsents is true
+        assertNotNull(result)
+        assertEquals(true, result.isSuccess)
+        val (_, consents) = result.getOrThrow()
+        assertEquals(0, consents.size) // No consents when hidePaymentConsents is true
+    }
+
+    @Test
+    fun `fetchAvailablePaymentMethodsAndConsents does not request consents for AirwallexRecurringWithIntentSession`() = runTest {
+        // Create spy to mock private methods
+        val airwallexSpy = spyk(airwallex)
+
+        // Setup recurring with intent session - even with customerId, should not request consents
+        every { mockRecurringWithIntentSession.customerId } returns testCustomerId
+        every { mockRecurringWithIntentSession.clientSecret } returns testPaymentIntent.clientSecret
+        every { mockRecurringWithIntentSession.paymentMethods } returns null
+
+        // Mock payment methods
+        val cardMethod = mockk<AvailablePaymentMethodType> {
+            every { name } returns PaymentMethodType.CARD.value
+        }
+        val paymentMethods = listOf(cardMethod)
+
+        // Mock the private method - use specific instances like the working test
+        coEvery {
+            airwallexSpy["retrieveAvailablePaymentMethodsPaged"](mockRecurringWithIntentSession, testPaymentIntent.clientSecret)
+        } returns paymentMethods
+
+        // Execute
+        val result = airwallexSpy.fetchAvailablePaymentMethodsAndConsents(mockRecurringWithIntentSession)
+
+        // Verify - should NOT request consents since it's AirwallexRecurringWithIntentSession
+        assertNotNull(result)
+        assertEquals(true, result.isSuccess)
+        val (_, consents) = result.getOrThrow()
+        assertEquals(0, consents.size) // No consents for AirwallexRecurringWithIntentSession
+    }
+
+    @Test
+    fun `fetchAvailablePaymentMethodsAndConsents requests consents with correct parameters for AirwallexPaymentSession`() = runTest {
+        // Create spy to mock private methods
+        val airwallexSpy = spyk(airwallex)
+
+        // Setup AirwallexPaymentSession with customerId
+        every { mockPaymentSession.customerId } returns testCustomerId
+        every { mockPaymentSession.hidePaymentConsents } returns false
+
+        // Mock payment methods
+        val cardMethod = mockk<AvailablePaymentMethodType> {
+            every { name } returns PaymentMethodType.CARD.value
+        }
+        val paymentMethods = listOf(cardMethod)
+
+        // Mock payment consents
+        val consent = mockk<PaymentConsent> {
+            every { paymentMethod } returns mockk {
+                every { type } returns PaymentMethodType.CARD.value
+            }
+        }
+        val consents = listOf(consent)
+
+        // Mock the private methods - use specific instances like the working test
+        coEvery {
+            airwallexSpy["retrieveAvailablePaymentMethodsPaged"](mockPaymentSession, testPaymentIntent.clientSecret)
+        } returns paymentMethods
+
+        coEvery {
+            airwallexSpy["retrieveAvailablePaymentConsentsPaged"](testPaymentIntent.clientSecret, testCustomerId)
+        } returns consents
+
+        // Execute
+        val result = airwallexSpy.fetchAvailablePaymentMethodsAndConsents(mockPaymentSession)
+
+        // Verify
+        assertNotNull(result)
+        assertEquals(true, result.isSuccess)
+        val (_, returnedConsents) = result.getOrThrow()
+        assertEquals(1, returnedConsents.size)
     }
 
     // Tests for retrieveAvailablePaymentConsentsPaged and loadPagedItems pagination logic

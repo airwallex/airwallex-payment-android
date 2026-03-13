@@ -948,7 +948,7 @@ airwallex.confirmPaymentIntent(
 val methods = airwallex.retrieveAvailablePaymentMethods(
     session = session,
     params = RetrieveAvailablePaymentMethodParams.Builder(
-        clientSecret = getClientSecretFromSession(session),
+        clientSecret = session.clientSecret,
         pageNum = 1
     )
     .setActive(true)

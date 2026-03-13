@@ -2,6 +2,7 @@ package com.airwallex.paymentacceptance.repo
 
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.paymentacceptance.Settings
+import java.math.BigDecimal
 
 enum class DemoReturnUrl(private val subpath: String) {
     UIIntegration("/ui"),
@@ -17,7 +18,8 @@ interface BaseRepository {
     suspend fun getPaymentIntentFromServer(
         force3DS: Boolean? = false,
         customerId: String? = null,
-        returnUrl: DemoReturnUrl
+        returnUrl: DemoReturnUrl,
+        amount: BigDecimal? = null
     ): PaymentIntent
 
     suspend fun getCustomerIdFromServer(saveCustomerIdToSetting: Boolean): String
