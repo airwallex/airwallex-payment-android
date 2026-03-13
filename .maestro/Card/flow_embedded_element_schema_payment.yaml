@@ -17,7 +17,7 @@ appId: com.airwallex.paymentacceptance
       IS_GUEST: true
 - tapOn: "Launch Embedded Element"
 # Wait for the embedded element activity to load
-- assertVisible: "Shopping Cart"
+- assertVisible: "Order details"
 # Scroll down to AlipayHK
 - scrollUntilVisible:
     element: "AlipayHK"

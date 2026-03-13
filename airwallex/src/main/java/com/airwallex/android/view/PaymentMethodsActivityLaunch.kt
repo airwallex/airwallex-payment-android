@@ -35,20 +35,20 @@ class PaymentMethodsActivityLaunch : AirwallexActivityLaunch<PaymentMethodsActiv
     data class Args internal constructor(
         val session: AirwallexSession,
         val layoutType: PaymentMethodsLayoutType,
-        val prioritizeGooglePay: Boolean = true,
+        val showsGooglePayAsPrimaryButton: Boolean = true,
     ) : AirwallexActivityLaunch.Args {
 
         class Builder : ObjectBuilder<Args> {
             private lateinit var session: AirwallexSession
             private lateinit var layoutType: PaymentMethodsLayoutType
-            private var prioritizeGooglePay: Boolean = true
+            private var showsGooglePayAsPrimaryButton: Boolean = true
 
             fun setAirwallexSession(session: AirwallexSession): Builder = apply {
                 this.session = session
             }
 
-            fun setPrioritizeGooglePay(prioritizeGooglePay: Boolean): Builder = apply {
-                this.prioritizeGooglePay = prioritizeGooglePay
+            fun setShowsGooglePayAsPrimaryButton(showsGooglePayAsPrimaryButton: Boolean): Builder = apply {
+                this.showsGooglePayAsPrimaryButton = showsGooglePayAsPrimaryButton
             }
 
             fun setLayoutType(layoutType: PaymentMethodsLayoutType): Builder = apply {
@@ -59,7 +59,7 @@ class PaymentMethodsActivityLaunch : AirwallexActivityLaunch<PaymentMethodsActiv
                 return Args(
                     session = session,
                     layoutType = layoutType,
-                    prioritizeGooglePay = prioritizeGooglePay,
+                    showsGooglePayAsPrimaryButton = showsGooglePayAsPrimaryButton,
                 )
             }
         }
