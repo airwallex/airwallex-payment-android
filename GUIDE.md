@@ -9,8 +9,9 @@ To accept online payments with Airwallex Android SDK, please complete preparatio
 1. [Before you start](#before-you-start)
 
 *Integration options*
-1. [Airwallex Native UI integration](#airwallex-native-ui-integration) You can choose to use this SDK with our prebuilt UI page, this is **recommended usage**. 
-2. [Low-level API Integration](#low-level-api-integration) You can build your own custom UI and use our low-level APIs.
+1. [Airwallex Native UI integration](#airwallex-native-ui-integration) You can choose to use this SDK with our prebuilt UI page, this is **recommended usage**.
+2. [Embedded Element Integration](#embedded-element-integration) Embed our payment UI components directly into your own activity or view for seamless integration.
+3. [Low-level API Integration](#low-level-api-integration) You can build your own custom UI and use our low-level APIs.
 
 Our demo application is available open source on [Github](https://github.com/airwallex/airwallex-payment-android) and it will help you to better understand how to integrate Airwallex Android SDK in your Android App.
 
@@ -21,11 +22,19 @@ Our demo application is available open source on [Github](https://github.com/air
 * [Before you start](#before-you-start)
 * [Airwallex Native UI integration](#airwallex-native-ui-integration)
     * [Requirements](#requirements)
-    * [Installation](#installation) 
+    * [Installation](#installation)
     * [SDK Configuration](#sdk-configuration)
+    * [Customization](#customization)
     * [Payment Flow](#payment-flow)
     * [Google Pay Integration](#google-pay-integration)
-    * [Custom Theme](#custom-theme)
+* [Embedded Element Integration](#embedded-element-integration)
+    * [Overview](#embedded-overview)
+    * [Requirements](#embedded-requirements)
+    * [Installation](#embedded-installation)
+    * [Create PaymentElement](#create-paymentelement)
+    * [Configuration Options](#configuration-options)
+    * [Kotlin Example](#kotlin-example)
+    * [Java Example](#java-example)
 * [Low-level API Integration](#low-level-api-integration)
     * [Step 1: Set up SDK](#step-1-set-up-sdk)
     * [Step 2: Configuration and preparation](#step-2-configuration-and-preparation)
@@ -121,6 +130,85 @@ AirwallexStarter.initialize(
         .build()
 )
 ```
+
+## Customization
+
+You can customize the appearance of the Airwallex SDK UI including theme color and dark mode preferences. This applies to both Native UI integration and Embedded Element integration.
+
+### Theme Color and Dark Mode
+
+Configure the payment UI appearance using `PaymentAppearance`:
+
+**Kotlin:**
+```kotlin
+import com.airwallex.android.core.AirwallexConfiguration
+import com.airwallex.android.core.PaymentAppearance
+
+AirwallexStarter.initialize(
+    application,
+    AirwallexConfiguration.Builder()
+        .enableLogging(true)
+        .setEnvironment(environment)
+        .setSupportComponentProviders(
+            listOf(
+                CardComponent.PROVIDER,
+                RedirectComponent.PROVIDER,
+                GooglePayComponent.PROVIDER
+            )
+        )
+        .setPaymentAppearance(
+            PaymentAppearance(
+                themeColor = 0xFF612FFF.toInt(),  // Custom theme color (ARGB format)
+                isDarkTheme = true                 // Force dark mode (true), light mode (false), or follow system (null)
+            )
+        )
+        .build()
+)
+```
+
+**Java:**
+```java
+import com.airwallex.android.core.AirwallexConfiguration;
+import com.airwallex.android.core.PaymentAppearance;
+
+AirwallexStarter.initialize(
+    application,
+    new AirwallexConfiguration.Builder()
+        .enableLogging(true)
+        .setEnvironment(environment)
+        .setSupportComponentProviders(
+            Arrays.asList(
+                CardComponent.PROVIDER,
+                RedirectComponent.PROVIDER,
+                GooglePayComponent.PROVIDER
+            )
+        )
+        .setPaymentAppearance(
+            new PaymentAppearance(
+                0xFF612FFF,  // Custom theme color (ARGB format)
+                true         // Force dark mode (true), light mode (false), or follow system (null)
+            )
+        )
+        .build()
+);
+```
+
+**PaymentAppearance Options:**
+- `themeColor`: Custom theme color in ARGB format (e.g., `0xFF612FFF`). If null, uses default Airwallex theme color.
+- `isDarkTheme`:
+  - `true` - Force dark mode
+  - `false` - Force light mode
+  - `null` - Follow system dark mode setting (default)
+
+### Legacy Theme Override
+
+You can also override the default theme color using Android's theme system:
+
+```xml
+<color name="airwallex_tint_color">@color/your_custom_color</color>
+```
+
+Note: The `PaymentAppearance` approach is recommended as it provides more control and applies consistently across all SDK UI components.
 
 ## Payment Flow
 
@@ -465,11 +553,331 @@ The following card networks are supported for Google Pay:
 - VISA
 - MAESTRO (only when `countryCode` is set to `BR`)
 
-### Custom Theme
-You can overwrite these color values in your app. https://developer.android.com/guide/topics/ui/look-and-feel/themes#CustomizeTheme
+## Embedded Element Integration
+
+The Airwallex SDK provides `PaymentElement` - a flexible component that allows you to embed payment UI directly into your own activity or view. This gives you full control over the host UI while leveraging Airwallex's prebuilt payment components.
+
+### <a name="embedded-overview"></a>Overview
+
+Unlike Native UI integration where the SDK launches its own activities (`PaymentMethodsActivity`, `AddPaymentActivity`), Embedded Element integration lets you:
+- Embed payment UI in your own activity/view
+- Control the surrounding UI and layout
+- Customize the container styling
+- Integrate seamlessly with your app's navigation flow
+
+Both integration methods support the same customization options via `PaymentAppearance` (theme color and dark mode).
+
+### <a name="embedded-requirements"></a>Requirements
+
+- Android API level 21 and above
+- Kotlin Coroutines support (for suspend functions)
+
+### <a name="embedded-installation"></a>Installation
+
+Add the same dependencies as Native UI integration:
+
+```groovy
+dependencies {
+    // Core module (required)
+    implementation 'io.github.airwallex:payment:6.4.2'
+
+    // Add payment methods you want to support
+    implementation 'io.github.airwallex:payment-card:6.4.2'
+    implementation 'io.github.airwallex:payment-redirect:6.4.2'
+    implementation 'io.github.airwallex:payment-wechat:6.4.2'
+    implementation 'io.github.airwallex:payment-googlepay:6.4.2'
+}
 ```
-    <color name="airwallex_tint_color">@color/airwallex_color_red</color>
+
+Configure the SDK in your Application class (same as Native UI integration - see [SDK Configuration](#sdk-configuration)).
+
+### <a name="create-paymentelement"></a>Create PaymentElement
+
+`PaymentElement.create()` is a suspending function that initializes and fetches required data for the payment UI. You can either use `PaymentFlowlistener` interface or lambda callbacks.
+
+Both variants return `Result<PaymentElement>` which contains either:
+- `Success` with the `PaymentElement` instance
+- `Failure` with the error
+
+### <a name="configuration-options"></a>Configuration Options
+
+Configure the payment UI using `PaymentElementConfiguration`:
+
+#### 1. Card-only Payment (`PaymentElementConfiguration.Card`)
+
+Shows only card input and saved cards:
+
+```kotlin
+import com.airwallex.android.core.AirwallexSupportedCard
+
+// Use default (all supported cards: Visa, Amex, Mastercard, Discover, JCB, Diners Club, UnionPay)
+val configuration = PaymentElementConfiguration.Card()
+
+// Or customize supported card brands
+val customConfiguration = PaymentElementConfiguration.Card(
+    supportedCardBrands = listOf(
+        AirwallexSupportedCard.VISA,
+        AirwallexSupportedCard.MASTERCARD
+    )
+)
 ```
+
+**Note:** By default, `supportedCardBrands` includes all cards from `AirwallexSupportedCard` (Visa, Amex, Mastercard, Discover, JCB, Diners Club, UnionPay). You can customize this list to restrict which card brands to accept.
+
+#### 2. Payment Sheet (`PaymentElementConfiguration.PaymentSheet`)
+
+Shows multiple payment methods with Tab or Accordion layout:
+
+```kotlin
+val configuration = PaymentElementConfiguration.PaymentSheet(
+    layout = PaymentMethodsLayoutType.TAB,           // TAB or ACCORDION
+    showsGooglePayAsPrimaryButton = true             // true: show Google Pay as primary button, false: show in list
+)
+```
+
+**Layout Options:**
+- `PaymentMethodsLayoutType.TAB` - Tab-based layout for payment methods
+- `PaymentMethodsLayoutType.ACCORDION` - Accordion-based layout for payment methods
+
+**Google Pay Display:**
+- `showsGooglePayAsPrimaryButton = true` - Google Pay appears as a prominent button above other payment methods
+- `showsGooglePayAsPrimaryButton = false` - Google Pay appears in the list alongside other payment methods
+
+### <a name="kotlin-example"></a>Kotlin Example
+
+Here's a complete example of embedding the payment element in your own activity:
+
+```kotlin
+import android.os.Bundle
+import android.view.View
+import androidx.activity.ComponentActivity
+import androidx.lifecycle.lifecycleScope
+import com.airwallex.android.core.Airwallex
+import com.airwallex.android.core.AirwallexPaymentSession
+import com.airwallex.android.core.AirwallexPaymentStatus
+import com.airwallex.android.core.PaymentMethodsLayoutType
+import com.airwallex.android.core.model.PaymentIntent
+import com.airwallex.android.view.composables.PaymentElement
+import com.airwallex.android.view.composables.PaymentElementConfiguration
+import com.yourapp.databinding.ActivityCheckoutBinding
+import kotlinx.coroutines.launch
+
+class CheckoutActivity : ComponentActivity() {
+
+    private lateinit var binding: ActivityCheckoutBinding
+    private val airwallex: Airwallex by lazy { Airwallex(this) }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityCheckoutBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        setupPaymentElement()
+    }
+
+    private fun setupPaymentElement() {
+        // Show loading indicator
+        binding.progressBar.visibility = View.VISIBLE
+        binding.composeView.visibility = View.GONE
+
+        lifecycleScope.launch {
+            // Create session (see "Create an Airwallex Session" section)
+            val paymentIntent = PaymentIntent(
+                id = "your_payment_intent_id",
+                clientSecret = "your_client_secret",
+                amount = 100.toBigDecimal(),
+                currency = "USD"
+            )
+
+            val session = AirwallexPaymentSession.Builder(
+                paymentIntent = paymentIntent,
+                countryCode = "US"
+            ).build()
+
+            // Configure payment element
+            val configuration = PaymentElementConfiguration.PaymentSheet(
+                layout = PaymentMethodsLayoutType.TAB,
+                showsGooglePayAsPrimaryButton = true
+            )
+
+            // Create PaymentElement
+            val result = PaymentElement.create(
+                session = session,
+                airwallex = airwallex,
+                configuration = configuration,
+                onLoadingStateChanged = { isLoading ->
+                    // Optional: Handle loading state changes during payment
+                    binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+                },
+                onPaymentResult = { status ->
+                    // Handle payment result
+                    when (status) {
+                        is AirwallexPaymentStatus.Success -> {
+                            // Payment successful
+                            showSuccess(status.paymentIntentId)
+                        }
+                        is AirwallexPaymentStatus.Failure -> {
+                            // Payment failed
+                            showError(status.exception.message)
+                        }
+                        is AirwallexPaymentStatus.Cancel -> {
+                            // User cancelled payment
+                            showCancelled()
+                        }
+                        is AirwallexPaymentStatus.InProgress -> {
+                            // Payment in progress (e.g., waiting for 3DS)
+                            // Loading is handled by onLoadingStateChanged
+                        }
+                    }
+                },
+                onError = { throwable ->
+                    // Optional: Handle errors during element initialization or payment
+                    // If not provided, SDK will show default error dialog
+                    showError(throwable.message)
+                }
+            )
+
+            // Handle creation result
+            result.onSuccess { paymentElement ->
+                // Hide loading, show payment element
+                binding.progressBar.visibility = View.GONE
+                binding.composeView.visibility = View.VISIBLE
+
+                // Render the payment UI
+                binding.composeView.setContent {
+                    paymentElement.Content()
+                }
+            }.onFailure { throwable ->
+                // Failed to initialize payment element
+                binding.progressBar.visibility = View.GONE
+                showError(throwable.message)
+            }
+        }
+    }
+
+    private fun showSuccess(paymentIntentId: String?) {
+        // Show success UI
+    }
+
+    private fun showError(message: String?) {
+        // Show error UI
+    }
+
+    private fun showCancelled() {
+        // Handle cancellation
+    }
+}
+```
+
+**Layout XML (activity_checkout.xml):**
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Your custom UI elements -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Payment Methods"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Loading indicator -->
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone" />
+
+    <!-- ComposeView for PaymentElement -->
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/composeView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>
+```
+or you can check `EmbeddedElementActivity` in our demo app.
+### <a name="java-example"></a>Java Example
+
+For Java developers, we provide `PaymentElementHelper` - a Java-friendly wrapper that simplifies integration by handling Kotlin coroutines and Composable rendering internally.
+
+**Full Implementation Reference:** See `EmbeddedElementJavaActivity.java` in the sample app for a complete working example.
+
+**Key Integration Code:**
+
+```java
+import com.airwallex.android.view.composables.PaymentElementHelper;
+import com.airwallex.android.view.composables.PaymentElementCallback;
+import com.airwallex.android.view.PaymentFlowListener;
+
+// Configure payment element
+PaymentElementConfiguration configuration = new PaymentElementConfiguration.PaymentSheet(
+    PaymentMethodsLayoutType.TAB,
+    true  // showsGooglePayAsPrimaryButton
+);
+
+// Create payment flow listener to handle results
+PaymentFlowListener listener = new PaymentFlowListener() {
+    @Override
+    public void onPaymentResult(@NonNull AirwallexPaymentStatus status) {
+        if (status instanceof AirwallexPaymentStatus.Success) {
+            // Handle success
+        } else if (status instanceof AirwallexPaymentStatus.Failure) {
+            // Handle failure
+        }
+    }
+};
+
+// Create and render PaymentElement using the Java-friendly helper
+PaymentElementHelper.create(
+    this,                    // AppCompatActivity
+    session,                 // AirwallexSession
+    airwallex,               // Airwallex instance
+    configuration,           // PaymentElementConfiguration
+    listener,                // PaymentFlowListener
+    binding.composeView,     // ComposeView for rendering
+    binding.progressBar,     // ProgressBar (optional, for loading state)
+    new PaymentElementCallback() {
+        @Override
+        public void onSuccess(@NonNull PaymentElement element) {
+            // PaymentElement created and rendered successfully
+        }
+
+        @Override
+        public void onFailure(@NonNull Throwable error) {
+            // Handle creation error
+        }
+    }
+);
+```
+
+**PaymentElementHelper Benefits:**
+- Handles Kotlin coroutines internally (no need for suspend function interop)
+- Automatically manages loading states during initialization
+- Renders the Composable UI for you
+- Uses familiar callback patterns for Java developers
+- Supports both automatic rendering (`create()`) and manual rendering (`createOnly()` + `renderInView()`)
+
+**Note:** While Java integration is supported, we recommend using Kotlin for the best development experience with Embedded Elements.
+
+**Key Differences from Native UI Integration:**
+
+| Feature | Native UI Integration | Embedded Element Integration |
+|---------|----------------------|------------------------------|
+| Entry Point | `AirwallexStarter.presentPaymentFlow()` | `PaymentElement.create()` |
+| Activity Ownership | SDK owns the activity | You own the activity |
+| UI Container | SDK activities | Your ComposeView |
+| Layout Control | Limited (SDK-controlled) | Full (you control surrounding UI) |
+| Initialization | Launch activity | Suspending function |
+| Callbacks | `AirwallexCheckoutListener` | `PaymentFlowListener` or lambdas |
 
 ## Low-level API Integration
 You can build your own entirely custom UI on top of our low-level APIs.
