@@ -18,7 +18,6 @@ import com.airwallex.android.core.BillingAddressParameters
 import com.airwallex.android.core.GooglePayOptions
 import com.airwallex.android.core.PaymentMethodsLayoutType
 import com.airwallex.android.core.bindToActivity
-import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.view.AirwallexAddPaymentDialog
@@ -294,7 +293,7 @@ class UIIntegrationViewModel : BaseViewModel() {
             context = activity,
             session = session,
             layoutType = layoutType,
-            supportedCardSchemes = null,
+            supportedCardBrands = null,
             showsGooglePayAsPrimaryButton = true
         )
     }
@@ -313,7 +312,7 @@ class UIIntegrationViewModel : BaseViewModel() {
             context = activity,
             session = session,
             layoutType = layoutType,
-            supportedCardSchemes = null,
+            supportedCardBrands = null,
             showsGooglePayAsPrimaryButton = true
         )
     }
@@ -332,7 +331,7 @@ class UIIntegrationViewModel : BaseViewModel() {
             context = activity,
             session = session,
             layoutType = layoutType,
-            supportedCardSchemes = null,
+            supportedCardBrands = null,
             showsGooglePayAsPrimaryButton = false
         )
     }
@@ -359,13 +358,13 @@ class UIIntegrationViewModel : BaseViewModel() {
             returnUrl = DemoReturnUrl.EmbeddedElement
         )
         session.bindToActivity(activity)
-        // Card only: use null layoutType with all supported card schemes
-        val supportedCardSchemes = enumValues<AirwallexSupportedCard>().map { CardScheme(it.brandName) }
+        // Card only: use null layoutType with all supported card brands
+        val supportedCardBrands = enumValues<AirwallexSupportedCard>().toList()
         EmbeddedElementActivity.start(
             context = activity,
             session = session,
             layoutType = null,
-            supportedCardSchemes = supportedCardSchemes,
+            supportedCardBrands = supportedCardBrands,
             showsGooglePayAsPrimaryButton = true  // Not used for card-only mode
         )
     }
@@ -378,13 +377,13 @@ class UIIntegrationViewModel : BaseViewModel() {
             returnUrl = DemoReturnUrl.EmbeddedElement
         )
         session.bindToActivity(activity)
-        // Card only: use null layoutType with all supported card schemes
-        val supportedCardSchemes = enumValues<AirwallexSupportedCard>().map { CardScheme(it.brandName) }
+        // Card only: use null layoutType with all supported card brands
+        val supportedCardBrands = enumValues<AirwallexSupportedCard>().toList()
         EmbeddedElementActivity.start(
             context = activity,
             session = session,
             layoutType = null,
-            supportedCardSchemes = supportedCardSchemes,
+            supportedCardBrands = supportedCardBrands,
             showsGooglePayAsPrimaryButton = true  // Not used for card-only mode
         )
     }

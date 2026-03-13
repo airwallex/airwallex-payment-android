@@ -2,7 +2,6 @@ package com.airwallex.android.view.composables
 
 import com.airwallex.android.core.AirwallexSupportedCard
 import com.airwallex.android.core.PaymentMethodsLayoutType
-import com.airwallex.android.core.model.CardScheme
 
 /**
  * Configuration for Airwallex Payment Element.
@@ -20,9 +19,7 @@ sealed class PaymentElementConfiguration {
      *                            (Visa, Amex, Mastercard, Discover, JCB, Diners Club, UnionPay).
      */
     data class Card(
-        val supportedCardBrands: List<CardScheme> = enumValues<AirwallexSupportedCard>().map {
-            CardScheme(it.brandName)
-        }
+        val supportedCardBrands: List<AirwallexSupportedCard> = enumValues<AirwallexSupportedCard>().toList()
     ) : PaymentElementConfiguration()
 
     /**
