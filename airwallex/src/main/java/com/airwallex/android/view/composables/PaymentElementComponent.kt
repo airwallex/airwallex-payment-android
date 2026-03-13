@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -38,13 +37,6 @@ internal fun PaymentElementComponent(
     flowViewModel: PaymentFlowViewModel
 ) {
 
-    LaunchedEffect(Unit) {
-        flowViewModel.paymentResult.collect { event ->
-            paymentFlowListener.onLoadingStateChanged(false, airwallex.activity)
-            paymentFlowListener.onPaymentResult(event.status)
-        }
-    }
-
     Column(Modifier.background(AirwallexColor.backgroundPrimary)) {
         when (configuration) {
             is PaymentElementConfiguration.Card -> {
@@ -75,7 +67,7 @@ internal fun PaymentElementComponent(
                             session = session,
                             airwallex = airwallex,
                             paymentFlowListener = paymentFlowListener,
-                            prioritizeGooglePay = configuration.prioritizeGooglePay,
+                            showsGooglePayAsPrimaryButton = configuration.showsGooglePayAsPrimaryButton,
                         )
                     }
 
@@ -84,7 +76,7 @@ internal fun PaymentElementComponent(
                             session = session,
                             airwallex = airwallex,
                             paymentFlowListener = paymentFlowListener,
-                            prioritizeGooglePay = configuration.prioritizeGooglePay,
+                            showsGooglePayAsPrimaryButton = configuration.showsGooglePayAsPrimaryButton,
                         )
                     }
                 }

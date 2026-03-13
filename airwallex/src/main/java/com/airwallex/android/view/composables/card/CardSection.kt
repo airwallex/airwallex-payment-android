@@ -136,7 +136,7 @@ internal fun CardSection(
                     paymentFlowViewModel = paymentFlowViewModel,
                     cardSchemes = cardSchemes,
                     paymentFlowListener = paymentFlowListener,
-                    airwallex = airwallex,
+                    activity = airwallex.activity,
                 )
             }
 

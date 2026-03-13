@@ -92,7 +92,7 @@ class UIIntegrationViewModel : BaseViewModel() {
             activity = activity,
             session = session,
             layoutType = PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase()),
-            prioritizeGooglePay = true,
+            showsGooglePayAsPrimaryButton = true,
             paymentResultListener = object : Airwallex.PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
                     handlePaymentStatus(session, status)
@@ -117,7 +117,7 @@ class UIIntegrationViewModel : BaseViewModel() {
             activity = activity,
             session = session,
             layoutType = PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase()),
-            prioritizeGooglePay = true,
+            showsGooglePayAsPrimaryButton = true,
             paymentResultListener = object : Airwallex.PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
                     handlePaymentStatus(session, status)
@@ -154,7 +154,7 @@ class UIIntegrationViewModel : BaseViewModel() {
             activity = activity,
             session = session,
             layoutType = PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase()),
-            prioritizeGooglePay = true,
+            showsGooglePayAsPrimaryButton = true,
             paymentResultListener = object : Airwallex.PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
                     handlePaymentStatus(session, status)
@@ -177,7 +177,7 @@ class UIIntegrationViewModel : BaseViewModel() {
             activity = activity,
             session = session,
             layoutType = PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase()),
-            prioritizeGooglePay = true,
+            showsGooglePayAsPrimaryButton = true,
             paymentResultListener = object : Airwallex.PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
                     handlePaymentStatus(session, status)
