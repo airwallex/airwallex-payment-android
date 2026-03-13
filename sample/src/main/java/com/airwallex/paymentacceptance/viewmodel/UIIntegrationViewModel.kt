@@ -17,7 +17,7 @@ import com.airwallex.android.core.AirwallexSupportedCard
 import com.airwallex.android.core.BillingAddressParameters
 import com.airwallex.android.core.GooglePayOptions
 import com.airwallex.android.core.PaymentMethodsLayoutType
-import com.airwallex.android.core.bindToActivity
+import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.view.AirwallexAddPaymentDialog
@@ -287,13 +287,13 @@ class UIIntegrationViewModel : BaseViewModel() {
             googlePayOptions = googlePayOptions,
             returnUrl = DemoReturnUrl.EmbeddedElement
         )
-        session.bindToActivity(activity)
         val layoutType = PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase())
+        val supportedCardSchemes = enumValues<AirwallexSupportedCard>().toList()
         EmbeddedElementActivity.start(
             context = activity,
             session = session,
             layoutType = layoutType,
-            supportedCardBrands = null,
+            supportedCardBrands = supportedCardSchemes,
             showsGooglePayAsPrimaryButton = true
         )
     }
@@ -306,7 +306,6 @@ class UIIntegrationViewModel : BaseViewModel() {
             returnUrl = DemoReturnUrl.EmbeddedElement,
             googlePayOptions = googlePayOptions
         )
-        session.bindToActivity(activity)
         val layoutType = PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase())
         EmbeddedElementActivity.start(
             context = activity,
@@ -325,7 +324,6 @@ class UIIntegrationViewModel : BaseViewModel() {
             returnUrl = DemoReturnUrl.EmbeddedElement,
             googlePayOptions = googlePayOptions
         )
-        session.bindToActivity(activity)
         val layoutType = PaymentMethodsLayoutType.valueOf(Settings.paymentLayout.uppercase())
         EmbeddedElementActivity.start(
             context = activity,
@@ -357,7 +355,6 @@ class UIIntegrationViewModel : BaseViewModel() {
         val session = buildAirwallexPaymentSessionWithProvider(
             returnUrl = DemoReturnUrl.EmbeddedElement
         )
-        session.bindToActivity(activity)
         // Card only: use null layoutType with all supported card brands
         val supportedCardBrands = enumValues<AirwallexSupportedCard>().toList()
         EmbeddedElementActivity.start(
@@ -376,7 +373,6 @@ class UIIntegrationViewModel : BaseViewModel() {
         val session = createSession(
             returnUrl = DemoReturnUrl.EmbeddedElement
         )
-        session.bindToActivity(activity)
         // Card only: use null layoutType with all supported card brands
         val supportedCardBrands = enumValues<AirwallexSupportedCard>().toList()
         EmbeddedElementActivity.start(
