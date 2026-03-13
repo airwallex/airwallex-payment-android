@@ -19,7 +19,7 @@ env:
       USE_NEW_SESSION: ${USE_NEW_SESSION}
 - tapOn: "Launch Embedded Element"
 # Wait for the embedded element activity to load
-- assertVisible: "Shopping Cart"
+- assertVisible: "Order details"
 # Assert Google Pay button exists
 - scrollUntilVisible:
     element: "Buy with GPay"
@@ -67,7 +67,7 @@ env:
 # Launch Embedded Element again to pay with saved card
 - tapOn: "Launch Embedded Element"
 # Wait for the embedded element activity to load
-- assertVisible: "Shopping Cart"
+- assertVisible: "Order details"
 # Assert Google Pay button exists
 - scrollUntilVisible:
     element: "Buy with GPay"
@@ -102,7 +102,7 @@ env:
 # Launch Embedded Element one more time to delete the saved card
 - tapOn: "Launch Embedded Element"
 # Wait for the embedded element activity to load
-- assertVisible: "Shopping Cart"
+- assertVisible: "Order details"
 # Scroll down to the card information section
 - scrollUntilVisible:
     element: "Choose a card"

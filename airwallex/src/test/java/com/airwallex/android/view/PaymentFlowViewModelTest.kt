@@ -706,7 +706,6 @@ class PaymentFlowViewModelTest {
         job.cancel()
     }
 
-
     @Test
     fun `test checkoutWithNewCard with session is Session`() = runTest {
         val session = createSession()

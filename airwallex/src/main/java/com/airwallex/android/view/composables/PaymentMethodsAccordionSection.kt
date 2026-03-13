@@ -21,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,7 +62,7 @@ internal fun PaymentMethodsAccordionSection(
     session: AirwallexSession,
     airwallex: Airwallex,
     paymentFlowListener: PaymentFlowListener,
-    prioritizeGooglePay: Boolean = true,
+    showsGooglePayAsPrimaryButton: Boolean = true,
 ) {
     val flowViewModel: PaymentFlowViewModel = viewModel(
         factory = PaymentFlowViewModel.Factory(
@@ -72,8 +73,10 @@ internal fun PaymentMethodsAccordionSection(
     )
     val availablePaymentMethods by flowViewModel.availablePaymentMethods.collectAsState()
     val availablePaymentConsents by flowViewModel.availablePaymentConsents.collectAsState()
-    val (selectedOption, onOptionSelected) = remember { mutableStateOf(availablePaymentMethods.first()) }
-    var selectedIndex by remember { mutableIntStateOf(0) }
+    var selectedIndex by rememberSaveable { mutableIntStateOf(0) }
+    val (selectedOption, onOptionSelected) = remember(selectedIndex, availablePaymentMethods) {
+        mutableStateOf(availablePaymentMethods.getOrNull(selectedIndex) ?: availablePaymentMethods.first())
+    }
 
     if (availablePaymentMethods.getSinglePaymentMethodOrNull(availablePaymentConsents) == null) {
         val allowedPaymentMethods = remember(availablePaymentMethods) {
@@ -88,8 +91,8 @@ internal fun PaymentMethodsAccordionSection(
                 }
             }
         }
-        // Google Pay Section on top (if eligible and prioritizeGooglePay is true)
-        if (prioritizeGooglePay) {
+        // Google Pay Section on top (if eligible and showsGooglePayAsPrimaryButton is true)
+        if (showsGooglePayAsPrimaryButton) {
             GooglePayStandaloneButton(
                 allowedPaymentMethods = allowedPaymentMethods,
                 paymentFlowListener = paymentFlowListener,
@@ -97,7 +100,7 @@ internal fun PaymentMethodsAccordionSection(
                 airwallex = airwallex,
             )
         }
-        val paymentMethodsList = if (prioritizeGooglePay) {
+        val paymentMethodsList = if (showsGooglePayAsPrimaryButton) {
             availablePaymentMethods.filterNot { paymentMethodType ->
                 paymentMethodType.name == PaymentMethodType.GOOGLEPAY.value
             }

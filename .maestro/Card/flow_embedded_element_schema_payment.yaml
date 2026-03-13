@@ -20,7 +20,7 @@ env:
       USE_NEW_SESSION: ${USE_NEW_SESSION}
 - tapOn: "Launch Embedded Element"
 # Wait for the embedded element activity to load
-- assertVisible: "Shopping Cart"
+- assertVisible: "Order details"
 # Scroll down to AlipayHK
 - scrollUntilVisible:
     element: "AlipayHK"
