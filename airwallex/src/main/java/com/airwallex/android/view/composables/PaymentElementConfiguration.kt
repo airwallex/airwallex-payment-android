@@ -1,7 +1,7 @@
 package com.airwallex.android.view.composables
 
+import com.airwallex.android.core.AirwallexSupportedCard
 import com.airwallex.android.core.PaymentMethodsLayoutType
-import com.airwallex.android.core.model.CardScheme
 
 /**
  * Configuration for Airwallex Payment Element.
@@ -14,9 +14,13 @@ sealed class PaymentElementConfiguration {
      * Configuration for standalone card payment element.
      * Shows only card input and saved cards (if available).
      *
-     * @param supportedCardBrands List of supported card brands/schemes. If empty, will be fetched automatically.
+     * @param supportedCardBrands List of supported card brands/schemes.
+     *                            Defaults to all cards from [AirwallexSupportedCard]
+     *                            (Visa, Amex, Mastercard, Discover, JCB, Diners Club, UnionPay).
      */
-    data class Card(val supportedCardBrands: List<CardScheme> = emptyList()) : PaymentElementConfiguration()
+    data class Card(
+        val supportedCardBrands: List<AirwallexSupportedCard> = enumValues<AirwallexSupportedCard>().toList()
+    ) : PaymentElementConfiguration()
 
     /**
      * Configuration for payment sheet with multiple payment methods.
