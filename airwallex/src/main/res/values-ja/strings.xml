@@ -34,6 +34,7 @@
     <string name="airwallex_delete_consent_alert_title">%sを削除しますか？</string>
     <string name="airwallex_delete_consent_alert_content">このオプションは保存されたお支払い方法から完全に削除されます。</string>
     <string name="airwallex_schema_payment_redirect_message">確認後、支払い手続きへリダイレクトされます。</string>
+    <string name="airwallex_google_payment_redirect_message">下のGoogle Payボタンをクリックして、安全に購入を完了してください。</string>
     <string name="airwallex_invalid_scheme_message">スキーマが無効です</string>
     <string name="airwallex_empty_state">都道府県を入力してください</string>
     <string name="airwallex_delete_payment_method_prompt_title">この支払い同意を削除しますか？</string>

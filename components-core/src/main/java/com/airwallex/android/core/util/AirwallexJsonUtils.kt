@@ -59,6 +59,9 @@ object AirwallexJsonUtils {
         }
     }
 
+    // TODO: according to claude, the null is not equivalent to "null", but rather this private val NULL = JSONObject.NULL
+    // but no changes made now since this is existing code.
+    // check `jsonObjectToMap with null values filtered` test case for reference
     @JvmSynthetic
     internal fun jsonObjectToMap(jsonObject: JSONObject?): Map<String, Any?>? {
         if (jsonObject == null) {
@@ -128,7 +131,8 @@ object AirwallexJsonUtils {
                     try {
                         val mapValue = value as Map<String, Any>
                         jsonObject.put(key, mapToJsonObject(mapValue))
-                    } catch (classCastException: ClassCastException) {
+                    } catch (_: ClassCastException) {
+                        // do nothing
                     }
                 } else if (value is List<*>) {
                     jsonObject.put(key, listToJsonArray(value as List<Any>))
@@ -137,7 +141,8 @@ object AirwallexJsonUtils {
                 } else {
                     jsonObject.put(key, value.toString())
                 }
-            } catch (jsonException: JSONException) {
+            } catch (_: JSONException) {
+                // do nothing
             }
         }
         return jsonObject

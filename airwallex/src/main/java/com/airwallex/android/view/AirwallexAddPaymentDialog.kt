@@ -1,37 +1,48 @@
 package com.airwallex.android.view
 
 import android.annotation.SuppressLint
-import android.app.Application
-import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.ComponentActivity
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelStore
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.unit.dp
 import com.airwallex.android.R
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentSession
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.AirwallexSupportedCard
-import com.airwallex.android.core.isExpressCheckout
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.TrackablePage
 import com.airwallex.android.core.model.CardScheme
-import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.databinding.DialogAddCardBinding
+import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.composables.AirwallexTheme
-import com.airwallex.android.view.composables.card.CardSection
+import com.airwallex.android.view.composables.PaymentElement
+import com.airwallex.android.view.composables.PaymentElementConfiguration
+import com.airwallex.android.view.util.AnalyticsConstants.CARD_PAYMENT_VIEW
+import com.airwallex.android.view.util.AnalyticsConstants.EVENT_PAYMENT_CANCELLED
+import com.airwallex.android.view.util.AnalyticsConstants.SUPPORTED_SCHEMES
 import com.airwallex.risk.AirwallexRisk
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 
 @SuppressLint("InflateParams")
-class AirwallexAddPaymentDialog(
+class AirwallexAddPaymentDialog @JvmOverloads constructor(
     private val activity: ComponentActivity,
     private val session: AirwallexSession,
     private val supportedCardSchemes: List<CardScheme> =
@@ -46,41 +57,23 @@ class AirwallexAddPaymentDialog(
     }
 
     override val pageName: String
-        get() = viewModel.pageName
+        get() = CARD_PAYMENT_VIEW
 
     override val additionalInfo: Map<String, Any>
-        get() = viewModel.additionalInfo
+        get() = mapOf(SUPPORTED_SCHEMES to supportedCardSchemes.map { it.name })
 
-    private val viewModel: AddPaymentMethodViewModel by lazy {
-        createViewModel()
-    }
-
-    private val viewModelStore = ViewModelStore()
-    private fun createViewModel(): AddPaymentMethodViewModel {
-        val factoryKey = System.currentTimeMillis().toString()
-        return ViewModelProvider(
-            viewModelStore,
-            AddPaymentMethodViewModel.Factory(
-                (activity.applicationContext as Application),
-                Airwallex(activity),
-                session,
-                supportedCardSchemes
-            )
-        )[factoryKey, AddPaymentMethodViewModel::class.java]
+    private val airwallex: Airwallex by lazy {
+        Airwallex(activity)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(viewBinding.root)
-        AirwallexRisk.log(AirwallexRisk.Events.TRANSACTION_INITIATED)
-        AnalyticsLogger.logAction(
-            actionName = "payment_launched",
-            additionalInfo = mapOf(
-                "subtype" to "component",
-                "paymentMethod" to PaymentMethodType.CARD.value,
-                "expressCheckout" to session.isExpressCheckout
-            )
+        AnalyticsLogger.setupSession(
+            session,
+            launchType = AnalyticsLogger.LaunchType.HPP,
         )
+        AirwallexRisk.log(AirwallexRisk.Events.TRANSACTION_INITIATED)
         initDialog()
         initView()
         addListener()
@@ -105,46 +98,89 @@ class AirwallexAddPaymentDialog(
 
     private fun initView() {
         AirwallexRisk.log(event = "show_create_card", screen = "page_create_card")
-        viewBinding.closeIcon.setColorFilter(Color.BLACK)
+
+        // Set background with rounded corners (12dp on top)
+        val cornerRadius = context.resources.displayMetrics.density * 12
+        viewBinding.root.background = GradientDrawable().apply {
+            setColor(AirwallexColor.backgroundPrimary.toArgb())
+            cornerRadii = floatArrayOf(
+                cornerRadius, cornerRadius,
+                cornerRadius, cornerRadius,
+                0f, 0f,
+                0f, 0f
+            )
+        }
+        viewBinding.cardLabel.setTextColor(AirwallexColor.textPrimary.toArgb())
+        viewBinding.closeIcon.setColorFilter(AirwallexColor.iconPrimary.toArgb())
         viewBinding.composeView.apply {
             setContent {
-                AirwallexTheme {
-                    CardSection(
-                        addPaymentMethodViewModel = viewModel,
-                        cardSchemes = supportedCardSchemes,
-                        onAddCard = {
-                            AnalyticsLogger.logAction("tap_pay_button", mapOf("payment_method" to PaymentMethodType.CARD.value))
-                            setLoadingProgress(true)
-                        },
-                        onDeleteCard = {},
-                        onCheckoutWithoutCvc = {},
-                        onCheckoutWithCvc = { _, _ -> },
-                        isSinglePaymentMethod = true,
-                    )
-                }
+                AddPaymentDialogContent()
             }
         }
+    }
+
+    @Composable
+    private fun AddPaymentDialogContent() {
+        AirwallexTheme {
+            Column(modifier = Modifier.padding(horizontal = 24.dp)) {
+                PaymentElementContent()
+            }
+        }
+    }
+
+    @Composable
+    private fun PaymentElementContent() {
+        var paymentState by remember { mutableStateOf<PaymentElement?>(null) }
+
+        LaunchedEffect(Unit) {
+            setLoadingProgress(true)
+            PaymentElement.create(
+                session = session,
+                airwallex = airwallex,
+                configuration = PaymentElementConfiguration.Card(
+                    supportedCardBrands = supportedCardSchemes
+                ),
+                launchType = AnalyticsLogger.LaunchType.HPP,
+                onLoadingStateChanged = { isLoading ->
+                    setLoadingProgress(isLoading)
+                },
+                onPaymentResult = { status ->
+                    when (status) {
+                        is AirwallexPaymentStatus.Success -> {
+                            dismissWithPaymentResult(
+                                paymentIntentId = status.paymentIntentId,
+                                paymentConsentId = status.consentId
+                            )
+                        }
+
+                        is AirwallexPaymentStatus.Failure -> {
+                            dismissWithPaymentResult(exception = status.exception)
+                        }
+
+                        else -> Unit
+                    }
+                },
+                onError = { _ ->
+                    // shouldn't be any error
+                }
+            ).fold(
+                onSuccess = { state ->
+                    paymentState = state
+                    setLoadingProgress(false)
+                },
+                onFailure = { error ->
+                    setLoadingProgress(false)
+                    dismiss()
+                }
+            )
+        }
+
+        paymentState?.Content()
     }
 
     private fun addListener() {
         viewBinding.closeIcon.setOnClickListener {
             cancelPayment()
-        }
-        viewModel.airwallexPaymentStatus.observe(activity) { result ->
-            when (result) {
-                is AirwallexPaymentStatus.Success -> {
-                    dismissWithPaymentResult(
-                        paymentIntentId = result.paymentIntentId,
-                        paymentConsentId = result.consentId
-                    )
-                }
-
-                is AirwallexPaymentStatus.Failure -> {
-                    dismissWithPaymentResult(exception = result.exception)
-                }
-
-                else -> Unit
-            }
         }
     }
 
@@ -185,17 +221,12 @@ class AirwallexAddPaymentDialog(
     private fun cancelPayment() {
         val paymentSession = session as? AirwallexPaymentSession
         AirwallexLogger.info("AddPaymentMethodDialog cancelPayment[${paymentSession?.paymentIntent?.id}]: cancel")
-        viewModel.trackPaymentCancelled()
+        AnalyticsLogger.logAction(actionName = EVENT_PAYMENT_CANCELLED)
         paymentResultListener.onCompleted(AirwallexPaymentStatus.Cancel)
         dismiss()
     }
 
     private fun setLoadingProgress(loading: Boolean) {
         viewBinding.frLoading.visibility = if (loading) View.VISIBLE else View.GONE
-    }
-
-    override fun dismiss() {
-        super.dismiss()
-        viewModelStore.clear()
     }
 }

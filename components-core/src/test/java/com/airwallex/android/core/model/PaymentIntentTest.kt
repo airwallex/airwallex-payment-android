@@ -5,7 +5,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.math.BigDecimal
-import java.util.*
+import java.util.Date
 import kotlin.test.assertEquals
 
 @RunWith(RobolectricTestRunner::class)

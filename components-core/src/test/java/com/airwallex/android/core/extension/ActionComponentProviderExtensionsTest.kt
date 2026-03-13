@@ -3,14 +3,27 @@ package com.airwallex.android.core.extension
 import android.content.Context
 import androidx.activity.ComponentActivity
 import androidx.fragment.app.Fragment
-import com.airwallex.android.core.*
+import com.airwallex.android.core.ActionComponent
+import com.airwallex.android.core.Airwallex
+import com.airwallex.android.core.AirwallexPaymentStatus
+import com.airwallex.android.core.AirwallexPlugins
+import com.airwallex.android.core.Environment
+import com.airwallex.android.core.PaymentManager
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.model.Billing
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.parser.PaymentIntentParser
-import io.mockk.*
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.mockkObject
+import io.mockk.slot
+import io.mockk.spyk
+import io.mockk.unmockkAll
+import io.mockk.verify
 import org.json.JSONObject
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
 
 class ActionComponentProviderExtensionsTest {
@@ -28,6 +41,17 @@ class ActionComponentProviderExtensionsTest {
         .setPaymentDataType("payment_data_type")
         .setEncryptedPaymentToken("encrypted_payment_token")
         .build()
+
+    @Before
+    fun setUp() {
+        mockkObject(AirwallexPlugins)
+        every { AirwallexPlugins.environment } returns Environment.PRODUCTION
+    }
+
+    @After
+    fun tearDown() {
+        unmockkAll()
+    }
 
     @Test
     fun `test confirmGooglePayIntent with next action`() {

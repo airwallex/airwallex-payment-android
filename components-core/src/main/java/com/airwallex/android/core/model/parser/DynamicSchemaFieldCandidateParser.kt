@@ -1,6 +1,6 @@
 package com.airwallex.android.core.model.parser
 
-import com.airwallex.android.core.model.*
+import com.airwallex.android.core.model.DynamicSchemaFieldCandidate
 import org.json.JSONObject
 
 class DynamicSchemaFieldCandidateParser :

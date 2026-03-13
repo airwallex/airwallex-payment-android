@@ -8,13 +8,9 @@ object SessionUtils {
 
     fun getIntentId(session: AirwallexSession): String {
         return when (session) {
-            is AirwallexPaymentSession -> {
-                session.paymentIntent?.id ?: ""
-            }
+            is AirwallexPaymentSession -> session.paymentIntent?.id ?: ""
 
-            is AirwallexRecurringWithIntentSession -> {
-                session.paymentIntent?.id ?: ""
-            }
+            is AirwallexRecurringWithIntentSession -> session.paymentIntent?.id ?: ""
 
             else -> ""
         }

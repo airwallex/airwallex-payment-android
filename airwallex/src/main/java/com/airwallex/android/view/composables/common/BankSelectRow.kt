@@ -48,7 +48,7 @@ internal fun BankSelectRow(
 
                 StandardText(
                     text = stringResource(id = R.string.airwallex_select_your_bank),
-                    color = AirwallexColor.TextPrimary,
+                    color = AirwallexColor.textPrimary,
                     typography = AirwallexTypography.Title200,
                     modifier = Modifier.padding(24.dp),
                 )
@@ -63,9 +63,7 @@ internal fun BankSelectRow(
                         BankItem(
                             bank = content,
                             isSelected = selectedValue == content.name,
-                            modifier = Modifier
-                                .padding(horizontal = 24.dp)
-                                .fillMaxWidth(),
+                            modifier = Modifier.fillMaxWidth(),
                             onClick = {
                                 sheetDetails.onDismissRequested {}
                                 selectedLabel = content.displayName

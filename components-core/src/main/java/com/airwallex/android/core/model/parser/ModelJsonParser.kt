@@ -3,7 +3,7 @@ package com.airwallex.android.core.model.parser
 import org.json.JSONArray
 import org.json.JSONObject
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
 
 interface ModelJsonParser<Model> {
     fun parse(json: JSONObject): Model?

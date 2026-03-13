@@ -329,7 +329,7 @@ data class TrackerRequest internal constructor(
 
         HPP("hpp"),
 
-        REDIRECT_PAGE("redirectPage");
+        REDIRECT_PAGE("redirectPage")
     }
 
     @Parcelize
@@ -380,6 +380,6 @@ data class TrackerRequest internal constructor(
 
         ON_SWITCH_METHOD("onSwitchMethod"),
 
-        ON_CLICK_CONFIRM_BUTTON("onClickConfirmButton");
+        ON_CLICK_CONFIRM_BUTTON("onClickConfirmButton")
     }
 }
