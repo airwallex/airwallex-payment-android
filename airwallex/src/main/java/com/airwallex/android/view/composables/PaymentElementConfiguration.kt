@@ -1,5 +1,6 @@
 package com.airwallex.android.view.composables
 
+import com.airwallex.android.core.AirwallexSupportedCard
 import com.airwallex.android.core.PaymentMethodsLayoutType
 import com.airwallex.android.core.model.CardScheme
 
@@ -16,7 +17,11 @@ sealed class PaymentElementConfiguration {
      *
      * @param supportedCardBrands List of supported card brands/schemes. Must not be empty.
      */
-    data class Card(val supportedCardBrands: List<CardScheme>) : PaymentElementConfiguration()
+    data class Card(
+        val supportedCardBrands: List<CardScheme> = enumValues<AirwallexSupportedCard>().map {
+            CardScheme(it.brandName)
+        }
+    ) : PaymentElementConfiguration()
 
     /**
      * Configuration for payment sheet with multiple payment methods.

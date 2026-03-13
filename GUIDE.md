@@ -608,12 +608,16 @@ Configure the payment UI using `PaymentElementConfiguration`:
 Shows only card input and saved cards:
 
 ```kotlin
-val configuration = PaymentElementConfiguration.Card(
-    supportedCardBrands = listOf(CardScheme.Visa, CardScheme.Mastercard) // Required
+// Use default (all supported cards: Visa, Amex, Mastercard, Discover, JCB, Diners Club, UnionPay)
+val configuration = PaymentElementConfiguration.Card()
+
+// Or customize supported card brands
+val customConfiguration = PaymentElementConfiguration.Card(
+    supportedCardBrands = listOf(CardScheme("visa"), CardScheme("mastercard"))
 )
 ```
 
-**Note:** `supportedCardBrands` must not be empty. Specify the card brands you want to support.
+**Note:** By default, `supportedCardBrands` includes all cards from `AirwallexSupportedCard` (Visa, Amex, Mastercard, Discover, JCB, Diners Club, UnionPay). You can customize this list to restrict which card brands to accept.
 
 #### 2. Payment Sheet (`PaymentElementConfiguration.PaymentSheet`)
 
