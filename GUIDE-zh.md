@@ -764,151 +764,66 @@ class CheckoutActivity : ComponentActivity() {
 
 ### <a name="java-示例"></a>Java 示例
 
-以下是使用基于监听器的 API 的等效 Java 示例：
+对于 Java 开发者，我们提供了 `PaymentElementHelper` - 一个 Java 友好的包装器，通过内部处理 Kotlin 协程和 Composable 渲染来简化集成。
+
+**完整实现参考：** 查看示例应用中的 `EmbeddedElementJavaActivity.java` 获取完整可运行的示例。
+
+**核心集成代码：**
 
 ```java
-import android.content.Context;
-import android.os.Bundle;
-import android.view.View;
-import androidx.activity.ComponentActivity;
-import com.airwallex.android.core.Airwallex;
-import com.airwallex.android.core.AirwallexPaymentSession;
-import com.airwallex.android.core.AirwallexPaymentStatus;
-import com.airwallex.android.core.PaymentMethodsLayoutType;
-import com.airwallex.android.core.model.PaymentIntent;
+import com.airwallex.android.view.composables.PaymentElementHelper;
+import com.airwallex.android.view.composables.PaymentElementCallback;
 import com.airwallex.android.view.PaymentFlowListener;
-import com.airwallex.android.view.composables.PaymentElement;
-import com.airwallex.android.view.composables.PaymentElementConfiguration;
-import com.yourapp.databinding.ActivityCheckoutBinding;
-import java.math.BigDecimal;
-import kotlin.coroutines.Continuation;
-import kotlin.coroutines.CoroutineContext;
-import kotlin.coroutines.EmptyCoroutineContext;
-import kotlinx.coroutines.BuildersKt;
-import kotlinx.coroutines.CoroutineScope;
-import org.jetbrains.annotations.NotNull;
 
-public class CheckoutActivity extends ComponentActivity {
+// 配置支付元素
+PaymentElementConfiguration configuration = new PaymentElementConfiguration.PaymentSheet(
+    PaymentMethodsLayoutType.TAB,
+    true  // showsGooglePayAsPrimaryButton
+);
 
-    private ActivityCheckoutBinding binding;
-    private Airwallex airwallex;
-
+// 创建支付流程监听器以处理结果
+PaymentFlowListener listener = new PaymentFlowListener() {
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding = ActivityCheckoutBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-
-        airwallex = new Airwallex(this);
-        setupPaymentElement();
+    public void onPaymentResult(@NonNull AirwallexPaymentStatus status) {
+        if (status instanceof AirwallexPaymentStatus.Success) {
+            // 处理成功
+        } else if (status instanceof AirwallexPaymentStatus.Failure) {
+            // 处理失败
+        }
     }
+};
 
-    private void setupPaymentElement() {
-        // 显示加载指示器
-        binding.progressBar.setVisibility(View.VISIBLE);
-        binding.composeView.setVisibility(View.GONE);
+// 使用 Java 友好的 helper 创建并渲染 PaymentElement
+PaymentElementHelper.create(
+    this,                    // AppCompatActivity
+    session,                 // AirwallexSession
+    airwallex,               // Airwallex 实例
+    configuration,           // PaymentElementConfiguration
+    listener,                // PaymentFlowListener
+    binding.composeView,     // 用于渲染的 ComposeView
+    binding.progressBar,     // ProgressBar（可选，用于加载状态）
+    new PaymentElementCallback() {
+        @Override
+        public void onSuccess(@NonNull PaymentElement element) {
+            // PaymentElement 创建并渲染成功
+        }
 
-        // 创建 session
-        PaymentIntent paymentIntent = new PaymentIntent(
-            "your_payment_intent_id",
-            "your_client_secret",
-            new BigDecimal("100"),
-            "USD"
-        );
-
-        AirwallexPaymentSession session = new AirwallexPaymentSession.Builder(
-            paymentIntent,
-            "US"
-        ).build();
-
-        // 配置支付元素
-        PaymentElementConfiguration configuration = new PaymentElementConfiguration.PaymentSheet(
-            PaymentMethodsLayoutType.TAB,
-            true  // showsGooglePayAsPrimaryButton
-        );
-
-        // 创建支付流程监听器
-        PaymentFlowListener listener = new PaymentFlowListener() {
-            @Override
-            public void onLoadingStateChanged(boolean isLoading, @NotNull Context context) {
-                // 可选：处理支付过程中的加载状态变化
-                binding.progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
-            }
-
-            @Override
-            public void onPaymentResult(@NotNull AirwallexPaymentStatus status) {
-                // 处理支付结果
-                if (status instanceof AirwallexPaymentStatus.Success) {
-                    AirwallexPaymentStatus.Success success = (AirwallexPaymentStatus.Success) status;
-                    showSuccess(success.getPaymentIntentId());
-                } else if (status instanceof AirwallexPaymentStatus.Failure) {
-                    AirwallexPaymentStatus.Failure failure = (AirwallexPaymentStatus.Failure) status;
-                    showError(failure.getException().getMessage());
-                } else if (status instanceof AirwallexPaymentStatus.Cancel) {
-                    showCancelled();
-                } else if (status instanceof AirwallexPaymentStatus.InProgress) {
-                    // 支付进行中（加载由 onLoadingStateChanged 处理）
-                }
-            }
-
-            @Override
-            public void onError(@NotNull Throwable exception, @NotNull Context context) {
-                // 可选：处理错误
-                // 如果不提供，SDK 将显示默认错误对话框
-                showError(exception.getMessage());
-            }
-        };
-
-        // 使用协程创建 PaymentElement
-        CoroutineScope scope = androidx.lifecycle.LifecycleKt.getLifecycleScope(this);
-        BuildersKt.launch(scope, EmptyCoroutineContext.INSTANCE, null, (coroutineScope, continuation) -> {
-            // 调用 create suspend 函数
-            Result<PaymentElement> result = PaymentElement.create(
-                session,
-                airwallex,
-                configuration,
-                listener,
-                continuation
-            );
-
-            // 处理结果
-            if (result.isSuccess()) {
-                PaymentElement paymentElement = result.getResultOrNull();
-                runOnUiThread(() -> {
-                    binding.progressBar.setVisibility(View.GONE);
-                    binding.composeView.setVisibility(View.VISIBLE);
-
-                    // 渲染支付 UI
-                    binding.composeView.setContent(() -> {
-                        paymentElement.Content();
-                        return null;
-                    });
-                });
-            } else {
-                Throwable error = result.exceptionOrNull();
-                runOnUiThread(() -> {
-                    binding.progressBar.setVisibility(View.GONE);
-                    showError(error != null ? error.getMessage() : "未知错误");
-                });
-            }
-
-            return null;
-        });
+        @Override
+        public void onFailure(@NonNull Throwable error) {
+            // 处理创建错误
+        }
     }
-
-    private void showSuccess(String paymentIntentId) {
-        // 显示成功 UI
-    }
-
-    private void showError(String message) {
-        // 显示错误 UI
-    }
-
-    private void showCancelled() {
-        // 处理取消
-    }
-}
+);
 ```
+
+**PaymentElementHelper 优势：**
+- 内部处理 Kotlin 协程（无需处理 suspend 函数互操作）
+- 初始化期间自动管理加载状态
+- 为你渲染 Composable UI
+- 使用 Java 开发者熟悉的回调模式
+- 支持自动渲染（`create()`）和手动渲染（`createOnly()` + `renderInView()`）
+
+**注意：** 虽然支持 Java 集成，但我们建议使用 Kotlin 以获得嵌入式元素的最佳开发体验。
 
 **与原生 UI 集成的主要区别：**
 

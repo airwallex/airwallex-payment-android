@@ -807,152 +807,66 @@ class CheckoutActivity : ComponentActivity() {
 or you can check `EmbeddedElementActivity` in our demo app.
 ### <a name="java-example"></a>Java Example
 
-Here's the equivalent example in Java using the listener-based API:
+For Java developers, we provide `PaymentElementHelper` - a Java-friendly wrapper that simplifies integration by handling Kotlin coroutines and Composable rendering internally.
+
+**Full Implementation Reference:** See `EmbeddedElementJavaActivity.java` in the sample app for a complete working example.
+
+**Key Integration Code:**
 
 ```java
-import android.content.Context;
-import android.os.Bundle;
-import android.view.View;
-import androidx.activity.ComponentActivity;
-import androidx.lifecycle.LifecycleOwner;
-import com.airwallex.android.core.Airwallex;
-import com.airwallex.android.core.AirwallexPaymentSession;
-import com.airwallex.android.core.AirwallexPaymentStatus;
-import com.airwallex.android.core.PaymentMethodsLayoutType;
-import com.airwallex.android.core.model.PaymentIntent;
+import com.airwallex.android.view.composables.PaymentElementHelper;
+import com.airwallex.android.view.composables.PaymentElementCallback;
 import com.airwallex.android.view.PaymentFlowListener;
-import com.airwallex.android.view.composables.PaymentElement;
-import com.airwallex.android.view.composables.PaymentElementConfiguration;
-import com.yourapp.databinding.ActivityCheckoutBinding;
-import java.math.BigDecimal;
-import kotlin.coroutines.Continuation;
-import kotlin.coroutines.CoroutineContext;
-import kotlin.coroutines.EmptyCoroutineContext;
-import kotlinx.coroutines.BuildersKt;
-import kotlinx.coroutines.CoroutineScope;
-import org.jetbrains.annotations.NotNull;
 
-public class CheckoutActivity extends ComponentActivity {
+// Configure payment element
+PaymentElementConfiguration configuration = new PaymentElementConfiguration.PaymentSheet(
+    PaymentMethodsLayoutType.TAB,
+    true  // showsGooglePayAsPrimaryButton
+);
 
-    private ActivityCheckoutBinding binding;
-    private Airwallex airwallex;
-
+// Create payment flow listener to handle results
+PaymentFlowListener listener = new PaymentFlowListener() {
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding = ActivityCheckoutBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-
-        airwallex = new Airwallex(this);
-        setupPaymentElement();
+    public void onPaymentResult(@NonNull AirwallexPaymentStatus status) {
+        if (status instanceof AirwallexPaymentStatus.Success) {
+            // Handle success
+        } else if (status instanceof AirwallexPaymentStatus.Failure) {
+            // Handle failure
+        }
     }
+};
 
-    private void setupPaymentElement() {
-        // Show loading indicator
-        binding.progressBar.setVisibility(View.VISIBLE);
-        binding.composeView.setVisibility(View.GONE);
+// Create and render PaymentElement using the Java-friendly helper
+PaymentElementHelper.create(
+    this,                    // AppCompatActivity
+    session,                 // AirwallexSession
+    airwallex,               // Airwallex instance
+    configuration,           // PaymentElementConfiguration
+    listener,                // PaymentFlowListener
+    binding.composeView,     // ComposeView for rendering
+    binding.progressBar,     // ProgressBar (optional, for loading state)
+    new PaymentElementCallback() {
+        @Override
+        public void onSuccess(@NonNull PaymentElement element) {
+            // PaymentElement created and rendered successfully
+        }
 
-        // Create session
-        PaymentIntent paymentIntent = new PaymentIntent(
-            "your_payment_intent_id",
-            "your_client_secret",
-            new BigDecimal("100"),
-            "USD"
-        );
-
-        AirwallexPaymentSession session = new AirwallexPaymentSession.Builder(
-            paymentIntent,
-            "US"
-        ).build();
-
-        // Configure payment element
-        PaymentElementConfiguration configuration = new PaymentElementConfiguration.PaymentSheet(
-            PaymentMethodsLayoutType.TAB,
-            true  // showsGooglePayAsPrimaryButton
-        );
-
-        // Create payment flow listener
-        PaymentFlowListener listener = new PaymentFlowListener() {
-            @Override
-            public void onLoadingStateChanged(boolean isLoading, @NotNull Context context) {
-                // Optional: Handle loading state changes during payment
-                binding.progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
-            }
-
-            @Override
-            public void onPaymentResult(@NotNull AirwallexPaymentStatus status) {
-                // Handle payment result
-                if (status instanceof AirwallexPaymentStatus.Success) {
-                    AirwallexPaymentStatus.Success success = (AirwallexPaymentStatus.Success) status;
-                    showSuccess(success.getPaymentIntentId());
-                } else if (status instanceof AirwallexPaymentStatus.Failure) {
-                    AirwallexPaymentStatus.Failure failure = (AirwallexPaymentStatus.Failure) status;
-                    showError(failure.getException().getMessage());
-                } else if (status instanceof AirwallexPaymentStatus.Cancel) {
-                    showCancelled();
-                } else if (status instanceof AirwallexPaymentStatus.InProgress) {
-                    // Payment in progress (loading handled by onLoadingStateChanged)
-                }
-            }
-
-            @Override
-            public void onError(@NotNull Throwable exception, @NotNull Context context) {
-                // Optional: Handle errors
-                // If not provided, SDK will show default error dialog
-                showError(exception.getMessage());
-            }
-        };
-
-        // Create PaymentElement using coroutine
-        CoroutineScope scope = androidx.lifecycle.LifecycleKt.getLifecycleScope(this);
-        BuildersKt.launch(scope, EmptyCoroutineContext.INSTANCE, null, (coroutineScope, continuation) -> {
-            // Call create suspending function
-            Result<PaymentElement> result = PaymentElement.create(
-                session,
-                airwallex,
-                configuration,
-                listener,
-                continuation
-            );
-
-            // Handle result
-            if (result.isSuccess()) {
-                PaymentElement paymentElement = result.getResultOrNull();
-                runOnUiThread(() -> {
-                    binding.progressBar.setVisibility(View.GONE);
-                    binding.composeView.setVisibility(View.VISIBLE);
-
-                    // Render payment UI
-                    binding.composeView.setContent(() -> {
-                        paymentElement.Content();
-                        return null;
-                    });
-                });
-            } else {
-                Throwable error = result.exceptionOrNull();
-                runOnUiThread(() -> {
-                    binding.progressBar.setVisibility(View.GONE);
-                    showError(error != null ? error.getMessage() : "Unknown error");
-                });
-            }
-
-            return null;
-        });
+        @Override
+        public void onFailure(@NonNull Throwable error) {
+            // Handle creation error
+        }
     }
-
-    private void showSuccess(String paymentIntentId) {
-        // Show success UI
-    }
-
-    private void showError(String message) {
-        // Show error UI
-    }
-
-    private void showCancelled() {
-        // Handle cancellation
-    }
-}
+);
 ```
+
+**PaymentElementHelper Benefits:**
+- Handles Kotlin coroutines internally (no need for suspend function interop)
+- Automatically manages loading states during initialization
+- Renders the Composable UI for you
+- Uses familiar callback patterns for Java developers
+- Supports both automatic rendering (`create()`) and manual rendering (`createOnly()` + `renderInView()`)
+
+**Note:** While Java integration is supported, we recommend using Kotlin for the best development experience with Embedded Elements.
 
 **Key Differences from Native UI Integration:**
 
