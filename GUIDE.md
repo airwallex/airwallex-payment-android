@@ -608,12 +608,17 @@ Configure the payment UI using `PaymentElementConfiguration`:
 Shows only card input and saved cards:
 
 ```kotlin
+import com.airwallex.android.core.AirwallexSupportedCard
+
 // Use default (all supported cards: Visa, Amex, Mastercard, Discover, JCB, Diners Club, UnionPay)
 val configuration = PaymentElementConfiguration.Card()
 
 // Or customize supported card brands
 val customConfiguration = PaymentElementConfiguration.Card(
-    supportedCardBrands = listOf(CardScheme("visa"), CardScheme("mastercard"))
+    supportedCardBrands = listOf(
+        AirwallexSupportedCard.VISA,
+        AirwallexSupportedCard.MASTERCARD
+    )
 )
 ```
 
