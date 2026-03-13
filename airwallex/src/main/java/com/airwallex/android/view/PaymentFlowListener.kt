@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.ContextWrapper
 import androidx.appcompat.app.AlertDialog
 import com.airwallex.android.core.AirwallexPaymentStatus
+import com.airwallex.android.ui.AirwallexLoadingDialogFragment
 import com.airwallex.android.ui.R
 
 interface PaymentFlowListener {

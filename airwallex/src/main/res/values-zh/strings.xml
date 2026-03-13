@@ -34,6 +34,7 @@
     <string name="airwallex_delete_consent_alert_title">移除%s？</string>
     <string name="airwallex_delete_consent_alert_content">该选项将永久从您的已保存支付方式中移除。</string>
     <string name="airwallex_schema_payment_redirect_message">确认后您将被重定向完成支付。</string>
+    <string name="airwallex_google_payment_redirect_message">点击下方的 Google Pay 按钮安全完成您的购买。</string>
     <string name="airwallex_invalid_scheme_message">无效的格式</string>
     <string name="airwallex_payment_methods">支付方式</string>
     <string name="airwallex_empty_expiry">请输入卡的有效期</string>

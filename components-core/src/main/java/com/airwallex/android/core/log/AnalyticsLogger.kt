@@ -33,7 +33,7 @@ object AnalyticsLogger {
     private var expressCheckout: Boolean? = null
     private var layout: String? = null
 
-    private var prioritizeGooglePay: Boolean? = null
+    private var showsGooglePayAsPrimaryButton: Boolean? = null
 
     // Track current session for session-aware setup
     private var currentSession: AirwallexSession? = null
@@ -202,14 +202,14 @@ object AnalyticsLogger {
         expressCheckout: Boolean,
         layout: String? = null,
         paymentIntentId: String? = null,
-        prioritizeGooglePay: Boolean? = null
+        showsGooglePayAsPrimaryButton: Boolean? = null
     ) {
         this.paymentIntentId = paymentIntentId
         this.transactionMode = transactionMode
         this.launchType = launchType
         this.expressCheckout = expressCheckout
         this.layout = layout
-        this.prioritizeGooglePay = prioritizeGooglePay
+        this.showsGooglePayAsPrimaryButton = showsGooglePayAsPrimaryButton
     }
 
     /**
@@ -236,7 +236,7 @@ object AnalyticsLogger {
         session: AirwallexSession,
         launchType: String,
         layout: String? = null,
-        prioritizeGooglePay: Boolean? = null
+        showsGooglePayAsPrimaryButton: Boolean? = null
     ) {
         this.currentSession = session
         val expressCheckout = session.isExpressCheckout
@@ -248,7 +248,7 @@ object AnalyticsLogger {
                     expressCheckout = expressCheckout,
                     layout = layout,
                     launchType = launchType,
-                    prioritizeGooglePay = prioritizeGooglePay
+                    showsGooglePayAsPrimaryButton = showsGooglePayAsPrimaryButton
                 )
             }
             is AirwallexRecurringSession -> {
@@ -257,7 +257,7 @@ object AnalyticsLogger {
                     expressCheckout = expressCheckout,
                     layout = layout,
                     launchType = launchType,
-                    prioritizeGooglePay = prioritizeGooglePay
+                    showsGooglePayAsPrimaryButton = showsGooglePayAsPrimaryButton
                 )
             }
             is AirwallexRecurringWithIntentSession -> {
@@ -267,7 +267,7 @@ object AnalyticsLogger {
                     expressCheckout = expressCheckout,
                     layout = layout,
                     launchType = launchType,
-                    prioritizeGooglePay = prioritizeGooglePay
+                    showsGooglePayAsPrimaryButton = showsGooglePayAsPrimaryButton
                 )
             }
         }
@@ -293,7 +293,7 @@ object AnalyticsLogger {
                 context.packageManager.getAppVersion(context.packageName)
             )
             putIfNotNull("accountId", TokenManager.accountId)
-            put("framework", "android")
+            put("framework", "native")
         }
     }
 
@@ -304,7 +304,7 @@ object AnalyticsLogger {
             putIfNotNull("launchType", launchType)
             putIfNotNull("expressCheckout", expressCheckout)
             putIfNotNull("layout", layout)
-            putIfNotNull("showsGooglePayAsPrimaryButton", prioritizeGooglePay)
+            putIfNotNull("showsGooglePayAsPrimaryButton", showsGooglePayAsPrimaryButton)
 
         }
 

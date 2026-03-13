@@ -1,23 +1,17 @@
 package com.airwallex.android.ui
 
-import android.app.Activity
-import android.app.Dialog
-import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.ViewStub
-import android.widget.ProgressBar
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.compose.ui.graphics.toArgb
 import com.airwallex.android.core.AirwallexInternalActivity
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.TrackablePage
-import com.airwallex.android.ui.composables.AirwallexThemeConfig
 import com.airwallex.android.ui.databinding.ActivityAirwallexBinding
 
 abstract class AirwallexActivity : AppCompatActivity(), AirwallexInternalActivity {
@@ -36,10 +30,9 @@ abstract class AirwallexActivity : AppCompatActivity(), AirwallexInternalActivit
 
     val loading: Boolean
         get() {
-            return loadingDialog?.isShowing == true
+            return supportFragmentManager.findFragmentByTag(AirwallexLoadingDialogFragment.TAG) != null
         }
 
-    private var loadingDialog: Dialog? = null
     private var isLoadingBeforeConfigChange = false
     private var loadingCancelable = true
 
@@ -100,8 +93,10 @@ abstract class AirwallexActivity : AppCompatActivity(), AirwallexInternalActivit
 
     override fun onDestroy() {
         AirwallexLogger.debug("$localClassName#onDestroy()")
-        loadingDialog?.dismiss()
-        loadingDialog = null
+        // Only dismiss if this is final destruction, not configuration change
+        if (!isChangingConfigurations) {
+            AirwallexLoadingDialogFragment.hide(this)
+        }
         super.onDestroy()
     }
 
@@ -134,42 +129,9 @@ abstract class AirwallexActivity : AppCompatActivity(), AirwallexInternalActivit
     open fun setLoadingProgress(loading: Boolean, cancelable: Boolean = true) {
         loadingCancelable = cancelable
         if (loading) {
-            startWait(this, cancelable)
+            AirwallexLoadingDialogFragment.show(this)
         } else {
-            endWait()
+            AirwallexLoadingDialogFragment.hide(this)
         }
-    }
-
-    private fun startWait(activity: Activity, cancelable: Boolean) {
-        if (loadingDialog?.isShowing == true) {
-            return
-        }
-        if (!activity.isFinishing) {
-            try {
-                loadingDialog = Dialog(activity).apply {
-                    setContentView(R.layout.airwallex_loading)
-                    val progressBar = findViewById<ProgressBar>(R.id.airwallex_progress_bar)
-                    progressBar.indeterminateTintList = ColorStateList.valueOf(
-                        AirwallexThemeConfig.themeColor.toArgb()
-                    )
-                    window?.apply {
-                        setBackgroundDrawableResource(android.R.color.transparent)
-                        // Clear any dim behind
-                        setDimAmount(0f)
-                    }
-                    setCancelable(cancelable)
-                    show()
-                }
-            } catch (e: Exception) {
-                AirwallexLogger.error("Failed to show loading dialog", e)
-            }
-        } else {
-            loadingDialog = null
-        }
-    }
-
-    private fun endWait() {
-        loadingDialog?.dismiss()
-        loadingDialog = null
     }
 }
