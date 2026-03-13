@@ -33,7 +33,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.airwallex.android.R
-import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.CardBrand
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.CardScheme
