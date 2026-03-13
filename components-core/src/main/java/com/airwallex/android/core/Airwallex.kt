@@ -219,7 +219,7 @@ class Airwallex internal constructor(
             saveCard = saveCard,
             listener = object : PaymentListener<PaymentMethod> {
                 override fun onSuccess(response: PaymentMethod) {
-                    checkoutInternal(
+                    checkoutLegacySession(
                         session = session,
                         paymentMethod = response,
                         cvc = card.cvc,
@@ -987,42 +987,38 @@ class Airwallex internal constructor(
         listener: PaymentResultListener,
         saveCard: Boolean = false,
     ) {
-        // PUBLIC ENTRY POINT: Routes all session types to appropriate implementation
-        // Handle AirwallexRecurringSession - route to appropriate confirmPaymentIntent
-        if (session is AirwallexRecurringSession) {
-            if (paymentConsentId == null && paymentConsent == null && paymentMethod.card != null) {
-                confirmPaymentIntent(
-                    session = session,
-                    card = paymentMethod.card,
-                    billing = paymentMethod.billing,
-                    saveCard = saveCard,
-                    listener = listener
-                )
-            } else if (paymentConsent != null) {
-                confirmPaymentIntent(
-                    session = session,
-                    paymentConsent = paymentConsent,
-                    listener = listener
-                )
-            } else if (paymentConsentId != null) {
-                confirmPaymentIntent(
-                    session = session,
-                    paymentConsentId = paymentConsentId,
-                    listener = listener
-                )
+        // PUBLIC ENTRY POINT: Consolidates session routing logic
+        // DECISION LOGIC: Use old flow if:
+        // 1. session is AirwallexRecurringSession (no unified flow support yet)
+        // 2. OR paymentMethod.type is NOT card/googlepay (LPMs use legacy flow)
+        // Otherwise: use new unified flow with Session
+
+        val isCardOrGooglePay = paymentMethod.type == PaymentMethodType.GOOGLEPAY.value ||
+                                paymentMethod.type == PaymentMethodType.CARD.value
+        val useOldFlow = session is AirwallexRecurringSession || !isCardOrGooglePay
+
+        if (useOldFlow) {
+            // OLD FLOW: Use legacy implementation for AirwallexRecurringSession and LPMs
+            // Convert Session to legacy if needed
+            if (session is Session) {
+                CoroutineScope(Dispatchers.Main).launch {
+                    try {
+                        val legacySession = session.convertToLegacySession()
+                        checkoutLegacySession(legacySession, paymentMethod, paymentConsentId, paymentConsent, cvc, additionalInfo, flow, listener, saveCard)
+                    } catch (error: Throwable) {
+                        listener.onCompleted(AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = error.message, e = error)))
+                    }
+                }
             } else {
-                listener.onCompleted(
-                    AirwallexPaymentStatus.Failure(
-                        AirwallexCheckoutException(message = "Card details are required for recurring payments without a saved payment consent.")
-                    )
-                )
+                checkoutLegacySession(session, paymentMethod, paymentConsentId, paymentConsent, cvc, additionalInfo, flow, listener, saveCard)
             }
             return
         }
 
-        // Convert legacy sessions to new Session (except AirwallexRecurringSession)
-        if (session !is Session) {
-            val convertedSession = when (session) {
+        // NEW FLOW: Use unified Session flow for card/googlepay
+        // Convert legacy to Session if needed
+        val unifiedSession = session as? Session
+            ?: when (session) {
                 is AirwallexPaymentSession -> session.convertToSession()
                 is AirwallexRecurringWithIntentSession -> session.convertToSession()
                 else -> {
@@ -1034,22 +1030,18 @@ class Airwallex internal constructor(
                     return
                 }
             }
-            // Call internal implementation with converted Session
-            checkoutInternal(convertedSession, paymentMethod, paymentConsentId, paymentConsent, cvc, additionalInfo, flow, listener, saveCard)
-            return
-        }
 
-        // Call internal implementation for Session
-        checkoutInternal(session, paymentMethod, paymentConsentId, paymentConsent, cvc, additionalInfo, flow, listener, saveCard)
+        // Call unified Session checkout
+        checkoutUnified(unifiedSession, paymentMethod, cvc, saveCard, paymentConsent, listener)
     }
 
     /**
-     * INTERNAL: Actual checkout implementation without routing logic.
-     * This is called by public checkout() after routing, and by confirmPaymentIntent() for AirwallexRecurringSession
+     * INTERNAL: Legacy checkout implementation for AirwallexRecurringSession and LPMs.
+     * Handles all deprecated session types with the old flow.
      */
     @Suppress("LongParameterList")
     @UiThread
-    private fun checkoutInternal(
+    private fun checkoutLegacySession(
         session: AirwallexSession,
         paymentMethod: PaymentMethod,
         paymentConsentId: String? = null,
@@ -1074,26 +1066,7 @@ class Airwallex internal constructor(
         }
         AirwallexLogger.info("Airwallex checkout: saveCard = $saveCard, paymentMethod.type = ${paymentMethod.type} session type = ${session.javaClass}")
 
-        // Route Session to new unified flow for card/googlepay, or convert to legacy session for other methods
-        if (session is Session) {
-            if (paymentMethod.type == PaymentMethodType.GOOGLEPAY.value || paymentMethod.type == PaymentMethodType.CARD.value) {
-                // NEW: Use unified flow for card/googlepay
-                checkout(session, paymentMethod, cvc, saveCard, paymentConsent, loggingListener)
-            } else {
-                // OLD: Convert to legacy session and continue with existing flow
-                CoroutineScope(Dispatchers.Main).launch {
-                    try {
-                        val legacySession = session.convertToLegacySession()
-                        checkout(legacySession, paymentMethod, paymentConsentId, paymentConsent, cvc, additionalInfo, flow, loggingListener, saveCard)
-                    } catch (error: Throwable) {
-                        loggingListener.onCompleted(AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = error.message, e = error)))
-                    }
-                }
-            }
-            return
-        }
-
-        // Keep existing implementation for backward compatibility with deprecated sessions
+        // Legacy flow implementation
         when (session) {
             is AirwallexPaymentSession -> {
                 if (paymentMethod.type == PaymentMethodType.GOOGLEPAY.value) {
@@ -1130,12 +1103,21 @@ class Airwallex internal constructor(
 
             is AirwallexRecurringSession, is AirwallexRecurringWithIntentSession ->
                 createPaymentConsentAndConfirmIntent(session, paymentMethod, cvc, loggingListener)
+
+            else -> {
+                loggingListener.onCompleted(
+                    AirwallexPaymentStatus.Failure(
+                        AirwallexCheckoutException(message = "Unknown legacy session type: ${session.javaClass}")
+                    )
+                )
+            }
         }
     }
 
     /**
-     * Unified checkout function for Session.
+     * INTERNAL: Unified checkout function for Session.
      * Replaces the need for separate createPaymentConsentAndConfirmIntent - everything goes through single API call.
+     * Only called for card/googlepay with Session.
      *
      * @param session a [Session] used to start the payment flow
      * @param paymentMethod the payment method to use
@@ -1146,7 +1128,7 @@ class Airwallex internal constructor(
      */
     @Suppress("LongParameterList")
     @UiThread
-    private fun checkout(
+    private fun checkoutUnified(
         session: Session,
         paymentMethod: PaymentMethod,
         cvc: String? = null,
@@ -1155,9 +1137,22 @@ class Airwallex internal constructor(
         listener: PaymentResultListener
     ) {
         setupAnalyticsLogger(session)
+        // Wrap listener at entry point to log payment result once
+        val loggingListener = wrapListenerWithLogging(listener, paymentMethod.type ?: "unknown")
+        // Only log payment_launched for true API integration (not embedded elements or UI integration)
+        if (!isAirwallexUIActivity && AnalyticsLogger.getLaunchType() == AnalyticsLogger.LaunchType.API) {
+            AnalyticsLogger.logAction(
+                actionName = "payment_launched",
+                additionalInfo = mutableMapOf<String, Any>().apply {
+                    paymentMethod.type?.let { put("paymentMethod", it) }
+                }
+            )
+        }
+        AirwallexLogger.info("Airwallex unified checkout: saveCard = $saveCard, paymentMethod.type = ${paymentMethod.type} session type = ${session.javaClass}")
+
         // Handle Google Pay separately (different flow)
         if (paymentMethod.type == PaymentMethodType.GOOGLEPAY.value) {
-            checkoutGooglePay(session, listener)
+            checkoutGooglePay(session, loggingListener)
             return
         }
 
@@ -1176,12 +1171,12 @@ class Airwallex internal constructor(
                         AirwallexPlugins.environment.threeDsReturnUrl()
                     } else session.returnUrl,
                     autoCapture = session.autoCapture,
-                    listener = listener
+                    listener = loggingListener
                 )
             }
 
             override fun onError(error: Throwable) {
-                listener.onCompleted(
+                loggingListener.onCompleted(
                     AirwallexPaymentStatus.Failure(
                         AirwallexCheckoutException(message = error.message, e = error)
                     )
