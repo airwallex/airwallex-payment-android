@@ -12,6 +12,7 @@ import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.bindToActivity
 import com.airwallex.android.core.exception.InvalidParamsException
 import com.airwallex.android.core.log.AnalyticsLogger
+import com.airwallex.android.core.log.AnalyticsLogger.Field
 import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.core.toAnalyticsLayoutString
 import com.airwallex.android.ui.composables.AirwallexTheme
@@ -110,7 +111,7 @@ class PaymentElement private constructor(
             AnalyticsLogger.setupSession(session, launchType, layout, showsGooglePayAsPrimaryButton)
             val additionalInfo = mutableMapOf<String, String>()
             if (configuration is PaymentElementConfiguration.Card) {
-                additionalInfo["paymentMethod"] = PaymentMethodType.CARD.value
+                additionalInfo[Field.PAYMENT_METHOD] = PaymentMethodType.CARD.value
             }
             AnalyticsLogger.logAction(
                 actionName = AnalyticsConstants.EVENT_PAYMENT_LAUNCHED,
