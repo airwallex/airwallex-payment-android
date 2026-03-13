@@ -17,7 +17,6 @@ import com.airwallex.android.core.bindToActivity
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
-import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.Shipping
 import com.airwallex.android.core.util.SessionUtils.getIntentId
 import com.airwallex.android.ui.AirwallexActivityLaunch
@@ -82,7 +81,7 @@ class AirwallexStarter {
                 .launchForResult(
                     AddPaymentMethodActivityLaunch.Args.Builder()
                         .setAirwallexSession(session)
-                        .setSupportedCardSchemes(supportedCards.map { CardScheme(it.brandName) })
+                        .setSupportedCardBrands(supportedCards)
                         .build()
                 ) { _, result ->
                     handleCardPaymentData(result.resultCode, result.data, paymentResultListener, intentId)
