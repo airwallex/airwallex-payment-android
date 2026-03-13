@@ -35,6 +35,7 @@ import androidx.compose.ui.zIndex
 import com.airwallex.android.R
 import com.airwallex.android.core.CardBrand
 import com.airwallex.android.core.log.AnalyticsLogger
+import com.airwallex.android.core.log.AnalyticsLogger.Field
 import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.ui.composables.AirwallexColor
@@ -100,7 +101,7 @@ internal fun AddCardSection(
     ScreenView {
         viewModel.trackScreenViewed(
             PaymentMethodType.CARD.value,
-            mapOf("subtype" to "card")
+            mapOf(Field.SUBTYPE to "card")
         )
     }
 

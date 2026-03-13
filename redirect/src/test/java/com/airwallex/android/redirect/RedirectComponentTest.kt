@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.log.AnalyticsLogger
+import com.airwallex.android.core.log.AnalyticsLogger.Field
 import com.airwallex.android.core.model.NextAction
 import com.airwallex.android.redirect.exception.RedirectException
 import com.airwallex.android.redirect.util.RedirectUtil
@@ -66,7 +67,7 @@ class RedirectComponentTest {
             listener
         )
 
-        verify { AnalyticsLogger.logPageView("payment_redirect", mapOf("url" to testUrl)) }
+        verify { AnalyticsLogger.logPageView("payment_redirect", mapOf(Field.URL to testUrl)) }
     }
 
     @Test
@@ -95,7 +96,7 @@ class RedirectComponentTest {
         verify {
             AnalyticsLogger.logError(
                 "payment_redirect",
-                mapOf("url" to testUrl, "message" to redirectMsg)
+                mapOf(Field.URL to testUrl, Field.MESSAGE to redirectMsg)
             )
         }
     }
