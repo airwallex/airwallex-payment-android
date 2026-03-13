@@ -18,6 +18,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.airwallex.android.R
 import com.airwallex.android.core.log.AnalyticsLogger
+import com.airwallex.android.core.log.AnalyticsLogger.Field
 import com.airwallex.android.core.model.Bank
 import com.airwallex.android.core.model.DynamicSchemaField
 import com.airwallex.android.core.model.DynamicSchemaFieldType
@@ -140,7 +141,7 @@ internal fun SchemaFieldsSection(
                         options = banks,
                         default = selectedBank?.name,
                         onOptionSelected = { bank ->
-                            AnalyticsLogger.logAction("select_bank", mapOf("bankName" to bank.name))
+                            AnalyticsLogger.logAction("select_bank", mapOf(Field.BANK_NAME to bank.name))
                             selectedBank = bank
                             inputMap[field.name] = bank.name
                             errorMap[field.name] = false
