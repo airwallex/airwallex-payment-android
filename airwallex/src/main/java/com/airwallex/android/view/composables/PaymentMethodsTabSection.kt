@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerScope
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -15,6 +16,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -23,6 +25,7 @@ import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
+import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.view.PaymentFlowListener
 import com.airwallex.android.view.PaymentFlowViewModel
@@ -36,6 +39,7 @@ import com.airwallex.android.view.util.AnalyticsConstants.PAYMENT_SELECT
 import com.airwallex.android.view.util.GooglePayUtil
 import com.airwallex.android.view.util.getSinglePaymentMethodOrNull
 import kotlinx.coroutines.launch
+import org.json.JSONArray
 
 /**
  * PaymentMethodsTabSection with internal ViewModel management.
@@ -43,7 +47,7 @@ import kotlinx.coroutines.launch
  *
  * @param session The Airwallex session for the payment flow
  * @param airwallex The Airwallex instance for payment operations
- * @param prioritizeGooglePay If true, GooglePay is shown on top; if false, shown in LazyRow
+ * @param showsGooglePayAsPrimaryButton If true, GooglePay is shown on top; if false, shown in LazyRow
  */
 @Suppress("LongMethod", "LongParameterList")
 @Composable
@@ -51,7 +55,7 @@ internal fun PaymentMethodsTabSection(
     session: AirwallexSession,
     airwallex: Airwallex,
     paymentFlowListener: PaymentFlowListener,
-    prioritizeGooglePay: Boolean = true,
+    showsGooglePayAsPrimaryButton: Boolean = true,
 ) {
     val flowViewModel: PaymentFlowViewModel = viewModel(
         factory = PaymentFlowViewModel.Factory(
@@ -69,8 +73,10 @@ internal fun PaymentMethodsTabSection(
         val pagerState = rememberPagerState(pageCount = { availablePaymentMethods.size })
         val coroutineScope = rememberCoroutineScope()
 
-        var type by remember { mutableStateOf(availablePaymentMethods.first()) }
-        var selectedIndex by remember { mutableIntStateOf(0) }
+        var selectedIndex by rememberSaveable { mutableIntStateOf(0) }
+        var type by remember(selectedIndex, availablePaymentMethods) {
+            mutableStateOf(availablePaymentMethods.getOrNull(selectedIndex) ?: availablePaymentMethods.first())
+        }
         val allowedPaymentMethods = remember(availablePaymentMethods) {
             session.googlePayOptions?.let { googlePayOptions ->
                 availablePaymentMethods.firstOrNull {
@@ -84,8 +90,8 @@ internal fun PaymentMethodsTabSection(
             }
         }
         Column {
-            // Google Pay Section on top (if eligible and prioritizeGooglePay is true)
-            if (prioritizeGooglePay) {
+            // Google Pay Section on top (if eligible and showsGooglePayAsPrimaryButton is true)
+            if (showsGooglePayAsPrimaryButton) {
                 GooglePayStandaloneButton(
                     allowedPaymentMethods = allowedPaymentMethods,
                     paymentFlowListener = paymentFlowListener,
@@ -93,7 +99,7 @@ internal fun PaymentMethodsTabSection(
                     airwallex = airwallex,
                 )
             }
-            val paymentMethodsList = if (prioritizeGooglePay || allowedPaymentMethods == null) {
+            val paymentMethodsList = if (showsGooglePayAsPrimaryButton || allowedPaymentMethods == null) {
                 availablePaymentMethods.filterNot { paymentMethodType ->
                     paymentMethodType.name == PaymentMethodType.GOOGLEPAY.value
                 }
@@ -143,36 +149,54 @@ internal fun PaymentMethodsTabSection(
             HorizontalPager(
                 state = pagerState,
                 userScrollEnabled = false,
-            ) {
-                when (type.name) {
-                    PaymentMethodType.CARD.value -> {
-                        CardSection(
-                            session = session,
-                            airwallex = airwallex,
-                            cardSchemes = type.cardSchemes.orEmpty(),
-                            paymentFlowListener = paymentFlowListener,
-                        )
-                    }
+                pageContent = horizontalPagerContent(
+                        type,
+                        session,
+                        airwallex,
+                        paymentFlowListener,
+                        allowedPaymentMethods,
+                        flowViewModel
+                    ),
+            )
+        }
+    }
+}
+@Suppress("LongParameterList")
+@Composable
+private fun horizontalPagerContent(
+    type: AvailablePaymentMethodType,
+    session: AirwallexSession,
+    airwallex: Airwallex,
+    paymentFlowListener: PaymentFlowListener,
+    allowedPaymentMethods: JSONArray?,
+    flowViewModel: PaymentFlowViewModel
+): @Composable PagerScope.(Int) -> Unit = {
+    when (type.name) {
+        PaymentMethodType.CARD.value -> {
+            CardSection(
+                session = session,
+                airwallex = airwallex,
+                cardSchemes = type.cardSchemes.orEmpty(),
+                paymentFlowListener = paymentFlowListener,
+            )
+        }
 
-                    PaymentMethodType.GOOGLEPAY.value -> {
-                        GooglePayListItem(
-                            allowedPaymentMethods = allowedPaymentMethods,
-                            paymentFlowListener = paymentFlowListener,
-                            flowViewModel = flowViewModel,
-                            airwallex = airwallex,
-                        )
-                    }
+        PaymentMethodType.GOOGLEPAY.value -> {
+            GooglePayListItem(
+                allowedPaymentMethods = allowedPaymentMethods,
+                paymentFlowListener = paymentFlowListener,
+                flowViewModel = flowViewModel,
+                airwallex = airwallex,
+            )
+        }
 
-                    else -> {
-                        SchemaSection(
-                            session = session,
-                            airwallex = airwallex,
-                            type = type,
-                            paymentFlowListener = paymentFlowListener,
-                        )
-                    }
-                }
-            }
+        else -> {
+            SchemaSection(
+                session = session,
+                airwallex = airwallex,
+                type = type,
+                paymentFlowListener = paymentFlowListener,
+            )
         }
     }
 }

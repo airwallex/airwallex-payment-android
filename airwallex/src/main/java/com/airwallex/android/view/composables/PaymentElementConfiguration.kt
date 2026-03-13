@@ -26,6 +26,6 @@ sealed class PaymentElementConfiguration {
      */
     data class PaymentSheet(
         val layout: PaymentMethodsLayoutType = PaymentMethodsLayoutType.TAB,
-        val prioritizeGooglePay: Boolean = true,
+        val showsGooglePayAsPrimaryButton: Boolean = true,
     ) : PaymentElementConfiguration()
 }

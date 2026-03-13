@@ -1,5 +1,6 @@
 package com.airwallex.android.view.composables.card
 
+import androidx.activity.ComponentActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -32,7 +33,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.airwallex.android.R
-import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.CardBrand
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.CardScheme
@@ -64,7 +64,7 @@ internal fun AddCardSection(
     paymentFlowViewModel: PaymentFlowViewModel,
     cardSchemes: List<CardScheme>,
     paymentFlowListener: PaymentFlowListener,
-    airwallex: Airwallex,
+    activity: ComponentActivity,
 ) {
     val focusManager = LocalFocusManager.current
     val expiryFocusRequester = remember { FocusRequester() }
@@ -581,7 +581,7 @@ internal fun AddCardSection(
                         phoneNumber = phoneNumber,
                         email = email,
                     )
-                    paymentFlowListener.onLoadingStateChanged(true, airwallex.activity)
+                    paymentFlowListener.onLoadingStateChanged(true, activity)
                     AnalyticsLogger.logAction(
                         TAP_PAY_BUTTON,
                         mapOf(PAYMENT_METHOD to PaymentMethodType.CARD.value)

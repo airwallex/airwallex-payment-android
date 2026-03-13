@@ -2,7 +2,10 @@ package com.airwallex.android.view.composables
 
 import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
@@ -15,6 +18,7 @@ import com.airwallex.android.view.PaymentFlowListener
 import com.airwallex.android.view.PaymentFlowViewModel
 import com.airwallex.android.view.composables.PaymentElement.Companion.create
 import com.airwallex.android.view.util.AnalyticsConstants
+import kotlinx.coroutines.launch
 
 class PaymentElement private constructor(
     private val session: AirwallexSession,
@@ -85,17 +89,20 @@ class PaymentElement private constructor(
                 )
             )[PaymentFlowViewModel::class.java]
             viewModel.updateActivity(airwallex.activity)
+
+            observeState(airwallex, viewModel, paymentFlowListener)
+
             val alreadyLoaded = viewModel.availablePaymentMethods.value.isNotEmpty()
 
             val layout = when (configuration) {
                 is PaymentElementConfiguration.PaymentSheet -> configuration.layout.toAnalyticsLayoutString()
                 else -> null
             }
-            val prioritizeGooglePay = when (configuration) {
-                is PaymentElementConfiguration.PaymentSheet -> configuration.prioritizeGooglePay
+            val showsGooglePayAsPrimaryButton = when (configuration) {
+                is PaymentElementConfiguration.PaymentSheet -> configuration.showsGooglePayAsPrimaryButton
                 else -> null
             }
-            AnalyticsLogger.setupSession(session, launchType, layout, prioritizeGooglePay)
+            AnalyticsLogger.setupSession(session, launchType, layout, showsGooglePayAsPrimaryButton)
             val additionalInfo = mutableMapOf<String, String>()
             if (configuration is PaymentElementConfiguration.Card) {
                 additionalInfo["paymentMethod"] = PaymentMethodType.CARD.value
@@ -198,6 +205,21 @@ class PaymentElement private constructor(
                 paymentFlowListener = paymentFlowListener,
                 flowViewModel = flowViewModel
             )
+        }
+    }
+}
+
+private fun observeState(
+    airwallex: Airwallex,
+    viewModel: PaymentFlowViewModel,
+    paymentFlowListener: PaymentFlowListener
+) {
+    airwallex.activity.lifecycleScope.launch {
+        airwallex.activity.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewModel.paymentResult.collect { event ->
+                paymentFlowListener.onLoadingStateChanged(false, airwallex.activity)
+                paymentFlowListener.onPaymentResult(event.status)
+            }
         }
     }
 }
