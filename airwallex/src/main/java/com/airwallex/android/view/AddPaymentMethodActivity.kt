@@ -60,7 +60,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
         get() = CARD_PAYMENT_VIEW
 
     override val additionalInfo: Map<String, Any>
-        get() = mapOf(SUPPORTED_SCHEMES to args.supportedCardSchemes.map { it.name })
+        get() = mapOf(SUPPORTED_SCHEMES to args.supportedCardBrands.map { it.brandName })
 
     override val session: AirwallexSession by lazy {
         args.session
@@ -121,7 +121,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
                 session = session,
                 airwallex = airwallex,
                 configuration = PaymentElementConfiguration.Card(
-                    supportedCardBrands = args.supportedCardSchemes
+                    supportedCardBrands = args.supportedCardBrands
                 ),
                 launchType = AnalyticsLogger.LaunchType.HPP,
                 onLoadingStateChanged = { isLoading ->

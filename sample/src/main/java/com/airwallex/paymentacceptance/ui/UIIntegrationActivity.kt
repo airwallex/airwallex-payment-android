@@ -53,14 +53,19 @@ class UIIntegrationActivity :
             ButtonItem(LAUNCH_CUSTOM_PAYMENT_LIST, "Launch custom payment list"),
             ButtonItem(LAUNCH_CARD_PAYMENT, "Launch card payment"),
             ButtonItem(LAUNCH_CARD_PAYMENT_DIALOG, "Launch card payment (dialog)"),
-            ButtonItem(LAUNCH_EMBEDDED_ELEMENT, "Launch Embedded Element"),
+            ButtonItem(LAUNCH_EMBEDDED_ELEMENT, "Embedded element"),
+            ButtonItem(LAUNCH_EMBEDDED_ELEMENT_INLINE_GPAY, "Embedded element (inline Google Pay)"),
+            ButtonItem(LAUNCH_EMBEDDED_ELEMENT_CARD_ONLY, "Embedded element (card only)"),
             ButtonItem(LAUNCH_SHIPPING_ADDRESS_DIALOG, "Launch shipping address (dialog)")
         )
 
         return if (Settings.expressCheckout == "Enabled") {
-            // Hide "Launch payment list" and "Launch custom payment list" when Express Checkout is enabled
+            // Hide "Launch payment list", "Launch custom payment list", "inline Google Pay", and "embedded element" when Express Checkout is enabled
             allButtons.filter {
-                it.id != LAUNCH_PAYMENT_LIST && it.id != LAUNCH_CUSTOM_PAYMENT_LIST
+                it.id != LAUNCH_PAYMENT_LIST &&
+                it.id != LAUNCH_CUSTOM_PAYMENT_LIST &&
+                it.id != LAUNCH_EMBEDDED_ELEMENT_INLINE_GPAY &&
+                it.id != LAUNCH_EMBEDDED_ELEMENT
             }
         } else {
             allButtons
@@ -86,6 +91,8 @@ class UIIntegrationActivity :
             }
 
             LAUNCH_EMBEDDED_ELEMENT -> mViewModel.launchEmbeddedElement(this)
+            LAUNCH_EMBEDDED_ELEMENT_INLINE_GPAY -> mViewModel.launchEmbeddedElementInlineGPay(this)
+            LAUNCH_EMBEDDED_ELEMENT_CARD_ONLY -> mViewModel.launchEmbeddedElementCardOnly(this)
 
             LAUNCH_SHIPPING_ADDRESS_DIALOG -> {
                 mViewModel.launchShipping(this)
@@ -174,6 +181,8 @@ class UIIntegrationActivity :
         const val LAUNCH_CARD_PAYMENT = 3
         const val LAUNCH_CARD_PAYMENT_DIALOG = 4
         const val LAUNCH_EMBEDDED_ELEMENT = 5
-        const val LAUNCH_SHIPPING_ADDRESS_DIALOG = 6
+        const val LAUNCH_EMBEDDED_ELEMENT_INLINE_GPAY = 6
+        const val LAUNCH_EMBEDDED_ELEMENT_CARD_ONLY = 7
+        const val LAUNCH_SHIPPING_ADDRESS_DIALOG = 8
     }
 }
