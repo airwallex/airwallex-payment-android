@@ -1,6 +1,7 @@
 package com.airwallex.android.core
 
 import com.airwallex.android.core.extension.convertToLegacySession
+import com.airwallex.android.core.extension.convertToSession
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentConsentOptions
 import com.airwallex.android.core.model.PaymentIntent
@@ -236,6 +237,166 @@ class SessionTest {
         assertEquals(true, recurringWithIntentSession.isEmailRequired)
         assertEquals("test://return", recurringWithIntentSession.returnUrl)
         assertEquals(true, recurringWithIntentSession.autoCapture)
+    }
+
+    @Test
+    fun `convertToLegacySession with PaymentIntentProvider preserves provider for one-off payment`() = runTest {
+        // Arrange: Create Session with PaymentIntentProvider (Express Checkout scenario)
+        val provider = object : PaymentIntentProvider {
+            override val currency = "USD"
+            override val amount = BigDecimal("100.00")
+            override fun provide(callback: PaymentIntentProvider.PaymentIntentCallback) {
+                callback.onSuccess(PaymentIntentFixtures.PAYMENT_INTENT)
+            }
+        }
+
+        val session = Session.Builder(
+            provider,
+            "US",
+            "cus_express_123"
+        )
+            .setRequireBillingInformation(false)
+            .setRequireEmail(true)
+            .build()
+
+        // Act
+        val legacySession = session.convertToLegacySession()
+
+        // Assert
+        assertTrue(legacySession is AirwallexPaymentSession)
+        val paymentSession = legacySession as AirwallexPaymentSession
+        // Verify provider was preserved (not resolved to PaymentIntent)
+        assertTrue(paymentSession is PaymentIntentResolvableSession)
+        val resolvableSession = paymentSession as PaymentIntentResolvableSession
+        assertEquals(provider, resolvableSession.paymentIntentProvider)
+        assertEquals("US", paymentSession.countryCode)
+        assertEquals("cus_express_123", paymentSession.customerId)
+    }
+
+    @Test
+    fun `convertToLegacySession with PaymentIntentProvider preserves provider for recurring with intent`() = runTest {
+        // Arrange: Create Session with PaymentIntentProvider and payment consent options
+        val provider = object : PaymentIntentProvider {
+            override val currency = "USD"
+            override val amount = BigDecimal("200.00")
+            override fun provide(callback: PaymentIntentProvider.PaymentIntentCallback) {
+                callback.onSuccess(PaymentIntentFixtures.PAYMENT_INTENT)
+            }
+        }
+
+        val paymentConsentOptions = PaymentConsentOptions(
+            nextTriggeredBy = PaymentConsent.NextTriggeredBy.CUSTOMER,
+            merchantTriggerReason = PaymentConsent.MerchantTriggerReason.UNSCHEDULED
+        )
+
+        val session = Session.Builder(
+            provider,
+            "US",
+            "cus_recurring_456"
+        )
+            .setPaymentConsentOptions(paymentConsentOptions)
+            .setRequireEmail(true)
+            .setAutoCapture(true)
+            .build()
+
+        // Act
+        val legacySession = session.convertToLegacySession()
+
+        // Assert
+        assertTrue(legacySession is AirwallexRecurringWithIntentSession)
+        val recurringSession = legacySession as AirwallexRecurringWithIntentSession
+        // Verify provider was preserved
+        assertTrue(recurringSession is PaymentIntentResolvableSession)
+        val resolvableSession = recurringSession as PaymentIntentResolvableSession
+        assertEquals(provider, resolvableSession.paymentIntentProvider)
+        assertEquals("cus_recurring_456", recurringSession.customerId)
+        assertEquals(PaymentConsent.NextTriggeredBy.CUSTOMER, recurringSession.nextTriggerBy)
+    }
+
+    // ========== convertToSession Tests ==========
+
+    @Test
+    fun `AirwallexPaymentSession convertToSession preserves PaymentIntentProvider`() {
+        // Arrange: Create AirwallexPaymentSession with provider
+        val provider = object : PaymentIntentProvider {
+            override val currency = "EUR"
+            override val amount = BigDecimal("150.00")
+            override fun provide(callback: PaymentIntentProvider.PaymentIntentCallback) {
+                callback.onSuccess(PaymentIntentFixtures.PAYMENT_INTENT)
+            }
+        }
+
+        val legacySession = AirwallexPaymentSession.Builder(
+            paymentIntentProvider = provider,
+            countryCode = "FR",
+            customerId = "cus_legacy_123"
+        )
+            .setRequireBillingInformation(false)
+            .setRequireEmail(true)
+            .setReturnUrl("legacy://return")
+            .build()
+
+        // Act
+        val session = legacySession.convertToSession()
+
+        // Assert
+        assertNotNull(session)
+        assertEquals("EUR", session.currency)
+        assertEquals(BigDecimal("150.00"), session.amount)
+        assertEquals("FR", session.countryCode)
+        assertEquals("cus_legacy_123", session.customerId)
+        assertEquals(false, session.isBillingInformationRequired)
+        assertEquals(true, session.isEmailRequired)
+        assertEquals("legacy://return", session.returnUrl)
+        assertNull(session.paymentConsentOptions) // One-off payment
+        // Verify transient provider field was preserved
+        assertTrue(session is PaymentIntentResolvableSession)
+        val resolvableSession = session as PaymentIntentResolvableSession
+        assertEquals(provider, resolvableSession.paymentIntentProvider)
+    }
+
+    @Test
+    fun `AirwallexRecurringWithIntentSession convertToSession preserves PaymentIntentProvider`() {
+        // Arrange: Create AirwallexRecurringWithIntentSession with provider
+        val provider = object : PaymentIntentProvider {
+            override val currency = "GBP"
+            override val amount = BigDecimal("300.00")
+            override fun provide(callback: PaymentIntentProvider.PaymentIntentCallback) {
+                callback.onSuccess(PaymentIntentFixtures.PAYMENT_INTENT)
+            }
+        }
+
+        val legacySession = AirwallexRecurringWithIntentSession.Builder(
+            paymentIntentProvider = provider,
+            customerId = "cus_recurring_789",
+            nextTriggerBy = PaymentConsent.NextTriggeredBy.MERCHANT,
+            countryCode = "GB"
+        )
+            .setRequireEmail(true)
+            .setMerchantTriggerReason(PaymentConsent.MerchantTriggerReason.SCHEDULED)
+            .setAutoCapture(false)
+            .build()
+
+        // Act
+        val session = legacySession.convertToSession()
+
+        // Assert
+        assertNotNull(session)
+        assertEquals("GBP", session.currency)
+        assertEquals(BigDecimal("300.00"), session.amount)
+        assertEquals("GB", session.countryCode)
+        assertEquals("cus_recurring_789", session.customerId)
+        assertEquals(true, session.isEmailRequired)
+        assertEquals(false, session.autoCapture)
+        // Verify payment consent options were preserved
+        val consentOptions = session.paymentConsentOptions
+        assertNotNull(consentOptions)
+        assertEquals(PaymentConsent.NextTriggeredBy.MERCHANT, consentOptions.nextTriggeredBy)
+        assertEquals(PaymentConsent.MerchantTriggerReason.SCHEDULED, consentOptions.merchantTriggerReason)
+        // Verify transient provider field was preserved
+        assertTrue(session is PaymentIntentResolvableSession)
+        val resolvableSession = session as PaymentIntentResolvableSession
+        assertEquals(provider, resolvableSession.paymentIntentProvider)
     }
 
     // ========== isOneOffPayment Tests ==========

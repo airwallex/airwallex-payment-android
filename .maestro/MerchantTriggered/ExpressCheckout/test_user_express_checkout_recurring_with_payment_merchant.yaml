@@ -47,6 +47,7 @@ onFlowComplete:
       IS_GUEST: false
       EXPRESS_CHECKOUT: false
       USE_NEW_SESSION: false
+      GENERATE_NEW_CUSTOMER_ID: false
 - tapOn: "Launch payment list"
 - runFlow:
     file: ../flow_assert_merchant_consent.yaml

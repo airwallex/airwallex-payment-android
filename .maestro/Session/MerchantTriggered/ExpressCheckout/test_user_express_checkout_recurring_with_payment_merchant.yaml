@@ -44,6 +44,8 @@ onFlowComplete:
       IS_GUEST: false
       EXPRESS_CHECKOUT: false
       USE_NEW_SESSION: true
+      NEXT_TRIGGERED_BY: ${output.settings.nextTriggeredBy.merchant}
+      GENERATE_NEW_CUSTOMER_ID: false
 - tapOn: "Launch payment list"
 - assertVisible:
     id: "saved-consent"

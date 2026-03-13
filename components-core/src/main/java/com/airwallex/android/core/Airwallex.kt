@@ -187,7 +187,17 @@ class Airwallex internal constructor(
      * @param saveCard whether card will be saved as a payment consent,
      * if set as true, [AirwallexSession.customerId] must be provided for the [session]
      * @param listener The callback of the payment flow
+     * @deprecated Use [checkout] with a [PaymentMethod] instead.
+     * Create a PaymentMethod first (either via createCardPaymentMethod() or build one yourself),
+     * then call checkout(session, paymentMethod, cvc = card.cvc, saveCard = saveCard, listener = listener)
      */
+    @Deprecated(
+        message = "Use checkout() with PaymentMethod instead",
+        replaceWith = ReplaceWith(
+            "checkout(session, paymentMethod, cvc = card.cvc, saveCard = saveCard, listener = listener)",
+            "com.airwallex.android.core.model.PaymentMethod"
+        )
+    )
     @UiThread
     fun confirmPaymentIntent(
         session: AirwallexSession,
@@ -231,7 +241,15 @@ class Airwallex internal constructor(
      * @param session an [AirwallexSession] used to start the payment flow
      * @param paymentConsent a [PaymentConsent] used to start the payment flow
      * @param listener The callback of the payment flow
+     * @deprecated Use [checkout] instead.
+     * Call checkout(session, paymentConsent.paymentMethod!!, paymentConsentId = paymentConsent.id, paymentConsent = paymentConsent, listener = listener)
      */
+    @Deprecated(
+        message = "Use checkout() instead",
+        replaceWith = ReplaceWith(
+            "checkout(session, paymentConsent.paymentMethod!!, paymentConsentId = paymentConsent.id, paymentConsent = paymentConsent, listener = listener)"
+        )
+    )
     @UiThread
     fun confirmPaymentIntent(
         session: AirwallexSession,
@@ -246,57 +264,21 @@ class Airwallex internal constructor(
             )
             return
         }
-        // Bind session's PaymentIntentProvider to this Activity's lifecycle
-        session.bindToActivity(activity)
 
-        setupAnalyticsLogger(session)
         val paymentMethod = paymentConsent.paymentMethod
-        val paymentConsentId = paymentConsent.id
-        val paymentMethodType = paymentMethod?.type ?: PaymentMethodType.CARD.value
-        // Wrap listener at entry point to log payment result once
-        val loggingListener = wrapListenerWithLogging(listener, paymentMethodType)
         if (paymentMethod == null) {
-            AirwallexLogger.info("confirmPaymentIntent, paymentMethod == null")
-            loggingListener.onCompleted(AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "paymentMethod is required")))
+            listener.onCompleted(AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "paymentMethod is required")))
             return
         }
-        if (paymentConsentId.isNullOrEmpty()) {
-            AirwallexLogger.info("confirmPaymentIntent, paymentConsentId isNullOrEmpty")
-            loggingListener.onCompleted(AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "paymentConsentId is required")))
-            return
-        }
-        if (paymentMethod.card?.numberType == PaymentMethod.Card.NumberType.PAN) {
-            AirwallexLogger.info("confirmPaymentIntent, need cvc")
-            // Only log payment_launched for true API integration (not embedded elements or UI integration)
-            logPaymentLaunchedIfNeeded(paymentConsentId)
-            val provider = AirwallexPlugins.getProvider(ActionComponentProviderType.CARD)
-            provider?.get()?.let { paymentProvider ->
-                paymentProvider.handlePaymentData(
-                    AirwallexCheckoutParam(
-                        activity,
-                        paymentMethod,
-                        session,
-                        paymentConsentId
-                    )
-                ) { status: AirwallexPaymentStatus? ->
-                    loggingListener.onCompleted(
-                        status ?: AirwallexPaymentStatus.Failure(
-                            AirwallexCheckoutException(message = "cvc unknown error")
-                        )
-                    )
-                }
-            } ?: run {
-                AirwallexLogger.error("confirmPaymentIntent, Provider is null, unable to handle payment data")
-                loggingListener.onCompleted(
-                    AirwallexPaymentStatus.Failure(
-                        AirwallexComponentDependencyException(dependency = Dependency.CARD)
-                    )
-                )
-            }
-        } else {
-            AirwallexLogger.info("confirmPaymentIntent, skip cvc")
-            confirmPaymentIntent(session, paymentConsentId, loggingListener)
-        }
+
+        // Redirect to checkout()
+        checkout(
+            session = session,
+            paymentMethod = paymentMethod,
+            paymentConsentId = paymentConsent.id,
+            paymentConsent = paymentConsent,
+            listener = listener
+        )
     }
 
     /**
@@ -305,7 +287,16 @@ class Airwallex internal constructor(
      * @param session an [AirwallexSession] used to start the payment flow
      * @param paymentConsentId the ID of the [PaymentConsent]
      * @param listener The callback of the payment flow
+     * @deprecated Use [checkout] instead.
+     * Create a PaymentMethod with card type and call checkout(session, PaymentMethod(type = "card"), paymentConsentId = paymentConsentId, listener = listener)
      */
+    @Deprecated(
+        message = "Use checkout() instead",
+        replaceWith = ReplaceWith(
+            "checkout(session, PaymentMethod(type = \"card\"), paymentConsentId = paymentConsentId, listener = listener)",
+            "com.airwallex.android.core.model.PaymentMethod"
+        )
+    )
     fun confirmPaymentIntent(
         session: AirwallexSession,
         paymentConsentId: String,
@@ -319,34 +310,15 @@ class Airwallex internal constructor(
             )
             return
         }
-        // Bind session's PaymentIntentProvider to this Activity's lifecycle
-        session.bindToActivity(activity)
 
-        setupAnalyticsLogger(session)
-        // Wrap listener at entry point to log payment result once
-        val loggingListener = wrapListenerWithLogging(listener, PaymentMethodType.CARD.value)
-
-        // Only log payment_launched for true API integration (not embedded elements or UI integration)
-        logPaymentLaunchedIfNeeded(paymentConsentId)
-        session.resolvePaymentIntent(object : PaymentIntentProvider.PaymentIntentCallback {
-            override fun onSuccess(paymentIntent: PaymentIntent) {
-                val params = ConfirmPaymentIntentParams.createCardParams(
-                    paymentIntentId = paymentIntent.id,
-                    clientSecret = requireNotNull(paymentIntent.clientSecret),
-                    paymentMethod = null,
-                    cvc = null,
-                    customerId = session.customerId,
-                    paymentConsentId = paymentConsentId,
-                    returnUrl = AirwallexPlugins.environment.threeDsReturnUrl(),
-                    autoCapture = session.autoCapture
-                )
-                confirmPaymentIntent(params, loggingListener)
-            }
-
-            override fun onError(error: Throwable) {
-                loggingListener.onCompleted(AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = error.message, e = error)))
-            }
-        })
+        // Redirect to checkout() with a minimal PaymentMethod (card type)
+        // The paymentConsentId will be used to retrieve the actual payment details
+        checkout(
+            session = session,
+            paymentMethod = PaymentMethod(type = PaymentMethodType.CARD.value),
+            paymentConsentId = paymentConsentId,
+            listener = listener
+        )
     }
 
     /**
@@ -1698,7 +1670,13 @@ class Airwallex internal constructor(
      * @param device a [Device] object containing device information for fingerprinting, optional.
      * @param params [ConfirmPaymentIntentParams] used to confirm the payment intent
      * @param listener a [PaymentResultListener] to receive the response or error
+     * @deprecated This is a low-level API. For most use cases, use [checkout] instead.
+     * This method remains available for advanced device fingerprinting scenarios but is no longer the recommended approach.
      */
+    @Deprecated(
+        message = "Use checkout() for standard payment flows. This low-level API is kept for advanced device fingerprinting only.",
+        level = DeprecationLevel.WARNING
+    )
     fun confirmPaymentIntentWithDevice(
         device: Device? = null,
         params: ConfirmPaymentIntentParams,

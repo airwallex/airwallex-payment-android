@@ -26,6 +26,7 @@ env:
       - tapOn: setting
 - runFlow: # ensure next triggered by
     when:
+      true: ${NEXT_TRIGGERED_BY && NEXT_TRIGGERED_BY != 'undefined'}
       notVisible: ${NEXT_TRIGGERED_BY}
     commands:
       - tapOn: "Next Trigger By"
