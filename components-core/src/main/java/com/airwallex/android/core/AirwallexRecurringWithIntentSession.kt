@@ -134,6 +134,9 @@ class AirwallexRecurringWithIntentSession internal constructor(
             this.countryCode = countryCode
             this.currency = paymentIntent.currency
             this.amount = paymentIntent.amount
+            paymentIntent.clientSecret?.apply {
+                TokenManager.updateClientSecret(this)
+            }
         }
 
         /**
