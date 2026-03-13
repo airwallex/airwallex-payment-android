@@ -23,11 +23,12 @@ platform:
 - tapOn: setting
 - runFlow:
     file: ../Common/flow_update_settings.yaml
-    env: 
+    env:
       LAYOUT: ${output.settings.layout.tab}
       ENVIRONMENT: ${output.settings.environment.demo}
       NEXT_TRIGGERED_BY: ${output.settings.nextTriggeredBy.customer}
-      IS_GUEST: false 
+      IS_GUEST: false
+      USE_NEW_SESSION: false 
 # Remove all consents before starting the payment flow
 - tapOn: "Launch payment list"
 - runFlow:

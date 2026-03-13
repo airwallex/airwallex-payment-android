@@ -34,6 +34,7 @@ object AnalyticsLogger {
     private var expressCheckout: Boolean? = null
     private var layout: String? = null
 
+    private var legacyConsentFlow: Boolean? = null
     private var showsGooglePayAsPrimaryButton: Boolean? = null
 
     // Track current session for session-aware setup
@@ -203,7 +204,8 @@ object AnalyticsLogger {
         expressCheckout: Boolean,
         layout: String? = null,
         paymentIntentId: String? = null,
-        showsGooglePayAsPrimaryButton: Boolean? = null
+        showsGooglePayAsPrimaryButton: Boolean? = null,
+        legacyConsentFlow: Boolean? = null,
     ) {
         this.paymentIntentId = paymentIntentId
         this.transactionMode = transactionMode
@@ -211,6 +213,7 @@ object AnalyticsLogger {
         this.expressCheckout = expressCheckout
         this.layout = layout
         this.showsGooglePayAsPrimaryButton = showsGooglePayAsPrimaryButton
+        this.legacyConsentFlow = legacyConsentFlow
     }
 
     /**
@@ -248,7 +251,8 @@ object AnalyticsLogger {
                     paymentIntentId = session.paymentIntent?.id,
                     expressCheckout = expressCheckout,
                     layout = layout,
-                    launchType = launchType
+                    launchType = launchType,
+                    showsGooglePayAsPrimaryButton = showsGooglePayAsPrimaryButton
                 )
             }
             is AirwallexPaymentSession -> {
@@ -267,7 +271,8 @@ object AnalyticsLogger {
                     expressCheckout = expressCheckout,
                     layout = layout,
                     launchType = launchType,
-                    showsGooglePayAsPrimaryButton = showsGooglePayAsPrimaryButton
+                    showsGooglePayAsPrimaryButton = showsGooglePayAsPrimaryButton,
+                    legacyConsentFlow = true
                 )
             }
             is AirwallexRecurringWithIntentSession -> {
@@ -315,6 +320,7 @@ object AnalyticsLogger {
             putIfNotNull("expressCheckout", expressCheckout)
             putIfNotNull("layout", layout)
             putIfNotNull("showsGooglePayAsPrimaryButton", showsGooglePayAsPrimaryButton)
+            putIfNotNull("legacyConsentFlow", legacyConsentFlow)
 
         }
 

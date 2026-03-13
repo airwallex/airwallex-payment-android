@@ -25,7 +25,8 @@ platform:
       LAYOUT: ${output.settings.layout.tab} # Tab/Accordion
       ENVIRONMENT: ${output.settings.environment.demo} # STAGING/DEMO
       NEXT_TRIGGERED_BY: ${output.settings.nextTriggeredBy.customer} # Customer/Merchant
-      IS_GUEST: true 
+      IS_GUEST: true
+      USE_NEW_SESSION: false 
 - tapOn: "Launch payment list"
 - runScript: cards.js
 - runFlow:

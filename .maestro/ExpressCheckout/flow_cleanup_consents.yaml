@@ -15,6 +15,7 @@ env:
     env:
       IS_GUEST: false
       EXPRESS_CHECKOUT: false
+      USE_NEW_SESSION: false
 - tapOn: "Launch payment list"
 - runFlow:
     when:

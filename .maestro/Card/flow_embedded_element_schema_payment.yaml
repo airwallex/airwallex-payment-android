@@ -1,4 +1,6 @@
 appId: com.airwallex.paymentacceptance
+env:
+  USE_NEW_SESSION: ${USE_NEW_SESSION || "false"}
 ---
 - launchApp
 - tapOn: "Integrate with Airwallex UI"
@@ -15,7 +17,8 @@ appId: com.airwallex.paymentacceptance
       ENVIRONMENT: ${output.settings.environment.demo}
       NEXT_TRIGGERED_BY: ${output.settings.nextTriggeredBy.customer}
       IS_GUEST: true
-- tapOn: "Launch Embedded Element"
+      USE_NEW_SESSION: ${USE_NEW_SESSION}
+- tapOn: "Embedded element"
 # Wait for the embedded element activity to load
 - assertVisible: "Order details"
 # Scroll down to AlipayHK
