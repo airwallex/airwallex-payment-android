@@ -18,7 +18,7 @@ env:
       IS_GUEST: true
       EXPRESS_CHECKOUT: true
       USE_NEW_SESSION: ${USE_NEW_SESSION}
-- tapOn: "Embedded element"
+- tapOn: "Embedded element (card only)"
 # Wait for the embedded element activity to load
 - assertVisible: "Order details"
 - assertNotVisible: "Buy with GPay"
