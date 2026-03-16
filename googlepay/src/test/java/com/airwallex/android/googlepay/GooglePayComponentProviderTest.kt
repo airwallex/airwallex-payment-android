@@ -3,10 +3,15 @@ package com.airwallex.android.googlepay
 import android.app.Activity
 import com.airwallex.android.core.ActionComponentProviderType
 import com.airwallex.android.core.AirwallexPaymentSession
+import com.airwallex.android.core.AirwallexRecurringSession
+import com.airwallex.android.core.AirwallexRecurringWithIntentSession
+import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.GooglePayOptions
+import com.airwallex.android.core.TokenManager
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.Page
+import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.parser.AvailablePaymentMethodTypeParser
 import com.airwallex.android.core.model.parser.PageParser
@@ -17,9 +22,11 @@ import com.google.android.gms.tasks.Task
 import com.google.android.gms.wallet.PaymentsClient
 import com.google.android.gms.wallet.Wallet
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
+import io.mockk.runs
 import io.mockk.unmockkObject
 import io.mockk.unmockkStatic
 import kotlinx.coroutines.test.runTest
@@ -28,6 +35,7 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import java.math.BigDecimal
@@ -74,6 +82,8 @@ class GooglePayComponentProviderTest {
     fun setUp() {
         task = mockGooglePayTask()
         mockkObject(AnalyticsLogger)
+        mockkObject(TokenManager)
+        every { TokenManager.updateClientSecret(any()) } just runs
         val service = mockk<GoogleApiAvailability>()
         mockkStatic(GoogleApiAvailability::class)
         every { GoogleApiAvailability.getInstance() } returns service
@@ -86,6 +96,7 @@ class GooglePayComponentProviderTest {
         unmockkStatic(Wallet::class)
         unmockkStatic(GoogleApiAvailability::class)
         unmockkObject(AnalyticsLogger)
+        unmockkObject(TokenManager)
     }
 
     @Test
@@ -133,6 +144,50 @@ class GooglePayComponentProviderTest {
         assert(canHandleSessionAndPaymentMethod(session))
     }
 
+    @Test
+    fun `test canHandleSessionAndPaymentMethod returns false for recurring session with customer nextTriggerBy`() =
+        runTest {
+            val session = AirwallexRecurringSession.Builder(
+                customerId = "cus_123",
+                clientSecret = "secret",
+                currency = "AUD",
+                amount = BigDecimal.valueOf(100.01),
+                nextTriggerBy = PaymentConsent.NextTriggeredBy.CUSTOMER,
+                countryCode = "AU"
+            ).setGooglePayOptions(GooglePayOptions(skipReadinessCheck = true)).build()
+            assertFalse(canHandleSessionAndPaymentMethod(session))
+        }
+
+    @Test
+    fun `test canHandleSessionAndPaymentMethod returns false for recurring with intent session with customer nextTriggerBy`() =
+        runTest {
+            val session = AirwallexRecurringWithIntentSession.Builder(
+                paymentIntent = PaymentIntent(
+                    id = "id",
+                    amount = BigDecimal.valueOf(100.01),
+                    currency = "AUD"
+                ),
+                customerId = "cus_123",
+                nextTriggerBy = PaymentConsent.NextTriggeredBy.CUSTOMER,
+                countryCode = "AU"
+            ).setGooglePayOptions(GooglePayOptions(skipReadinessCheck = true)).build()
+            assertFalse(canHandleSessionAndPaymentMethod(session))
+        }
+
+    @Test
+    fun `test canHandleSessionAndPaymentMethod returns true for recurring session with merchant nextTriggerBy`() =
+        runTest {
+            val session = AirwallexRecurringSession.Builder(
+                customerId = "cus_123",
+                clientSecret = "secret",
+                currency = "AUD",
+                amount = BigDecimal.valueOf(100.01),
+                nextTriggerBy = PaymentConsent.NextTriggeredBy.MERCHANT,
+                countryCode = "AU"
+            ).setGooglePayOptions(GooglePayOptions(skipReadinessCheck = true)).build()
+            assertTrue(canHandleSessionAndPaymentMethod(session))
+        }
+
     private fun mockGooglePayTask(): Task<Boolean> {
         mockkStatic(PaymentsUtil::class)
         mockkStatic(Wallet::class)
@@ -149,7 +204,7 @@ class GooglePayComponentProviderTest {
         return task
     }
 
-    private suspend fun canHandleSessionAndPaymentMethod(session: AirwallexPaymentSession? = null):
+    private suspend fun canHandleSessionAndPaymentMethod(session: AirwallexSession? = null):
             Boolean {
         val paymentMethodType = mockResponse.items?.first() ?: return false
         return componentProvider.canHandleSessionAndPaymentMethod(

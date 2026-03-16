@@ -3,10 +3,13 @@ package com.airwallex.android.googlepay
 import android.app.Activity
 import com.airwallex.android.core.ActionComponentProvider
 import com.airwallex.android.core.ActionComponentProviderType
+import com.airwallex.android.core.AirwallexRecurringSession
+import com.airwallex.android.core.AirwallexRecurringWithIntentSession
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.NextAction
+import com.airwallex.android.core.model.PaymentConsent
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.wallet.IsReadyToPayRequest
@@ -48,6 +51,16 @@ class GooglePayComponentProvider : ActionComponentProvider<GooglePayComponent> {
         paymentMethodType: AvailablePaymentMethodType,
         activity: Activity
     ): Boolean {
+        val isCreatingCITConsent = when (session) {
+            is AirwallexRecurringSession -> session.nextTriggerBy == PaymentConsent.NextTriggeredBy.CUSTOMER
+            is AirwallexRecurringWithIntentSession -> session.nextTriggerBy == PaymentConsent.NextTriggeredBy.CUSTOMER
+            else -> false
+        }
+        if (isCreatingCITConsent) {
+            AirwallexLogger.info("GooglePayComponentProvider requestIsReadyToPay: Google Pay is not supported for CIT recurring payments")
+            return false
+        }
+
         val googleApiAvailability = GoogleApiAvailability.getInstance()
         val resultCode = googleApiAvailability.isGooglePlayServicesAvailable(activity)
         if (resultCode != ConnectionResult.SUCCESS) {
