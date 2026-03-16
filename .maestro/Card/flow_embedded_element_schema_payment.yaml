@@ -30,7 +30,13 @@ env:
 - scrollUntilVisible:
     element: "^(Pay|Confirm)$"
 - tapOn: "^(Pay|Confirm)$"
-# WebView opens - click "Pay Now"
+# WebView opens - handle Chrome sign-in prompt if it appears
+- runFlow:
+    when:
+      visible: "Use without an account"
+    commands:
+      - tapOn: "Use without an account"
+# Click "Pay Now"
 - assertVisible: "Pay Now"
 - tapOn: "Pay Now"
 # Wait for "Return to Merchant" text with countdown

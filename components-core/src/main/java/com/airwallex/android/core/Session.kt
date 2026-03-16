@@ -228,8 +228,15 @@ class Session internal constructor(
                 "Either paymentIntent or paymentIntentProvider must be provided"
             }
 
+            // If a provider is set, store it in the repository immediately and get the ID
+            // This ensures the ID survives Intent parceling even before binding to an Activity
+            val providerId = paymentIntentProvider?.let { provider ->
+                PaymentIntentProviderRepository.store(provider)
+            }
+
             val session = Session(
                 paymentIntent = paymentIntent,
+                paymentIntentProviderId = providerId,
                 paymentConsentOptions = paymentConsentOptions,
                 currency = currency,
                 countryCode = countryCode,
