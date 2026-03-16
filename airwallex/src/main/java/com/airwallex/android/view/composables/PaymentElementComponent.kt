@@ -45,7 +45,10 @@ internal fun PaymentElementComponent(
                 val cardSchemes =
                     availablePaymentMethods.firstOrNull { it.name == PaymentMethodType.CARD.value }?.cardSchemes.orEmpty()
                         .ifEmpty {
-                            configuration.supportedCardBrands
+                            // Convert AirwallexSupportedCard to CardScheme
+                            configuration.supportedCardBrands.map {
+                                com.airwallex.android.core.model.CardScheme(it.brandName)
+                            }
                         }
 
                 val isSinglePaymentMethod =

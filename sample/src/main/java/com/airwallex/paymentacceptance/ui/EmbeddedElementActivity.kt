@@ -17,7 +17,7 @@ import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.PaymentMethodsLayoutType
 import com.airwallex.android.core.log.AirwallexLogger
-import com.airwallex.android.core.model.CardScheme
+import com.airwallex.android.core.AirwallexSupportedCard
 import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.view.composables.PaymentElementConfiguration
 import com.airwallex.android.view.composables.PaymentElement
@@ -164,7 +164,7 @@ class EmbeddedElementActivity :
                 )
 
                 null -> PaymentElementConfiguration.Card(
-                    supportedCardBrands = args.supportedCardSchemes ?: emptyList()
+                    supportedCardBrands = args.supportedCardBrands ?: enumValues<AirwallexSupportedCard>().toList()
                 )
             }
 
@@ -257,7 +257,7 @@ class EmbeddedElementActivity :
     data class Args(
         val session: AirwallexSession,
         val layoutType: PaymentMethodsLayoutType? = null,
-        val supportedCardSchemes: List<CardScheme>? = null,
+        val supportedCardBrands: List<AirwallexSupportedCard>? = null,
         val showsGooglePayAsPrimaryButton: Boolean = true
     ) : Parcelable
 
@@ -269,13 +269,13 @@ class EmbeddedElementActivity :
             context: Context,
             session: AirwallexSession,
             layoutType: PaymentMethodsLayoutType? = null,
-            supportedCardSchemes: List<CardScheme>? = null,
+            supportedCardBrands: List<AirwallexSupportedCard>? = null,
             showsGooglePayAsPrimaryButton: Boolean = true
         ) {
             val args = Args(
                 session = session,
                 layoutType = layoutType,
-                supportedCardSchemes = supportedCardSchemes,
+                supportedCardBrands = supportedCardBrands,
                 showsGooglePayAsPrimaryButton = showsGooglePayAsPrimaryButton
             )
             val intent = Intent(context, EmbeddedElementActivity::class.java).apply {
