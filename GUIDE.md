@@ -807,14 +807,14 @@ class CheckoutActivity : ComponentActivity() {
 or you can check `EmbeddedElementActivity` in our demo app.
 ### <a name="java-example"></a>Java Example
 
-For Java developers, we provide `PaymentElementHelper` - a Java-friendly wrapper that simplifies integration by handling Kotlin coroutines and Composable rendering internally.
+For Java developers, `PaymentElement` provides Java-friendly static methods that handle Kotlin coroutines internally, using the familiar two-step pattern: **create** + **renderInView**.
 
 **Full Implementation Reference:** See `EmbeddedElementJavaActivity.java` in the sample app for a complete working example.
 
 **Key Integration Code:**
 
 ```java
-import com.airwallex.android.view.composables.PaymentElementHelper;
+import com.airwallex.android.view.composables.PaymentElement;
 import com.airwallex.android.view.composables.PaymentElementCallback;
 import com.airwallex.android.view.PaymentFlowListener;
 
@@ -836,37 +836,50 @@ PaymentFlowListener listener = new PaymentFlowListener() {
     }
 };
 
-// Create and render PaymentElement using the Java-friendly helper
-PaymentElementHelper.create(
-    this,                    // AppCompatActivity
+// Show loading state
+binding.progressBar.setVisibility(View.VISIBLE);
+binding.composeView.setVisibility(View.GONE);
+
+// Step 1: Create PaymentElement (handles coroutines internally)
+PaymentElement.create(
+    this,                    // ComponentActivity
     session,                 // AirwallexSession
     airwallex,               // Airwallex instance
     configuration,           // PaymentElementConfiguration
     listener,                // PaymentFlowListener
-    binding.composeView,     // ComposeView for rendering
-    binding.progressBar,     // ProgressBar (optional, for loading state)
     new PaymentElementCallback() {
         @Override
         public void onSuccess(@NonNull PaymentElement element) {
-            // PaymentElement created and rendered successfully
+            // Hide loading
+            binding.progressBar.setVisibility(View.GONE);
+            binding.composeView.setVisibility(View.VISIBLE);
+
+            // Step 2: Render the PaymentElement in ComposeView
+            PaymentElement.renderInView(element, binding.composeView);
         }
 
         @Override
         public void onFailure(@NonNull Throwable error) {
-            // Handle creation error
+            // Hide loading and handle error
+            binding.progressBar.setVisibility(View.GONE);
+            showError(error.getMessage());
         }
     }
 );
 ```
 
-**PaymentElementHelper Benefits:**
+**Java Integration:**
 - Handles Kotlin coroutines internally (no need for suspend function interop)
-- Automatically manages loading states during initialization
-- Renders the Composable UI for you
 - Uses familiar callback patterns for Java developers
-- Supports both automatic rendering (`create()`) and manual rendering (`createOnly()` + `renderInView()`)
+- Separates creation and rendering for maximum flexibility
+- You control when and how to show loading states
+- Works with both Payment Sheet and Card-only modes
 
-**Note:** While Java integration is supported, we recommend using Kotlin for the best development experience with Embedded Elements.
+**Two-Step Pattern:**
+1. **`PaymentElement.create()`** - Creates and initializes the element (async operation)
+2. **`PaymentElement.renderInView()`** - Renders the UI in your ComposeView (called in success callback)
+
+**Note:** While Java integration is fully supported, we recommend using Kotlin for the best development experience with Embedded Elements.
 
 **Key Differences from Native UI Integration:**
 

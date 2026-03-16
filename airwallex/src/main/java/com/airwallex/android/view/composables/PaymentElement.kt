@@ -2,6 +2,7 @@ package com.airwallex.android.view.composables
 
 import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.ComposeView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -17,7 +18,6 @@ import com.airwallex.android.core.toAnalyticsLayoutString
 import com.airwallex.android.ui.composables.AirwallexTheme
 import com.airwallex.android.view.PaymentFlowListener
 import com.airwallex.android.view.PaymentFlowViewModel
-import com.airwallex.android.view.composables.PaymentElement.Companion.create
 import com.airwallex.android.view.util.AnalyticsConstants
 import kotlinx.coroutines.launch
 
@@ -192,6 +192,82 @@ class PaymentElement private constructor(
             }
             return create(session, airwallex, configuration, listener, launchType)
         }
+
+        /**
+         * Java-friendly: Creates a PaymentElement without automatic rendering.
+         *
+         * Use this from Java code when you want to control rendering yourself.
+         * Pair with [renderInView] to render the element when ready.
+         *
+         * Example usage from Java:
+         * ```java
+         * PaymentElement.create(
+         *     this,  // ComponentActivity
+         *     session,
+         *     airwallex,
+         *     configuration,
+         *     listener,
+         *     new PaymentElementCallback() {
+         *         @Override
+         *         public void onSuccess(PaymentElement element) {
+         *             // Render when ready
+         *             PaymentElement.renderInView(element, composeView);
+         *         }
+         *
+         *         @Override
+         *         public void onFailure(Throwable error) {
+         *             // Handle error
+         *         }
+         *     }
+         * );
+         * ```
+         *
+         * @param activity The ComponentActivity (required for lifecycle scope)
+         * @param session The Airwallex session containing payment information
+         * @param airwallex The Airwallex instance for payment operations
+         * @param configuration Configuration for the payment element
+         * @param paymentFlowListener Listener for payment operation callbacks
+         * @param callback Callback to receive the result
+         */
+        @Suppress("LongParameterList")
+        @JvmStatic
+        fun create(
+            session: AirwallexSession,
+            airwallex: Airwallex,
+            configuration: PaymentElementConfiguration,
+            paymentFlowListener: PaymentFlowListener,
+            callback: PaymentElementCallback
+        ) {
+            airwallex.activity.lifecycleScope.launch {
+                val result = create(
+                    session = session,
+                    airwallex = airwallex,
+                    configuration = configuration,
+                    paymentFlowListener = paymentFlowListener
+                )
+
+                result.onSuccess { paymentElement ->
+                    callback.onSuccess(paymentElement)
+                }.onFailure { throwable ->
+                    callback.onFailure(throwable)
+                }
+            }
+        }
+
+        /**
+         * Renders a PaymentElement in the given ComposeView.
+         *
+         * Call this method if you used the Java-friendly [create] and want to render the element.
+         *
+         * @param paymentElement The PaymentElement to render
+         * @param composeView The ComposeView where the payment UI will be rendered
+         */
+        @JvmStatic
+        fun renderInView(paymentElement: PaymentElement, composeView: ComposeView) {
+            composeView.setContent {
+                paymentElement.Content()
+            }
+        }
     }
 
     /**
@@ -227,4 +303,26 @@ private fun observeState(
             }
         }
     }
+}
+
+/**
+ * Callback interface for PaymentElement creation results.
+ *
+ * Implement this interface to receive callbacks when PaymentElement creation
+ * succeeds or fails. This is primarily for Java interoperability.
+ */
+interface PaymentElementCallback {
+    /**
+     * Called when PaymentElement is successfully created.
+     *
+     * @param element The created PaymentElement
+     */
+    fun onSuccess(element: PaymentElement)
+
+    /**
+     * Called when PaymentElement creation fails.
+     *
+     * @param error The error that occurred
+     */
+    fun onFailure(error: Throwable)
 }

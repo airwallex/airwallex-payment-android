@@ -6,8 +6,7 @@ import com.airwallex.paymentacceptance.Settings
 enum class DemoReturnUrl(private val subpath: String) {
     UIIntegration("/ui"),
     APIIntegration("/api"),
-    EmbeddedElement("/embedded"),
-    EmbeddedJava("/embeddedjava");
+    EmbeddedElement("/embedded");
 
     val fullUrl: String get() = Settings.returnUrl + subpath
 }
