@@ -28,7 +28,6 @@ import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.TrackablePage
-import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.databinding.DialogAddCardBinding
 import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.composables.AirwallexTheme
@@ -45,8 +44,8 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 class AirwallexAddPaymentDialog @JvmOverloads constructor(
     private val activity: ComponentActivity,
     private val session: AirwallexSession,
-    private val supportedCardSchemes: List<CardScheme> =
-        enumValues<AirwallexSupportedCard>().toList().map { CardScheme(it.brandName) },
+    private val supportedCardBrands: List<AirwallexSupportedCard> =
+        enumValues<AirwallexSupportedCard>().toList(),
     private val paymentResultListener: Airwallex.PaymentResultListener,
     private val dialogHeight: Int? = null,
 ) : BottomSheetDialog(activity, R.style.AirwallexBottomSheetDialog), TrackablePage {
@@ -60,7 +59,7 @@ class AirwallexAddPaymentDialog @JvmOverloads constructor(
         get() = CARD_PAYMENT_VIEW
 
     override val additionalInfo: Map<String, Any>
-        get() = mapOf(SUPPORTED_SCHEMES to supportedCardSchemes.map { it.name })
+        get() = mapOf(SUPPORTED_SCHEMES to supportedCardBrands.map { it.brandName })
 
     private val airwallex: Airwallex by lazy {
         Airwallex(activity)
@@ -138,7 +137,7 @@ class AirwallexAddPaymentDialog @JvmOverloads constructor(
                 session = session,
                 airwallex = airwallex,
                 configuration = PaymentElementConfiguration.Card(
-                    supportedCardBrands = supportedCardSchemes
+                    supportedCardBrands = supportedCardBrands
                 ),
                 launchType = AnalyticsLogger.LaunchType.HPP,
                 onLoadingStateChanged = { isLoading ->
