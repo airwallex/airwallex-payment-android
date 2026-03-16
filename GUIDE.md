@@ -807,7 +807,7 @@ class CheckoutActivity : ComponentActivity() {
 or you can check `EmbeddedElementActivity` in our demo app.
 ### <a name="java-example"></a>Java Example
 
-For Java developers, `PaymentElement` provides Java-friendly static methods that handle Kotlin coroutines internally, using the familiar two-step pattern: **create** + **renderInView**.
+For Java developers, `PaymentElement` provides Java-friendly static methods that handle Kotlin coroutines internally, using the familiar two-step pattern: **create** + **renderIn**.
 
 **Full Implementation Reference:** See `EmbeddedElementJavaActivity.java` in the sample app for a complete working example.
 
@@ -855,7 +855,7 @@ PaymentElement.create(
             binding.composeView.setVisibility(View.VISIBLE);
 
             // Step 2: Render the PaymentElement in ComposeView
-            PaymentElement.renderInView(element, binding.composeView);
+            element.renderIn(binding.composeView);
         }
 
         @Override
@@ -877,7 +877,7 @@ PaymentElement.create(
 
 **Two-Step Pattern:**
 1. **`PaymentElement.create()`** - Creates and initializes the element (async operation)
-2. **`PaymentElement.renderInView()`** - Renders the UI in your ComposeView (called in success callback)
+2. **`element.renderIn()`** - Renders the UI in your ComposeView (called in success callback)
 
 **Note:** While Java integration is fully supported, we recommend using Kotlin for the best development experience with Embedded Elements.
 

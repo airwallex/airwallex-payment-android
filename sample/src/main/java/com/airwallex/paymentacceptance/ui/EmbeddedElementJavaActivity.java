@@ -25,14 +25,14 @@ import com.airwallex.paymentacceptance.databinding.ActivityEmbeddedElementBindin
  * Java example of using Embedded Element integration with PaymentElement.
  * <p>
  * This activity demonstrates how to:
- * - Create a PaymentElement in Java using the create + renderInView pattern
+ * - Create a PaymentElement in Java using the create + renderIn pattern
  * - Handle payment results with PaymentFlowListener
  * - Embed payment UI in your own activity
  * <p>
  * This is a reference implementation showing how to use the Kotlin-based
  * PaymentElement API from Java code with the two-step pattern:
  * 1. PaymentElement.create() - Creates the element
- * 2. PaymentElement.renderInView() - Renders it in a ComposeView
+ * 2. element.renderIn() - Renders it in a ComposeView
  */
 public class EmbeddedElementJavaActivity extends AppCompatActivity {
 
@@ -127,7 +127,7 @@ public class EmbeddedElementJavaActivity extends AppCompatActivity {
         mBinding.progressBar.setVisibility(android.view.View.VISIBLE);
         mBinding.composeCardInfo.setVisibility(android.view.View.GONE);
 
-        // Create PaymentElement using the create + renderInView pattern
+        // Create PaymentElement using the create + renderIn pattern
         PaymentElement.create(
                 session,                        // AirwallexSession
                 airwallex,                      // Airwallex instance
@@ -141,7 +141,7 @@ public class EmbeddedElementJavaActivity extends AppCompatActivity {
                         mBinding.composeCardInfo.setVisibility(android.view.View.VISIBLE);
 
                         // Render the PaymentElement in the ComposeView
-                        PaymentElement.renderInView(element, mBinding.composeCardInfo);
+                        element.renderIn(mBinding.composeCardInfo);
                     }
 
                     @Override

@@ -197,7 +197,7 @@ class PaymentElement private constructor(
          * Java-friendly: Creates a PaymentElement without automatic rendering.
          *
          * Use this from Java code when you want to control rendering yourself.
-         * Pair with [renderInView] to render the element when ready.
+         * Call [PaymentElement.renderIn] on the element to render it when ready.
          *
          * Example usage from Java:
          * ```java
@@ -211,7 +211,7 @@ class PaymentElement private constructor(
          *         @Override
          *         public void onSuccess(PaymentElement element) {
          *             // Render when ready
-         *             PaymentElement.renderInView(element, composeView);
+         *             element.renderIn(composeView);
          *         }
          *
          *         @Override
@@ -254,19 +254,29 @@ class PaymentElement private constructor(
             }
         }
 
-        /**
-         * Renders a PaymentElement in the given ComposeView.
-         *
-         * Call this method if you used the Java-friendly [create] and want to render the element.
-         *
-         * @param paymentElement The PaymentElement to render
-         * @param composeView The ComposeView where the payment UI will be rendered
-         */
-        @JvmStatic
-        fun renderInView(paymentElement: PaymentElement, composeView: ComposeView) {
-            composeView.setContent {
-                paymentElement.Content()
-            }
+    }
+
+    /**
+     * Renders this PaymentElement in the given ComposeView.
+     *
+     * Call this method after successfully creating a PaymentElement to display it in your UI.
+     * This is typically called in the `onSuccess` callback of [create].
+     *
+     * Example (Java):
+     * ```java
+     * PaymentElement.create(..., new PaymentElementCallback() {
+     *     @Override
+     *     public void onSuccess(PaymentElement element) {
+     *         element.renderIn(composeView);
+     *     }
+     * });
+     * ```
+     *
+     * @param composeView The ComposeView where the payment UI will be rendered
+     */
+    fun renderIn(composeView: ComposeView) {
+        composeView.setContent {
+            Content()
         }
     }
 
@@ -275,6 +285,8 @@ class PaymentElement private constructor(
      *
      * This composable does NOT fetch data - all data is already loaded during [create].
      * It always uses the [PaymentFlowListener] provided at creation.
+     *
+     * Note: For Java developers, use [renderIn] instead of calling this directly.
      */
     @Composable
     fun Content() {

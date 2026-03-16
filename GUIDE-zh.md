@@ -812,7 +812,7 @@ PaymentElement.create(
             binding.composeView.setVisibility(View.VISIBLE);
 
             // 步骤 2：在 ComposeView 中渲染 PaymentElement
-            PaymentElement.renderInView(element, binding.composeView);
+            element.renderIn(binding.composeView);
         }
 
         @Override
@@ -834,7 +834,7 @@ PaymentElement.create(
 
 **两步模式：**
 1. **`PaymentElement.create()`** - 创建并初始化元素（异步操作）
-2. **`PaymentElement.renderInView()`** - 在你的 ComposeView 中渲染 UI（在成功回调中调用）
+2. **`element.renderIn()`** - 在你的 ComposeView 中渲染 UI（在成功回调中调用）
 
 **注意：** 虽然完全支持 Java 集成，但我们建议使用 Kotlin 以获得嵌入式元素的最佳开发体验。
 
