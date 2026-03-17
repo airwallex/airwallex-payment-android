@@ -1,5 +1,6 @@
 package com.airwallex.android.view.composables.card
 
+import androidx.activity.ComponentActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -9,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -35,6 +35,7 @@ import androidx.compose.ui.zIndex
 import com.airwallex.android.R
 import com.airwallex.android.core.CardBrand
 import com.airwallex.android.core.log.AnalyticsLogger
+import com.airwallex.android.core.log.AnalyticsLogger.Field
 import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.ui.composables.AirwallexColor
@@ -45,9 +46,15 @@ import com.airwallex.android.ui.composables.StandardSolidButton
 import com.airwallex.android.ui.composables.StandardText
 import com.airwallex.android.ui.composables.StandardTextFieldOptions
 import com.airwallex.android.view.AddPaymentMethodViewModel
+import com.airwallex.android.view.PaymentFlowListener
+import com.airwallex.android.view.PaymentFlowViewModel
 import com.airwallex.android.view.composables.common.CountrySelectRow
 import com.airwallex.android.view.composables.common.PaymentTextField
 import com.airwallex.android.view.composables.common.WarningBanner
+import com.airwallex.android.view.util.AnalyticsConstants.CLICK_PAY_BUTTON
+import com.airwallex.android.view.util.AnalyticsConstants.PAGE_CREATE_CARD
+import com.airwallex.android.view.util.AnalyticsConstants.PAYMENT_METHOD
+import com.airwallex.android.view.util.AnalyticsConstants.TAP_PAY_BUTTON
 import com.airwallex.android.view.util.CountryUtils
 import com.airwallex.risk.AirwallexRisk
 
@@ -55,8 +62,10 @@ import com.airwallex.risk.AirwallexRisk
 @Composable
 internal fun AddCardSection(
     viewModel: AddPaymentMethodViewModel,
+    paymentFlowViewModel: PaymentFlowViewModel,
     cardSchemes: List<CardScheme>,
-    onConfirm: () -> Unit,
+    paymentFlowListener: PaymentFlowListener,
+    activity: ComponentActivity,
 ) {
     val focusManager = LocalFocusManager.current
     val expiryFocusRequester = remember { FocusRequester() }
@@ -92,7 +101,7 @@ internal fun AddCardSection(
     ScreenView {
         viewModel.trackScreenViewed(
             PaymentMethodType.CARD.value,
-            mapOf("subtype" to "card")
+            mapOf(Field.SUBTYPE to "card")
         )
     }
 
@@ -114,9 +123,8 @@ internal fun AddCardSection(
             text = stringResource(R.string.airwallex_card_information_title),
             textAlign = TextAlign.Left,
             typography = AirwallexTypography.Body200,
-            color = AirwallexColor.TextPrimary,
+            color = AirwallexColor.textPrimary,
             modifier = Modifier.padding(
-                horizontal = 24.dp,
                 vertical = 12.dp,
             ),
         )
@@ -129,7 +137,6 @@ internal fun AddCardSection(
                 cardNumberErrorMessage = null
             },
             modifier = Modifier
-                .padding(horizontal = 24.dp)
                 .zIndex(1f),
             onComplete = { input ->
                 cardNumberErrorMessage = viewModel.getCardNumberValidationMessage(input)
@@ -160,7 +167,6 @@ internal fun AddCardSection(
                 },
                 modifier = Modifier
                     .focusRequester(expiryFocusRequester)
-                    .padding(start = 24.dp)
                     .weight(1f),
                 onFocusLost = { input ->
                     expiryDateErrorMessage = viewModel.getExpiryValidationMessage(input)
@@ -189,7 +195,6 @@ internal fun AddCardSection(
                 },
                 modifier = Modifier
                     .focusRequester(cvvFocusRequester)
-                    .padding(end = 24.dp)
                     .weight(1f),
                 isError = cvvErrorMessage != null,
                 shape = RoundedCornerShape(
@@ -209,8 +214,8 @@ internal fun AddCardSection(
                 text = stringResource(id = errorMessage),
                 textAlign = TextAlign.Left,
                 typography = AirwallexTypography.Caption100,
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(start = 40.dp),
+                color = AirwallexColor.textError,
+                modifier = Modifier.padding(start = 16.dp),
             )
         }
 
@@ -220,9 +225,8 @@ internal fun AddCardSection(
             text = stringResource(R.string.airwallex_card_name_hint),
             textAlign = TextAlign.Left,
             typography = AirwallexTypography.Body200,
-            color = AirwallexColor.TextPrimary,
+            color = AirwallexColor.textPrimary,
             modifier = Modifier.padding(
-                horizontal = 24.dp,
                 vertical = 12.dp,
             ),
         )
@@ -248,7 +252,6 @@ internal fun AddCardSection(
             modifier = Modifier
                 .focusRequester(nameFocusRequest)
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp)
                 .clickable(
                     onClick = {
                         AirwallexRisk.log(
@@ -266,9 +269,8 @@ internal fun AddCardSection(
                 text = stringResource(R.string.airwallex_email_hint),
                 textAlign = TextAlign.Left,
                 typography = AirwallexTypography.Body200,
-                color = AirwallexColor.TextPrimary,
+                color = AirwallexColor.textPrimary,
                 modifier = Modifier.padding(
-                    horizontal = 24.dp,
                     vertical = 12.dp,
                 ),
             )
@@ -289,7 +291,6 @@ internal fun AddCardSection(
                 errorText = cardHolderEmailErrorMessage?.let { stringResource(id = it) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 24.dp)
                     .contentType(ContentType.EmailAddress)
             )
         }
@@ -304,8 +305,7 @@ internal fun AddCardSection(
                     text = stringResource(R.string.airwallex_billing_info),
                     textAlign = TextAlign.Left,
                     typography = AirwallexTypography.Body200,
-                    color = AirwallexColor.TextPrimary,
-                    modifier = Modifier.padding(horizontal = 24.dp),
+                    color = AirwallexColor.textPrimary,
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -335,7 +335,6 @@ internal fun AddCardSection(
                     onOptionSelected = {
                         viewModel.updateSelectedCountryCode(it.second)
                     },
-                    modifier = Modifier.padding(horizontal = 24.dp),
                     enabled = !isSameAddressChecked,
                     shape = RoundedCornerShape(
                         topStart = 8.dp,
@@ -366,7 +365,6 @@ internal fun AddCardSection(
                         )
                     },
                     modifier = Modifier
-                        .padding(horizontal = 24.dp)
                         .zIndex(1f)
                         .contentType(ContentType.AddressStreet),
                     enabled = !isSameAddressChecked,
@@ -401,7 +399,6 @@ internal fun AddCardSection(
                             )
                         },
                         modifier = Modifier
-                            .padding(start = 24.dp)
                             .weight(1f)
                             .contentType(ContentType.AddressRegion),
                         enabled = !isSameAddressChecked,
@@ -434,7 +431,6 @@ internal fun AddCardSection(
                             )
                         },
                         modifier = Modifier
-                            .padding(end = 24.dp)
                             .weight(1f)
                             .contentType(ContentType.AddressLocality),
                         enabled = !isSameAddressChecked,
@@ -458,7 +454,6 @@ internal fun AddCardSection(
                         focusManager.moveFocus(FocusDirection.Down)
                     },
                     modifier = Modifier
-                        .padding(horizontal = 24.dp)
                         .contentType(ContentType.PostalCode),
                     enabled = !isSameAddressChecked,
                     shape = RoundedCornerShape(
@@ -479,7 +474,6 @@ internal fun AddCardSection(
                         focusManager.clearFocus()
                     },
                     modifier = Modifier
-                        .padding(horizontal = 24.dp)
                         .contentType(ContentType.PhoneNumber),
                     enabled = !isSameAddressChecked,
                     options = StandardTextFieldOptions(
@@ -503,8 +497,8 @@ internal fun AddCardSection(
                         text = stringResource(id = billingErrorMessage),
                         textAlign = TextAlign.Left,
                         typography = AirwallexTypography.Caption100,
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.padding(start = 40.dp),
+                        color = AirwallexColor.textError,
+                        modifier = Modifier.padding(start = 16.dp),
                     )
                 }
             }
@@ -579,26 +573,30 @@ internal fun AddCardSection(
                     // All fields are valid, so proceed to confirm payment.
                     val card = viewModel.createCard(cardNumber, cardHolderName, expiryDate, cvv)
                         ?: return@StandardSolidButton
-                    viewModel.confirmPayment(
+                    val billing = viewModel.createBilling(
+                        countryCode = selectedCountryCode,
+                        state = state,
+                        city = city,
+                        street = street,
+                        postcode = zipCode,
+                        phoneNumber = phoneNumber,
+                        email = email,
+                    )
+                    paymentFlowListener.onLoadingStateChanged(true, activity)
+                    AnalyticsLogger.logAction(
+                        TAP_PAY_BUTTON,
+                        mapOf(PAYMENT_METHOD to PaymentMethodType.CARD.value)
+                    )
+                    AirwallexRisk.log(event = CLICK_PAY_BUTTON, screen = PAGE_CREATE_CARD)
+                    paymentFlowViewModel.checkoutWithNewCard(
                         card = card,
                         saveCard = isSaveCardChecked,
-                        billing = viewModel.createBilling(
-                            countryCode = selectedCountryCode,
-                            state = state,
-                            city = city,
-                            street = street,
-                            postcode = zipCode,
-                            phoneNumber = phoneNumber,
-                            email = email,
-                        ),
+                        billing = billing,
                     )
-                    onConfirm()
                 }
                 // Otherwise do nothing
             },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp),
+            modifier = Modifier.fillMaxWidth(),
         )
 
         Spacer(modifier = Modifier.height(36.dp))

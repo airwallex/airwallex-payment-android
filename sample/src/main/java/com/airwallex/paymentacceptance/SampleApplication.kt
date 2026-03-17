@@ -1,15 +1,18 @@
 package com.airwallex.paymentacceptance
 
 import android.app.Application
+import android.graphics.Color
 import com.airwallex.android.AirwallexStarter
 import com.airwallex.android.card.CardComponent
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexConfiguration
 import com.airwallex.android.core.Environment
+import com.airwallex.android.core.PaymentAppearance
 import com.airwallex.android.core.RedirectMode
 import com.airwallex.android.googlepay.GooglePayComponent
 import com.airwallex.android.redirect.RedirectComponent
 import com.airwallex.android.wechat.WeChatComponent
+import androidx.core.graphics.toColorInt
 
 class SampleApplication : Application() {
 
@@ -77,9 +80,15 @@ class SampleApplication : Application() {
                     )
                 )
                 .setRedirectMode(RedirectMode.CUSTOM_TAB)
+//                .setPaymentAppearance(
+//                    PaymentAppearance(
+//                        themeColor = "#DA8C21".toColorInt(), // set theme color here
+//                        isDarkTheme = true
+//                    )
+//                )
 //                .setRedirectMode(RedirectMode.CUSTOM_TAB_BOTTOM_SHEET)
 //                .setRedirectMode(RedirectMode.EXTERNAL_BROWSER)
-                .build()
+                .build(),
         )
     }
 }

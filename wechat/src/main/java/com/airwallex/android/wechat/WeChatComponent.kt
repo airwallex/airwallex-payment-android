@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import com.airwallex.android.core.*
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.log.AnalyticsLogger
+import com.airwallex.android.core.log.AnalyticsLogger.Field
 import com.airwallex.android.core.model.NextAction
 import com.airwallex.android.core.model.WeChat
 import com.tencent.mm.opensdk.modelbase.BaseReq
@@ -124,7 +125,7 @@ class WeChatComponent : ActionComponent {
                         )
                         AnalyticsLogger.logError(
                             EVENT_NAME,
-                            mapOf("message" to errorMsg)
+                            mapOf(Field.MESSAGE to errorMsg)
                         )
                     } else {
                         PaymentResultManager.getInstance().updateStatus(AirwallexPaymentStatus.InProgress(paymentIntentId))

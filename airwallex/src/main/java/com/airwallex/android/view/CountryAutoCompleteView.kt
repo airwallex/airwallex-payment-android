@@ -1,16 +1,24 @@
 package com.airwallex.android.view
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.OnFocusChangeListener
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Filter
+import android.widget.FrameLayout
+import android.widget.TextView
+import androidx.compose.ui.graphics.toArgb
+import androidx.core.graphics.drawable.toDrawable
 import com.airwallex.android.R
 import com.airwallex.android.databinding.CountryAutocompleteViewBinding
+import com.airwallex.android.ui.composables.AirwallexColor
+import com.airwallex.android.ui.util.EditTextColorUtil
 import com.airwallex.android.view.util.CountryUtils
-import java.util.*
+import java.util.Locale
 
 class CountryAutoCompleteView constructor(
     context: Context,
@@ -52,8 +60,40 @@ class CountryAutoCompleteView constructor(
         }
 
     init {
+        viewBinding.actCountry.setTextColor(AirwallexColor.textPrimary.toArgb())
+
+        EditTextColorUtil.applyCursorColor(viewBinding.actCountry, AirwallexColor.theme, context)
+
+        val boxStrokeStateList = ColorStateList(
+            arrayOf(
+                intArrayOf(android.R.attr.state_focused),
+                intArrayOf()
+            ),
+            intArrayOf(
+                AirwallexColor.theme.toArgb(),
+                AirwallexColor.borderDecorativeStrong.toArgb()
+            )
+        )
+        viewBinding.tlCountry.setBoxStrokeColorStateList(boxStrokeStateList)
+
+        val hintStateList = ColorStateList(
+            arrayOf(
+                intArrayOf(android.R.attr.state_focused),
+                intArrayOf()
+            ),
+            intArrayOf(
+                AirwallexColor.theme.toArgb(),
+                AirwallexColor.textPlaceholder.toArgb()
+            )
+        )
+        viewBinding.tlCountry.hintTextColor = hintStateList
+        viewBinding.tlCountry.defaultHintTextColor = hintStateList
+
         viewBinding.actCountry.threshold = 0
         viewBinding.actCountry.setAdapter(countryAdapter)
+        viewBinding.actCountry.setDropDownBackgroundDrawable(
+            AirwallexColor.backgroundSecondary.toArgb().toDrawable()
+        )
 
         viewBinding.actCountry.onItemClickListener =
             AdapterView.OnItemClickListener { _, _, position, _ ->
@@ -132,12 +172,14 @@ class CountryAutoCompleteView constructor(
         override fun getView(i: Int, view: View?, viewGroup: ViewGroup): View {
             return if (view is TextView) {
                 view.text = getItem(i).name
+                view.setTextColor(AirwallexColor.textPrimary.toArgb())
                 view
             } else {
                 val countryText = LayoutInflater.from(context).inflate(
                     R.layout.country_textview, viewGroup, false
                 ) as TextView
                 countryText.text = getItem(i).name
+                countryText.setTextColor(AirwallexColor.textPrimary.toArgb())
                 countryText
             }
         }

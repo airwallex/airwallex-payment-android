@@ -20,7 +20,6 @@ class PaymentIntentParser : ModelJsonParser<PaymentIntent> {
                     PaymentMethodType.fromValue(jsonObject)
                 }
         }
-
         val customerPaymentMethods = json.optJSONArray(FIELD_AVAILABLE_PAYMENT_METHODS)?.let {
             (0 until it.length())
                 .map { idx -> it.optJSONObject(idx) }
@@ -28,7 +27,6 @@ class PaymentIntentParser : ModelJsonParser<PaymentIntent> {
                     paymentMethodParser.parse(jsonObject)
                 }
         }
-
         val customerPaymentConsents = json.optJSONArray(FIELD_AVAILABLE_PAYMENT_CONSENTS)?.let {
             (0 until it.length())
                 .map { idx -> it.optJSONObject(idx) }
@@ -36,7 +34,6 @@ class PaymentIntentParser : ModelJsonParser<PaymentIntent> {
                     paymentConsentParser.parse(jsonObject)
                 }
         }
-
         return PaymentIntent(
             id = json.optString(FIELD_ID),
             requestId = AirwallexJsonUtils.optString(json, FIELD_REQUEST_ID),

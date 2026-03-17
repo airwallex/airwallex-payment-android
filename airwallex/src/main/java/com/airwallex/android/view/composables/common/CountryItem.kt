@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,7 +35,7 @@ internal fun CountryItem(
                 if (isSelected) {
                     Modifier
                         .background(
-                            color = AirwallexColor.Ultraviolet10,
+                            color = AirwallexColor.backgroundPrimary,
                             shape = RoundedCornerShape(8.dp),
                         )
                 } else {
@@ -62,7 +61,7 @@ internal fun CountryItem(
 
         StandardText(
             text = countryName,
-            color = AirwallexColor.TextPrimary,
+            color = AirwallexColor.textPrimary,
             typography = AirwallexTypography.Body100,
         )
 
@@ -73,7 +72,7 @@ internal fun CountryItem(
                 drawableRes = R.drawable.airwallex_ic_tick,
                 size = 16.dp,
                 padding = 0.dp,
-                tint = MaterialTheme.colorScheme.primary,
+                tint = AirwallexColor.theme,
             )
 
             Spacer(modifier = Modifier.width(24.dp))

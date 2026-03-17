@@ -3,12 +3,26 @@ package com.airwallex.android.core.log
 import android.content.Context
 import android.content.pm.PackageManager
 import com.airwallex.airtracker.Tracker
+import com.airwallex.android.core.AirwallexPlugins
+import com.airwallex.android.core.Environment
+import com.airwallex.android.core.TokenManager
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.extension.getAppName
 import com.airwallex.android.core.extension.getAppVersion
 import com.airwallex.android.core.model.AirwallexError
-import io.mockk.*
+import com.airwallex.android.core.log.AnalyticsLogger.Field
+import io.mockk.MockKAnnotations
+import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.just
+import io.mockk.mockk
+import io.mockk.mockkConstructor
+import io.mockk.mockkObject
+import io.mockk.mockkStatic
+import io.mockk.runs
+import io.mockk.unmockkAll
+import io.mockk.verify
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
@@ -23,19 +37,29 @@ class AnalyticsLoggerTest {
     fun setup() {
         MockKAnnotations.init(this)
         mockkStatic(PackageManager::getAppName)
+        mockkObject(AirwallexPlugins)
+        mockkObject(TokenManager)
 
         every { context.packageName } returns "abc"
         every { packageManager.getAppName(any()) } returns "test_app"
         every { any<PackageManager>().getAppVersion(any()) } returns "1.0.1"
         every { context.packageManager } returns packageManager
+        every { AirwallexPlugins.environment } returns Environment.PRODUCTION
+        every { AirwallexPlugins.enableAnalytics } returns true
+        every { TokenManager.accountId } returns null
 
         mockkConstructor(Tracker::class)
         every { anyConstructed<Tracker>().info(any(), any()) } just runs
         every { anyConstructed<Tracker>().error(any(), any()) } just runs
     }
 
+    @After
+    fun tearDown() {
+        unmockkAll()
+    }
+
     @Test
-    fun `test page view, error and action logging`() {
+    fun `test initialization, page view, error and action logging`() {
         AnalyticsLogger.initialize(context)
         val additionalInfo = mapOf("key" to "value")
 
@@ -43,7 +67,7 @@ class AnalyticsLoggerTest {
 
         verify(exactly = 1) {
             anyConstructed<Tracker>().info(
-                "page_name", mapOf("key" to "value", "eventType" to "page_view")
+                "page_name", mapOf("key" to "value", Field.EVENT_TYPE to "page_view")
             )
         }
 
@@ -59,7 +83,7 @@ class AnalyticsLoggerTest {
         verify(exactly = 1) {
             anyConstructed<Tracker>().error(
                 "error_name",
-                mapOf("eventType" to "pa_api_request", "url" to "http://example.com")
+                mapOf(Field.EVENT_TYPE to "pa_api_request", Field.URL to "http://example.com")
             )
         }
 
@@ -71,14 +95,14 @@ class AnalyticsLoggerTest {
         verify(exactly = 1) {
             anyConstructed<Tracker>().error(
                 "error_name",
-                mapOf("code" to "code", "message" to "message")
+                mapOf(Field.CODE to "code", Field.MESSAGE to "message")
             )
         }
 
         AnalyticsLogger.logAction("action_name")
 
         verify(exactly = 1) {
-            anyConstructed<Tracker>().info("action_name", mapOf("eventType" to "action"))
+            anyConstructed<Tracker>().info("action_name", mapOf(Field.EVENT_TYPE to "action"))
         }
 
         AnalyticsLogger.logAction("action_name", additionalInfo)
@@ -86,23 +110,24 @@ class AnalyticsLoggerTest {
         verify(exactly = 1) {
             anyConstructed<Tracker>().info(
                 "action_name",
-                mapOf("eventType" to "action", "key" to "value")
+                mapOf(Field.EVENT_TYPE to "action", "key" to "value")
             )
         }
 
         AnalyticsLogger.updateAccountId("aid")
         verify(exactly = 1) {
             anyConstructed<Tracker>() setProperty "extraCommonData" value mapOf(
-                "merchantAppName" to "test_app",
-                "merchantAppVersion" to "1.0.1",
-                "accountId" to "aid"
+                Field.MERCHANT_APP_NAME to "test_app",
+                Field.MERCHANT_APP_VERSION to "1.0.1",
+                Field.ACCOUNT_ID to "aid",
+                Field.FRAMEWORK to "native"
             )
         }
 
         AnalyticsLogger.logPaymentView("view_name", mapOf("key" to "value"))
         verify(exactly = 1) {
             anyConstructed<Tracker>().info(
-                "view_name", mapOf("key" to "value", "eventType" to "payment_method_view")
+                "view_name", mapOf("key" to "value", Field.EVENT_TYPE to "payment_method_view")
             )
         }
     }

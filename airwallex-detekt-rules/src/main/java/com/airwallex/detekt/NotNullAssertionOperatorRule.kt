@@ -20,8 +20,10 @@ class NotNullAssertionOperatorRule : Rule() {
     override fun visitPostfixExpression(expression: KtPostfixExpression) {
         if (expression.operationToken == KtTokens.EXCLEXCL) {
             report(
-                CodeSmell(issue, Entity.from(expression),
-                "Not-null assertion operator (!!) is dangerous. Unwrap, or throw IllegalArgumentException instead.")
+                CodeSmell(
+                    issue, Entity.from(expression),
+                    "Not-null assertion operator (!!) is dangerous. Unwrap, or throw IllegalArgumentException instead."
+                )
             )
         }
         super.visitPostfixExpression(expression)

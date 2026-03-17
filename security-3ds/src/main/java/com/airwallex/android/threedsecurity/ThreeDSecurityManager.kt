@@ -9,6 +9,7 @@ import com.airwallex.android.core.*
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.extension.putIfNotNull
 import com.airwallex.android.core.log.AnalyticsLogger
+import com.airwallex.android.core.log.AnalyticsLogger.Field
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.model.*
 import com.airwallex.android.threedsecurity.exception.ThreeDSException
@@ -53,7 +54,7 @@ object ThreeDSecurityManager {
             AnalyticsLogger.logPageView(
                 "webview_redirect",
                 mutableMapOf<String, Any>().apply {
-                    putIfNotNull("stage", nextAction.stage?.value)
+                    putIfNotNull(Field.STAGE, nextAction.stage?.value)
                 }
             )
 
@@ -120,7 +121,7 @@ object ThreeDSecurityManager {
                                     AnalyticsLogger.logPageView(
                                         "webview_redirect",
                                         mutableMapOf<String, Any>().apply {
-                                            putIfNotNull("stage", nextAction.stage?.value)
+                                            putIfNotNull(Field.STAGE, nextAction.stage?.value)
                                         }
                                     )
                                     ThreeDSecurityActivityLaunch(cardNextActionModel.activityProvider())

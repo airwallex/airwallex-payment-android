@@ -34,6 +34,7 @@
     <string name="airwallex_delete_consent_alert_title">Удалить %s?</string>
     <string name="airwallex_delete_consent_alert_content">Этот вариант будет навсегда удалён из сохранённых способов оплаты.</string>
     <string name="airwallex_schema_payment_redirect_message">После подтверждения вы будете перенаправлены для завершения оплаты.</string>
+    <string name="airwallex_google_payment_redirect_message">Нажмите кнопку Google Pay ниже, чтобы безопасно завершить покупку.</string>
     <string name="airwallex_invalid_scheme_message">Недопустимая схема</string>
     <string name="airwallex_empty_state">Пожалуйста, введите ваш штат / область</string>
     <string name="airwallex_delete_payment_method_prompt_title">Вы хотите удалить это платёжное согласие?</string>

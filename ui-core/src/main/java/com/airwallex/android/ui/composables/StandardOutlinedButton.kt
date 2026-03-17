@@ -4,7 +4,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -21,7 +20,7 @@ fun StandardOutlinedButton(
     text: String,
     buttonHeight: Dp = 52.dp,
     buttonWidth: Modifier.() -> Modifier = { this.fillMaxWidth() },
-    textColor: Color = MaterialTheme.colorScheme.primary,
+    textColor: Color = AirwallexColor.theme,
     borderColor: Color = AirwallexColor.Gray30,
 ) {
     OutlinedButton(

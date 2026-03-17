@@ -11,6 +11,5 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:singleLine="true"
-        android:textColor="@color/airwallex_color_grey_100"
         android:textSize="16sp" />
 </com.google.android.material.textfield.TextInputLayout>
