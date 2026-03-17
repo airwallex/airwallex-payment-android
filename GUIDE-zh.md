@@ -92,12 +92,12 @@ SDK 已发布至 [Maven Central](https://repo1.maven.org/maven2/io/github/airwal
 ```groovy
 dependencies {
     // 必须
-    implementation 'io.github.airwallex:payment:6.4.2'
+    implementation 'io.github.airwallex:payment:6.4.3'
     // 按需添加支付方式
-    implementation 'io.github.airwallex:payment-card:6.4.2'
-    implementation 'io.github.airwallex:payment-redirect:6.4.2'
-    implementation 'io.github.airwallex:payment-wechat:6.4.2'
-    implementation 'io.github.airwallex:payment-googlepay:6.4.2'
+    implementation 'io.github.airwallex:payment-card:6.4.3'
+    implementation 'io.github.airwallex:payment-redirect:6.4.3'
+    implementation 'io.github.airwallex:payment-wechat:6.4.3'
+    implementation 'io.github.airwallex:payment-googlepay:6.4.3'
 }
 ```
 
@@ -764,14 +764,14 @@ class CheckoutActivity : ComponentActivity() {
 
 ### <a name="java-示例"></a>Java 示例
 
-对于 Java 开发者，我们提供了 `PaymentElementHelper` - 一个 Java 友好的包装器，通过内部处理 Kotlin 协程和 Composable 渲染来简化集成。
+对于 Java 开发者，`PaymentElement` 提供了 Java 友好的静态方法，内部处理 Kotlin 协程，使用熟悉的两步模式：**创建** + **渲染**。
 
 **完整实现参考：** 查看示例应用中的 `EmbeddedElementJavaActivity.java` 获取完整可运行的示例。
 
 **核心集成代码：**
 
 ```java
-import com.airwallex.android.view.composables.PaymentElementHelper;
+import com.airwallex.android.view.composables.PaymentElement;
 import com.airwallex.android.view.composables.PaymentElementCallback;
 import com.airwallex.android.view.PaymentFlowListener;
 
@@ -793,37 +793,50 @@ PaymentFlowListener listener = new PaymentFlowListener() {
     }
 };
 
-// 使用 Java 友好的 helper 创建并渲染 PaymentElement
-PaymentElementHelper.create(
-    this,                    // AppCompatActivity
+// 显示加载状态
+binding.progressBar.setVisibility(View.VISIBLE);
+binding.composeView.setVisibility(View.GONE);
+
+// 步骤 1：创建 PaymentElement（内部处理协程）
+PaymentElement.create(
+    this,                    // ComponentActivity
     session,                 // AirwallexSession
     airwallex,               // Airwallex 实例
     configuration,           // PaymentElementConfiguration
     listener,                // PaymentFlowListener
-    binding.composeView,     // 用于渲染的 ComposeView
-    binding.progressBar,     // ProgressBar（可选，用于加载状态）
     new PaymentElementCallback() {
         @Override
         public void onSuccess(@NonNull PaymentElement element) {
-            // PaymentElement 创建并渲染成功
+            // 隐藏加载状态
+            binding.progressBar.setVisibility(View.GONE);
+            binding.composeView.setVisibility(View.VISIBLE);
+
+            // 步骤 2：在 ComposeView 中渲染 PaymentElement
+            element.renderIn(binding.composeView);
         }
 
         @Override
         public void onFailure(@NonNull Throwable error) {
-            // 处理创建错误
+            // 隐藏加载状态并处理错误
+            binding.progressBar.setVisibility(View.GONE);
+            showError(error.getMessage());
         }
     }
 );
 ```
 
-**PaymentElementHelper 优势：**
+**Java 集成优势：**
 - 内部处理 Kotlin 协程（无需处理 suspend 函数互操作）
-- 初始化期间自动管理加载状态
-- 为你渲染 Composable UI
 - 使用 Java 开发者熟悉的回调模式
-- 支持自动渲染（`create()`）和手动渲染（`createOnly()` + `renderInView()`）
+- 分离创建和渲染，提供最大灵活性
+- 你可以控制何时以及如何显示加载状态
+- 支持支付表单和仅卡片两种模式
 
-**注意：** 虽然支持 Java 集成，但我们建议使用 Kotlin 以获得嵌入式元素的最佳开发体验。
+**两步模式：**
+1. **`PaymentElement.create()`** - 创建并初始化元素（异步操作）
+2. **`element.renderIn()`** - 在你的 ComposeView 中渲染 UI（在成功回调中调用）
+
+**注意：** 虽然完全支持 Java 集成，但我们建议使用 Kotlin 以获得嵌入式元素的最佳开发体验。
 
 **与原生 UI 集成的主要区别：**
 
@@ -851,11 +864,11 @@ SDK 支持 Android API 21 及以上。
 ```groovy
 dependencies {
     // 必须
-    implementation 'io.github.airwallex:payment-components-core:6.4.2'
+    implementation 'io.github.airwallex:payment-components-core:6.4.3'
     // 按需添加支付方式
-    implementation 'io.github.airwallex:payment-card:6.4.2'
-    implementation 'io.github.airwallex:payment-googlepay:6.4.2'
-    implementation 'io.github.airwallex:payment-redirect:6.4.2'
+    implementation 'io.github.airwallex:payment-card:6.4.3'
+    implementation 'io.github.airwallex:payment-googlepay:6.4.3'
+    implementation 'io.github.airwallex:payment-redirect:6.4.3'
 }
 ```
 
@@ -932,7 +945,7 @@ airwallex.confirmPaymentIntent(
 
 ```kotlin
 airwallex.confirmPaymentIntent(
-    session = session as AirwallexPaymentSession,
+    session = session,
     paymentConsent = paymentConsent,
     listener = object : Airwallex.PaymentResultListener {
         override fun onCompleted(status: AirwallexPaymentStatus) {

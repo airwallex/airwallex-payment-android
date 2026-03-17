@@ -23,6 +23,7 @@ import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardText
 import com.airwallex.android.view.PaymentFlowListener
 import com.airwallex.android.view.PaymentFlowViewModel
+import com.airwallex.android.view.util.AnalyticsConstants.PAYMENT_METHOD
 import org.json.JSONArray
 
 /**
@@ -70,7 +71,7 @@ internal fun GooglePayListItem(
                 onClick = {
                     AnalyticsLogger.logAction(
                         "tap_pay_button",
-                        mapOf("payment_method" to PaymentMethodType.GOOGLEPAY.value)
+                        mapOf(PAYMENT_METHOD to PaymentMethodType.GOOGLEPAY.value)
                     )
                     paymentFlowListener.onLoadingStateChanged(true, airwallex.activity)
                     flowViewModel.checkoutWithGooglePay()

@@ -135,6 +135,7 @@ class AirwallexPaymentSession internal constructor(
             this.amount = paymentIntent.amount
             this.customerId = paymentIntent.customerId
             this.googlePayOptions = googlePayOptions
+
             paymentIntent.clientSecret?.apply {
                 TokenManager.updateClientSecret(this)
             }
@@ -182,12 +183,6 @@ class AirwallexPaymentSession internal constructor(
         private var hidePaymentConsents: Boolean = false
         private var paymentMethods: List<String>? = null
         private var shipping: Shipping? = null
-
-        init {
-            paymentIntent?.clientSecret?.apply {
-                TokenManager.updateClientSecret(this)
-            }
-        }
 
         fun setRequireBillingInformation(requiresBillingInformation: Boolean): Builder = apply {
             this.isBillingInformationRequired = requiresBillingInformation

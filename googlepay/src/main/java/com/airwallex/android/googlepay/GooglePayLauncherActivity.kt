@@ -8,6 +8,7 @@ import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.extension.putIfNotNull
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
+import com.airwallex.android.core.log.AnalyticsLogger.Field
 import com.airwallex.android.ui.extension.getExtraArgs
 import com.airwallex.risk.AirwallexRisk
 import com.google.android.gms.common.api.CommonStatusCodes
@@ -46,7 +47,7 @@ class GooglePayLauncherActivity : ComponentActivity() {
             AnalyticsLogger.logError(
                 "googlepay_payment_data_retrieve",
                 exception = exception,
-                additionalInfo = mapOf("skipReadinessCheck" to viewModel.getSkipReadinessCheck())
+                additionalInfo = mapOf(Field.SKIP_READINESS_CHECK to viewModel.getSkipReadinessCheck())
             )
         }
 
