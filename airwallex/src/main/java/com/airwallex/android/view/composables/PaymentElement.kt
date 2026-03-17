@@ -2,6 +2,7 @@ package com.airwallex.android.view.composables
 
 import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.ComposeView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -12,12 +13,12 @@ import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.bindToActivity
 import com.airwallex.android.core.exception.InvalidParamsException
 import com.airwallex.android.core.log.AnalyticsLogger
+import com.airwallex.android.core.log.AnalyticsLogger.Field
 import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.core.toAnalyticsLayoutString
 import com.airwallex.android.ui.composables.AirwallexTheme
 import com.airwallex.android.view.PaymentFlowListener
 import com.airwallex.android.view.PaymentFlowViewModel
-import com.airwallex.android.view.composables.PaymentElement.Companion.create
 import com.airwallex.android.view.util.AnalyticsConstants
 import kotlinx.coroutines.launch
 
@@ -110,7 +111,7 @@ class PaymentElement private constructor(
             AnalyticsLogger.setupSession(session, launchType, layout, showsGooglePayAsPrimaryButton)
             val additionalInfo = mutableMapOf<String, String>()
             if (configuration is PaymentElementConfiguration.Card) {
-                additionalInfo["paymentMethod"] = PaymentMethodType.CARD.value
+                additionalInfo[Field.PAYMENT_METHOD] = PaymentMethodType.CARD.value
             }
             AnalyticsLogger.logAction(
                 actionName = AnalyticsConstants.EVENT_PAYMENT_LAUNCHED,
@@ -192,6 +193,92 @@ class PaymentElement private constructor(
             }
             return create(session, airwallex, configuration, listener, launchType)
         }
+
+        /**
+         * Java-friendly: Creates a PaymentElement without automatic rendering.
+         *
+         * Use this from Java code when you want to control rendering yourself.
+         * Call [PaymentElement.renderIn] on the element to render it when ready.
+         *
+         * Example usage from Java:
+         * ```java
+         * PaymentElement.create(
+         *     this,  // ComponentActivity
+         *     session,
+         *     airwallex,
+         *     configuration,
+         *     listener,
+         *     new PaymentElementCallback() {
+         *         @Override
+         *         public void onSuccess(PaymentElement element) {
+         *             // Render when ready
+         *             element.renderIn(composeView);
+         *         }
+         *
+         *         @Override
+         *         public void onFailure(Throwable error) {
+         *             // Handle error
+         *         }
+         *     }
+         * );
+         * ```
+         *
+         * @param activity The ComponentActivity (required for lifecycle scope)
+         * @param session The Airwallex session containing payment information
+         * @param airwallex The Airwallex instance for payment operations
+         * @param configuration Configuration for the payment element
+         * @param paymentFlowListener Listener for payment operation callbacks
+         * @param callback Callback to receive the result
+         */
+        @Suppress("LongParameterList")
+        @JvmStatic
+        fun create(
+            session: AirwallexSession,
+            airwallex: Airwallex,
+            configuration: PaymentElementConfiguration,
+            paymentFlowListener: PaymentFlowListener,
+            callback: PaymentElementCallback
+        ) {
+            airwallex.activity.lifecycleScope.launch {
+                val result = create(
+                    session = session,
+                    airwallex = airwallex,
+                    configuration = configuration,
+                    paymentFlowListener = paymentFlowListener
+                )
+
+                result.onSuccess { paymentElement ->
+                    callback.onSuccess(paymentElement)
+                }.onFailure { throwable ->
+                    callback.onFailure(throwable)
+                }
+            }
+        }
+
+    }
+
+    /**
+     * Renders this PaymentElement in the given ComposeView.
+     *
+     * Call this method after successfully creating a PaymentElement to display it in your UI.
+     * This is typically called in the `onSuccess` callback of [create].
+     *
+     * Example (Java):
+     * ```java
+     * PaymentElement.create(..., new PaymentElementCallback() {
+     *     @Override
+     *     public void onSuccess(PaymentElement element) {
+     *         element.renderIn(composeView);
+     *     }
+     * });
+     * ```
+     *
+     * @param composeView The ComposeView where the payment UI will be rendered
+     */
+    fun renderIn(composeView: ComposeView) {
+        composeView.setContent {
+            Content()
+        }
     }
 
     /**
@@ -199,6 +286,8 @@ class PaymentElement private constructor(
      *
      * This composable does NOT fetch data - all data is already loaded during [create].
      * It always uses the [PaymentFlowListener] provided at creation.
+     *
+     * Note: For Java developers, use [renderIn] instead of calling this directly.
      */
     @Composable
     fun Content() {
@@ -227,4 +316,26 @@ private fun observeState(
             }
         }
     }
+}
+
+/**
+ * Callback interface for PaymentElement creation results.
+ *
+ * Implement this interface to receive callbacks when PaymentElement creation
+ * succeeds or fails. This is primarily for Java interoperability.
+ */
+interface PaymentElementCallback {
+    /**
+     * Called when PaymentElement is successfully created.
+     *
+     * @param element The created PaymentElement
+     */
+    fun onSuccess(element: PaymentElement)
+
+    /**
+     * Called when PaymentElement creation fails.
+     *
+     * @param error The error that occurred
+     */
+    fun onFailure(error: Throwable)
 }
