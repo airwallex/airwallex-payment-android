@@ -1,5 +1,7 @@
 package com.airwallex.android.view.util
 
+import com.airwallex.android.core.log.AnalyticsLogger.Field
+
 object AnalyticsConstants {
     // event names
     const val EVENT_PAYMENT_CANCELLED = "payment_canceled"
@@ -14,5 +16,5 @@ object AnalyticsConstants {
 
     // extras
     const val SUPPORTED_SCHEMES: String = "supportedSchemes"
-    const val PAYMENT_METHOD = "payment_method"
+    const val PAYMENT_METHOD = Field.PAYMENT_METHOD
 }

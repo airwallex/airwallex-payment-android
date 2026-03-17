@@ -899,4 +899,23 @@ class SchemaPaymentViewModelTest {
         Assert.assertNotNull(schemaData)
         assertEquals(emptyList(), schemaData?.banks)
     }
+
+    @Test
+    fun `test requireHandleSchemaFields when resources is null`() = runTest {
+        val testViewModel = mockViewModel(TransactionMode.ONE_OFF)
+
+        // Given - resources is null so requireHandleSchemaFields returns false
+        val paymentMethodType = mockk<AvailablePaymentMethodType> {
+            every { name } returns "test_method"
+            every { resources } returns null // resources is null
+        }
+
+        // When
+        val result = testViewModel.loadSchemaFields(paymentMethodType)
+        advanceUntilIdle()
+
+        // Then - Should return success with null when resources is null
+        assertEquals(true, result.isSuccess)
+        Assert.assertNull(result.getOrNull())
+    }
 }
