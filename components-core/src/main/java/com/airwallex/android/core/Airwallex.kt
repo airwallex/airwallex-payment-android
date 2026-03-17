@@ -19,6 +19,7 @@ import com.airwallex.android.core.extension.confirmGooglePayIntent
 import com.airwallex.android.core.extension.createCardPaymentMethod
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
+import com.airwallex.android.core.log.AnalyticsLogger.Field
 import com.airwallex.android.core.model.AirwallexPaymentRequest
 import com.airwallex.android.core.model.AirwallexPaymentRequestFlow
 import com.airwallex.android.core.model.AvailablePaymentMethodType
@@ -253,8 +254,8 @@ class Airwallex internal constructor(
                 AnalyticsLogger.logAction(
                     actionName = "payment_launched",
                     additionalInfo = mutableMapOf<String, Any>(
-                        "paymentMethod" to PaymentMethodType.CARD.value,
-                        "consentId" to paymentConsentId
+                        Field.PAYMENT_METHOD to PaymentMethodType.CARD.value,
+                        Field.CONSENT_ID to paymentConsentId
                     )
                 )
             }
@@ -312,8 +313,8 @@ class Airwallex internal constructor(
             AnalyticsLogger.logAction(
                 actionName = "payment_launched",
                 additionalInfo = mutableMapOf<String, Any>(
-                    "paymentMethod" to PaymentMethodType.CARD.value,
-                    "consentId" to paymentConsentId
+                    Field.PAYMENT_METHOD to PaymentMethodType.CARD.value,
+                    Field.CONSENT_ID to paymentConsentId
                 )
             )
         }
@@ -358,7 +359,7 @@ class Airwallex internal constructor(
             AnalyticsLogger.logAction(
                 actionName = "payment_launched",
                 additionalInfo = mapOf(
-                    "paymentMethod" to PaymentMethodType.GOOGLEPAY.value,
+                    Field.PAYMENT_METHOD to PaymentMethodType.GOOGLEPAY.value,
                 )
             )
         }
@@ -788,7 +789,7 @@ class Airwallex internal constructor(
                 if (paymentIntentId.isNullOrEmpty()) {
                     AnalyticsLogger.logError(
                         "initialPaymentIntentId_null_or_empty",
-                        mapOf("type" to paymentMethodType)
+                        mapOf(Field.TYPE to paymentMethodType)
                     )
                     AirwallexLogger.error("Airwallex verifyPaymentConsent: type = $paymentMethodType, paymentIntentId isNullOrEmpty")
                     loggingListener.onCompleted(
@@ -989,7 +990,7 @@ class Airwallex internal constructor(
             AnalyticsLogger.logAction(
                 actionName = "payment_launched",
                 additionalInfo = mutableMapOf<String, Any>().apply {
-                    paymentMethod.type?.let { put("paymentMethod", it) }
+                    paymentMethod.type?.let { put(Field.PAYMENT_METHOD, it) }
                 }
             )
         }
@@ -1784,19 +1785,19 @@ class Airwallex internal constructor(
         override fun onCompleted(status: AirwallexPaymentStatus) {
             when (status) {
                 is AirwallexPaymentStatus.Success -> {
-                    AnalyticsLogger.logAction("payment_success", mapOf("payment_method" to paymentMethod))
+                    AnalyticsLogger.logAction("payment_success", mapOf(Field.PAYMENT_METHOD to paymentMethod))
                 }
                 is AirwallexPaymentStatus.Cancel -> {
-                    AnalyticsLogger.logAction("payment_canceled", mapOf("payment_method" to paymentMethod))
+                    AnalyticsLogger.logAction("payment_canceled", mapOf(Field.PAYMENT_METHOD to paymentMethod))
                 }
                 is AirwallexPaymentStatus.Failure -> {
                     AnalyticsLogger.logAction(
                         "payment_failed",
-                        mapOf("payment_method" to paymentMethod, "message" to (status.exception.message ?: ""))
+                        mapOf(Field.PAYMENT_METHOD to paymentMethod, Field.MESSAGE to (status.exception.message ?: ""))
                     )
                 }
                 is AirwallexPaymentStatus.InProgress -> {
-                    AnalyticsLogger.logAction("payment_in_progress", mapOf("payment_method" to paymentMethod))
+                    AnalyticsLogger.logAction("payment_in_progress", mapOf(Field.PAYMENT_METHOD to paymentMethod))
                 }
             }
             delegate.onCompleted(status)

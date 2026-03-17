@@ -4,6 +4,9 @@ import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ActivityInfo
+import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
 import android.net.Uri
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.browser.customtabs.CustomTabsIntent
@@ -206,5 +209,215 @@ class RedirectUtilTest {
         // Should use startActivity for custom tab mode
         verify { activity.startActivity(any()) }
         verify(exactly = 0) { activity.startActivityForResult(any(), any()) }
+    }
+
+    @Test
+    fun `test makeRedirect - CUSTOM_TAB_BOTTOM_SHEET with APPLICATION type uses startActivity`() {
+        mockkObject(AirwallexPlugins)
+        mockkObject(RedirectUtil)
+        every { AirwallexPlugins.redirectMode } returns RedirectMode.CUSTOM_TAB_BOTTOM_SHEET
+        // Mock determineResolveResult to return APPLICATION type
+        every {
+            RedirectUtil["determineResolveResult"](
+                any<Context>(),
+                any<Uri>(),
+                any<String>()
+            )
+        } returns ResolveResultType.APPLICATION
+
+        val activity = mockk<Activity>(relaxed = true)
+        val redirectUrl = "http://www.google.com"
+
+        every { activity.startActivity(any()) } just Runs
+        every { activity.startActivityForResult(any(), any()) } just Runs
+
+        RedirectUtil.makeRedirect(activity, redirectUrl, packageName = "com.test.app")
+
+        // When resolve type is APPLICATION, should use startActivity even in bottom sheet mode
+        verify { activity.startActivity(any()) }
+    }
+
+    @Test(expected = RedirectException::class)
+    fun `test makeRedirect - fails with empty fallback URL`() {
+        val activity = mockk<Activity>(relaxed = true)
+        val redirectUrl = "http://www.google.com"
+        val emptyFallback = "" // Empty string fallback
+
+        every { activity.startActivity(any()) } throws ActivityNotFoundException()
+
+        RedirectUtil.makeRedirect(activity, redirectUrl, emptyFallback)
+    }
+
+    @Test
+    fun `test determineResolveResult - returns RESOLVER_ACTIVITY when package is android`() {
+        val mockContext = mockk<Context>()
+        val mockPackageManager = mockk<PackageManager>()
+        val mockResolveInfo = mockk<ResolveInfo>()
+        val mockActivityInfo = mockk<ActivityInfo>()
+        val mockBrowserInfo = mockk<ResolveInfo>()
+        val mockBrowserActivityInfo = mockk<ActivityInfo>()
+
+        mockActivityInfo.packageName = "android"
+        mockResolveInfo.activityInfo = mockActivityInfo
+        mockBrowserActivityInfo.packageName = "com.android.browser"
+        mockBrowserInfo.activityInfo = mockBrowserActivityInfo
+
+        every { mockContext.packageManager } returns mockPackageManager
+        every { mockPackageManager.resolveActivity(any(), 0) } returns mockResolveInfo
+        every { mockPackageManager.resolveActivity(any(), PackageManager.MATCH_DEFAULT_ONLY) } returns mockBrowserInfo
+
+        val uri = Uri.parse("http://www.google.com")
+
+        val method = RedirectUtil::class.java.getDeclaredMethod(
+            "determineResolveResult",
+            Context::class.java,
+            Uri::class.java,
+            String::class.java
+        )
+        method.isAccessible = true
+
+        val result = method.invoke(RedirectUtil, mockContext, uri, null)
+
+        assertEquals(ResolveResultType.RESOLVER_ACTIVITY, result)
+    }
+
+    @Test
+    fun `test determineResolveResult - returns DEFAULT_BROWSER when package matches browser`() {
+        val mockContext = mockk<Context>()
+        val mockPackageManager = mockk<PackageManager>()
+        val mockResolveInfo = mockk<ResolveInfo>()
+        val mockActivityInfo = mockk<ActivityInfo>()
+        val mockBrowserInfo = mockk<ResolveInfo>()
+        val mockBrowserActivityInfo = mockk<ActivityInfo>()
+
+        mockActivityInfo.packageName = "com.android.chrome"
+        mockResolveInfo.activityInfo = mockActivityInfo
+        mockBrowserActivityInfo.packageName = "com.android.chrome"
+        mockBrowserInfo.activityInfo = mockBrowserActivityInfo
+
+        every { mockContext.packageManager } returns mockPackageManager
+        every { mockPackageManager.resolveActivity(any(), 0) } returns mockResolveInfo
+        every { mockPackageManager.resolveActivity(any(), PackageManager.MATCH_DEFAULT_ONLY) } returns mockBrowserInfo
+
+        val uri = Uri.parse("http://www.google.com")
+
+        val method = RedirectUtil::class.java.getDeclaredMethod(
+            "determineResolveResult",
+            Context::class.java,
+            Uri::class.java,
+            String::class.java
+        )
+        method.isAccessible = true
+
+        val result = method.invoke(RedirectUtil, mockContext, uri, null)
+
+        assertEquals(ResolveResultType.DEFAULT_BROWSER, result)
+    }
+
+    @Test
+    fun `test determineResolveResult - returns APPLICATION when package is specific app`() {
+        val mockContext = mockk<Context>()
+        val mockPackageManager = mockk<PackageManager>()
+        val mockResolveInfo = mockk<ResolveInfo>()
+        val mockActivityInfo = mockk<ActivityInfo>()
+        val mockBrowserInfo = mockk<ResolveInfo>()
+        val mockBrowserActivityInfo = mockk<ActivityInfo>()
+
+        mockActivityInfo.packageName = "com.example.app"
+        mockResolveInfo.activityInfo = mockActivityInfo
+        mockBrowserActivityInfo.packageName = "com.android.chrome"
+        mockBrowserInfo.activityInfo = mockBrowserActivityInfo
+
+        every { mockContext.packageManager } returns mockPackageManager
+        every { mockPackageManager.resolveActivity(any(), 0) } returns mockResolveInfo
+        every { mockPackageManager.resolveActivity(any(), PackageManager.MATCH_DEFAULT_ONLY) } returns mockBrowserInfo
+
+        val uri = Uri.parse("http://www.google.com")
+
+        val method = RedirectUtil::class.java.getDeclaredMethod(
+            "determineResolveResult",
+            Context::class.java,
+            Uri::class.java,
+            String::class.java
+        )
+        method.isAccessible = true
+
+        val result = method.invoke(RedirectUtil, mockContext, uri, "com.example.app")
+
+        assertEquals(ResolveResultType.APPLICATION, result)
+    }
+
+    @Test
+    fun `test determineResolveResult - returns UNKNOWN when resolveActivity returns null`() {
+        val mockContext = mockk<Context>()
+        val mockPackageManager = mockk<PackageManager>()
+
+        every { mockContext.packageManager } returns mockPackageManager
+        every { mockPackageManager.resolveActivity(any<Intent>(), 0) } returns null
+        every { mockPackageManager.resolveActivity(any<Intent>(), PackageManager.MATCH_DEFAULT_ONLY) } returns null
+
+        val uri = Uri.parse("http://www.google.com")
+
+        val method = RedirectUtil::class.java.getDeclaredMethod(
+            "determineResolveResult",
+            Context::class.java,
+            Uri::class.java,
+            String::class.java
+        )
+        method.isAccessible = true
+
+        val result = method.invoke(RedirectUtil, mockContext, uri, null)
+
+        assertEquals(ResolveResultType.UNKNOWN, result)
+    }
+
+    @Test
+    fun `test determineResolveResult - returns UNKNOWN when exception occurs`() {
+        val mockContext = mockk<Context>()
+        val mockPackageManager = mockk<PackageManager>()
+
+        every { mockContext.packageManager } returns mockPackageManager
+        every { mockPackageManager.resolveActivity(any<Intent>(), 0) } throws RuntimeException("Test exception")
+
+        val uri = Uri.parse("http://www.google.com")
+
+        val method = RedirectUtil::class.java.getDeclaredMethod(
+            "determineResolveResult",
+            Context::class.java,
+            Uri::class.java,
+            String::class.java
+        )
+        method.isAccessible = true
+
+        val result = method.invoke(RedirectUtil, mockContext, uri, null)
+
+        assertEquals(ResolveResultType.UNKNOWN, result)
+    }
+
+    @Test
+    fun `test determineResolveResult - returns UNKNOWN when activityInfo is null`() {
+        val mockContext = mockk<Context>()
+        val mockPackageManager = mockk<PackageManager>()
+        val mockResolveInfo = mockk<ResolveInfo>()
+
+        mockResolveInfo.activityInfo = null
+
+        every { mockContext.packageManager } returns mockPackageManager
+        every { mockPackageManager.resolveActivity(any(), 0) } returns mockResolveInfo
+        every { mockPackageManager.resolveActivity(any(), PackageManager.MATCH_DEFAULT_ONLY) } returns null
+
+        val uri = Uri.parse("http://www.google.com")
+
+        val method = RedirectUtil::class.java.getDeclaredMethod(
+            "determineResolveResult",
+            Context::class.java,
+            Uri::class.java,
+            String::class.java
+        )
+        method.isAccessible = true
+
+        val result = method.invoke(RedirectUtil, mockContext, uri, null)
+
+        assertEquals(ResolveResultType.UNKNOWN, result)
     }
 }
