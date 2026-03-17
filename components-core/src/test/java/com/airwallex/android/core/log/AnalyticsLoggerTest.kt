@@ -16,6 +16,7 @@ import com.airwallex.android.core.extension.getAppVersion
 import com.airwallex.android.core.model.AirwallexError
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentConsentOptions
+import com.airwallex.android.core.log.AnalyticsLogger.Field
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -93,7 +94,7 @@ class AnalyticsLoggerTest {
 
         verify(exactly = 1) {
             anyConstructed<Tracker>().info(
-                "page_name", mapOf("key" to "value", "eventType" to "page_view")
+                "page_name", mapOf("key" to "value", Field.EVENT_TYPE to "page_view")
             )
         }
 
@@ -109,7 +110,7 @@ class AnalyticsLoggerTest {
         verify(exactly = 1) {
             anyConstructed<Tracker>().error(
                 "error_name",
-                mapOf("eventType" to "pa_api_request", "url" to "http://example.com")
+                mapOf(Field.EVENT_TYPE to "pa_api_request", Field.URL to "http://example.com")
             )
         }
 
@@ -121,14 +122,14 @@ class AnalyticsLoggerTest {
         verify(exactly = 1) {
             anyConstructed<Tracker>().error(
                 "error_name",
-                mapOf("code" to "code", "message" to "message")
+                mapOf(Field.CODE to "code", Field.MESSAGE to "message")
             )
         }
 
         AnalyticsLogger.logAction("action_name")
 
         verify(exactly = 1) {
-            anyConstructed<Tracker>().info("action_name", mapOf("eventType" to "action"))
+            anyConstructed<Tracker>().info("action_name", mapOf(Field.EVENT_TYPE to "action"))
         }
 
         AnalyticsLogger.logAction("action_name", additionalInfo)
@@ -136,24 +137,24 @@ class AnalyticsLoggerTest {
         verify(exactly = 1) {
             anyConstructed<Tracker>().info(
                 "action_name",
-                mapOf("eventType" to "action", "key" to "value")
+                mapOf(Field.EVENT_TYPE to "action", "key" to "value")
             )
         }
 
         AnalyticsLogger.updateAccountId("aid")
         verify(exactly = 1) {
             anyConstructed<Tracker>() setProperty "extraCommonData" value mapOf(
-                "merchantAppName" to "test_app",
-                "merchantAppVersion" to "1.0.1",
-                "accountId" to "aid",
-                "framework" to "native"
+                Field.MERCHANT_APP_NAME to "test_app",
+                Field.MERCHANT_APP_VERSION to "1.0.1",
+                Field.ACCOUNT_ID to "aid",
+                Field.FRAMEWORK to "native"
             )
         }
 
         AnalyticsLogger.logPaymentView("view_name", mapOf("key" to "value"))
         verify(exactly = 1) {
             anyConstructed<Tracker>().info(
-                "view_name", mapOf("key" to "value", "eventType" to "payment_method_view")
+                "view_name", mapOf("key" to "value", Field.EVENT_TYPE to "payment_method_view")
             )
         }
     }

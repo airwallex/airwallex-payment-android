@@ -137,6 +137,7 @@ class AirwallexRecurringWithIntentSession internal constructor(
             this.countryCode = countryCode
             this.currency = paymentIntent.currency
             this.amount = paymentIntent.amount
+
             paymentIntent.clientSecret?.apply {
                 TokenManager.updateClientSecret(this)
             }
@@ -187,12 +188,6 @@ class AirwallexRecurringWithIntentSession internal constructor(
         private var paymentMethods: List<String>? = null
         private var googlePayOptions: GooglePayOptions? = null
         private var shipping: Shipping? = null
-
-        init {
-            paymentIntent?.clientSecret?.apply {
-                TokenManager.updateClientSecret(this)
-            }
-        }
 
         fun setRequireBillingInformation(requiresBillingInformation: Boolean): Builder = apply {
             this.isBillingInformationRequired = requiresBillingInformation

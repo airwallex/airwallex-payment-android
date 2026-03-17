@@ -49,6 +49,33 @@ object AnalyticsLogger {
     }
 
     /**
+     * Constants for event field keys
+     */
+    object Field {
+        const val EVENT_TYPE = "eventType"
+        const val PAYMENT_METHOD = "paymentMethod"
+        const val PAYMENT_INTENT_ID = "paymentIntentId"
+        const val TRANSACTION_MODE = "transactionMode"
+        const val LAUNCH_TYPE = "launchType"
+        const val EXPRESS_CHECKOUT = "expressCheckout"
+        const val LAYOUT = "layout"
+        const val SHOWS_GOOGLE_PAY_AS_PRIMARY_BUTTON = "showsGooglePayAsPrimaryButton"
+        const val ACCOUNT_ID = "accountId"
+        const val MERCHANT_APP_NAME = "merchantAppName"
+        const val MERCHANT_APP_VERSION = "merchantAppVersion"
+        const val FRAMEWORK = "framework"
+        const val CODE = "code"
+        const val MESSAGE = "message"
+        const val URL = "url"
+        const val CONSENT_ID = "consentId"
+        const val TYPE = "type"
+        const val STAGE = "stage"
+        const val SKIP_READINESS_CHECK = "skipReadinessCheck"
+        const val BANK_NAME = "bankName"
+        const val SUBTYPE = "subtype"
+    }
+
+    /**
      * Constants for layout type values
      */
     object Layout {
@@ -83,7 +110,7 @@ object AnalyticsLogger {
     fun updateAccountId(accountId: String?) {
         tracker?.let {
             it.extraCommonData = it.extraCommonData.toMutableMap().apply {
-                putIfNotNull("accountId", accountId)
+                putIfNotNull(Field.ACCOUNT_ID, accountId)
             }
         }
     }
@@ -96,7 +123,7 @@ object AnalyticsLogger {
     fun logPageView(pageName: String, additionalInfo: Map<String, Any>? = null) {
         val extraInfo = (additionalInfo?.toMutableMap() ?: mutableMapOf()).apply {
             putAll(additionalSessionInfo)
-            this["eventType"] = "page_view"
+            this[Field.EVENT_TYPE] = "page_view"
         }
         tracker?.info(pageName, extraInfo)
     }
@@ -124,11 +151,11 @@ object AnalyticsLogger {
         val extraInfo = mutableMapOf<String, Any>().apply {
             exception.getAirwallexCodeOrStatusCode()
                 .takeIf { it.isNotEmpty() }
-                ?.let { this["code"] = it }
+                ?.let { this[Field.CODE] = it }
 
             exception.getAirwallexMessageOrMessage()
                 ?.takeIf { it.isNotEmpty() }
-                ?.let { this["message"] = it }
+                ?.let { this[Field.MESSAGE] = it }
 
             additionalInfo?.let { putAll(it) }
             putAll(additionalSessionInfo)
@@ -148,16 +175,16 @@ object AnalyticsLogger {
         url: String,
         exception: AirwallexException
     ) {
-        val extraInfo = mutableMapOf<String, Any>("eventType" to "pa_api_request").apply {
-            if (url.isNotEmpty()) this["url"] = url
+        val extraInfo = mutableMapOf<String, Any>(Field.EVENT_TYPE to "pa_api_request").apply {
+            if (url.isNotEmpty()) this[Field.URL] = url
 
             exception.getAirwallexCodeOrStatusCode()
                 .takeIf { it.isNotEmpty() }
-                ?.let { this["code"] = it }
+                ?.let { this[Field.CODE] = it }
 
             exception.getAirwallexMessageOrMessage()
                 ?.takeIf { it.isNotEmpty() }
-                ?.let { this["message"] = it }
+                ?.let { this[Field.MESSAGE] = it }
 
             putAll(additionalSessionInfo)
         }
@@ -173,7 +200,7 @@ object AnalyticsLogger {
     fun logAction(actionName: String, additionalInfo: Map<String, Any>? = null) {
         val extraInfo = (additionalInfo?.toMutableMap() ?: mutableMapOf()).apply {
             putAll(additionalSessionInfo)
-            this["eventType"] = "action"
+            this[Field.EVENT_TYPE] = "action"
         }
         tracker?.info(actionName, extraInfo)
     }
@@ -186,7 +213,7 @@ object AnalyticsLogger {
     fun logPaymentView(viewName: String, additionalInfo: Map<String, Any>? = null) {
         val extraInfo = (additionalInfo?.toMutableMap() ?: mutableMapOf()).apply {
             putAll(additionalSessionInfo)
-            this["eventType"] = "payment_method_view"
+            this[Field.EVENT_TYPE] = "payment_method_view"
         }
         tracker?.info(viewName, extraInfo)
     }
@@ -297,24 +324,24 @@ object AnalyticsLogger {
 
     private fun getExtraCommonData(context: Context): Map<String, Any> {
         return mutableMapOf<String, Any>().apply {
-            putIfNotNull("merchantAppName", context.packageManager.getAppName(context.packageName))
+            putIfNotNull(Field.MERCHANT_APP_NAME, context.packageManager.getAppName(context.packageName))
             putIfNotNull(
-                "merchantAppVersion",
+                Field.MERCHANT_APP_VERSION,
                 context.packageManager.getAppVersion(context.packageName)
             )
-            putIfNotNull("accountId", TokenManager.accountId)
-            put("framework", "native")
+            putIfNotNull(Field.ACCOUNT_ID, TokenManager.accountId)
+            put(Field.FRAMEWORK, "native")
         }
     }
 
     private val additionalSessionInfo: MutableMap<String, Any>
         get() = mutableMapOf<String, Any>().apply {
-            putIfNotNull("paymentIntentId", paymentIntentId)
-            putIfNotNull("transactionMode", transactionMode)
-            putIfNotNull("launchType", launchType)
-            putIfNotNull("expressCheckout", expressCheckout)
-            putIfNotNull("layout", layout)
-            putIfNotNull("showsGooglePayAsPrimaryButton", showsGooglePayAsPrimaryButton)
+            putIfNotNull(Field.PAYMENT_INTENT_ID, paymentIntentId)
+            putIfNotNull(Field.TRANSACTION_MODE, transactionMode)
+            putIfNotNull(Field.LAUNCH_TYPE, launchType)
+            putIfNotNull(Field.EXPRESS_CHECKOUT, expressCheckout)
+            putIfNotNull(Field.LAYOUT, layout)
+            putIfNotNull(Field.SHOWS_GOOGLE_PAY_AS_PRIMARY_BUTTON, showsGooglePayAsPrimaryButton)
 
         }
 

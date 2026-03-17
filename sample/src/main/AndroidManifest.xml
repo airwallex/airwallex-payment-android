@@ -131,27 +131,6 @@
 
         </activity>
 
-        <activity
-            android:name=".ui.EmbeddedElementJavaActivity"
-            android:exported="true"
-            android:launchMode="singleTask"
-            tools:ignore="LockedOrientationActivity,ExportedActivity">
-
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <!--airwallexcheckout://com.airwallex.paymentacceptance/embeddedjava-->
-                <data
-                    android:scheme="airwallexcheckout"
-                    android:host="${applicationId}"
-                    android:path="/embeddedjava" />
-            </intent-filter>
-
-        </activity>
-
     </application>
 
     <queries>

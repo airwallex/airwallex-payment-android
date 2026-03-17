@@ -25,6 +25,7 @@ import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.CardBrand
 import com.airwallex.android.core.log.AnalyticsLogger
+import com.airwallex.android.core.log.AnalyticsLogger.Field
 import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentMethodType
@@ -178,7 +179,7 @@ internal fun CardSection(
                     onScreenViewed = {
                         addPaymentMethodViewModel.trackScreenViewed(
                             PaymentMethodType.CARD.value,
-                            mapOf("subtype" to "consent")
+                            mapOf(Field.SUBTYPE to "consent")
                         )
                     },
                 )
@@ -252,7 +253,7 @@ internal fun CardSection(
                     onScreenViewed = {
                         addPaymentMethodViewModel.trackScreenViewed(
                             PaymentMethodType.CARD.value,
-                            mapOf("subtype" to "consent")
+                            mapOf(Field.SUBTYPE to "consent")
                         )
                     },
                     modifier = Modifier
