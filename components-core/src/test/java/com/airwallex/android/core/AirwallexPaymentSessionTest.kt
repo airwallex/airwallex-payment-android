@@ -281,4 +281,24 @@ class AirwallexPaymentSessionTest {
         assertEquals("Either paymentIntent or paymentIntentProvider must be provided", exception.message)
     }
 
+    @Test
+    fun `init block does not call TokenManager when PaymentIntent has null clientSecret`() {
+        val paymentIntentWithNullSecret = mockk<PaymentIntent> {
+            every { clientSecret } returns null
+            every { currency } returns "USD"
+            every { amount } returns BigDecimal(100.0)
+            every { customerId } returns null
+        }
+
+        AirwallexPaymentSession.Builder(
+            paymentIntent = paymentIntentWithNullSecret,
+            countryCode = "US"
+        )
+
+        // Should not call updateClientSecret when clientSecret is null
+        verify(exactly = 0) {
+            TokenManager.updateClientSecret(any())
+        }
+    }
+
 }

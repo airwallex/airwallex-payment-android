@@ -6,8 +6,10 @@ import com.airwallex.android.core.model.PaymentIntentFixtures
 import com.airwallex.android.core.model.Shipping
 import io.mockk.every
 import io.mockk.just
+import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.runs
+import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -148,6 +150,33 @@ class AirwallexRecurringWithIntentSessionTest {
         assertNotNull(session.paymentIntentProvider)
     }
 
+    @Test
+    fun `build throws exception when both paymentIntent and paymentIntentProvider are null`() {
+        // Use reflection to test the defensive require check in build()
+        val builder = AirwallexRecurringWithIntentSession.Builder(
+            paymentIntent = PaymentIntentFixtures.PAYMENT_INTENT,
+            customerId = "test_customer",
+            nextTriggerBy = PaymentConsent.NextTriggeredBy.CUSTOMER,
+            countryCode = "US"
+        )
+
+        // Use reflection to set both paymentIntent and paymentIntentProvider to null
+        val builderClass = builder.javaClass
+        val paymentIntentField = builderClass.getDeclaredField("paymentIntent")
+        paymentIntentField.isAccessible = true
+        paymentIntentField.set(builder, null)
+
+        val paymentIntentProviderField = builderClass.getDeclaredField("paymentIntentProvider")
+        paymentIntentProviderField.isAccessible = true
+        paymentIntentProviderField.set(builder, null)
+
+        // Now calling build() should throw IllegalArgumentException
+        val exception = kotlin.test.assertFailsWith<IllegalArgumentException> {
+            builder.build()
+        }
+        assertEquals("Either paymentIntent or paymentIntentProvider must be provided", exception.message)
+    }
+
     private class TestPaymentIntentProvider(
         override val currency: String,
         override val amount: BigDecimal
@@ -163,6 +192,27 @@ class AirwallexRecurringWithIntentSessionTest {
     ) : PaymentIntentSource {
         override suspend fun getPaymentIntent(): PaymentIntent {
             return PaymentIntentFixtures.PAYMENT_INTENT
+        }
+    }
+
+    @Test
+    fun `init block does not call TokenManager when PaymentIntent has null clientSecret`() {
+        val paymentIntentWithNullSecret = mockk<PaymentIntent> {
+            every { clientSecret } returns null
+            every { currency } returns "USD"
+            every { amount } returns BigDecimal(100.0)
+        }
+
+        AirwallexRecurringWithIntentSession.Builder(
+            paymentIntent = paymentIntentWithNullSecret,
+            customerId = "test_customer",
+            nextTriggerBy = PaymentConsent.NextTriggeredBy.CUSTOMER,
+            countryCode = "US"
+        )
+
+        // Should not call updateClientSecret when clientSecret is null
+        verify(exactly = 0) {
+            TokenManager.updateClientSecret(any())
         }
     }
 }
