@@ -1,24 +1,9 @@
-# Development Guide
-Airwallex Android SDK is a flexible tool that enables you to integrate payment methods into your Android App. It also includes a prebuilt UI that provides you the flexibility to choose to use any part of it, while replacing the rest with your own UI.
-
-This section will guide you through the process of integrating Airwallex Android SDK. We assume you are an Android developer and familiar with Android Studio and Gradle.
-
-To accept online payments with Airwallex Android SDK, please complete preparation work first and choose the integration option according to your need. 
-
-*Preparation*
-1. [Before you start](#before-you-start)
-
-*Integration options*
-1. [Airwallex Native UI integration](#airwallex-native-ui-integration) You can choose to use this SDK with our prebuilt UI page, this is **recommended usage**.
-2. [Embedded Element Integration](#embedded-element-integration) Embed our payment UI components directly into your own activity or view for seamless integration.
-3. [Low-level API Integration](#low-level-api-integration) You can build your own custom UI and use our low-level APIs.
-
-Our demo application is available open source on [Github](https://github.com/airwallex/airwallex-payment-android) and it will help you to better understand how to integrate Airwallex Android SDK in your Android App.
-
 # Contents
 * [Overview](#overview)
-    * [Airwallex API](#airwallex-api)
-    * [Airwallex Native UI](#airwallex-native-ui)
+    * [Supported Payment Methods](#supported-payment-methods)
+    * [Integration Options](#integration-options)
+    * [Platform Requirements](#platform-requirements)
+    * [Native UI Components](#native-ui-components)
 * [Before you start](#before-you-start)
 * [Airwallex Native UI integration](#airwallex-native-ui-integration)
     * [Requirements](#requirements)
@@ -52,24 +37,44 @@ Our demo application is available open source on [Github](https://github.com/air
 
 # Overview
 
-## Airwallex API
+The Airwallex Android SDK provides a comprehensive toolkit for integrating payment functionality into your Android application. It offers prebuilt UI components for rapid integration, embeddable elements for a customized look, and low-level APIs for full control over the payment experience.
 
-Airwallex Android SDK is a flexible tool that enables you to integrate payment methods into your Android App. 
+This guide covers SDK setup, configuration, and integration. It assumes familiarity with Android development, Android Studio, and Gradle.
 
-Note: The Airwallex Android SDK is compatible with apps supporting Android API level 21 and above and SDK file size is 3188.04KB approximately
+## Supported Payment Methods
 
-Payment methods supported: 
-- Cards: [`Visa, Mastercard`](#cards). If you want to integrate Airwallex API without our Native UI for card payments, then your website is required to be PCI-DSS compliant. 
-- E-Wallets: [`Alipay`](#alipay), [`AlipayHK`](#alipayhk), [`DANA`](#dana), [`GCash`](#gcash), [`Kakao Pay`](#kakao-pay), [`Touch ‘n Go`](#touch-n-go), [`WeChat Pay`](#wechat-pay)
+| Category | Methods | Notes |
+|----------|---------|-------|
+| Cards | [`Visa, Mastercard, UnionPay, Discover, JCB, Diners Club`](#cards) | PCI-DSS compliance is required when integrating without Native UI |
+| E-Wallets | [`Alipay`](#alipay), [`AlipayHK`](#alipayhk), [`DANA`](#dana), [`GCash`](#gcash), [`Kakao Pay`](#kakao-pay), [`Touch ‘n Go`](#touch-n-go), [`WeChat Pay`](#wechat-pay) | |
 
-## Airwallex Native UI
-Airwallex Native UI is a prebuilt UI which enables you to customize the UI color and fit your App theme. You can use these components separately, or pack our prebuilt UI into one flow to present your payment.
-|#|Native UI|Picture|
-|---|---|----
-|1|[`Edit shipping info page`](#edit-shipping-info)<br/>This page contains a detailed shipping form for shopper to fill in, after the shopper successfully saved the form, the shipping info object will be returned|<p align="center"><img src="https://github.com/user-attachments/assets/4c3c2344-3dec-4379-980e-28ee948c3f28" width="90%" alt="PaymentShippingActivity" hspace="10"></p>
-|2|[`Select payment method page`](#selecting-payment-method-page)<br/>This page will display all the available payment methods to shopper, the shopper can choose any one of them to pay|<p align="center"><img src="https://github.com/user-attachments/assets/71f526f5-ce3e-4615-a0ec-a75689bd9eb5" width="90%" alt="PaymentMethodsActivity" hspace="10"></p>
-|3|[`Input card information module`](#input-card-information-module)<br/>This module contains card number, expiration date and cvv.|<p align="center"><img src="https://github.com/user-attachments/assets/010be7e0-2395-4d10-bb18-fca7df9712d6" width="90%" alt="AddPaymentMethodActivity" hspace="10"></p>
-|4|[`Confirm payment intent page`](#confirm-payment-intent-page)<br/>You need to pass in a PaymentIntent object and a PaymentMethod object. It will display the current selected payment amount, encapsulate the specific operation of payment, and return the PaymentIntent or Exception through the callback method|<p align="center"><img src="assets/payment_detail.jpg" width="90%" alt="PaymentCheckoutActivity" hspace="10"></p>
+## Integration Options
+
+Complete the [prerequisites](#before-you-start), then choose the integration approach that best fits your needs:
+
+| Option | Description |
+|--------|-------------|
+| [Native UI Integration](#airwallex-native-ui-integration) | Prebuilt UI components with customizable theming. **Recommended for most use cases.** |
+| [Embedded Element Integration](#embedded-element-integration) | Embed individual payment UI components directly into your own layouts. |
+| [Low-level API Integration](#low-level-api-integration) | Build a fully custom UI on top of the Airwallex payment APIs. |
+
+> A fully functional demo application is available on [GitHub](https://github.com/airwallex/airwallex-payment-android).
+
+## Platform Requirements
+
+- Android API level 21 (Lollipop) and above
+- Approximate SDK size: ~3.1 MB
+
+## Native UI Components
+
+The Native UI provides prebuilt, themeable screens that can be used individually or composed into a complete payment flow.
+
+| # | Component | Preview |
+|---|-----------|---------|
+| 1 | [`Edit shipping info page`](#edit-shipping-info)<br/>Collects shipping details from the shopper. Returns a shipping info object upon successful submission. | <p align="center"><img src="https://github.com/user-attachments/assets/4c3c2344-3dec-4379-980e-28ee948c3f28" width="90%" alt="PaymentShippingActivity" hspace="10"></p> |
+| 2 | [`Select payment method page`](#selecting-payment-method-page)<br/>Displays all available payment methods for the shopper to choose from. | <p align="center"><img src="https://github.com/user-attachments/assets/71f526f5-ce3e-4615-a0ec-a75689bd9eb5" width="90%" alt="PaymentMethodsActivity" hspace="10"></p> |
+| 3 | [`Input card information module`](#input-card-information-module)<br/>Captures card number, expiration date, and CVV. | <p align="center"><img src="https://github.com/user-attachments/assets/010be7e0-2395-4d10-bb18-fca7df9712d6" width="90%" alt="AddPaymentMethodActivity" hspace="10"></p> |
+| 4 | [`Confirm payment intent page`](#confirm-payment-intent-page)<br/>Accepts a `PaymentIntent` and `PaymentMethod`, displays the payment summary, and returns the result or error via callback. | <p align="center"><img src="assets/payment_detail.jpg" width="90%" alt="PaymentCheckoutActivity" hspace="10"></p> |
 
 # Before you start
 We offer two methods for integrating Airwallex services. The first method provides pre-built user interfaces that you can directly invoke in your project. The second method provides low-level APIs, which require you to build your own user interfaces. You can choose the integration method based on your needs.
