@@ -71,6 +71,7 @@ fun CardCvcTextField(
                 text = textFieldValue.text.take(cvcLength),
                 selection = TextRange(cvcLength)
             )
+            onTextChanged(textFieldValue) // notify parent of trimmed value
         }
     }
 

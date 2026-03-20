@@ -150,7 +150,7 @@ class SchemaPaymentViewModel(
         additionalInfo: Map<String, String>,
         typeInfo: PaymentMethodTypeInfo
     ) = viewModelScope.launch {
-        AirwallexLogger.info("SchemaPaymentViewModel checkoutWithSchema, type = \\${paymentMethod.type}")
+        AirwallexLogger.info("SchemaPaymentViewModel checkoutWithSchema, type = ${paymentMethod.type}")
         val status =
             checkout(paymentMethod, additionalInfo, typeInfo.toPaymentFlow(transactionMode))
         _paymentResult.emit(ConsumableEvent(status))
@@ -159,7 +159,7 @@ class SchemaPaymentViewModel(
     fun checkoutWithSchema(
         paymentMethodType: AvailablePaymentMethodType
     ) = viewModelScope.launch {
-        AirwallexLogger.info("SchemaPaymentViewModel checkoutWithSchema, type = \\${paymentMethodType.name}")
+        AirwallexLogger.info("SchemaPaymentViewModel checkoutWithSchema, type = ${paymentMethodType.name}")
         val paymentMethod = PaymentMethod.Builder().setType(paymentMethodType.name).build()
         AirwallexLogger.info("SchemaPaymentViewModel get more payment Info fields on one-off flow.")
         val status = checkout(paymentMethod)
