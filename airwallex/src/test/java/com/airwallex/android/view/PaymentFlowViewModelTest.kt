@@ -16,7 +16,6 @@ import com.airwallex.android.core.model.PaymentIntentStatus
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.view.Constants.createPaymentMethod
 import com.airwallex.android.view.PaymentFlowViewModel.PaymentFlowType
-import com.airwallex.android.view.util.ConsumableEvent
 import io.mockk.Runs
 import io.mockk.clearMocks
 import io.mockk.coEvery
@@ -31,6 +30,7 @@ import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -80,12 +80,12 @@ class PaymentFlowViewModelTest {
     // ========== Helper Methods ==========
 
     private fun <T> TestScope.collectSharedFlow(
-        flow: SharedFlow<ConsumableEvent<T>>,
+        flow: Flow<T>,
         collector: MutableList<T> = mutableListOf()
     ): Pair<MutableList<T>, Job> {
         val job = launch(UnconfinedTestDispatcher(testScheduler)) {
             flow.collect { event ->
-                event.peekContent()?.let { collector.add(it) }
+                collector.add(event)
             }
         }
         return Pair(collector, job)

@@ -250,7 +250,7 @@ class SchemaPaymentViewModelTest {
         val results = mutableListOf<AirwallexPaymentStatus>()
         val job = launch(UnconfinedTestDispatcher(testScheduler)) {
             testViewModel.paymentResult.collect { event ->
-                event.peekContent()?.let { results.add(it) }
+                results.add(event)
             }
         }
 
@@ -285,7 +285,7 @@ class SchemaPaymentViewModelTest {
         val results = mutableListOf<AirwallexPaymentStatus>()
         val job = launch(UnconfinedTestDispatcher(testScheduler)) {
             testViewModel.paymentResult.collect { event ->
-                event.peekContent()?.let { results.add(it) }
+                results.add(event)
             }
         }
 
@@ -320,7 +320,7 @@ class SchemaPaymentViewModelTest {
         val results = mutableListOf<AirwallexPaymentStatus>()
         val job = launch(UnconfinedTestDispatcher(testScheduler)) {
             testViewModel.paymentResult.collect { event ->
-                event.peekContent()?.let { results.add(it) }
+                results.add(event)
             }
         }
 
@@ -355,7 +355,7 @@ class SchemaPaymentViewModelTest {
         val results = mutableListOf<AirwallexPaymentStatus>()
         val job = launch(UnconfinedTestDispatcher(testScheduler)) {
             testViewModel.paymentResult.collect { event ->
-                event.peekContent()?.let { results.add(it) }
+                results.add(event)
             }
         }
 
@@ -390,7 +390,7 @@ class SchemaPaymentViewModelTest {
         val results = mutableListOf<AirwallexPaymentStatus>()
         val job = launch(UnconfinedTestDispatcher(testScheduler)) {
             testViewModel.paymentResult.collect { event ->
-                event.peekContent()?.let { results.add(it) }
+                results.add(event)
             }
         }
 
