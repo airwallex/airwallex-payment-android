@@ -14,4 +14,3 @@ class ConsumableEventTest {
         assertEquals(true, event.peekContent())
     }
 }
-
