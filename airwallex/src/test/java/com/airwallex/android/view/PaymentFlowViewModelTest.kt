@@ -16,6 +16,7 @@ import com.airwallex.android.core.model.PaymentIntentStatus
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.view.Constants.createPaymentMethod
 import com.airwallex.android.view.PaymentFlowViewModel.PaymentFlowType
+import com.airwallex.android.view.util.ConsumableEvent
 import io.mockk.Runs
 import io.mockk.clearMocks
 import io.mockk.coEvery
@@ -79,6 +80,18 @@ class PaymentFlowViewModelTest {
     // ========== Helper Methods ==========
 
     private fun <T> TestScope.collectSharedFlow(
+        flow: SharedFlow<ConsumableEvent<T>>,
+        collector: MutableList<T> = mutableListOf()
+    ): Pair<MutableList<T>, Job> {
+        val job = launch(UnconfinedTestDispatcher(testScheduler)) {
+            flow.collect { event ->
+                event.peekContent()?.let { collector.add(it) }
+            }
+        }
+        return Pair(collector, job)
+    }
+
+    private fun <T> TestScope.collectRawSharedFlow(
         flow: SharedFlow<T>,
         collector: MutableList<T> = mutableListOf()
     ): Pair<MutableList<T>, Job> {
@@ -200,7 +213,7 @@ class PaymentFlowViewModelTest {
         }
 
         val viewModel = createViewModel(session)
-        val (results, job) = collectSharedFlow(viewModel.deleteConsentResult)
+        val (results, job) = collectRawSharedFlow(viewModel.deleteConsentResult)
 
         viewModel.deletePaymentConsent(paymentConsent)
         advanceUntilIdle()
@@ -230,7 +243,7 @@ class PaymentFlowViewModelTest {
         } returns null
 
         val viewModel = createViewModel(session)
-        val (results, job) = collectSharedFlow(viewModel.deleteConsentResult)
+        val (results, job) = collectRawSharedFlow(viewModel.deleteConsentResult)
 
         viewModel.deletePaymentConsent(paymentConsent)
         advanceUntilIdle()
@@ -265,7 +278,7 @@ class PaymentFlowViewModelTest {
         }
 
         val viewModel = createViewModel(session)
-        val (results, job) = collectSharedFlow(viewModel.deleteConsentResult)
+        val (results, job) = collectRawSharedFlow(viewModel.deleteConsentResult)
 
         viewModel.deletePaymentConsent(paymentConsent)
         advanceUntilIdle()

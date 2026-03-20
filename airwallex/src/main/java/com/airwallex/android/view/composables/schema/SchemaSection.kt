@@ -92,9 +92,11 @@ internal fun SchemaSection(
     DisposableEffect(airwallex.activity) {
         val job = airwallex.activity.lifecycleScope.launch {
             airwallex.activity.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                schemaPaymentViewModel.paymentResult.collect { status ->
-                    paymentFlowListener.onLoadingStateChanged(false, airwallex.activity)
-                    paymentFlowListener.onPaymentResult(status)
+                schemaPaymentViewModel.paymentResult.collect { event ->
+                    event.getContentIfNotHandled()?.let { status ->
+                        paymentFlowListener.onLoadingStateChanged(false, airwallex.activity)
+                        paymentFlowListener.onPaymentResult(status)
+                    }
                 }
             }
         }
