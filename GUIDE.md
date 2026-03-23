@@ -2,6 +2,7 @@
 * [Overview](#overview)
     * [Supported Payment Methods](#supported-payment-methods)
     * [Integration Options](#integration-options)
+    * [Demo](#demo)
     * [Platform Requirements](#platform-requirements)
 * [Before you start](#before-you-start)
 * [Hosted Payment Page Integration](#hosted-payment-page)
@@ -30,8 +31,6 @@
     * [Retrieve the list of saved cards](#retrieve-the-list-of-saved-cards)
     * [Launch payment via Google Pay](#launch-payment-via-google-pay)
     * [Pay by redirection](#pay-by-redirection)
-* [SDK Example](#sdk-example)
-* [Test Card Numbers](#test-card-numbers)
 * [Contributing](#contributing)
 
 # Overview
@@ -58,7 +57,33 @@ Choose the integration option that best suits your needs:
 | [Embedded Element Integration](#embedded-element-integration) | Embed Airwallex's `PaymentElement` directly into your own activity or view using Jetpack Compose. You retain full control over the host layout and navigation while leveraging the SDK's payment UI components. | <img src="assets/embedded_element.png" width="200" alt="Embedded Element - Multiple payment methods"> | <img src="assets/embedded_element_2.png" width="200" alt="Embedded Element - Single payment method"> |
 | [Low-level API Integration](#low-level-api-integration) | Build a fully custom payment UI using the SDK's core APIs. Gives you direct access to payment method retrieval, card tokenization, payment confirmation, and consent management. Requires PCI-DSS compliance for card payments. | | |
 
-> A fully functional demo application is available on [GitHub](https://github.com/airwallex/airwallex-payment-android).
+## Demo
+
+A fully functional demo application is available in the [sample](sample) directory. It demonstrates integrating with the Airwallex Android SDK using its prebuilt UI components to manage the checkout flow, including specifying a shipping address and selecting a payment method.
+
+<img src="assets/demo.gif" width="300" alt="Demo">
+
+To run the demo app:
+
+1. Clone the repository:
+`git clone git@github.com:airwallex/airwallex-payment-android.git`
+
+2. Open Android Studio and import the project by selecting the `build.gradle` file from the cloned repository.
+
+3. (Optional) To test with your own API keys, go to [Airwallex Account settings > API keys](https://www.airwallex.com/app/settings/api), then copy `Client ID` and `API key` to [`Settings.kt`](sample/src/main/java/com/airwallex/paymentacceptance/Settings.kt):
+```
+    private const val API_KEY = replace_with_api_key
+    private const val CLIENT_ID = replace_with_client_id
+```
+
+4. (Optional) To enable WeChat Pay, register your app on [WeChat Pay](https://pay.weixin.qq.com/index.php/public/wechatpay), then set your App ID in [`Settings.kt`](sample/src/main/java/com/airwallex/paymentacceptance/Settings.kt):
+```
+    private const val WECHAT_APP_ID = "put your WeChat app id here"
+```
+
+5. Run the `sample` project.
+
+For testing, you can use the [test card numbers](https://www.airwallex.com/docs/payments/test-and-go-live/test-card-numbers) provided by Airwallex.
 
 ## Platform Requirements
 
@@ -1071,33 +1096,6 @@ airwallex.startRedirectPay(
     }
 )
 ```
-
-## SDK Example
-This sample app demonstrates integrating with the Airwallex Android SDK using its prebuilt UI components to manage the checkout flow, including specifying a shipping address and selecting a Payment Method.
-
-To run the example project, you should follow these steps.
-
-1. Run the following script to clone the repository to your local machine
-`git clone git@github.com:airwallex/airwallex-payment-android.git`
-
-2. Open Android Studio and import the project by selecting the `build.gradle` file from the cloned repository
-
-3. Go to [Airwallex Account settings > API keys](https://www.airwallex.com/app/settings/api), then copy `Client ID` and` API key` to [`Settings.kt`](https://github.com/airwallex/airwallex-payment-android/blob/master/sample/src/main/java/com/airwallex/paymentacceptance/Settings.kt)
-```
-    private const val BASE_URL = replace_with_base_url
-    private const val API_KEY = replace_with_api_key
-    private const val CLIENT_ID = replace_with_client_id
-```
-
-4. Register app on [WeChat Pay](https://pay.weixin.qq.com/index.php/public/wechatpay), then copy `App ID` to [`Settings.kt`](https://github.com/airwallex/airwallex-payment-android/blob/master/sample/src/main/java/com/airwallex/paymentacceptance/Settings.kt)
-```
-    private const val WECHAT_APP_ID = "put your WeChat app id here"
-```
-
-5. Run the `sample` project
-
-## Test Card Numbers
-https://www.airwallex.com/docs/payments/test-and-go-live/test-card-numbers
 
 ## Contributing
 We welcome contributions of any kind including new features, bug fixes, and documentation 
