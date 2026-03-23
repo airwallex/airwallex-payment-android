@@ -3,9 +3,8 @@
     * [Supported Payment Methods](#supported-payment-methods)
     * [Integration Options](#integration-options)
     * [Platform Requirements](#platform-requirements)
-    * [Native UI Components](#native-ui-components)
 * [Before you start](#before-you-start)
-* [Airwallex Native UI integration](#airwallex-native-ui-integration)
+* [Hosted Payment Page Integration](#hosted-payment-page)
     * [Requirements](#requirements)
     * [Installation](#installation)
     * [SDK Configuration](#sdk-configuration)
@@ -45,18 +44,19 @@ This guide covers SDK setup, configuration, and integration. It assumes familiar
 
 | Category | Methods | Notes |
 |----------|---------|-------|
-| Cards | [`Visa, Mastercard, UnionPay, Discover, JCB, Diners Club`](#cards) | PCI-DSS compliance is required when integrating without Native UI |
-| E-Wallets | [`Alipay`](#alipay), [`AlipayHK`](#alipayhk), [`DANA`](#dana), [`GCash`](#gcash), [`Kakao Pay`](#kakao-pay), [`Touch ‘n Go`](#touch-n-go), [`WeChat Pay`](#wechat-pay) | |
+| Cards | [`Visa, Mastercard, UnionPay, Discover, JCB, Diners Club`](#cards) | PCI-DSS compliance is required when using Low-level API Integration |
+| Google Pay | [`Google Pay`](#google-pay-integration) | |
+| E-Wallets | [`Alipay`](#alipay), [`AlipayHK`](#alipayhk), [`DANA`](#dana), [`GCash`](#gcash), [`Kakao Pay`](#kakao-pay), [`Touch ‘n Go`](#touch-n-go), [`WeChat Pay`](#wechat-pay), and [more](https://www.airwallex.com/docs/payments/payment-methods/payment-methods-overview) | |
 
 ## Integration Options
 
-Complete the [prerequisites](#before-you-start), then choose the integration approach that best fits your needs:
+Choose the integration option that best suits your needs:
 
-| Option | Description |
-|--------|-------------|
-| [Native UI Integration](#airwallex-native-ui-integration) | Prebuilt UI components with customizable theming. **Recommended for most use cases.** |
-| [Embedded Element Integration](#embedded-element-integration) | Embed individual payment UI components directly into your own layouts. |
-| [Low-level API Integration](#low-level-api-integration) | Build a fully custom UI on top of the Airwallex payment APIs. |
+| Option | Description | Multiple payment methods | Single payment method |
+|--------|-------------|--------------------------|------------------------|
+| [Hosted Payment Page Integration](#hosted-payment-page-integration) | Launch a complete, SDK-managed payment flow with prebuilt screens for payment method selection, card input, and checkout. Supports customizable theming and dark mode. **Recommended for most use cases.** | <img src="assets/hosted_payment_page.png" width="200" alt="Hosted Payment Page - Multiple payment methods"> | <img src="assets/hosted_payment_page_2.png" width="200" alt="Hosted Payment Page - Single payment method"> |
+| [Embedded Element Integration](#embedded-element-integration) | Embed Airwallex's `PaymentElement` directly into your own activity or view using Jetpack Compose. You retain full control over the host layout and navigation while leveraging the SDK's payment UI components. | <img src="assets/embedded_element.png" width="200" alt="Embedded Element - Multiple payment methods"> | <img src="assets/embedded_element_2.png" width="200" alt="Embedded Element - Single payment method"> |
+| [Low-level API Integration](#low-level-api-integration) | Build a fully custom payment UI using the SDK's core APIs. Gives you direct access to payment method retrieval, card tokenization, payment confirmation, and consent management. Requires PCI-DSS compliance for card payments. | | |
 
 > A fully functional demo application is available on [GitHub](https://github.com/airwallex/airwallex-payment-android).
 
@@ -65,22 +65,11 @@ Complete the [prerequisites](#before-you-start), then choose the integration app
 - Android API level 21 (Lollipop) and above
 - Approximate SDK size: ~3.1 MB
 
-## Native UI Components
-
-The Native UI provides prebuilt, themeable screens that can be used individually or composed into a complete payment flow.
-
-| # | Component | Preview |
-|---|-----------|---------|
-| 1 | [`Edit shipping info page`](#edit-shipping-info)<br/>Collects shipping details from the shopper. Returns a shipping info object upon successful submission. | <p align="center"><img src="https://github.com/user-attachments/assets/4c3c2344-3dec-4379-980e-28ee948c3f28" width="90%" alt="PaymentShippingActivity" hspace="10"></p> |
-| 2 | [`Select payment method page`](#selecting-payment-method-page)<br/>Displays all available payment methods for the shopper to choose from. | <p align="center"><img src="https://github.com/user-attachments/assets/71f526f5-ce3e-4615-a0ec-a75689bd9eb5" width="90%" alt="PaymentMethodsActivity" hspace="10"></p> |
-| 3 | [`Input card information module`](#input-card-information-module)<br/>Captures card number, expiration date, and CVV. | <p align="center"><img src="https://github.com/user-attachments/assets/010be7e0-2395-4d10-bb18-fca7df9712d6" width="90%" alt="AddPaymentMethodActivity" hspace="10"></p> |
-| 4 | [`Confirm payment intent page`](#confirm-payment-intent-page)<br/>Accepts a `PaymentIntent` and `PaymentMethod`, displays the payment summary, and returns the result or error via callback. | <p align="center"><img src="assets/payment_detail.jpg" width="90%" alt="PaymentCheckoutActivity" hspace="10"></p> |
-
 # Before you start
 We offer two methods for integrating Airwallex services. The first method provides pre-built user interfaces that you can directly invoke in your project. The second method provides low-level APIs, which require you to build your own user interfaces. You can choose the integration method based on your needs.
 
-# Airwallex Native UI integration
-The Airwallex Android SDK provides native UI components to simplify payment integration in your Android application.
+# Hosted Payment Page Integration
+The Airwallex Android SDK provides prebuilt UI components to simplify payment integration in your Android application.
 
 ## Requirements
 - Android API level 21 and above
@@ -138,7 +127,7 @@ AirwallexStarter.initialize(
 
 ## Customization
 
-You can customize the appearance of the Airwallex SDK UI including theme color and dark mode preferences. This applies to both Native UI integration and Embedded Element integration.
+You can customize the appearance of the Airwallex SDK UI including theme color and dark mode preferences. This applies to both Hosted Payment Page Integration and Embedded Element integration.
 
 ### Theme Color and Dark Mode
 
@@ -564,7 +553,7 @@ The Airwallex SDK provides `PaymentElement` - a flexible component that allows y
 
 ### <a name="embedded-overview"></a>Overview
 
-Unlike Native UI integration where the SDK launches its own activities (`PaymentMethodsActivity`, `AddPaymentActivity`), Embedded Element integration lets you:
+Unlike Hosted Payment Page Integration where the SDK launches its own activities (`PaymentMethodsActivity`, `AddPaymentActivity`), Embedded Element integration lets you:
 - Embed payment UI in your own activity/view
 - Control the surrounding UI and layout
 - Customize the container styling
@@ -579,7 +568,7 @@ Both integration methods support the same customization options via `PaymentAppe
 
 ### <a name="embedded-installation"></a>Installation
 
-Add the same dependencies as Native UI integration:
+Add the same dependencies as Hosted Payment Page Integration:
 
 ```groovy
 dependencies {
@@ -594,7 +583,7 @@ dependencies {
 }
 ```
 
-Configure the SDK in your Application class (same as Native UI integration - see [SDK Configuration](#sdk-configuration)).
+Configure the SDK in your Application class (same as Hosted Payment Page Integration - see [SDK Configuration](#sdk-configuration)).
 
 ### <a name="create-paymentelement"></a>Create PaymentElement
 
@@ -886,9 +875,9 @@ PaymentElement.create(
 
 **Note:** While Java integration is fully supported, we recommend using Kotlin for the best development experience with Embedded Elements.
 
-**Key Differences from Native UI Integration:**
+**Key Differences from Hosted Payment Page Integration:**
 
-| Feature | Native UI Integration | Embedded Element Integration |
+| Feature | Hosted Payment Page Integration | Embedded Element Integration |
 |---------|----------------------|------------------------------|
 | Entry Point | `AirwallexStarter.presentPaymentFlow()` | `PaymentElement.create()` |
 | Activity Ownership | SDK owns the activity | You own the activity |
