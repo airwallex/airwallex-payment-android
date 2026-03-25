@@ -310,9 +310,9 @@ private fun observeState(
 ) {
     airwallex.activity.lifecycleScope.launch {
         airwallex.activity.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            viewModel.paymentResult.collect { event ->
+            viewModel.paymentResult.collect { result ->
                 paymentFlowListener.onLoadingStateChanged(false, airwallex.activity)
-                paymentFlowListener.onPaymentResult(event.status)
+                paymentFlowListener.onPaymentResult(result.status)
             }
         }
     }
