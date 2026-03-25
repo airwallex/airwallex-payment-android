@@ -2,9 +2,8 @@ name: Push release to Maven
 
 on:
   workflow_dispatch:
-  push:
-    tags:
-      - '*'
+  release:
+    types: [published]
 
 jobs:
   maven:
