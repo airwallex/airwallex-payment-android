@@ -8,7 +8,9 @@ import androidx.fragment.app.Fragment
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.PaymentMethodsLayoutType
 import com.airwallex.android.core.exception.AirwallexException
-import com.airwallex.android.core.model.*
+import com.airwallex.android.core.model.ObjectBuilder
+import com.airwallex.android.core.model.PaymentMethod
+import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.ui.AirwallexActivityLaunch
 import com.airwallex.android.ui.extension.getExtraResult
 import com.airwallex.android.view.PaymentMethodsActivityLaunch.Args
@@ -33,14 +35,20 @@ class PaymentMethodsActivityLaunch : AirwallexActivityLaunch<PaymentMethodsActiv
     data class Args internal constructor(
         val session: AirwallexSession,
         val layoutType: PaymentMethodsLayoutType,
+        val showsGooglePayAsPrimaryButton: Boolean = true,
     ) : AirwallexActivityLaunch.Args {
 
         class Builder : ObjectBuilder<Args> {
             private lateinit var session: AirwallexSession
             private lateinit var layoutType: PaymentMethodsLayoutType
+            private var showsGooglePayAsPrimaryButton: Boolean = true
 
             fun setAirwallexSession(session: AirwallexSession): Builder = apply {
                 this.session = session
+            }
+
+            fun setShowsGooglePayAsPrimaryButton(showsGooglePayAsPrimaryButton: Boolean): Builder = apply {
+                this.showsGooglePayAsPrimaryButton = showsGooglePayAsPrimaryButton
             }
 
             fun setLayoutType(layoutType: PaymentMethodsLayoutType): Builder = apply {
@@ -51,6 +59,7 @@ class PaymentMethodsActivityLaunch : AirwallexActivityLaunch<PaymentMethodsActiv
                 return Args(
                     session = session,
                     layoutType = layoutType,
+                    showsGooglePayAsPrimaryButton = showsGooglePayAsPrimaryButton,
                 )
             }
         }

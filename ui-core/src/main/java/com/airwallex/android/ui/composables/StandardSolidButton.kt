@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -19,9 +18,9 @@ fun StandardSolidButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
     text: String,
-    containerColor: Color = MaterialTheme.colorScheme.primary,
+    containerColor: Color = AirwallexColor.theme,
     contentColor: Color = Color.Unspecified,
-    textColor: Color = MaterialTheme.colorScheme.primaryContainer,
+    textColor: Color = AirwallexColor.textInverse,
     typography: AirwallexTypography = AirwallexTypography.Headline100,
     buttonHeight: Dp = 52.dp,
     buttonWidth: Modifier.() -> Modifier = { this.fillMaxWidth() },

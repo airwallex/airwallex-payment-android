@@ -5,13 +5,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Parcel
 import androidx.fragment.app.Fragment
-import com.airwallex.android.view.AddPaymentMethodActivityLaunch.Args
 import com.airwallex.android.core.AirwallexSession
+import com.airwallex.android.core.AirwallexSupportedCard
 import com.airwallex.android.core.exception.AirwallexException
-import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.ObjectBuilder
 import com.airwallex.android.ui.AirwallexActivityLaunch
 import com.airwallex.android.ui.extension.getExtraResult
+import com.airwallex.android.view.AddPaymentMethodActivityLaunch.Args
 import kotlinx.parcelize.Parceler
 import kotlinx.parcelize.Parcelize
 
@@ -33,21 +33,21 @@ internal class AddPaymentMethodActivityLaunch :
     @Parcelize
     data class Args internal constructor(
         val session: AirwallexSession,
-        val supportedCardSchemes: List<CardScheme>,
+        val supportedCardBrands: List<AirwallexSupportedCard>,
         val isSinglePaymentMethod: Boolean
     ) : AirwallexActivityLaunch.Args {
 
         class Builder : ObjectBuilder<Args> {
             private lateinit var session: AirwallexSession
-            private lateinit var supportedCardSchemes: List<CardScheme>
+            private lateinit var supportedCardBrands: List<AirwallexSupportedCard>
             private var isSinglePaymentMethod: Boolean = false
 
             fun setAirwallexSession(session: AirwallexSession): Builder = apply {
                 this.session = session
             }
 
-            fun setSupportedCardSchemes(supportedCardSchemes: List<CardScheme>): Builder = apply {
-                this.supportedCardSchemes = supportedCardSchemes
+            fun setSupportedCardBrands(supportedCardBrands: List<AirwallexSupportedCard>): Builder = apply {
+                this.supportedCardBrands = supportedCardBrands
             }
 
             fun setSinglePaymentMethod(isSinglePaymentMethod: Boolean): Builder = apply {
@@ -57,7 +57,7 @@ internal class AddPaymentMethodActivityLaunch :
             override fun build(): Args {
                 return Args(
                     session = session,
-                    supportedCardSchemes = supportedCardSchemes,
+                    supportedCardBrands = supportedCardBrands,
                     isSinglePaymentMethod = isSinglePaymentMethod
                 )
             }

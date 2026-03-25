@@ -2,6 +2,8 @@ package com.airwallex.android.core.model
 
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
 
 class PhysicalProductTest {
 
@@ -51,5 +53,34 @@ class PhysicalProductTest {
             ),
             paramMap
         )
+    }
+
+    @Test
+    fun `test toParamMap with all null fields`() {
+        val product = PhysicalProduct.Builder().build()
+        val paramMap = product.toParamMap()
+
+        assertEquals(emptyMap(), paramMap)
+        assertNull(product.type)
+        assertNull(product.code)
+        assertNull(product.name)
+        assertNull(product.sku)
+        assertNull(product.quantity)
+        assertNull(product.unitPrice)
+        assertNull(product.desc)
+        assertNull(product.url)
+    }
+
+    @Test
+    fun `test toParamMap with only code set`() {
+        val product = PhysicalProduct.Builder()
+            .setCode("ABC123")
+            .build()
+
+        val paramMap = product.toParamMap()
+
+        assertEquals(mapOf("code" to "ABC123"), paramMap)
+        assertFalse(paramMap.containsKey("type"))
+        assertFalse(paramMap.containsKey("name"))
     }
 }

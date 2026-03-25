@@ -8,22 +8,23 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.autofill.ContentType
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentType
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
-import androidx.compose.ui.semantics.contentType
-import androidx.compose.ui.autofill.ContentType
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
@@ -50,32 +51,43 @@ fun CardCvcTextField(
     errorMessage: String? = null,
     shape: Shape = OutlinedTextFieldDefaults.shape,
 ) {
+    val cvcLength = remember(cardBrand) {
+        when (cardBrand) {
+            CardBrand.Amex -> AMEX_CVV_LENGTH
+            else -> DEFAULT_CVV_LENGTH
+        }
+    }
+
     var showClearButton by remember { mutableStateOf(false) }
     var textFieldValue by remember(initialValue) {
         mutableStateOf(TextFieldValue(text = initialValue, selection = TextRange(initialValue.length)))
     }
     var localFocusState by remember { mutableStateOf<FocusState>(FocusState.Initial) }
 
+    // Trim text when cardBrand changes and length exceeds new limit
+    LaunchedEffect(cardBrand) {
+        if (textFieldValue.text.length > cvcLength) {
+            textFieldValue = textFieldValue.copy(
+                text = textFieldValue.text.take(cvcLength),
+                selection = TextRange(cvcLength)
+            )
+            onTextChanged(textFieldValue) // notify parent of trimmed value
+        }
+    }
+
     StandardTextField(
         hint = stringResource(R.string.airwallex_cvc_hint),
         text = textFieldValue,
         onTextChanged = { newText ->
-            val cvcLength = when (cardBrand) {
-                CardBrand.Amex -> AMEX_CVV_LENGTH
-                else -> DEFAULT_CVV_LENGTH
-            }
-            val newTextLength = newText.text.length
-            val newCursorPosition = if (newTextLength > cvcLength) {
-                cvcLength
-            } else {
-                newTextLength
-            }
+            val filteredText = newText.text.take(cvcLength)
+            val newCursorPosition = filteredText.length.coerceAtMost(cvcLength)
+
             textFieldValue = TextFieldValue(
-                text = newText.text.take(cvcLength),
+                text = filteredText,
                 selection = TextRange(newCursorPosition),
             )
             showClearButton = textFieldValue.text.isNotEmpty()
-            onTextChanged(newText)
+            onTextChanged(textFieldValue)
             if (textFieldValue.text.length == cvcLength) {
                 onComplete(textFieldValue.text)
                 showClearButton = false

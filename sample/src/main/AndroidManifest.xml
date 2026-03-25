@@ -110,6 +110,27 @@
             android:name=".ui.SettingActivity"
             tools:ignore="LockedOrientationActivity" />
 
+        <activity
+            android:name=".ui.EmbeddedElementActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            tools:ignore="LockedOrientationActivity,ExportedActivity">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!--airwallexcheckout://com.airwallex.paymentacceptance/embedded-->
+                <data
+                    android:scheme="airwallexcheckout"
+                    android:host="${applicationId}"
+                    android:path="/embedded" />
+            </intent-filter>
+
+        </activity>
+
     </application>
 
     <queries>

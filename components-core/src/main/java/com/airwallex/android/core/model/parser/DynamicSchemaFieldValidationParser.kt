@@ -1,6 +1,6 @@
 package com.airwallex.android.core.model.parser
 
-import com.airwallex.android.core.model.*
+import com.airwallex.android.core.model.DynamicSchemaFieldValidation
 import com.airwallex.android.core.util.AirwallexJsonUtils
 import org.json.JSONObject
 

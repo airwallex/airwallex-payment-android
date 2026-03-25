@@ -52,7 +52,7 @@ internal fun BankItem(
 
         StandardText(
             text = bank.displayName,
-            color = AirwallexColor.TextPrimary,
+            color = AirwallexColor.textPrimary,
             typography = AirwallexTypography.Body100,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,

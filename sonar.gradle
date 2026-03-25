@@ -95,9 +95,11 @@ sonarqube {
                 '**/AirwallexStarter.kt',
                 '**/*InputLayout.kt',
                 '**/*EditText.kt',
+                '**/EditTextColorUtil.kt',
                 '**/SessionUtils.kt',
                 '**/view/CardWidget.kt',
                 '**/paymentacceptance/**',
+                '**/sample/**',
                 'security-3ds/**',
                 '**/ui/extension/Intent+Extensions.kt'
         ].join(",")

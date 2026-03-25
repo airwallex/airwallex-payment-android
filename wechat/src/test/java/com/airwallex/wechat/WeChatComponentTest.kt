@@ -7,6 +7,7 @@ import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.PaymentResultManager
 import com.airwallex.android.core.log.AnalyticsLogger
+import com.airwallex.android.core.log.AnalyticsLogger.Field
 import com.airwallex.android.core.model.NextAction
 import com.airwallex.android.core.model.WeChat
 import com.airwallex.android.wechat.WeChatComponent
@@ -84,7 +85,7 @@ class WeChatComponentTest {
         verify(exactly = 1) {
             AnalyticsLogger.logError(
                 "wechat_redirect",
-                mapOf("message" to "Failed to initialize WeChat app.")
+                mapOf(Field.MESSAGE to "Failed to initialize WeChat app.")
             )
         }
     }
