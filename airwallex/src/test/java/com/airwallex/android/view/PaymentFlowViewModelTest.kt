@@ -30,6 +30,7 @@ import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -79,6 +80,18 @@ class PaymentFlowViewModelTest {
     // ========== Helper Methods ==========
 
     private fun <T> TestScope.collectSharedFlow(
+        flow: Flow<T>,
+        collector: MutableList<T> = mutableListOf()
+    ): Pair<MutableList<T>, Job> {
+        val job = launch(UnconfinedTestDispatcher(testScheduler)) {
+            flow.collect { event ->
+                collector.add(event)
+            }
+        }
+        return Pair(collector, job)
+    }
+
+    private fun <T> TestScope.collectRawSharedFlow(
         flow: SharedFlow<T>,
         collector: MutableList<T> = mutableListOf()
     ): Pair<MutableList<T>, Job> {
@@ -200,7 +213,7 @@ class PaymentFlowViewModelTest {
         }
 
         val viewModel = createViewModel(session)
-        val (results, job) = collectSharedFlow(viewModel.deleteConsentResult)
+        val (results, job) = collectRawSharedFlow(viewModel.deleteConsentResult)
 
         viewModel.deletePaymentConsent(paymentConsent)
         advanceUntilIdle()
@@ -230,7 +243,7 @@ class PaymentFlowViewModelTest {
         } returns null
 
         val viewModel = createViewModel(session)
-        val (results, job) = collectSharedFlow(viewModel.deleteConsentResult)
+        val (results, job) = collectRawSharedFlow(viewModel.deleteConsentResult)
 
         viewModel.deletePaymentConsent(paymentConsent)
         advanceUntilIdle()
@@ -265,7 +278,7 @@ class PaymentFlowViewModelTest {
         }
 
         val viewModel = createViewModel(session)
-        val (results, job) = collectSharedFlow(viewModel.deleteConsentResult)
+        val (results, job) = collectRawSharedFlow(viewModel.deleteConsentResult)
 
         viewModel.deletePaymentConsent(paymentConsent)
         advanceUntilIdle()
