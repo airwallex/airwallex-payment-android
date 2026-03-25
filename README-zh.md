@@ -112,12 +112,12 @@ SDK 已发布至 [Maven Central](https://repo1.maven.org/maven2/io/github/airwal
 ```groovy
 dependencies {
     // 必须
-    implementation 'io.github.airwallex:payment:6.4.4'
+    implementation 'io.github.airwallex:payment:6.5.0'
     // 按需添加支付方式
-    implementation 'io.github.airwallex:payment-card:6.4.4'
-    implementation 'io.github.airwallex:payment-redirect:6.4.4'
-    implementation 'io.github.airwallex:payment-wechat:6.4.4'
-    implementation 'io.github.airwallex:payment-googlepay:6.4.4'
+    implementation 'io.github.airwallex:payment-card:6.5.0'
+    implementation 'io.github.airwallex:payment-redirect:6.5.0'
+    implementation 'io.github.airwallex:payment-wechat:6.5.0'
+    implementation 'io.github.airwallex:payment-googlepay:6.5.0'
 }
 ```
 
@@ -549,13 +549,13 @@ Airwallex SDK 提供 `PaymentElement` - 一个灵活的组件，允许你将支�
 ```groovy
 dependencies {
     // 核心模块（必需）
-    implementation 'io.github.airwallex:payment:6.4.4'
+    implementation 'io.github.airwallex:payment:6.5.0'
 
     // 添加你想要支持的支付方式
-    implementation 'io.github.airwallex:payment-card:6.4.4'
-    implementation 'io.github.airwallex:payment-redirect:6.4.4'
-    implementation 'io.github.airwallex:payment-wechat:6.4.4'
-    implementation 'io.github.airwallex:payment-googlepay:6.4.4'
+    implementation 'io.github.airwallex:payment-card:6.5.0'
+    implementation 'io.github.airwallex:payment-redirect:6.5.0'
+    implementation 'io.github.airwallex:payment-wechat:6.5.0'
+    implementation 'io.github.airwallex:payment-googlepay:6.5.0'
 }
 ```
 
@@ -879,11 +879,11 @@ SDK 支持 Android API 21 及以上。
 ```groovy
 dependencies {
     // 必须
-    implementation 'io.github.airwallex:payment-components-core:6.4.4'
+    implementation 'io.github.airwallex:payment-components-core:6.5.0'
     // 按需添加支付方式
-    implementation 'io.github.airwallex:payment-card:6.4.4'
-    implementation 'io.github.airwallex:payment-googlepay:6.4.4'
-    implementation 'io.github.airwallex:payment-redirect:6.4.4'
+    implementation 'io.github.airwallex:payment-card:6.5.0'
+    implementation 'io.github.airwallex:payment-googlepay:6.5.0'
+    implementation 'io.github.airwallex:payment-redirect:6.5.0'
 }
 ```
 
