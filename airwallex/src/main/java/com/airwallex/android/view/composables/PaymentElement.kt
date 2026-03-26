@@ -32,7 +32,7 @@ class PaymentElement private constructor(
 
     companion object {
         /**
-         * Creates an [PaymentElement] by fetching required data.
+         * Creates a [PaymentElement] by fetching required data.
          *
          * This method obtains a [PaymentFlowViewModel] scoped to the Activity,
          * checks if data is already loaded (for configuration changes), and fetches
@@ -45,7 +45,7 @@ class PaymentElement private constructor(
          * @param airwallex The Airwallex instance for payment operations
          * @param configuration Configuration for the payment element
          * @param paymentFlowListener Listener for payment operation callbacks
-         * @return Result containing the state or an error if fetching failed
+         * @return Result containing the PaymentElement or an error if fetching failed
          */
         suspend fun create(
             session: AirwallexSession,
@@ -144,6 +144,19 @@ class PaymentElement private constructor(
             }
         }
 
+        /**
+         * Creates a [PaymentElement] using callback-based approach.
+         *
+         * This is a convenience method that wraps [PaymentFlowListener] with lambda callbacks.
+         *
+         * @param session The Airwallex session containing payment information
+         * @param airwallex The Airwallex instance for payment operations
+         * @param configuration Configuration for the payment element
+         * @param onLoadingStateChanged Optional callback when loading state changes
+         * @param onPaymentResult Callback when payment completes (success, failure, or cancel)
+         * @param onError Optional callback when errors occur during initialization or payment
+         * @return Result containing the PaymentElement or an error if fetching failed
+         */
         @Suppress("LongParameterList")
         suspend fun create(
             session: AirwallexSession,
@@ -203,7 +216,6 @@ class PaymentElement private constructor(
          * Example usage from Java:
          * ```java
          * PaymentElement.create(
-         *     this,  // ComponentActivity
          *     session,
          *     airwallex,
          *     configuration,
@@ -223,7 +235,6 @@ class PaymentElement private constructor(
          * );
          * ```
          *
-         * @param activity The ComponentActivity (required for lifecycle scope)
          * @param session The Airwallex session containing payment information
          * @param airwallex The Airwallex instance for payment operations
          * @param configuration Configuration for the payment element

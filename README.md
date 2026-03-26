@@ -856,7 +856,6 @@ binding.composeView.setVisibility(View.GONE);
 
 // Step 1: Create PaymentElement (handles coroutines internally)
 PaymentElement.create(
-    this,                    // ComponentActivity
     session,                 // AirwallexSession
     airwallex,               // Airwallex instance
     configuration,           // PaymentElementConfiguration
