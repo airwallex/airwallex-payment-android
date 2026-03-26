@@ -814,7 +814,6 @@ binding.composeView.setVisibility(View.GONE);
 
 // 步骤 1：创建 PaymentElement（内部处理协程）
 PaymentElement.create(
-    this,                    // ComponentActivity
     session,                 // AirwallexSession
     airwallex,               // Airwallex 实例
     configuration,           // PaymentElementConfiguration
