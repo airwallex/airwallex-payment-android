@@ -806,6 +806,18 @@ PaymentFlowListener listener = new PaymentFlowListener() {
             // 处理失败
         }
     }
+
+    @Override
+    public void onLoadingStateChanged(boolean isLoading, @NonNull Context context) {
+        // 你可以实现自己的加载 UI 或使用默认实现（显示/隐藏加载对话框）
+        PaymentFlowListener.super.onLoadingStateChanged(isLoading, context);
+    }
+
+    @Override
+    public void onError(@NonNull Throwable exception, @NonNull Context context) {
+        // 你可以实现自己的错误处理或使用默认实现（显示错误对话框）
+        PaymentFlowListener.super.onError(exception, context);
+    }
 };
 
 // 显示加载状态
