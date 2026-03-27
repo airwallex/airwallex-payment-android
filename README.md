@@ -848,6 +848,18 @@ PaymentFlowListener listener = new PaymentFlowListener() {
             // Handle failure
         }
     }
+
+    @Override
+    public void onLoadingStateChanged(boolean isLoading, @NonNull Context context) {
+        // You can implement your own loading UI or use the default implementation (shows/hides loading dialog)
+        PaymentFlowListener.super.onLoadingStateChanged(isLoading, context);
+    }
+
+    @Override
+    public void onError(@NonNull Throwable exception, @NonNull Context context) {
+        // You can implement your own error handling or use the default implementation (shows error dialog)
+        PaymentFlowListener.super.onError(exception, context);
+    }
 };
 
 // Show loading state
