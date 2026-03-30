@@ -30,7 +30,7 @@ import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
@@ -79,12 +79,14 @@ class PaymentFlowViewModelTest {
 
     // ========== Helper Methods ==========
 
-    private fun <T> TestScope.collectSharedFlow(
-        flow: SharedFlow<T>,
+    private fun <T> TestScope.collectFlow(
+        flow: Flow<T>,
         collector: MutableList<T> = mutableListOf()
     ): Pair<MutableList<T>, Job> {
         val job = launch(UnconfinedTestDispatcher(testScheduler)) {
-            flow.collect { collector.add(it) }
+            flow.collect { event ->
+                collector.add(event)
+            }
         }
         return Pair(collector, job)
     }
@@ -299,7 +301,7 @@ class PaymentFlowViewModelTest {
         }
 
         val viewModel = createViewModel(session)
-        val (results, job) = collectSharedFlow(viewModel.deleteConsentResult)
+        val (results, job) = collectFlow(viewModel.deleteConsentResult)
 
         viewModel.deletePaymentConsent(paymentConsent)
         advanceUntilIdle()
@@ -329,7 +331,7 @@ class PaymentFlowViewModelTest {
         } returns null
 
         val viewModel = createViewModel(session)
-        val (results, job) = collectSharedFlow(viewModel.deleteConsentResult)
+        val (results, job) = collectFlow(viewModel.deleteConsentResult)
 
         viewModel.deletePaymentConsent(paymentConsent)
         advanceUntilIdle()
@@ -364,7 +366,7 @@ class PaymentFlowViewModelTest {
         }
 
         val viewModel = createViewModel(session)
-        val (results, job) = collectSharedFlow(viewModel.deleteConsentResult)
+        val (results, job) = collectFlow(viewModel.deleteConsentResult)
 
         viewModel.deletePaymentConsent(paymentConsent)
         advanceUntilIdle()
@@ -388,7 +390,7 @@ class PaymentFlowViewModelTest {
         val paymentConsent = mockk<PaymentConsent>(relaxed = true)
 
         val viewModel = createViewModel(session)
-        val (results, job) = collectSharedFlow(viewModel.paymentResult)
+        val (results, job) = collectFlow(viewModel.paymentResult)
 
         viewModel.confirmPaymentIntent(paymentConsent)
         advanceUntilIdle()
@@ -425,7 +427,7 @@ class PaymentFlowViewModelTest {
         }
 
         val viewModel = createViewModel(session)
-        val (results, job) = collectSharedFlow(viewModel.paymentResult)
+        val (results, job) = collectFlow(viewModel.paymentResult)
 
         viewModel.confirmPaymentIntent(paymentConsent)
         advanceUntilIdle()
@@ -462,7 +464,7 @@ class PaymentFlowViewModelTest {
         }
 
         val viewModel = createViewModel(session)
-        val (results, job) = collectSharedFlow(viewModel.paymentResult)
+        val (results, job) = collectFlow(viewModel.paymentResult)
 
         viewModel.checkoutWithCvc(paymentConsent, cvc)
         advanceUntilIdle()
@@ -482,7 +484,7 @@ class PaymentFlowViewModelTest {
         val cvc = "123"
 
         val viewModel = createViewModel(session)
-        val (results, job) = collectSharedFlow(viewModel.paymentResult)
+        val (results, job) = collectFlow(viewModel.paymentResult)
 
         viewModel.checkoutWithCvc(paymentConsent, cvc)
         advanceUntilIdle()
@@ -508,7 +510,7 @@ class PaymentFlowViewModelTest {
         val cvc = "123"
 
         val viewModel = createViewModel(session)
-        val (results, job) = collectSharedFlow(viewModel.paymentResult)
+        val (results, job) = collectFlow(viewModel.paymentResult)
 
         viewModel.checkoutWithCvc(paymentConsent, cvc)
         advanceUntilIdle()
@@ -545,7 +547,7 @@ class PaymentFlowViewModelTest {
         }
 
         val viewModel = createViewModel(session)
-        val (results, job) = collectSharedFlow(viewModel.paymentResult)
+        val (results, job) = collectFlow(viewModel.paymentResult)
 
         viewModel.checkoutWithGooglePay()
         advanceUntilIdle()
@@ -575,7 +577,7 @@ class PaymentFlowViewModelTest {
         }
 
         val viewModel = createViewModel(session)
-        val (results, job) = collectSharedFlow(viewModel.paymentResult)
+        val (results, job) = collectFlow(viewModel.paymentResult)
 
         viewModel.checkoutWithGooglePay()
         advanceUntilIdle()
@@ -614,7 +616,7 @@ class PaymentFlowViewModelTest {
         }
 
         val viewModel = createViewModel(session)
-        val (results, job) = collectSharedFlow(viewModel.paymentResult)
+        val (results, job) = collectFlow(viewModel.paymentResult)
 
         viewModel.checkoutWithNewCard(card, saveCard = true, billing = billing)
         advanceUntilIdle()
@@ -657,7 +659,7 @@ class PaymentFlowViewModelTest {
         }
 
         val viewModel = createViewModel(session)
-        val (results, job) = collectSharedFlow(viewModel.paymentResult)
+        val (results, job) = collectFlow(viewModel.paymentResult)
 
         viewModel.checkoutWithNewCard(card, saveCard = false, billing = null)
         advanceUntilIdle()
@@ -698,7 +700,7 @@ class PaymentFlowViewModelTest {
         }
 
         val viewModel = createViewModel(session)
-        val (results, job) = collectSharedFlow(viewModel.paymentResult)
+        val (results, job) = collectFlow(viewModel.paymentResult)
 
         viewModel.checkoutWithNewCard(card, saveCard = true, billing = null)
         advanceUntilIdle()

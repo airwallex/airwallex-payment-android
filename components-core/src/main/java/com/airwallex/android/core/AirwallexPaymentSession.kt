@@ -219,6 +219,12 @@ class AirwallexPaymentSession internal constructor(
             ).apply {
                 // Set the provider directly on the session (transient field, won't be parceled)
                 paymentIntentProvider = this@Builder.paymentIntentProvider
+
+                // If provider exists, store it in repository immediately so it survives parcelling
+                // The providerId will survive parcelling and can be used to retrieve the provider later
+                paymentIntentProvider?.let { provider ->
+                    paymentIntentProviderId = PaymentIntentProviderRepository.store(provider)
+                }
             }
             return session
         }
