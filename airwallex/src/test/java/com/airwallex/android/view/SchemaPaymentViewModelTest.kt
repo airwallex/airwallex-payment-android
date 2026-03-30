@@ -249,7 +249,9 @@ class SchemaPaymentViewModelTest {
 
         val results = mutableListOf<AirwallexPaymentStatus>()
         val job = launch(UnconfinedTestDispatcher(testScheduler)) {
-            testViewModel.paymentResult.collect { results.add(it) }
+            testViewModel.paymentResult.collect { event ->
+                results.add(event)
+            }
         }
 
         testViewModel.checkoutWithSchema(paymentMethod, additionalInfo, typeInfo)
@@ -282,7 +284,9 @@ class SchemaPaymentViewModelTest {
 
         val results = mutableListOf<AirwallexPaymentStatus>()
         val job = launch(UnconfinedTestDispatcher(testScheduler)) {
-            testViewModel.paymentResult.collect { results.add(it) }
+            testViewModel.paymentResult.collect { event ->
+                results.add(event)
+            }
         }
 
         testViewModel.checkoutWithSchema(availablePaymentMethodType)
@@ -315,7 +319,9 @@ class SchemaPaymentViewModelTest {
 
         val results = mutableListOf<AirwallexPaymentStatus>()
         val job = launch(UnconfinedTestDispatcher(testScheduler)) {
-            testViewModel.paymentResult.collect { results.add(it) }
+            testViewModel.paymentResult.collect { event ->
+                results.add(event)
+            }
         }
 
         testViewModel.checkoutWithSchema(availablePaymentMethodType)
@@ -348,7 +354,9 @@ class SchemaPaymentViewModelTest {
 
         val results = mutableListOf<AirwallexPaymentStatus>()
         val job = launch(UnconfinedTestDispatcher(testScheduler)) {
-            testViewModel.paymentResult.collect { results.add(it) }
+            testViewModel.paymentResult.collect { event ->
+                results.add(event)
+            }
         }
 
         testViewModel.checkoutWithSchema(availablePaymentMethodType)
@@ -381,7 +389,9 @@ class SchemaPaymentViewModelTest {
 
         val results = mutableListOf<AirwallexPaymentStatus>()
         val job = launch(UnconfinedTestDispatcher(testScheduler)) {
-            testViewModel.paymentResult.collect { results.add(it) }
+            testViewModel.paymentResult.collect { event ->
+                results.add(event)
+            }
         }
 
         testViewModel.checkoutWithSchema(availablePaymentMethodType)
