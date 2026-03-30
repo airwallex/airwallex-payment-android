@@ -14,7 +14,7 @@ appId: com.airwallex.paymentacceptance
       ENVIRONMENT: ${output.settings.environment.demo}
       NEXT_TRIGGERED_BY: ${output.settings.nextTriggeredBy.customer}
       IS_GUEST: false
-- tapOn: "Launch Embedded Element"
+- tapOn: "Embedded Element"
 # Wait for the embedded element activity to load
 - assertVisible: "Order details"
 # Assert Google Pay button exists
