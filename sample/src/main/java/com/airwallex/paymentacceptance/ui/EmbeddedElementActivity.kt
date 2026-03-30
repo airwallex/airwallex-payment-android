@@ -22,12 +22,16 @@ import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.view.composables.PaymentElement
 import com.airwallex.android.view.composables.PaymentElementConfiguration
 import com.airwallex.paymentacceptance.R
+import com.airwallex.paymentacceptance.Settings
 import com.airwallex.paymentacceptance.databinding.ActivityEmbeddedElementBinding
 import com.airwallex.paymentacceptance.ui.base.BasePaymentActivity
 import com.airwallex.paymentacceptance.util.PaymentStatusPoller
 import com.airwallex.paymentacceptance.viewmodel.EmbeddedElementViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import java.math.BigDecimal
+import java.text.NumberFormat
+import java.util.Currency
 
 /**
  * Activity to demonstrate Embedded Element integration
@@ -58,6 +62,7 @@ class EmbeddedElementActivity :
 
     override fun initView() {
         setupColors()
+        updatePrices()
         setupCardInfoCompose()
     }
 
@@ -97,9 +102,54 @@ class EmbeddedElementActivity :
 
         mBinding.tvTotalLabel.setTextColor(AirwallexColor.textSecondary.toArgb())
         mBinding.tvTotalPrice.setTextColor(AirwallexColor.textPrimary.toArgb())
+
         mBinding.progressBar.indeterminateTintList = ColorStateList.valueOf(
             AirwallexColor.theme.toArgb()
         )
+    }
+
+    private fun updatePrices() {
+        val productSum = PRODUCT_1_PRICE + PRODUCT_2_PRICE
+        val finalAmount = Settings.price.toBigDecimalOrNull() ?: BigDecimal(productSum)
+        val difference = finalAmount.subtract(BigDecimal(productSum))
+
+        val currencyCode = Settings.currency
+        val numberFormat = NumberFormat.getCurrencyInstance().apply {
+            try {
+                currency = Currency.getInstance(currencyCode)
+            } catch (e: IllegalArgumentException) {
+                // Fallback to USD if currency code is invalid
+                currency = Currency.getInstance("USD")
+            }
+        }
+
+        // Update product prices (static)
+        mBinding.tvProduct1Price.text = numberFormat.format(PRODUCT_1_PRICE)
+        mBinding.tvProduct2Price.text = numberFormat.format(PRODUCT_2_PRICE)
+
+        // Update fee/discount based on difference
+        when {
+            difference > BigDecimal.ZERO -> {
+                mBinding.tvFeeLabel.text = "Fee"
+                mBinding.tvFeeAmount.text = numberFormat.format(difference)
+                mBinding.tvFeeLabel.visibility = View.VISIBLE
+                mBinding.tvFeeAmount.visibility = View.VISIBLE
+            }
+            difference < BigDecimal.ZERO -> {
+                mBinding.tvFeeLabel.text = "Discount"
+                mBinding.tvFeeAmount.text = numberFormat.format(difference.abs())
+                mBinding.tvFeeLabel.visibility = View.VISIBLE
+                mBinding.tvFeeAmount.visibility = View.VISIBLE
+            }
+            else -> {
+                mBinding.tvFeeLabel.visibility = View.GONE
+                mBinding.tvFeeAmount.visibility = View.GONE
+            }
+        }
+
+        // Update subtotal and total
+        mBinding.tvSubtotalAmount.text = numberFormat.format(finalAmount)
+        mBinding.tvTotalPrice.text = "${finalAmount.toPlainString()} $currencyCode"
     }
 
     private fun setupToolbar() {
@@ -263,6 +313,8 @@ class EmbeddedElementActivity :
     companion object {
         private const val EXTRA_BUNDLE = "extra_bundle"
         private const val EXTRA_ARGS = "extra_args"
+        private const val PRODUCT_1_PRICE = 300.00
+        private const val PRODUCT_2_PRICE = 100.00
 
         fun start(
             context: Context,

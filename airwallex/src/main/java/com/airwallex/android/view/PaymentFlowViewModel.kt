@@ -18,12 +18,15 @@ import com.airwallex.android.core.model.DisablePaymentConsentParams
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.PaymentMethodType
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
@@ -48,8 +51,8 @@ class PaymentFlowViewModel(
     val availablePaymentConsents: StateFlow<List<PaymentConsent>> = _availablePaymentConsents.asStateFlow()
 
     // Payment flow result event - one-time event stream
-    private val _paymentResult = MutableSharedFlow<PaymentResultEvent>(replay = 0)
-    val paymentResult: SharedFlow<PaymentResultEvent> = _paymentResult.asSharedFlow()
+    private val _paymentResult = Channel<PaymentResultEvent>(capacity = Channel.CONFLATED)
+    val paymentResult: Flow<PaymentResultEvent> = _paymentResult.receiveAsFlow()
 
     // Delete payment consent result - one-time event stream
     private val _deleteConsentResult = MutableSharedFlow<DeleteConsentResult>(replay = 0)
@@ -182,7 +185,7 @@ class PaymentFlowViewModel(
         viewModelScope.launch {
             val paymentMethod = paymentConsent.paymentMethod
             if (paymentMethod == null) {
-                _paymentResult.emit(
+                _paymentResult.send(
                     PaymentResultEvent(
                         flowType = PaymentFlowType.CHECKOUT_WITHOUT_CVC,
                         status = AirwallexPaymentStatus.Failure(
@@ -201,7 +204,7 @@ class PaymentFlowViewModel(
                 listener = object : PaymentResultListener {
                     override fun onCompleted(status: AirwallexPaymentStatus) {
                         viewModelScope.launch {
-                            _paymentResult.emit(
+                            _paymentResult.send(
                                 PaymentResultEvent(
                                     flowType = PaymentFlowType.CHECKOUT_WITHOUT_CVC,
                                     status = status
@@ -220,7 +223,7 @@ class PaymentFlowViewModel(
     ) = viewModelScope.launch {
         val paymentMethod = paymentConsent.paymentMethod
         if (paymentMethod == null) {
-            _paymentResult.emit(
+            _paymentResult.send(
                 PaymentResultEvent(
                     flowType = PaymentFlowType.CHECKOUT_WITH_CVC,
                     status = AirwallexPaymentStatus.Failure(
@@ -237,7 +240,7 @@ class PaymentFlowViewModel(
             cvc = cvc
         )
 
-        _paymentResult.emit(
+        _paymentResult.send(
             PaymentResultEvent(
                 flowType = PaymentFlowType.CHECKOUT_WITH_CVC,
                 status = status
@@ -247,7 +250,7 @@ class PaymentFlowViewModel(
 
     fun checkoutWithGooglePay() = viewModelScope.launch {
         val status = checkoutGooglePay()
-        _paymentResult.emit(
+        _paymentResult.send(
             PaymentResultEvent(
                 flowType = PaymentFlowType.CHECKOUT_WITH_GOOGLE_PAY,
                 status = status
@@ -277,8 +280,7 @@ class PaymentFlowViewModel(
                 }
             )
         }
-
-        _paymentResult.emit(
+        _paymentResult.send(
             PaymentResultEvent(
                 flowType = PaymentFlowType.CHECKOUT_WITH_NEW_CARD,
                 status = status

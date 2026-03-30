@@ -32,7 +32,7 @@ import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
@@ -81,12 +81,14 @@ class PaymentFlowViewModelTest {
 
     // ========== Helper Methods ==========
 
-    private fun <T> TestScope.collectSharedFlow(
-        flow: SharedFlow<T>,
+    private fun <T> TestScope.collectFlow(
+        flow: Flow<T>,
         collector: MutableList<T> = mutableListOf()
     ): Pair<MutableList<T>, Job> {
         val job = launch(UnconfinedTestDispatcher(testScheduler)) {
-            flow.collect { collector.add(it) }
+            flow.collect { event ->
+                collector.add(event)
+            }
         }
         return Pair(collector, job)
     }
@@ -301,7 +303,7 @@ class PaymentFlowViewModelTest {
         }
 
         val viewModel = createViewModel(session)
-        val (results, job) = collectSharedFlow(viewModel.deleteConsentResult)
+        val (results, job) = collectFlow(viewModel.deleteConsentResult)
 
         viewModel.deletePaymentConsent(paymentConsent)
         advanceUntilIdle()
@@ -331,7 +333,7 @@ class PaymentFlowViewModelTest {
         } returns null
 
         val viewModel = createViewModel(session)
-        val (results, job) = collectSharedFlow(viewModel.deleteConsentResult)
+        val (results, job) = collectFlow(viewModel.deleteConsentResult)
 
         viewModel.deletePaymentConsent(paymentConsent)
         advanceUntilIdle()
@@ -366,7 +368,7 @@ class PaymentFlowViewModelTest {
         }
 
         val viewModel = createViewModel(session)
-        val (results, job) = collectSharedFlow(viewModel.deleteConsentResult)
+        val (results, job) = collectFlow(viewModel.deleteConsentResult)
 
         viewModel.deletePaymentConsent(paymentConsent)
         advanceUntilIdle()
@@ -383,6 +385,48 @@ class PaymentFlowViewModelTest {
     }
 
     // ========== Confirm Payment Intent Tests ==========
+
+    @Test
+    fun `test checkoutWithoutCvc with invalid session`() = runTest {
+        val session = createRecurringSession()
+        val paymentConsent = mockk<PaymentConsent>(relaxed = true) {
+            every { paymentMethod } returns mockk(relaxed = true)
+        }
+        val error = AirwallexCheckoutException(message = "confirm with paymentConsent only support AirwallexPaymentSession")
+        val expectedStatus = AirwallexPaymentStatus.Failure(error)
+
+        val slot = slot<Airwallex.PaymentResultListener>()
+        coEvery {
+            airwallex.checkout(
+                session = session,
+                paymentMethod = any(),
+                paymentConsent = paymentConsent,
+                cvc = null,
+                listener = capture(slot)
+            )
+        } answers {
+            slot.captured.onCompleted(expectedStatus)
+        }
+
+        val viewModel = createViewModel(session)
+        val (results, job) = collectFlow(viewModel.paymentResult)
+
+        viewModel.checkoutWithoutCvc(paymentConsent)
+        advanceUntilIdle()
+
+        assertEquals(1, results.size)
+        val result = results.first()
+        assertEquals(PaymentFlowType.CHECKOUT_WITHOUT_CVC, result.flowType)
+        assertTrue(result.status is AirwallexPaymentStatus.Failure)
+        val failureStatus = result.status as AirwallexPaymentStatus.Failure
+        assertNotNull(failureStatus.exception)
+        assertEquals(
+            "confirm with paymentConsent only support AirwallexPaymentSession",
+            failureStatus.exception.message
+        )
+
+        job.cancel()
+    }
 
     @Test
     fun `test checkoutWithoutCvc with valid session`() = runTest {
@@ -404,7 +448,7 @@ class PaymentFlowViewModelTest {
         }
 
         val viewModel = createViewModel(session)
-        val (results, job) = collectSharedFlow(viewModel.paymentResult)
+        val (results, job) = collectFlow(viewModel.paymentResult)
 
         viewModel.checkoutWithoutCvc(paymentConsent)
         advanceUntilIdle()
@@ -423,7 +467,7 @@ class PaymentFlowViewModelTest {
         val paymentConsent = createMockPaymentConsent(paymentMethod = null)
 
         val viewModel = createViewModel(session)
-        val (results, job) = collectSharedFlow(viewModel.paymentResult)
+        val (results, job) = collectFlow(viewModel.paymentResult)
 
         viewModel.checkoutWithoutCvc(paymentConsent)
         advanceUntilIdle()
@@ -462,7 +506,7 @@ class PaymentFlowViewModelTest {
         }
 
         val viewModel = createViewModel(session)
-        val (results, job) = collectSharedFlow(viewModel.paymentResult)
+        val (results, job) = collectFlow(viewModel.paymentResult)
 
         viewModel.checkoutWithoutCvc(paymentConsent)
         advanceUntilIdle()
@@ -509,7 +553,7 @@ class PaymentFlowViewModelTest {
         }
 
         val viewModel = createViewModel(session)
-        val (results, job) = collectSharedFlow(viewModel.paymentResult)
+        val (results, job) = collectFlow(viewModel.paymentResult)
 
         viewModel.checkoutWithCvc(paymentConsent, cvc)
         advanceUntilIdle()
@@ -529,7 +573,7 @@ class PaymentFlowViewModelTest {
         val cvc = "123"
 
         val viewModel = createViewModel(session)
-        val (results, job) = collectSharedFlow(viewModel.paymentResult)
+        val (results, job) = collectFlow(viewModel.paymentResult)
 
         viewModel.checkoutWithCvc(paymentConsent, cvc)
         advanceUntilIdle()
@@ -571,7 +615,7 @@ class PaymentFlowViewModelTest {
         }
 
         val viewModel = createViewModel(session)
-        val (results, job) = collectSharedFlow(viewModel.paymentResult)
+        val (results, job) = collectFlow(viewModel.paymentResult)
 
         viewModel.checkoutWithCvc(paymentConsent, cvc)
         advanceUntilIdle()
@@ -608,7 +652,7 @@ class PaymentFlowViewModelTest {
         }
 
         val viewModel = createViewModel(session)
-        val (results, job) = collectSharedFlow(viewModel.paymentResult)
+        val (results, job) = collectFlow(viewModel.paymentResult)
 
         viewModel.checkoutWithGooglePay()
         advanceUntilIdle()
@@ -638,7 +682,7 @@ class PaymentFlowViewModelTest {
         }
 
         val viewModel = createViewModel(session)
-        val (results, job) = collectSharedFlow(viewModel.paymentResult)
+        val (results, job) = collectFlow(viewModel.paymentResult)
 
         viewModel.checkoutWithGooglePay()
         advanceUntilIdle()
@@ -679,7 +723,7 @@ class PaymentFlowViewModelTest {
         }
 
         val viewModel = createViewModel(session)
-        val (results, job) = collectSharedFlow(viewModel.paymentResult)
+        val (results, job) = collectFlow(viewModel.paymentResult)
 
         viewModel.checkoutWithNewCard(card, saveCard = true, billing = billing)
         advanceUntilIdle()
@@ -707,6 +751,83 @@ class PaymentFlowViewModelTest {
     }
 
     @Test
+    fun `test checkoutWithNewCard with saveCard false`() = runTest {
+        val session = createPaymentSession()
+        val card = mockk<PaymentMethod.Card>(relaxed = true) {
+            every { cvc } returns "123"
+        }
+        val expectedStatus = AirwallexPaymentStatus.Success("test_payment_intent_id")
+
+        val slot = slot<Airwallex.PaymentResultListener>()
+        coEvery {
+            airwallex.checkout(
+                session = session,
+                paymentMethod = any(),
+                cvc = "123",
+                saveCard = false,
+                listener = capture(slot)
+            )
+        } answers {
+            slot.captured.onCompleted(expectedStatus)
+        }
+
+        val viewModel = createViewModel(session)
+        val (results, job) = collectFlow(viewModel.paymentResult)
+
+        viewModel.checkoutWithNewCard(card, saveCard = false, billing = null)
+        advanceUntilIdle()
+
+        assertEquals(1, results.size)
+        assertEquals(expectedStatus, results.first().status)
+
+        coVerify {
+            airwallex.checkout(
+                session = session,
+                paymentMethod = any(),
+                cvc = "123",
+                saveCard = false,
+                listener = any()
+            )
+        }
+
+        job.cancel()
+    }
+
+    @Test
+    fun `test checkoutWithNewCard with non-payment session`() = runTest {
+        val session = createRecurringSession()
+        val card = mockk<PaymentMethod.Card>(relaxed = true) {
+            every { cvc } returns "123"
+        }
+        val expectedStatus = AirwallexPaymentStatus.Success("test_payment_intent_id", "test_consent_id")
+
+        val slot = slot<Airwallex.PaymentResultListener>()
+        coEvery {
+            airwallex.checkout(
+                session = session,
+                paymentMethod = any(),
+                cvc = "123",
+                saveCard = true,
+                listener = capture(slot)
+            )
+        } answers {
+            slot.captured.onCompleted(expectedStatus)
+        }
+
+        val viewModel = createViewModel(session)
+        val (results, job) = collectFlow(viewModel.paymentResult)
+
+        viewModel.checkoutWithNewCard(card, saveCard = true, billing = null)
+        advanceUntilIdle()
+
+        assertEquals(1, results.size)
+        val result = results.first()
+        assertEquals(PaymentFlowType.CHECKOUT_WITH_NEW_CARD, result.flowType)
+        assertEquals(expectedStatus, result.status)
+        job.cancel()
+    }
+
+    @Test
     fun `test checkoutWithNewCard with session is Session`() = runTest {
         val session = createSession()
         val card = mockk<PaymentMethod.Card>(relaxed = true) {
@@ -729,7 +850,7 @@ class PaymentFlowViewModelTest {
         }
 
         val viewModel = createViewModel(session)
-        val (results, job) = collectSharedFlow(viewModel.paymentResult)
+        val (results, job) = collectFlow(viewModel.paymentResult)
 
         viewModel.checkoutWithNewCard(card, saveCard = true, billing = billing)
         advanceUntilIdle()
