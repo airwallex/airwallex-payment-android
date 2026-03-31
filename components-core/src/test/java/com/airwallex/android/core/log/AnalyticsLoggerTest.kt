@@ -55,6 +55,11 @@ class AnalyticsLoggerTest {
 
     @After
     fun tearDown() {
+        // Reset the singleton's private tracker field so tests don't leak state
+        AnalyticsLogger::class.java.getDeclaredField("tracker").apply {
+            isAccessible = true
+            set(AnalyticsLogger, null)
+        }
         unmockkAll()
     }
 
