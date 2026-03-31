@@ -627,7 +627,7 @@ Configure the payment UI using `PaymentElementConfiguration`:
 
 ### 1. Card-only Payment (`PaymentElementConfiguration.Card`)
 
-Shows only card input and saved cards:
+Shows only card input:
 
 ```kotlin
 import com.airwallex.android.core.AirwallexSupportedCard
