@@ -272,19 +272,18 @@ internal object PaymentIntentProviderRepository {
  * Internal implementation for binding a session's PaymentIntentProvider to an Activity lifecycle.
  */
 private fun PaymentIntentResolvableSession.bindProviderToActivity(activity: Activity) {
-    // Check if provider was already stored (e.g., in Builder.build())
-    val providerId = paymentIntentProviderId
-    if (providerId != null) {
-        // Provider already in repository, just bind to this activity
-        PaymentIntentProviderRepository.bindToActivity(providerId, activity)
-        return
-    }
-
-    // Provider not yet stored, store it now if available
     val provider = paymentIntentProvider ?: return
-    val newProviderId = PaymentIntentProviderRepository.store(provider)
-    PaymentIntentProviderRepository.bindToActivity(newProviderId, activity)
-    paymentIntentProviderId = newProviderId
+
+    val providerId = paymentIntentProviderId
+    if (providerId == null) {
+        // Store the provider in the repository and bind to activity
+        val newProviderId = PaymentIntentProviderRepository.store(provider)
+        PaymentIntentProviderRepository.bindToActivity(newProviderId, activity)
+        paymentIntentProviderId = newProviderId
+    } else {
+        // Already stored, just bind to the new activity
+        PaymentIntentProviderRepository.bindToActivity(providerId, activity)
+    }
 }
 
 /**
