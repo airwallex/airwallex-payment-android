@@ -583,7 +583,7 @@ dependencies {
 
 ### 1. 仅卡支付（`PaymentElementConfiguration.Card`）
 
-仅显示卡输入和已保存的卡：
+仅显示卡输入：
 
 ```kotlin
 import com.airwallex.android.core.AirwallexSupportedCard
