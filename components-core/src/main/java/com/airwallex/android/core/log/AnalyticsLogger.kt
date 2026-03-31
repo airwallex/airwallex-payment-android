@@ -115,6 +115,19 @@ object AnalyticsLogger {
     }
 
     /**
+     * Updates extra common data in the analytics tracker.
+     * This allows cross-platform SDKs (e.g., Flutter, React Native) to set custom fields.
+     * @param data A map of field keys to values to be merged into the extra common data.
+     */
+    fun updateExtraCommonData(data: Map<String, Any>) {
+        tracker?.let {
+            it.extraCommonData = it.extraCommonData.toMutableMap().apply {
+                putAll(data)
+            }
+        }
+    }
+
+    /**
      * Logs a page view event.
      * @param pageName The name of the page being viewed.
      * @param additionalInfo Additional information to be included with the event.
