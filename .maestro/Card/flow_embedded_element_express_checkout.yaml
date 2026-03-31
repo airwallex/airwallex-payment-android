@@ -1,0 +1,46 @@
+appId: com.airwallex.paymentacceptance
+---
+- launchApp
+- tapOn: "Integrate with Airwallex UI"
+- runFlow:
+    file: ../Common/flow_update_checkout_mode.yaml
+    env:
+      CHECKOUT_MODE: ${output.settings.checkoutMode.oneOff} # Ensure one-off checkout mode
+- tapOn: setting
+- runFlow:
+    file: ../Common/flow_update_settings.yaml
+    env:
+      LAYOUT: ${LAYOUT}
+      ENVIRONMENT: ${output.settings.environment.demo}
+      NEXT_TRIGGERED_BY: ${output.settings.nextTriggeredBy.customer}
+      IS_GUEST: true
+      EXPRESS_CHECKOUT: true
+- tapOn: "Embedded element (card only)"
+# Wait for the embedded element activity to load
+- assertVisible: "Order details"
+- assertNotVisible: "Buy with GPay"
+# With Express Checkout enabled, should see Card information directly (no payment method selection)
+- scrollUntilVisible:
+    element: "Card information"
+- assertVisible: "Card information"
+# Fill in card details
+- tapOn:
+    id: "card-number-text-field"
+- inputText: ${CARD_NUMBER}
+- tapOn:
+    id: "card-expiry-text-field"
+- inputText: "1233"
+- tapOn:
+    id: "card-cvc-text-field"
+- inputText: "333"
+- scrollUntilVisible:
+    element: "^(Pay|Confirm)$"
+# Assert AlipayHK is NOT visible (Express Checkout hides other payment methods)
+- assertNotVisible: "AlipayHK"
+# Tap Pay/Confirm button
+- tapOn: "^(Pay|Confirm)$"
+# Handle payment result
+- runFlow:
+    file: ../Common/flow_handle_payment_result.yaml
+    env:
+      PAYMENT_RESULT: SUCCESS # SUCCESS/FAILED/CANCELLED
