@@ -156,6 +156,7 @@ class AirwallexStarter {
             paymentResultListener: Airwallex.PaymentResultListener,
         ) {
             presentPaymentFlow(
+                fragment.requireActivity(),
                 PaymentMethodsActivityLaunch(fragment),
                 session,
                 layoutType,
@@ -180,6 +181,7 @@ class AirwallexStarter {
             paymentResultListener: Airwallex.PaymentResultListener,
         ) {
             presentPaymentFlow(
+                activity,
                 PaymentMethodsActivityLaunch(activity),
                 session,
                 layoutType,
@@ -204,6 +206,7 @@ class AirwallexStarter {
             paymentResultListener: Airwallex.PaymentResultListener,
         ) {
             presentPaymentFlow(
+                activity,
                 PaymentMethodsActivityLaunch(activity),
                 session,
                 layoutType,
@@ -212,13 +215,16 @@ class AirwallexStarter {
             )
         }
 
+        @Suppress("LongParameterList")
         private fun presentPaymentFlow(
+            activity: ComponentActivity,
             launch: PaymentMethodsActivityLaunch,
             session: AirwallexSession,
             layoutType: PaymentMethodsLayoutType,
             showsGooglePayAsPrimaryButton: Boolean = true,
             paymentResultListener: Airwallex.PaymentResultListener,
         ) {
+            session.bindToActivity(activity)
             AnalyticsLogger.setupSession(
                 session = session,
                 launchType = AnalyticsLogger.LaunchType.HPP,
