@@ -261,6 +261,10 @@ Create an appropriate session object based on your payment scenario. You can cho
 - **Standard Flow**: Create PaymentIntent upfront on your server, then pass it to the SDK
 - **Express Checkout**: Provide a PaymentIntentProvider to create PaymentIntent on demand after collecting payment details
 
+> **📝 Important - Where to Create the Session:**
+> - **For Hosted Payment Page (HPP)** using `AirwallexStarter`: Create the session in your calling activity, then pass it to `AirwallexStarter.presentEntirePaymentFlow()` or similar methods. The SDK will launch its own activities to handle the payment flow.
+> - **For Embedded Element** using `PaymentElement`: Create the session in the Activity (or its ViewModel) that hosts the `PaymentElement`. The session should be created before calling `PaymentElement.create()`. For better architecture, store the session in a ViewModel to survive configuration changes (e.g., screen rotation).
+
 #### Standard Payment Session
 
 **Standard Flow** (PaymentIntent created upfront):
@@ -586,6 +590,10 @@ Unlike Hosted Payment Page Integration where the SDK launches its own activities
 
 Both integration methods support the same customization options via `PaymentAppearance` (theme color and dark mode).
 
+**Key Difference - Session Creation:**
+- **Hosted Payment Page (HPP)**: Create session in your calling activity → Pass to `AirwallexStarter` methods
+- **Embedded Element**: Create session in the activity that hosts `PaymentElement` (or its ViewModel) → Pass to `PaymentElement.create()`
+
 ## <a name="embedded-installation"></a>Installation
 
 Add the same dependencies as Hosted Payment Page Integration:
@@ -695,7 +703,9 @@ class CheckoutActivity : ComponentActivity() {
         binding.composeView.visibility = View.GONE
 
         lifecycleScope.launch {
-            // Create session (see "Create an Airwallex Session" section)
+            // Create session in this activity (see "Create an Airwallex Session" section)
+            // For better architecture, create and store the session in a ViewModel
+            // to survive configuration changes
             val paymentIntent = PaymentIntent(
                 id = "your_payment_intent_id",
                 clientSecret = "your_client_secret",
