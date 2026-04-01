@@ -14,7 +14,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
-import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.PaymentMethodsLayoutType
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.AirwallexSupportedCard
@@ -42,10 +41,6 @@ class EmbeddedElementActivity :
 
     private val args: Args by lazy {
         intent.getArgs()
-    }
-
-    private val session: AirwallexSession by lazy {
-        args.session
     }
 
     private val airwallex: Airwallex by lazy {
@@ -199,7 +194,37 @@ class EmbeddedElementActivity :
         mBinding.progressBar.visibility = View.VISIBLE
         mBinding.composeCardInfo.visibility = View.GONE
 
+        // Create session first
+        val includeGooglePay = args.layoutType != null // Include Google Pay for tab/accordion layouts
+        mViewModel.createEmbeddedElementSession(
+            includeGooglePay = includeGooglePay,
+            paymentMethods = args.paymentMethods,
+            onSuccess = {
+                setupPaymentElement()
+            },
+            onError = { e ->
+                AirwallexLogger.error("Failed to create session", e)
+                mBinding.progressBar.visibility = View.GONE
+                showAlert(
+                    getString(R.string.payment_failed),
+                    e.message ?: e.toString()
+                )
+            }
+        )
+    }
+
+    private fun setupPaymentElement() {
         lifecycleScope.launch {
+            val session = mViewModel.getSession() ?: run {
+                AirwallexLogger.error("Session is null")
+                mBinding.progressBar.visibility = View.GONE
+                showAlert(
+                    getString(R.string.payment_failed),
+                    "Session not created"
+                )
+                return@launch
+            }
+
             // Determine configuration based on layoutType
             val configuration = when (args.layoutType) {
                 PaymentMethodsLayoutType.TAB -> PaymentElementConfiguration.PaymentSheet(
@@ -251,7 +276,7 @@ class EmbeddedElementActivity :
 
     private fun handlePaymentResult(status: AirwallexPaymentStatus) {
         // Delegate to ViewModel which handles polling if needed
-        mViewModel.handlePaymentResult(session, status)
+        mViewModel.handlePaymentResult(status)
     }
 
     private fun handleStatusUpdate(status: AirwallexPaymentStatus) {
@@ -304,10 +329,10 @@ class EmbeddedElementActivity :
     @Suppress("ParcelCreator")
     @Parcelize
     data class Args(
-        val session: AirwallexSession,
         val layoutType: PaymentMethodsLayoutType? = null,
         val supportedCardBrands: List<AirwallexSupportedCard>? = null,
-        val showsGooglePayAsPrimaryButton: Boolean = true
+        val showsGooglePayAsPrimaryButton: Boolean = true,
+        val paymentMethods: List<String> = listOf()
     ) : Parcelable
 
     companion object {
@@ -318,16 +343,16 @@ class EmbeddedElementActivity :
 
         fun start(
             context: Context,
-            session: AirwallexSession,
             layoutType: PaymentMethodsLayoutType? = null,
             supportedCardBrands: List<AirwallexSupportedCard>? = null,
-            showsGooglePayAsPrimaryButton: Boolean = true
+            showsGooglePayAsPrimaryButton: Boolean = true,
+            paymentMethods: List<String> = listOf()
         ) {
             val args = Args(
-                session = session,
                 layoutType = layoutType,
                 supportedCardBrands = supportedCardBrands,
-                showsGooglePayAsPrimaryButton = showsGooglePayAsPrimaryButton
+                showsGooglePayAsPrimaryButton = showsGooglePayAsPrimaryButton,
+                paymentMethods = paymentMethods
             )
             val intent = Intent(context, EmbeddedElementActivity::class.java).apply {
                 putExtra(EXTRA_BUNDLE, Bundle().apply {
