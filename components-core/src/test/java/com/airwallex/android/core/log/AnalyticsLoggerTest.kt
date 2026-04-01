@@ -68,6 +68,11 @@ class AnalyticsLoggerTest {
 
     @After
     fun tearDown() {
+        // Reset the singleton's private tracker field so tests don't leak state
+        AnalyticsLogger::class.java.getDeclaredField("tracker").apply {
+            isAccessible = true
+            set(AnalyticsLogger, null)
+        }
         unmockkAll()
     }
 
@@ -412,4 +417,17 @@ class AnalyticsLoggerTest {
     }
 
     // endregion
+    @Test
+    fun `test updateExtraCommonData updates framework field`() {
+        AnalyticsLogger.initialize(context)
+
+        AnalyticsLogger.updateExtraCommonData(mapOf(Field.FRAMEWORK to "flutter"))
+        verify(exactly = 1) {
+            anyConstructed<Tracker>() setProperty "extraCommonData" value mapOf(
+                Field.MERCHANT_APP_NAME to "test_app",
+                Field.MERCHANT_APP_VERSION to "1.0.1",
+                Field.FRAMEWORK to "flutter"
+            )
+        }
+    }
 }
