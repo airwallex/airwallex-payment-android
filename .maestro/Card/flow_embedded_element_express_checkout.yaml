@@ -21,7 +21,8 @@ env:
 - tapOn: "Embedded element (card only)"
 # Wait for the embedded element activity to load
 - assertVisible: "Order details"
-- assertNotVisible: "Buy with GPay"
+- assertNotVisible:
+    text: ".*GPay.*"
 # With Express Checkout enabled, should see Card information directly (no payment method selection)
 - scrollUntilVisible:
     element: "Card information"

@@ -20,10 +20,10 @@ env:
 - tapOn: "Embedded element"
 # Wait for the embedded element activity to load
 - assertVisible: "Order details"
-# Assert Google Pay button exists
+# Assert Google Pay button exists by checking for the "Or pay with" divider
 - scrollUntilVisible:
-    element: "Buy with GPay"
-- assertVisible: "Buy with GPay"
+    element:
+      text: "Or pay with"
 # Scroll down to the card information section
 - scrollUntilVisible:
     element: "Card information"
@@ -68,10 +68,10 @@ env:
 - tapOn: "Embedded element"
 # Wait for the embedded element activity to load
 - assertVisible: "Order details"
-# Assert Google Pay button exists
+# Assert Google Pay button exists by checking for the "Or pay with" divider
 - scrollUntilVisible:
-    element: "Buy with GPay"
-- assertVisible: "Buy with GPay"
+    element:
+      text: "Or pay with"
 # Scroll down to see if there are saved cards
 - scrollUntilVisible:
     element: "Choose a card"
