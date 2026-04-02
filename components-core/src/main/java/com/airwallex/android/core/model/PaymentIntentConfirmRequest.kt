@@ -70,7 +70,7 @@ data class PaymentIntentConfirmRequest internal constructor(
                 }.orEmpty()
             )
             .plus(
-                customerId?.let {
+                customerId?.takeIf { it.isNotEmpty() }?.let {
                     mapOf(FIELD_CUSTOMER_ID to it)
                 }.orEmpty()
             )

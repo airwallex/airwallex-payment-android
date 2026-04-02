@@ -56,7 +56,7 @@ class AddPaymentMethodViewModel(
         session.shipping
     }
 
-    val canSaveCard: Boolean by lazy { session is AirwallexPaymentSession && session.customerId != null }
+    val canSaveCard: Boolean by lazy { session is AirwallexPaymentSession && !session.customerId.isNullOrEmpty() }
 
     val isBillingRequired: Boolean by lazy { session.isBillingInformationRequired }
 

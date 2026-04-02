@@ -2,6 +2,7 @@ package com.airwallex.android.core.model
 
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 
 class PaymentIntentConfirmRequestTest {
 
@@ -87,5 +88,41 @@ class PaymentIntentConfirmRequestTest {
             ),
             paramMap
         )
+    }
+
+    @Test
+    fun `test toParamMap excludes customer_id when customerId is empty`() {
+        val requestWithEmptyCustomerId = PaymentIntentConfirmRequest.Builder(
+            requestId = "test-request-id"
+        )
+            .setCustomerId("")
+            .build()
+
+        val paramMap = requestWithEmptyCustomerId.toParamMap()
+        assertFalse(paramMap.containsKey("customer_id"))
+    }
+
+    @Test
+    fun `test toParamMap excludes customer_id when customerId is null`() {
+        val requestWithNullCustomerId = PaymentIntentConfirmRequest.Builder(
+            requestId = "test-request-id"
+        )
+            .setCustomerId(null)
+            .build()
+
+        val paramMap = requestWithNullCustomerId.toParamMap()
+        assertFalse(paramMap.containsKey("customer_id"))
+    }
+
+    @Test
+    fun `test toParamMap includes customer_id when customerId is non-empty`() {
+        val requestWithCustomerId = PaymentIntentConfirmRequest.Builder(
+            requestId = "test-request-id"
+        )
+            .setCustomerId("cus_123")
+            .build()
+
+        val paramMap = requestWithCustomerId.toParamMap()
+        assertEquals("cus_123", paramMap["customer_id"])
     }
 }
