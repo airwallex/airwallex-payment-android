@@ -20,7 +20,7 @@ import kotlin.math.pow
  *
  * Features:
  * - Exponential backoff: 2s → 4s → 8s → 16s (max)
- * - Maximum polling duration: 5 minutes
+ * - Maximum polling duration: 30 seconds
  * - Final status detection
  * - Lifecycle-aware: waits when app goes to background
  */
@@ -28,7 +28,7 @@ class PaymentStatusPoller(
     private val intentId: String,
     private val clientSecret: String,
     private val airwallex: Airwallex,
-    private val maxPollingDuration: Long = 300_000L, // 5 minutes
+    private val maxPollingDuration: Long = 30_000L, // 30 seconds
     private val baseInterval: Long = 2000L,
     private val maxInterval: Long = 16_000L
 ) {

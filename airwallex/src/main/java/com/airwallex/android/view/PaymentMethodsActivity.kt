@@ -13,6 +13,7 @@ import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.exception.AirwallexException
+import com.airwallex.android.core.exception.ThreeDSCancelledException
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.TrackablePage
 import com.airwallex.android.databinding.ActivityPaymentMethodsBinding
@@ -139,7 +140,16 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
             }
 
             is AirwallexPaymentStatus.Failure -> {
-                finishWithPaymentIntent(exception = status.exception)
+                // Check if it's a 3DS cancellation - stay open to allow retry
+                if (status.exception is ThreeDSCancelledException) {
+                    setLoadingProgress(false)
+                    alert(
+                        title = "Payment cancelled",
+                        message = status.exception.message ?: "Payment cancelled"
+                    )
+                } else {
+                    finishWithPaymentIntent(exception = status.exception)
+                }
             }
 
             is AirwallexPaymentStatus.InProgress -> {
@@ -151,6 +161,10 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
 
             is AirwallexPaymentStatus.Cancel -> {
                 setLoadingProgress(false)
+                alert(
+                    title = "Payment cancelled",
+                    message = "User cancel the payment"
+                )
             }
         }
     }
