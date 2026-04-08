@@ -19,7 +19,7 @@
     <string name="select_payment_failed">Select PaymentMethod failed</string>
     <string name="payment_failed_message">There was an error while processing your payment. Please try again.</string>
     <string name="payment_cancelled">Payment cancelled</string>
-    <string name="payment_cancelled_message">User cancel the payment</string>
+    <string name="payment_cancelled_message">Your payment has been cancelled</string>
 
     <string name="price_value">1</string>
     <string name="currency_value">HKD</string>

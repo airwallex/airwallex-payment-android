@@ -296,7 +296,7 @@ class EmbeddedElementActivity :
             is AirwallexPaymentStatus.Failure -> {
                 AirwallexLogger.error("Payment failed", status.exception)
                 if (status.exception is ThreeDSCancelledException) {
-                    showPaymentCancelled(status.exception.message)
+                    showPaymentCancelled()
                 } else {
                     showPaymentError(status.exception.localizedMessage)
                 }
