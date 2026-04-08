@@ -141,10 +141,6 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
                             // Check if it's a 3DS cancellation - stay open to allow retry
                             if (status.exception is ThreeDSCancelledException) {
                                 setLoadingProgress(false)
-                                alert(
-                                    title = "Payment cancelled",
-                                    message = status.exception.message ?: "User cancel the payment"
-                                )
                             } else {
                                 finishWithPaymentIntent(exception = status.exception)
                             }
@@ -152,10 +148,6 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
 
                         is AirwallexPaymentStatus.Cancel -> {
                             setLoadingProgress(false)
-                            alert(
-                                title = "Payment cancelled",
-                                message = "User cancel the payment"
-                            )
                         }
 
                         else -> Unit

@@ -143,10 +143,6 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                 // Check if it's a 3DS cancellation - stay open to allow retry
                 if (status.exception is ThreeDSCancelledException) {
                     setLoadingProgress(false)
-                    alert(
-                        title = "Payment cancelled",
-                        message = status.exception.message ?: "Payment cancelled"
-                    )
                 } else {
                     finishWithPaymentIntent(exception = status.exception)
                 }
@@ -161,10 +157,6 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
 
             is AirwallexPaymentStatus.Cancel -> {
                 setLoadingProgress(false)
-                alert(
-                    title = "Payment cancelled",
-                    message = "User cancel the payment"
-                )
             }
         }
     }
