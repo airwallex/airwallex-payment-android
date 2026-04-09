@@ -87,8 +87,7 @@ public class EmbeddedElementJavaActivity extends AppCompatActivity {
             configuration = new PaymentElementConfiguration.Card(
                     java.util.Arrays.asList(AirwallexSupportedCard.values()),
                     new PaymentElementConfiguration.CheckoutButton(null),
-                    null, // paymentAppearance - use default
-                    new PaymentElementConfiguration.GooglePayButton(true, null)
+                    null // paymentAppearance - use default
             );
         }
 

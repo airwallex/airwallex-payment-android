@@ -534,8 +534,7 @@ val customConfiguration = PaymentElementConfiguration.Card(
         AirwallexSupportedCard.MASTERCARD
     ),
     checkoutButton = PaymentElementConfiguration.CheckoutButton(title = "立即支付"),
-    paymentAppearance = PaymentAppearance(themeColor = 0xFF612FFF.toInt()),
-    googlePayButton = PaymentElementConfiguration.GooglePayButton(showsAsPrimaryButton = true)
+    paymentAppearance = PaymentAppearance(themeColor = 0xFF612FFF.toInt())
 )
 ```
 

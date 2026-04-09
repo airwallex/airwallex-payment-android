@@ -15,11 +15,6 @@ import kotlinx.parcelize.Parcelize
  */
 sealed class PaymentElementConfiguration {
     /**
-     * Google Pay button configuration
-     */
-    abstract val googlePayButton: GooglePayButton
-
-    /**
      * Checkout button configuration
      */
     abstract val checkoutButton: CheckoutButton
@@ -71,14 +66,12 @@ sealed class PaymentElementConfiguration {
      *                            (Visa, Amex, Mastercard, Discover, JCB, Diners Club, UnionPay).
      * @param checkoutButton Checkout button configuration
      * @param paymentAppearance Payment UI appearance configuration (theme color and dark mode)
-     * @param googlePayButton Google Pay button configuration
      */
     @Parcelize
     data class Card(
         val supportedCardBrands: List<AirwallexSupportedCard> = enumValues<AirwallexSupportedCard>().toList(),
         override val checkoutButton: CheckoutButton = CheckoutButton(),
-        override val paymentAppearance: PaymentAppearance? = null,
-        override val googlePayButton: GooglePayButton = GooglePayButton()
+        override val paymentAppearance: PaymentAppearance? = null
     ) : PaymentElementConfiguration(), Parcelable
 
     /**
@@ -93,7 +86,7 @@ sealed class PaymentElementConfiguration {
     @Parcelize
     data class PaymentSheet(
         val layout: PaymentMethodsLayoutType = PaymentMethodsLayoutType.TAB,
-        override val googlePayButton: GooglePayButton = GooglePayButton(),
+        val googlePayButton: GooglePayButton = GooglePayButton(),
         override val checkoutButton: CheckoutButton = CheckoutButton(),
         override val paymentAppearance: PaymentAppearance? = null
     ) : PaymentElementConfiguration(), Parcelable
