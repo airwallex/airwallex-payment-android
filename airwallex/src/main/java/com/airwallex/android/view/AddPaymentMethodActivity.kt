@@ -36,7 +36,6 @@ import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardText
 import com.airwallex.android.ui.extension.getExtraArgs
 import com.airwallex.android.view.composables.PaymentElement
-import com.airwallex.android.view.composables.PaymentElementConfiguration
 import com.airwallex.android.view.util.AnalyticsConstants.CARD_PAYMENT_VIEW
 import com.airwallex.android.view.util.AnalyticsConstants.SUPPORTED_SCHEMES
 import com.airwallex.risk.AirwallexRisk
@@ -60,7 +59,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
         get() = CARD_PAYMENT_VIEW
 
     override val additionalInfo: Map<String, Any>
-        get() = mapOf(SUPPORTED_SCHEMES to args.supportedCardBrands.map { it.brandName })
+        get() = mapOf(SUPPORTED_SCHEMES to args.configuration.supportedCardBrands.map { it.brandName })
 
     override val session: AirwallexSession by lazy {
         args.session
@@ -120,9 +119,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
             PaymentElement.create(
                 session = session,
                 airwallex = airwallex,
-                configuration = PaymentElementConfiguration.Card(
-                    supportedCardBrands = args.supportedCardBrands
-                ),
+                configuration = args.configuration,
                 launchType = AnalyticsLogger.LaunchType.HPP,
                 onLoadingStateChanged = { isLoading ->
                     setLoadingProgress(loading = isLoading, cancelable = false)

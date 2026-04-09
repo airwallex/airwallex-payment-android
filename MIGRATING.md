@@ -1,5 +1,14 @@
 # Migration Guide
 
+## Migrating from version 6.5.0
+- `PaymentAppearance` has been moved from `AirwallexConfiguration` to `PaymentElementConfiguration`
+- `showsGooglePayAsPrimaryButton` has been moved to `googlePayButton.showsAsPrimaryButton` in `PaymentElementConfiguration`
+
+## Migrating from versions < 6.5.0
+- Changes to `AirwallexStarter`:
+    * `presentCardPaymentFlow()` with `supportedCards` parameter is deprecated, use the new overload with `PaymentElementConfiguration.Card` instead
+    * `presentEntirePaymentFlow()` with `layoutType` and `showsGooglePayAsPrimaryButton` parameters is deprecated, use the new overload with `PaymentElementConfiguration.PaymentSheet` instead
+
 ## Migrating from versions < 6.0.0
 - Changes to `Airwallex`:
     * `ClientSecretProvider` has been removed as a parameter from `Airwallex.Companion#initialize()`

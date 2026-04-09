@@ -50,6 +50,7 @@ internal fun CardSection(
     cardSchemes: List<CardScheme>,
     isSinglePaymentMethod: Boolean = false,
     paymentFlowListener: PaymentFlowListener,
+    checkoutButtonTitle: String? = null,
 ) {
     val paymentFlowViewModel: PaymentFlowViewModel = viewModel(
         factory = PaymentFlowViewModel.Factory(
@@ -138,6 +139,7 @@ internal fun CardSection(
                     cardSchemes = cardSchemes,
                     paymentFlowListener = paymentFlowListener,
                     activity = airwallex.activity,
+                    checkoutButtonTitle = checkoutButtonTitle,
                 )
             }
 
@@ -259,6 +261,7 @@ internal fun CardSection(
                     modifier = Modifier
                         .fillMaxWidth()
                         .fillMaxWidth(),
+                    checkoutButtonTitle = checkoutButtonTitle,
                 )
             }
         }

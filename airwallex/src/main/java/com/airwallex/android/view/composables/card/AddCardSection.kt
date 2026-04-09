@@ -58,7 +58,7 @@ import com.airwallex.android.view.util.AnalyticsConstants.TAP_PAY_BUTTON
 import com.airwallex.android.view.util.CountryUtils
 import com.airwallex.risk.AirwallexRisk
 
-@Suppress("ComplexMethod", "LongMethod")
+@Suppress("ComplexMethod", "LongMethod", "LongParameterList")
 @Composable
 internal fun AddCardSection(
     viewModel: AddPaymentMethodViewModel,
@@ -66,6 +66,7 @@ internal fun AddCardSection(
     cardSchemes: List<CardScheme>,
     paymentFlowListener: PaymentFlowListener,
     activity: ComponentActivity,
+    checkoutButtonTitle: String? = null,
 ) {
     val focusManager = LocalFocusManager.current
     val expiryFocusRequester = remember { FocusRequester() }
@@ -532,7 +533,7 @@ internal fun AddCardSection(
         Spacer(modifier = Modifier.height(48.dp))
 
         StandardSolidButton(
-            text = stringResource(viewModel.ctaRes),
+            text = checkoutButtonTitle ?: stringResource(viewModel.ctaRes),
             onClick = {
                 focusManager.clearFocus()
 
