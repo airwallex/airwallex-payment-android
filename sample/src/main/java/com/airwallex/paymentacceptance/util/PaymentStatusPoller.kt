@@ -49,6 +49,9 @@ class PaymentStatusPoller(
     /**
      * Poll for payment status until final state or timeout.
      * This is a suspend function that returns the final result.
+     *
+     * Note: This should only be called when the app is already in foreground
+     * (e.g., after user returns from redirect). The timer starts immediately.
      */
     suspend fun getPaymentAttempt(): PollingResult {
         pollingJob = currentCoroutineContext().job

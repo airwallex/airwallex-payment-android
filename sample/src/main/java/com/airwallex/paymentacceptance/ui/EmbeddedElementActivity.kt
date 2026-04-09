@@ -70,6 +70,12 @@ class EmbeddedElementActivity :
         setupObservers()
     }
 
+    override fun onResume() {
+        super.onResume()
+        // Start polling when activity resumes (e.g., returning from redirect)
+        mViewModel.startPendingPollingIfNeeded()
+    }
+
     private fun setupColors() {
         mBinding.root.setBackgroundColor(AirwallexColor.backgroundPrimary.toArgb())
         mBinding.toolbar.setBackgroundColor(AirwallexColor.backgroundPrimary.toArgb())
