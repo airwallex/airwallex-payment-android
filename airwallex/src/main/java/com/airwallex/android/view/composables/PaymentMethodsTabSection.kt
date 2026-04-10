@@ -77,9 +77,6 @@ internal fun PaymentMethodsTabSection(
         val coroutineScope = rememberCoroutineScope()
 
         var selectedIndex by rememberSaveable { mutableIntStateOf(0) }
-        var type by remember(selectedIndex, availablePaymentMethods) {
-            mutableStateOf(availablePaymentMethods.getOrNull(selectedIndex) ?: availablePaymentMethods.first())
-        }
         val allowedPaymentMethods = remember(availablePaymentMethods) {
             session.googlePayOptions?.let { googlePayOptions ->
                 availablePaymentMethods.firstOrNull {
@@ -103,12 +100,16 @@ internal fun PaymentMethodsTabSection(
                     googlePayButtonType = googlePayButtonType,
                 )
             }
-            val paymentMethodsList = if (showsGooglePayAsPrimaryButton || allowedPaymentMethods == null) {
+            // Filter out Google Pay from tabs if it's shown as primary button and is available
+            val paymentMethodsList = if (showsGooglePayAsPrimaryButton && allowedPaymentMethods != null) {
                 availablePaymentMethods.filterNot { paymentMethodType ->
                     paymentMethodType.name == PaymentMethodType.GOOGLEPAY.value
                 }
             } else {
                 availablePaymentMethods
+            }
+            var type by remember(selectedIndex, availablePaymentMethods) {
+                mutableStateOf(paymentMethodsList.getOrNull(selectedIndex) ?: availablePaymentMethods.first())
             }
             if (paymentMethodsList.getSinglePaymentMethodOrNull(availablePaymentConsents) == null) {
                 LazyRow(

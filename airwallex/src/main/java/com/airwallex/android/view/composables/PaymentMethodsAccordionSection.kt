@@ -76,12 +76,9 @@ internal fun PaymentMethodsAccordionSection(
     )
     val availablePaymentMethods by flowViewModel.availablePaymentMethods.collectAsState()
     val availablePaymentConsents by flowViewModel.availablePaymentConsents.collectAsState()
-    var selectedIndex by rememberSaveable { mutableIntStateOf(0) }
-    val (selectedOption, onOptionSelected) = remember(selectedIndex, availablePaymentMethods) {
-        mutableStateOf(availablePaymentMethods.getOrNull(selectedIndex) ?: availablePaymentMethods.first())
-    }
 
     if (availablePaymentMethods.getSinglePaymentMethodOrNull(availablePaymentConsents) == null) {
+        var selectedIndex by rememberSaveable { mutableIntStateOf(0) }
         val allowedPaymentMethods = remember(availablePaymentMethods) {
             session.googlePayOptions?.let { googlePayOptions ->
                 availablePaymentMethods.firstOrNull {
@@ -104,15 +101,16 @@ internal fun PaymentMethodsAccordionSection(
                 googlePayButtonType = googlePayButtonType,
             )
         }
-        val paymentMethodsList = if (showsGooglePayAsPrimaryButton) {
+        // Filter out Google Pay from accordion if it's shown as primary button and is available
+        val paymentMethodsList = if (showsGooglePayAsPrimaryButton && allowedPaymentMethods != null) {
             availablePaymentMethods.filterNot { paymentMethodType ->
                 paymentMethodType.name == PaymentMethodType.GOOGLEPAY.value
             }
         } else {
-            // If Google Pay is not prioritized, filter it out only if allowedPaymentMethods is null
-            availablePaymentMethods.filterNot { paymentMethodType ->
-                paymentMethodType.name == PaymentMethodType.GOOGLEPAY.value && allowedPaymentMethods == null
-            }
+            availablePaymentMethods
+        }
+        val (selectedOption, onOptionSelected) = remember(selectedIndex, paymentMethodsList) {
+            mutableStateOf(paymentMethodsList.getOrNull(selectedIndex) ?: paymentMethodsList.first())
         }
         Column(
             modifier = Modifier.fillMaxWidth(),

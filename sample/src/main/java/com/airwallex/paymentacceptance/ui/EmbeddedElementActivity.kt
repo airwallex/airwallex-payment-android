@@ -17,6 +17,7 @@ import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.PaymentMethodsLayoutType
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.AirwallexSupportedCard
+import com.airwallex.android.core.exception.ThreeDSCancelledException
 import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.view.composables.PaymentElementConfiguration
 import com.airwallex.android.view.composables.PaymentElement
@@ -67,6 +68,12 @@ class EmbeddedElementActivity :
 
     override fun addObserver() {
         setupObservers()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Start polling when activity resumes (e.g., returning from redirect)
+        mViewModel.startPendingPollingIfNeeded()
     }
 
     private fun setupColors() {
@@ -298,7 +305,11 @@ class EmbeddedElementActivity :
 
             is AirwallexPaymentStatus.Failure -> {
                 AirwallexLogger.error("Payment failed", status.exception)
-                showPaymentError(status.exception.localizedMessage)
+                if (status.exception is ThreeDSCancelledException) {
+                    showPaymentCancelled()
+                } else {
+                    showPaymentError(status.exception.localizedMessage)
+                }
             }
 
             is AirwallexPaymentStatus.Cancel -> {
