@@ -1,0 +1,11 @@
+<resources>
+    <string name="airwallex_select_your_currency">Vælg din valuta</string>
+    <string name="airwallex_select_your_currency_title">Vælg den valuta, du vil betale med</string>
+    <string name="airwallex_card_empty_cvc">Indtast venligst kortets CVC/CVV</string>
+    <string name="airwallex_card_invalid_cvc">Indtast venligst en gyldig sikkerhedskode</string>
+    <string name="airwallex_card_enter_cvv">Indtast CVC/CVV for\n%s</string>
+    <string name="airwallex_card_pay_now">Betal</string>
+    <string name="airwallex_card_total">I alt %s</string>
+    <string name="airwallex_rate">1 %1$s = %2$f %3$s</string>
+    <string name="airwallex_confirm_payment">Bekræft betaling</string>
+</resources>

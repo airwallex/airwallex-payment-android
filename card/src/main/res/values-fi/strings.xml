@@ -1,0 +1,11 @@
+<resources>
+    <string name="airwallex_select_your_currency">Valitse valuuttasi</string>
+    <string name="airwallex_select_your_currency_title">Valitse valuutta, jolla haluat maksaa</string>
+    <string name="airwallex_card_empty_cvc">Syötä kortin CVC/CVV</string>
+    <string name="airwallex_card_invalid_cvc">Syötä kelvollinen turvakoodi</string>
+    <string name="airwallex_card_enter_cvv">Syötä CVC/CVV kortille\n%s</string>
+    <string name="airwallex_card_pay_now">Maksa</string>
+    <string name="airwallex_card_total">Yhteensä %s</string>
+    <string name="airwallex_rate">1 %1$s = %2$f %3$s</string>
+    <string name="airwallex_confirm_payment">Vahvista maksu</string>
+</resources>
