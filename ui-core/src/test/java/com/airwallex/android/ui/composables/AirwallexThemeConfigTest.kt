@@ -1,10 +1,7 @@
 package com.airwallex.android.ui.composables
 
-import android.graphics.Color
-import androidx.compose.ui.graphics.Color as ComposeColor
 import com.airwallex.android.core.AirwallexConfiguration
 import com.airwallex.android.core.AirwallexPlugins
-import com.airwallex.android.core.PaymentAppearance
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -12,6 +9,7 @@ import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import androidx.compose.ui.graphics.Color as ComposeColor
 
 @RunWith(RobolectricTestRunner::class)
 class AirwallexThemeConfigTest {
