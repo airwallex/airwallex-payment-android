@@ -17,6 +17,7 @@ import java.math.BigDecimal
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class AirwallexPaymentSessionTest {
@@ -279,6 +280,55 @@ class AirwallexPaymentSessionTest {
             builder.build()
         }
         assertEquals("Either paymentIntent or paymentIntentProvider must be provided", exception.message)
+    }
+
+    @Test
+    fun `build normalizes empty customerId to null for PaymentIntent constructor`() {
+        val paymentIntentWithEmptyCustomerId = mockk<PaymentIntent> {
+            every { clientSecret } returns null
+            every { currency } returns "USD"
+            every { amount } returns BigDecimal(100.0)
+            every { customerId } returns ""
+        }
+
+        val session = AirwallexPaymentSession.Builder(
+            paymentIntent = paymentIntentWithEmptyCustomerId,
+            countryCode = "US"
+        ).build()
+
+        assertNull(session.customerId)
+    }
+
+    @Test
+    fun `build normalizes empty customerId to null for PaymentIntentProvider constructor`() {
+        val testProvider = TestPaymentIntentProvider(
+            currency = "USD",
+            amount = BigDecimal(50.0)
+        )
+
+        val session = AirwallexPaymentSession.Builder(
+            paymentIntentProvider = testProvider,
+            countryCode = "US",
+            customerId = ""
+        ).build()
+
+        assertNull(session.customerId)
+    }
+
+    @Test
+    fun `build normalizes empty customerId to null for PaymentIntentSource constructor`() {
+        val testSource = TestPaymentIntentSource(
+            currency = "EUR",
+            amount = BigDecimal(75.0)
+        )
+
+        val session = AirwallexPaymentSession.Builder(
+            paymentIntentSource = testSource,
+            countryCode = "DE",
+            customerId = ""
+        ).build()
+
+        assertNull(session.customerId)
     }
 
     @Test

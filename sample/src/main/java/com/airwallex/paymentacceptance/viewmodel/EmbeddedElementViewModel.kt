@@ -1,11 +1,9 @@
 package com.airwallex.paymentacceptance.viewmodel
 
-import androidx.activity.ComponentActivity
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.BillingAddressParameters
 import com.airwallex.android.core.GooglePayOptions
-import com.airwallex.paymentacceptance.Settings
 import com.airwallex.paymentacceptance.repo.DemoReturnUrl
 import com.airwallex.paymentacceptance.viewmodel.base.BaseViewModel
 
@@ -20,15 +18,15 @@ class EmbeddedElementViewModel : BaseViewModel() {
 
     /**
      * Handle payment result from PaymentElement
+     * Defers polling until activity resumes (user returns from redirect)
      */
     fun handlePaymentResult(status: AirwallexPaymentStatus) {
-        session?.let { handlePaymentStatus(it, status) }
+        session?.let { handlePaymentStatus(it, status, deferPolling = true) }
     }
 
     /**
      * Create session for embedded element
      * Returns existing session if already created (e.g., after configuration change)
-     * Supports both express and traditional checkout flows
      * @param includeGooglePay whether to include Google Pay options
      * @param paymentMethods list of payment method types to include
      * @param onSuccess callback when session is created successfully
@@ -57,21 +55,11 @@ class EmbeddedElementViewModel : BaseViewModel() {
 
         launch {
             try {
-                val createdSession = if (Settings.useSession == "Enabled") {
-                    // Use the new unified Session API
-                    createSessionForUI(
-                        googlePayOptions = googlePayOptions,
-                        paymentMethods = paymentMethods,
-                        returnUrl = DemoReturnUrl.EmbeddedElement
-                    )
-                } else {
-                    // Use legacy session classes
-                    createLegacySessionForUI(
-                        googlePayOptions = googlePayOptions,
-                        paymentMethods = paymentMethods,
-                        returnUrl = DemoReturnUrl.EmbeddedElement
-                    )
-                }
+                val createdSession = createSession(
+                    googlePayOptions = googlePayOptions,
+                    paymentMethods = paymentMethods,
+                    returnUrl = DemoReturnUrl.EmbeddedElement
+                )
                 session = createdSession
                 onSuccess(createdSession)
             } catch (e: Exception) {

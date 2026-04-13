@@ -52,6 +52,7 @@ internal fun SchemaSection(
     airwallex: Airwallex,
     type: AvailablePaymentMethodType,
     paymentFlowListener: PaymentFlowListener,
+    checkoutButtonTitle: String? = null,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val schemaPaymentViewModel: SchemaPaymentViewModel = viewModel(
@@ -154,7 +155,7 @@ internal fun SchemaSection(
         Spacer(modifier = Modifier.height(24.dp))
 
         StandardSolidButton(
-            text = stringResource(schemaPaymentViewModel.ctaRes),
+            text = checkoutButtonTitle ?: stringResource(schemaPaymentViewModel.ctaRes),
             onClick = {
                 coroutineScope.launch {
                     val cachedResult = schemaPaymentViewModel.retrieveSchemaDataFromCache(type)

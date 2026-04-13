@@ -55,6 +55,7 @@ import com.airwallex.android.view.util.AnalyticsConstants.PAYMENT_SELECT
 import com.airwallex.android.view.util.GooglePayUtil
 import com.airwallex.android.view.util.getSinglePaymentMethodOrNull
 import com.airwallex.android.view.util.toSupportedIcons
+import com.google.pay.button.ButtonType
 
 @Suppress("ComplexMethod", "LongMethod", "LongParameterList")
 @Composable
@@ -63,6 +64,8 @@ internal fun PaymentMethodsAccordionSection(
     airwallex: Airwallex,
     paymentFlowListener: PaymentFlowListener,
     showsGooglePayAsPrimaryButton: Boolean = true,
+    googlePayButtonType: ButtonType,
+    checkoutButtonTitle: String? = null,
 ) {
     val flowViewModel: PaymentFlowViewModel = viewModel(
         factory = PaymentFlowViewModel.Factory(
@@ -73,12 +76,9 @@ internal fun PaymentMethodsAccordionSection(
     )
     val availablePaymentMethods by flowViewModel.availablePaymentMethods.collectAsState()
     val availablePaymentConsents by flowViewModel.availablePaymentConsents.collectAsState()
-    var selectedIndex by rememberSaveable { mutableIntStateOf(0) }
-    val (selectedOption, onOptionSelected) = remember(selectedIndex, availablePaymentMethods) {
-        mutableStateOf(availablePaymentMethods.getOrNull(selectedIndex) ?: availablePaymentMethods.first())
-    }
 
     if (availablePaymentMethods.getSinglePaymentMethodOrNull(availablePaymentConsents) == null) {
+        var selectedIndex by rememberSaveable { mutableIntStateOf(0) }
         val allowedPaymentMethods = remember(availablePaymentMethods) {
             session.googlePayOptions?.let { googlePayOptions ->
                 availablePaymentMethods.firstOrNull {
@@ -98,17 +98,19 @@ internal fun PaymentMethodsAccordionSection(
                 paymentFlowListener = paymentFlowListener,
                 flowViewModel = flowViewModel,
                 airwallex = airwallex,
+                googlePayButtonType = googlePayButtonType,
             )
         }
-        val paymentMethodsList = if (showsGooglePayAsPrimaryButton) {
+        // Filter out Google Pay from accordion if it's shown as primary button and is available
+        val paymentMethodsList = if (showsGooglePayAsPrimaryButton && allowedPaymentMethods != null) {
             availablePaymentMethods.filterNot { paymentMethodType ->
                 paymentMethodType.name == PaymentMethodType.GOOGLEPAY.value
             }
         } else {
-            // If Google Pay is not prioritized, filter it out only if allowedPaymentMethods is null
-            availablePaymentMethods.filterNot { paymentMethodType ->
-                paymentMethodType.name == PaymentMethodType.GOOGLEPAY.value && allowedPaymentMethods == null
-            }
+            availablePaymentMethods
+        }
+        val (selectedOption, onOptionSelected) = remember(selectedIndex, paymentMethodsList) {
+            mutableStateOf(paymentMethodsList.getOrNull(selectedIndex) ?: paymentMethodsList.first())
         }
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -214,6 +216,7 @@ internal fun PaymentMethodsAccordionSection(
                                     airwallex = airwallex,
                                     cardSchemes = type.cardSchemes.orEmpty(),
                                     paymentFlowListener = paymentFlowListener,
+                                    checkoutButtonTitle = checkoutButtonTitle,
                                 )
                             }
 
@@ -223,6 +226,7 @@ internal fun PaymentMethodsAccordionSection(
                                     paymentFlowListener = paymentFlowListener,
                                     flowViewModel = flowViewModel,
                                     airwallex = airwallex,
+                                    googlePayButtonType = googlePayButtonType,
                                 )
                             }
 
@@ -232,6 +236,7 @@ internal fun PaymentMethodsAccordionSection(
                                     airwallex = airwallex,
                                     type = type,
                                     paymentFlowListener = paymentFlowListener,
+                                    checkoutButtonTitle = checkoutButtonTitle,
                                 )
                             }
                         }

@@ -58,6 +58,10 @@ abstract class BaseViewModel : ViewModel() {
     private val _pollingResult = MutableSharedFlow<PaymentStatusPoller.PollingResult>()
     val pollingResult: SharedFlow<PaymentStatusPoller.PollingResult> = _pollingResult.asSharedFlow()
 
+    // Pending polling state - set when InProgress is received, cleared when polling starts
+    private var pendingPollingIntentId: String? = null
+    private var pendingPollingClientSecret: String? = null
+
     // Activity reference for creating Airwallex instance
     protected var activity: ComponentActivity? = null
 
@@ -84,6 +88,7 @@ abstract class BaseViewModel : ViewModel() {
     override fun onCleared() {
         super.onCleared()
         paymentStatusPoller?.stop()
+        clearPendingPolling()
         stopLoading()
     }
 
@@ -93,32 +98,67 @@ abstract class BaseViewModel : ViewModel() {
     fun stopPolling() {
         paymentStatusPoller?.stop()
         paymentStatusPoller = null
+        clearPendingPolling()
         stopLoading()
     }
 
     /**
-     * Handle payment status - start polling for InProgress, emit status for others
+     * Handle payment status - start/defer polling for InProgress based on deferPolling flag
+     * @param session The Airwallex session
+     * @param status The payment status
+     * @param deferPolling If true, defer polling until startPendingPollingIfNeeded() is called (for embedded element).
+     *                     If false, start polling immediately (for HPP/UI integration).
      */
     protected fun handlePaymentStatus(
         session: AirwallexSession,
-        status: AirwallexPaymentStatus
+        status: AirwallexPaymentStatus,
+        deferPolling: Boolean = false
     ) {
         viewModelScope.launch {
             if (status is AirwallexPaymentStatus.InProgress) {
-                // Start polling for InProgress status
                 status.paymentIntentId?.let { intentId ->
                     val clientSecret = session.clientSecret
                     if (!clientSecret.isNullOrEmpty()) {
-                        startPolling(intentId, clientSecret)
+                        if (deferPolling) {
+                            // Defer polling - wait for user to return from redirect
+                            pendingPollingIntentId = intentId
+                            pendingPollingClientSecret = clientSecret
+                            Log.d(TAG, "Polling deferred for intentId: $intentId, will start when activity resumes")
+                        } else {
+                            // Start polling immediately
+                            Log.d(TAG, "Starting polling immediately for intentId: $intentId")
+                            startPolling(intentId, clientSecret)
+                        }
                     } else {
                         Log.e(TAG, "Client secret is null, cannot start polling")
                     }
                 }
             } else {
                 stopLoading()
+                clearPendingPolling()
             }
             _airwallexPaymentStatus.emit(status)
         }
+    }
+
+    /**
+     * Start polling if there's a pending poll request
+     * Should be called from Activity.onResume() when returning from redirect
+     */
+    fun startPendingPollingIfNeeded() {
+        val intentId = pendingPollingIntentId
+        val clientSecret = pendingPollingClientSecret
+
+        if (intentId != null && clientSecret != null) {
+            Log.d(TAG, "Activity resumed, starting pending polling for intentId: $intentId")
+            startPolling(intentId, clientSecret)
+            clearPendingPolling()
+        }
+    }
+
+    private fun clearPendingPolling() {
+        pendingPollingIntentId = null
+        pendingPollingClientSecret = null
     }
 
     /**
@@ -363,7 +403,7 @@ abstract class BaseViewModel : ViewModel() {
         // Example with paymentIntentProvider: paymentIntentProvider = DemoPaymentIntentProvider(force3DS = force3DS, customerId = Settings.cachedCustomerId)
         paymentIntentSource = DemoPaymentIntentSource(
             force3DS = force3DS,
-            customerId = customerId ?: Settings.cachedCustomerId,
+            customerId = customerId,
             returnUrl = returnUrl
         ),
         countryCode = Settings.countryCode,
