@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.res.Configuration
 import androidx.compose.ui.graphics.Color
 import androidx.core.content.ContextCompat
-import com.airwallex.android.core.AirwallexPlugins
 import com.airwallex.android.ui.R
 
 /**
@@ -33,14 +32,10 @@ object AirwallexThemeConfig {
 
     /**
      * Current dark theme state. Resolves SYSTEM mode to actual boolean.
-     * Priority: PaymentAppearance > programmatic config > system setting
+     * Priority: programmatic config > system setting
      */
     val isDarkTheme: Boolean
         get() {
-            // Check PaymentAppearance from AirwallexConfiguration first
-            AirwallexPlugins.paymentAppearance?.isDarkTheme?.let { return it }
-
-            // Fall back to programmatic configuration
             return when (configuredDarkMode) {
                 DarkMode.LIGHT -> false
                 DarkMode.DARK -> true
@@ -53,12 +48,10 @@ object AirwallexThemeConfig {
 
     /**
      * Current theme color.
-     * Priority: PaymentAppearance > programmatic config > resource > default
+     * Priority: programmatic config > resource > default
      */
     val themeColor: Color
         get() {
-            AirwallexPlugins.paymentAppearance?.themeColor?.let { return Color(it) }
-
             // If color was set programmatically, use it
             configuredThemeColor?.let { return it }
 

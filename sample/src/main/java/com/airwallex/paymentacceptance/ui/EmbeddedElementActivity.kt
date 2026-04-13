@@ -236,12 +236,16 @@ class EmbeddedElementActivity :
             val configuration = when (args.layoutType) {
                 PaymentMethodsLayoutType.TAB -> PaymentElementConfiguration.PaymentSheet(
                     layout = PaymentMethodsLayoutType.TAB,
-                    showsGooglePayAsPrimaryButton = args.showsGooglePayAsPrimaryButton
+                    googlePayButton = PaymentElementConfiguration.GooglePayButton(
+                        showsAsPrimaryButton = args.showsGooglePayAsPrimaryButton
+                    )
                 )
 
                 PaymentMethodsLayoutType.ACCORDION -> PaymentElementConfiguration.PaymentSheet(
                     layout = PaymentMethodsLayoutType.ACCORDION,
-                    showsGooglePayAsPrimaryButton = args.showsGooglePayAsPrimaryButton
+                    googlePayButton = PaymentElementConfiguration.GooglePayButton(
+                        showsAsPrimaryButton = args.showsGooglePayAsPrimaryButton
+                    )
                 )
 
                 null -> PaymentElementConfiguration.Card(

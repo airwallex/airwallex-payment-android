@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.airwallex.android.core.Airwallex;
 import com.airwallex.android.core.AirwallexPaymentStatus;
 import com.airwallex.android.core.AirwallexSession;
+import com.airwallex.android.core.AirwallexSupportedCard;
 import com.airwallex.android.core.PaymentMethodsLayoutType;
 import com.airwallex.android.ui.AirwallexLoadingDialogFragment;
 import com.airwallex.android.view.PaymentFlowListener;
@@ -77,12 +78,16 @@ public class EmbeddedElementJavaActivity extends AppCompatActivity {
             PaymentMethodsLayoutType layoutType = PaymentMethodsLayoutType.valueOf(layoutTypeString);
             configuration = new PaymentElementConfiguration.PaymentSheet(
                     layoutType,
-                    showsGooglePayAsPrimaryButton
+                    new PaymentElementConfiguration.GooglePayButton(showsGooglePayAsPrimaryButton, null),
+                    new PaymentElementConfiguration.CheckoutButton(null),
+                    null // paymentAppearance - use default
             );
         } else {
             // Card-only mode (no payment sheet)
             configuration = new PaymentElementConfiguration.Card(
-                    java.util.Arrays.asList(com.airwallex.android.core.AirwallexSupportedCard.values())
+                    java.util.Arrays.asList(AirwallexSupportedCard.values()),
+                    new PaymentElementConfiguration.CheckoutButton(null),
+                    null // paymentAppearance - use default
             );
         }
 

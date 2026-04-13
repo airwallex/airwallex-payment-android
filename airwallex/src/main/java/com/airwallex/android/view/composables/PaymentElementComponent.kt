@@ -10,6 +10,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.airwallex.android.core.Airwallex
+import com.airwallex.android.core.AirwallexRecurringSession
+import com.airwallex.android.core.AirwallexRecurringWithIntentSession
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.PaymentMethodsLayoutType
 import com.airwallex.android.core.model.PaymentMethodType
@@ -18,6 +20,7 @@ import com.airwallex.android.view.PaymentFlowListener
 import com.airwallex.android.view.PaymentFlowViewModel
 import com.airwallex.android.view.composables.card.CardSection
 import com.airwallex.android.view.util.getSinglePaymentMethodOrNull
+import com.google.pay.button.ButtonType
 
 /**
  * Airwallex payment element composable that displays payment UI based on configuration.
@@ -60,17 +63,27 @@ internal fun PaymentElementComponent(
                     cardSchemes = cardSchemes,
                     isSinglePaymentMethod = isSinglePaymentMethod,
                     paymentFlowListener = paymentFlowListener,
+                    checkoutButtonTitle = configuration.checkoutButton.title,
                 )
             }
 
             is PaymentElementConfiguration.PaymentSheet -> {
+                // Resolve Google Pay button type once based on session type
+                val googlePayButtonType = configuration.googlePayButton.buttonType ?: run {
+                    val isRecurring = session is AirwallexRecurringSession ||
+                        session is AirwallexRecurringWithIntentSession
+                    if (isRecurring) ButtonType.Subscribe else ButtonType.Buy
+                }
+
                 when (configuration.layout) {
                     PaymentMethodsLayoutType.TAB -> {
                         PaymentMethodsTabSection(
                             session = session,
                             airwallex = airwallex,
                             paymentFlowListener = paymentFlowListener,
-                            showsGooglePayAsPrimaryButton = configuration.showsGooglePayAsPrimaryButton,
+                            showsGooglePayAsPrimaryButton = configuration.googlePayButton.showsAsPrimaryButton,
+                            googlePayButtonType = googlePayButtonType,
+                            checkoutButtonTitle = configuration.checkoutButton.title,
                         )
                     }
 
@@ -79,7 +92,9 @@ internal fun PaymentElementComponent(
                             session = session,
                             airwallex = airwallex,
                             paymentFlowListener = paymentFlowListener,
-                            showsGooglePayAsPrimaryButton = configuration.showsGooglePayAsPrimaryButton,
+                            showsGooglePayAsPrimaryButton = configuration.googlePayButton.showsAsPrimaryButton,
+                            googlePayButtonType = googlePayButtonType,
+                            checkoutButtonTitle = configuration.checkoutButton.title,
                         )
                     }
                 }

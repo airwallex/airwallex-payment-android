@@ -155,79 +155,15 @@ AirwallexStarter.initialize(
 You can customize the appearance of the Airwallex SDK UI including theme color and dark mode preferences. This applies to both Hosted Payment Page Integration and Embedded Element integration.
 
 ### Theme Color and Dark Mode
+### Theme Override
 
-Configure the payment UI appearance using `PaymentAppearance`:
-
-**Kotlin:**
-```kotlin
-import com.airwallex.android.core.AirwallexConfiguration
-import com.airwallex.android.core.PaymentAppearance
-
-AirwallexStarter.initialize(
-    application,
-    AirwallexConfiguration.Builder()
-        .enableLogging(true)
-        .setEnvironment(environment)
-        .setSupportComponentProviders(
-            listOf(
-                CardComponent.PROVIDER,
-                RedirectComponent.PROVIDER,
-                GooglePayComponent.PROVIDER
-            )
-        )
-        .setPaymentAppearance(
-            PaymentAppearance(
-                themeColor = 0xFF612FFF.toInt(),  // Custom theme color (ARGB format)
-                isDarkTheme = true                 // Force dark mode (true), light mode (false), or follow system (null)
-            )
-        )
-        .build()
-)
-```
-
-**Java:**
-```java
-import com.airwallex.android.core.AirwallexConfiguration;
-import com.airwallex.android.core.PaymentAppearance;
-
-AirwallexStarter.initialize(
-    application,
-    new AirwallexConfiguration.Builder()
-        .enableLogging(true)
-        .setEnvironment(environment)
-        .setSupportComponentProviders(
-            Arrays.asList(
-                CardComponent.PROVIDER,
-                RedirectComponent.PROVIDER,
-                GooglePayComponent.PROVIDER
-            )
-        )
-        .setPaymentAppearance(
-            new PaymentAppearance(
-                0xFF612FFF,  // Custom theme color (ARGB format)
-                true         // Force dark mode (true), light mode (false), or follow system (null)
-            )
-        )
-        .build()
-);
-```
-
-**PaymentAppearance Options:**
-- `themeColor`: Custom theme color in ARGB format (e.g., `0xFF612FFF`). If null, uses default Airwallex theme color.
-- `isDarkTheme`:
-  - `true` - Force dark mode
-  - `false` - Force light mode
-  - `null` - Follow system dark mode setting (default)
-
-### Legacy Theme Override
-
-You can also override the default theme color using Android's theme system:
+You can override the default theme color using Android's theme system:
 
 ```xml
 <color name="airwallex_tint_color">@color/your_custom_color</color>
 ```
 
-Note: The `PaymentAppearance` approach is recommended as it provides more control and applies consistently across all SDK UI components.
+Note: Alternatively, you can set theme color via `PaymentAppearance.themeColor` in your `PaymentElementConfiguration` (see configuration examples below). `PaymentAppearance` also supports dark mode configuration.
 
 ## Payment Flow
 
@@ -588,7 +524,7 @@ Unlike Hosted Payment Page Integration where the SDK launches its own activities
 - Customize the container styling
 - Integrate seamlessly with your app's navigation flow
 
-Both integration methods support the same customization options via `PaymentAppearance` (theme color and dark mode).
+Both integration methods support the same customization options via `PaymentElementConfiguration` (theme color, dark mode, button text, Google Pay display).
 
 **Key Difference - Session Creation:**
 - **Hosted Payment Page (HPP)**: Create session in your calling activity → Pass to `AirwallexStarter` methods
@@ -635,16 +571,18 @@ import com.airwallex.android.core.AirwallexSupportedCard
 // Use default (all supported cards: Visa, Amex, Mastercard, Discover, JCB, Diners Club, UnionPay)
 val configuration = PaymentElementConfiguration.Card()
 
-// Or customize supported card brands
+// Or customize supported card brands and appearance
 val customConfiguration = PaymentElementConfiguration.Card(
     supportedCardBrands = listOf(
         AirwallexSupportedCard.VISA,
         AirwallexSupportedCard.MASTERCARD
-    )
+    ),
+    checkoutButton = PaymentElementConfiguration.CheckoutButton(title = "Pay Now"),
+    paymentAppearance = PaymentAppearance(themeColor = 0xFF612FFF.toInt())
 )
 ```
 
-**Note:** By default, `supportedCardBrands` includes all cards from `AirwallexSupportedCard` (Visa, Amex, Mastercard, Discover, JCB, Diners Club, UnionPay). You can customize this list to restrict which card brands to accept.
+**Note:** By default, `supportedCardBrands` includes all cards from `AirwallexSupportedCard` (Visa, Amex, Mastercard, Discover, JCB, Diners Club, UnionPay). All other parameters are optional with sensible defaults.
 
 ### 2. Payment Sheet (`PaymentElementConfiguration.PaymentSheet`)
 
@@ -652,8 +590,18 @@ Shows multiple payment methods with Tab or Accordion layout:
 
 ```kotlin
 val configuration = PaymentElementConfiguration.PaymentSheet(
-    layout = PaymentMethodsLayoutType.TAB,           // TAB or ACCORDION
-    showsGooglePayAsPrimaryButton = true             // true: show Google Pay as primary button, false: show in list
+    layout = PaymentMethodsLayoutType.TAB,  // TAB or ACCORDION
+    googlePayButton = PaymentElementConfiguration.GooglePayButton(
+        showsAsPrimaryButton = true,         // true: show as primary button, false: show in list
+        buttonType = null                    // null: auto (BUY for one-off, SUBSCRIBE for recurring)
+    ),
+    checkoutButton = PaymentElementConfiguration.CheckoutButton(
+        title = null                         // null: auto ("Pay" for one-off, "Confirm" for recurring)
+    ),
+    paymentAppearance = PaymentAppearance(
+        themeColor = 0xFF612FFF.toInt(),    // Custom theme color (ARGB format), null for default
+        isDarkTheme = null                   // true: dark, false: light, null: follow system
+    )
 )
 ```
 
@@ -661,9 +609,17 @@ val configuration = PaymentElementConfiguration.PaymentSheet(
 - `PaymentMethodsLayoutType.TAB` - Tab-based layout for payment methods
 - `PaymentMethodsLayoutType.ACCORDION` - Accordion-based layout for payment methods
 
-**Google Pay Display:**
-- `showsGooglePayAsPrimaryButton = true` - Google Pay appears as a prominent button above other payment methods
-- `showsGooglePayAsPrimaryButton = false` - Google Pay appears in the list alongside other payment methods
+**Google Pay Button:**
+- `showsAsPrimaryButton = true` - Google Pay appears as a prominent button above other payment methods
+- `showsAsPrimaryButton = false` - Google Pay appears in the list alongside other payment methods
+- `buttonType` - Button type (BUY, SUBSCRIBE, etc.), null for automatic selection
+
+**Checkout Button:**
+- `title` - Custom button text, null for automatic ("Pay" or "Confirm")
+
+**Payment Appearance:**
+- `themeColor` - Custom theme color in ARGB format (e.g., `0xFF612FFF`), null for default
+- `isDarkTheme` - true (dark mode), false (light mode), null (follow system)
 
 ## <a name="kotlin-example"></a>Kotlin Example
 
@@ -721,7 +677,7 @@ class CheckoutActivity : ComponentActivity() {
             // Configure payment element
             val configuration = PaymentElementConfiguration.PaymentSheet(
                 layout = PaymentMethodsLayoutType.TAB,
-                showsGooglePayAsPrimaryButton = true
+                googlePayButton = PaymentElementConfiguration.GooglePayButton(showsAsPrimaryButton = true)
             )
 
             // Create PaymentElement
@@ -845,7 +801,9 @@ import com.airwallex.android.view.PaymentFlowListener;
 // Configure payment element
 PaymentElementConfiguration configuration = new PaymentElementConfiguration.PaymentSheet(
     PaymentMethodsLayoutType.TAB,
-    true  // showsGooglePayAsPrimaryButton
+    new PaymentElementConfiguration.GooglePayButton(true, null),  // showsAsPrimaryButton, buttonType
+    new PaymentElementConfiguration.CheckoutButton(null),         // title
+    null                                                           // paymentAppearance
 );
 
 // Create payment flow listener to handle results
