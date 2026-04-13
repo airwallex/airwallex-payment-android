@@ -8,8 +8,8 @@ import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexApiRepository
 import com.airwallex.android.core.AirwallexPaymentManager
 import com.airwallex.android.core.PaymentManager
-import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.exception.AirwallexException
+import com.airwallex.android.core.exception.ThreeDSCancelledException
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.model.PaymentIntent
@@ -35,7 +35,7 @@ class ThreeDSecurityActivity : AirwallexActivity() {
     }
 
     override fun onBackButtonPressed() {
-        finishWithData(exception = AirwallexCheckoutException(message = "3DS has been cancelled!"))
+        finishWithData(exception = ThreeDSCancelledException())
     }
 
     override fun homeAsUpIndicatorResId(): Int {

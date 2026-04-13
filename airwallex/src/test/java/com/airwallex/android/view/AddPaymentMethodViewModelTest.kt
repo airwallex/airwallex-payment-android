@@ -95,6 +95,15 @@ class AddPaymentMethodViewModelTest {
     }
 
     @Test
+    fun `test canSaveCard is false for AirwallexPaymentSession with empty customerId`() {
+        val mockSession = mockk<AirwallexPaymentSession>(relaxed = true) {
+            every { customerId } returns ""
+        }
+        val viewModel = createViewModel(mockSession)
+        assertFalse(viewModel.canSaveCard)
+    }
+
+    @Test
     fun `test canSaveCard is false for other session types`() {
         val mockSession = mockk<AirwallexSession>(relaxed = true)
         val viewModel = createViewModel(mockSession)
