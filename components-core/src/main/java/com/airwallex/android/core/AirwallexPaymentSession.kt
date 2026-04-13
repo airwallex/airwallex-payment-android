@@ -118,7 +118,7 @@ class AirwallexPaymentSession internal constructor(
             this.countryCode = countryCode
             this.currency = paymentIntent.currency
             this.amount = paymentIntent.amount
-            this.customerId = paymentIntent.customerId
+            this.customerId = paymentIntent.customerId?.takeIf { it.isNotEmpty() }
             this.googlePayOptions = googlePayOptions
 
             paymentIntent.clientSecret?.apply {
@@ -139,7 +139,7 @@ class AirwallexPaymentSession internal constructor(
             this.countryCode = countryCode
             this.currency = paymentIntentProvider.currency
             this.amount = paymentIntentProvider.amount
-            this.customerId = customerId
+            this.customerId = customerId?.takeIf { it.isNotEmpty() }
             this.googlePayOptions = googlePayOptions
         }
 
@@ -157,7 +157,7 @@ class AirwallexPaymentSession internal constructor(
             this.countryCode = countryCode
             this.currency = paymentIntentSource.currency
             this.amount = paymentIntentSource.amount
-            this.customerId = customerId
+            this.customerId = customerId?.takeIf { it.isNotEmpty() }
             this.googlePayOptions = googlePayOptions
         }
 

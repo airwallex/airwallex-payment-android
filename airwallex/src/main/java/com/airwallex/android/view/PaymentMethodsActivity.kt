@@ -7,27 +7,27 @@ import android.view.ViewGroup
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.graphics.drawable.toDrawable
 import androidx.lifecycle.lifecycleScope
 import com.airwallex.android.R
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.exception.AirwallexException
+import com.airwallex.android.core.exception.ThreeDSCancelledException
 import com.airwallex.android.core.log.AirwallexLogger
+import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.TrackablePage
 import com.airwallex.android.databinding.ActivityPaymentMethodsBinding
 import com.airwallex.android.ui.checkout.AirwallexCheckoutBaseActivity
 import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.composables.AirwallexTheme
 import com.airwallex.android.ui.extension.getExtraArgs
-import com.airwallex.android.view.composables.PaymentElementConfiguration
 import com.airwallex.android.view.composables.PaymentElement
 import com.airwallex.android.view.composables.PaymentScreen
 import com.airwallex.android.view.composables.PaymentScreenLoadingState
 import com.airwallex.risk.AirwallexRisk
 import kotlinx.coroutines.launch
-import androidx.core.graphics.drawable.toDrawable
-import com.airwallex.android.core.log.AnalyticsLogger
 
 @Suppress("LongMethod")
 class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
@@ -78,7 +78,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
             PaymentElement.create(
                 session = session,
                 airwallex = airwallex,
-                configuration = PaymentElementConfiguration.PaymentSheet(layout = args.layoutType, showsGooglePayAsPrimaryButton = args.showsGooglePayAsPrimaryButton),
+                configuration = args.configuration,
                 launchType = AnalyticsLogger.LaunchType.HPP,
                 paymentFlowListener = object : PaymentFlowListener {
                     override fun onLoadingStateChanged(isLoading: Boolean, context: Context) {
@@ -140,7 +140,12 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
             }
 
             is AirwallexPaymentStatus.Failure -> {
-                finishWithPaymentIntent(exception = status.exception)
+                // Check if it's a 3DS cancellation - stay open to allow retry
+                if (status.exception is ThreeDSCancelledException) {
+                    setLoadingProgress(false)
+                } else {
+                    finishWithPaymentIntent(exception = status.exception)
+                }
             }
 
             is AirwallexPaymentStatus.InProgress -> {

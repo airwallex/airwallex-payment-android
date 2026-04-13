@@ -26,11 +26,13 @@ import com.google.pay.button.ButtonTheme
 import com.google.pay.button.ButtonType
 import com.google.pay.button.PayButton
 
+@Suppress("LongParameterList")
 @Composable
 internal fun GooglePaySection(
     allowedPaymentMethods: String,
     onClick: () -> Unit,
     onScreenViewed: () -> Unit,
+    googlePayButtonType: ButtonType,
     modifier: Modifier = Modifier,
     onPayButtonVisibilityChanged: ((Boolean) -> Unit)? = null,
 ) {
@@ -47,7 +49,7 @@ internal fun GooglePaySection(
             onClick = onClick,
             allowedPaymentMethods = allowedPaymentMethods,
             theme = if (AirwallexThemeConfig.isDarkTheme) ButtonTheme.Light else ButtonTheme.Dark,
-            type = ButtonType.Buy,
+            type = googlePayButtonType,
             radius = 8.dp,
             enabled = true,
             modifier = modifier,
@@ -108,5 +110,6 @@ private fun GooglePaySectionPreview() {
         allowedPaymentMethods = "",
         onClick = {},
         onScreenViewed = {},
+        googlePayButtonType = ButtonType.Buy,
     )
 }

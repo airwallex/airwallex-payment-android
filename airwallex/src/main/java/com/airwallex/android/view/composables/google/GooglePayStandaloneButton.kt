@@ -13,6 +13,7 @@ import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.view.PaymentFlowListener
 import com.airwallex.android.view.PaymentFlowViewModel
 import com.airwallex.android.view.util.AnalyticsConstants.PAYMENT_METHOD
+import com.google.pay.button.ButtonType
 import org.json.JSONArray
 
 /**
@@ -23,6 +24,7 @@ import org.json.JSONArray
  * @param paymentFlowListener Listener for payment flow events
  * @param flowViewModel ViewModel for payment flow operations
  * @param airwallex The Airwallex instance for payment operations
+ * @param googlePayButtonType The Google Pay button type (BUY, SUBSCRIBE, etc.)
  */
 @Composable
 internal fun GooglePayStandaloneButton(
@@ -30,6 +32,7 @@ internal fun GooglePayStandaloneButton(
     paymentFlowListener: PaymentFlowListener,
     flowViewModel: PaymentFlowViewModel,
     airwallex: Airwallex,
+    googlePayButtonType: ButtonType,
 ) {
     var googlePayButtonVisible by remember { mutableStateOf(false) }
 
@@ -37,6 +40,7 @@ internal fun GooglePayStandaloneButton(
         GooglePaySection(
             modifier = Modifier.fillMaxWidth(),
             allowedPaymentMethods = methods.toString().trimIndent(),
+            googlePayButtonType = googlePayButtonType,
             onClick = {
                 AnalyticsLogger.logAction(
                     "tap_pay_button",

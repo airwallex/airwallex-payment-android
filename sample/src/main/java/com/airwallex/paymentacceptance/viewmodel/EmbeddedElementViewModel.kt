@@ -19,9 +19,10 @@ class EmbeddedElementViewModel : BaseViewModel() {
 
     /**
      * Handle payment result from PaymentElement
+     * Defers polling until activity resumes (user returns from redirect)
      */
     fun handlePaymentResult(status: AirwallexPaymentStatus) {
-        session?.let { handlePaymentStatus(it, status) }
+        session?.let { handlePaymentStatus(it, status, deferPolling = true) }
     }
 
     /**

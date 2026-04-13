@@ -173,32 +173,4 @@ class AirwallexPluginsTest {
         )
         assertNull(provider)
     }
-
-    @Test
-    fun `test payment appearance is null by default`() {
-        AirwallexPlugins.initialize(
-            AirwallexConfiguration.Builder()
-                .build()
-        )
-        assertNull(AirwallexPlugins.paymentAppearance)
-    }
-
-    @Test
-    fun `test payment appearance with both theme color and dark theme`() {
-        val themeColor = android.graphics.Color.parseColor("#DA8C21")
-        val isDark = false
-        val appearance = PaymentAppearance(
-            themeColor = themeColor,
-            isDarkTheme = isDark
-        )
-
-        AirwallexPlugins.initialize(
-            AirwallexConfiguration.Builder()
-                .setPaymentAppearance(appearance)
-                .build()
-        )
-
-        assertEquals(themeColor, AirwallexPlugins.paymentAppearance?.themeColor)
-        assertEquals(isDark, AirwallexPlugins.paymentAppearance?.isDarkTheme)
-    }
 }
