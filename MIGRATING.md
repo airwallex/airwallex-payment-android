@@ -1,7 +1,7 @@
 # Migration Guide
 
 ## Migrating from version 6.5.0
-- `PaymentAppearance` has been moved from `AirwallexConfiguration` to `PaymentElementConfiguration`
+- `PaymentAppearance` has been moved from `AirwallexConfiguration` to `PaymentElementConfiguration` and renamed into `Appearance`
 - `showsGooglePayAsPrimaryButton` has been moved to `googlePayButton.showsAsPrimaryButton` in `PaymentElementConfiguration.PaymentSheet`
 
 ## Migrating from versions < 6.5.0

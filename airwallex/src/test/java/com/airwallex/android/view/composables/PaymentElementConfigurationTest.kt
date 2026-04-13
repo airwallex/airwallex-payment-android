@@ -28,7 +28,7 @@ class PaymentElementConfigurationTest {
     }
 
     @Test
-    fun `test PaymentAppearance in Card configuration applies theme color`() {
+    fun `test Appearance in Card configuration applies theme color`() {
         val customColor = Color.parseColor("#DA8C21")
         val configuration = PaymentElementConfiguration.Card(
             appearance = Appearance(themeColor = customColor)
@@ -43,7 +43,7 @@ class PaymentElementConfigurationTest {
     }
 
     @Test
-    fun `test PaymentAppearance in Card configuration applies dark mode`() {
+    fun `test Appearance in Card configuration applies dark mode`() {
         val configuration = PaymentElementConfiguration.Card(
             appearance = Appearance(isDarkTheme = true)
         )
@@ -57,7 +57,7 @@ class PaymentElementConfigurationTest {
     }
 
     @Test
-    fun `test PaymentAppearance in Card configuration applies both theme color and dark mode`() {
+    fun `test Appearance in Card configuration applies both theme color and dark mode`() {
         val customColor = Color.parseColor("#612FFF")
         val configuration = PaymentElementConfiguration.Card(
             appearance = Appearance(
@@ -81,7 +81,7 @@ class PaymentElementConfigurationTest {
     }
 
     @Test
-    fun `test PaymentAppearance in PaymentSheet configuration applies theme color`() {
+    fun `test Appearance in PaymentSheet configuration applies theme color`() {
         val customColor = Color.parseColor("#FF0000")
         val configuration = PaymentElementConfiguration.PaymentSheet(
             appearance = Appearance(themeColor = customColor)
@@ -96,7 +96,7 @@ class PaymentElementConfigurationTest {
     }
 
     @Test
-    fun `test PaymentAppearance in PaymentSheet configuration applies dark mode`() {
+    fun `test Appearance in PaymentSheet configuration applies dark mode`() {
         val configuration = PaymentElementConfiguration.PaymentSheet(
             appearance = Appearance(isDarkTheme = false)
         )
@@ -110,7 +110,7 @@ class PaymentElementConfigurationTest {
     }
 
     @Test
-    fun `test null PaymentAppearance does not change theme config`() {
+    fun `test null Appearance does not change theme config`() {
         val programmaticColor = ComposeColor.Blue
         AirwallexThemeConfig.setThemeColor(programmaticColor)
         AirwallexThemeConfig.setDarkMode(DarkMode.DARK)
@@ -135,7 +135,7 @@ class PaymentElementConfigurationTest {
     }
 
     @Test
-    fun `test PaymentAppearance with only theme color does not change dark mode`() {
+    fun `test Appearance with only theme color does not change dark mode`() {
         val customColor = Color.parseColor("#612FFF")
         AirwallexThemeConfig.setDarkMode(DarkMode.LIGHT)
 
@@ -158,7 +158,7 @@ class PaymentElementConfigurationTest {
     }
 
     @Test
-    fun `test PaymentAppearance with only dark mode does not change theme color`() {
+    fun `test Appearance with only dark mode does not change theme color`() {
         val programmaticColor = ComposeColor.Green
         AirwallexThemeConfig.setThemeColor(programmaticColor)
 
@@ -181,7 +181,7 @@ class PaymentElementConfigurationTest {
     }
 
     @Test
-    fun `test PaymentAppearance overrides programmatic config`() {
+    fun `test Appearance overrides programmatic config`() {
         val programmaticColor = ComposeColor.Red
         val appearanceColor = Color.parseColor("#612FFF")
 
