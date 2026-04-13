@@ -157,7 +157,7 @@ AirwallexStarter.initialize(
 <color name="airwallex_tint_color">@color/your_custom_color</color>
 ```
 
-注意：或者，你可以通过在 `PaymentElementConfiguration` 中设置 `PaymentAppearance.themeColor` 来设置主题色（参见下面的配置示例）。`PaymentAppearance` 还支持深色模式配置。
+注意：或者，你可以通过在 `PaymentElementConfiguration` 中设置 `Appearance.themeColor` 来设置主题色（参见下面的配置示例）。`Appearance` 还支持深色模式配置。
 
 ### 支付流程
 
@@ -534,7 +534,7 @@ val customConfiguration = PaymentElementConfiguration.Card(
         AirwallexSupportedCard.MASTERCARD
     ),
     checkoutButton = PaymentElementConfiguration.CheckoutButton(title = "立即支付"),
-    paymentAppearance = PaymentAppearance(themeColor = 0xFF612FFF.toInt())
+    appearance = Appearance(themeColor = 0xFF612FFF.toInt())
 )
 ```
 
@@ -554,7 +554,7 @@ val configuration = PaymentElementConfiguration.PaymentSheet(
     checkoutButton = PaymentElementConfiguration.CheckoutButton(
         title = null                         // null: 自动（一次性支付为"支付"，循环支付为"确认"）
     ),
-    paymentAppearance = PaymentAppearance(
+    appearance = Appearance(
         themeColor = 0xFF612FFF.toInt(),    // 自定义主题色（ARGB 格式），null 为默认值
         isDarkTheme = null                   // true: 深色，false: 浅色，null: 跟随系统
     )
@@ -761,7 +761,7 @@ PaymentElementConfiguration configuration = new PaymentElementConfiguration.Paym
     PaymentMethodsLayoutType.TAB,
     new PaymentElementConfiguration.GooglePayButton(true, null),  // showsAsPrimaryButton, buttonType
     new PaymentElementConfiguration.CheckoutButton(null),         // title
-    null                                                           // paymentAppearance
+    null                                                           // appearance
 );
 
 // 创建支付流程监听器以处理结果

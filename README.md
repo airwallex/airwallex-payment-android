@@ -163,7 +163,7 @@ You can override the default theme color using Android's theme system:
 <color name="airwallex_tint_color">@color/your_custom_color</color>
 ```
 
-Note: Alternatively, you can set theme color via `PaymentAppearance.themeColor` in your `PaymentElementConfiguration` (see configuration examples below). `PaymentAppearance` also supports dark mode configuration.
+Note: Alternatively, you can set theme color via `Appearance.themeColor` in your `PaymentElementConfiguration` (see configuration examples below). `Appearance` also supports dark mode configuration.
 
 ## Payment Flow
 
@@ -578,7 +578,7 @@ val customConfiguration = PaymentElementConfiguration.Card(
         AirwallexSupportedCard.MASTERCARD
     ),
     checkoutButton = PaymentElementConfiguration.CheckoutButton(title = "Pay Now"),
-    paymentAppearance = PaymentAppearance(themeColor = 0xFF612FFF.toInt())
+    appearance = Appearance(themeColor = 0xFF612FFF.toInt())
 )
 ```
 
@@ -598,7 +598,7 @@ val configuration = PaymentElementConfiguration.PaymentSheet(
     checkoutButton = PaymentElementConfiguration.CheckoutButton(
         title = null                         // null: auto ("Pay" for one-off, "Confirm" for recurring)
     ),
-    paymentAppearance = PaymentAppearance(
+    appearance = Appearance(
         themeColor = 0xFF612FFF.toInt(),    // Custom theme color (ARGB format), null for default
         isDarkTheme = null                   // true: dark, false: light, null: follow system
     )
@@ -803,7 +803,7 @@ PaymentElementConfiguration configuration = new PaymentElementConfiguration.Paym
     PaymentMethodsLayoutType.TAB,
     new PaymentElementConfiguration.GooglePayButton(true, null),  // showsAsPrimaryButton, buttonType
     new PaymentElementConfiguration.CheckoutButton(null),         // title
-    null                                                           // paymentAppearance
+    null                                                           // appearance
 );
 
 // Create payment flow listener to handle results

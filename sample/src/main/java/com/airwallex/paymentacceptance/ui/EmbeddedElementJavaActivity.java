@@ -80,14 +80,14 @@ public class EmbeddedElementJavaActivity extends AppCompatActivity {
                     layoutType,
                     new PaymentElementConfiguration.GooglePayButton(showsGooglePayAsPrimaryButton, null),
                     new PaymentElementConfiguration.CheckoutButton(null),
-                    null // paymentAppearance - use default
+                    null // appearance - use default
             );
         } else {
             // Card-only mode (no payment sheet)
             configuration = new PaymentElementConfiguration.Card(
                     java.util.Arrays.asList(AirwallexSupportedCard.values()),
                     new PaymentElementConfiguration.CheckoutButton(null),
-                    null // paymentAppearance - use default
+                    null // appearance - use default
             );
         }
 
