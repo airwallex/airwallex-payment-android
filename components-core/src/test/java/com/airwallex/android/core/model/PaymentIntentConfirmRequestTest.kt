@@ -5,6 +5,7 @@ import java.math.BigDecimal
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertFalse
 
 class PaymentIntentConfirmRequestTest {
 
@@ -145,5 +146,41 @@ class PaymentIntentConfirmRequestTest {
         val scheduleMap = termsMap["payment_schedule"] as Map<*, *>
         assertEquals(1, scheduleMap["period"])
         assertEquals("MONTH", scheduleMap["period_unit"])
+    }
+
+    @Test
+    fun `test toParamMap excludes customer_id when customerId is empty`() {
+        val requestWithEmptyCustomerId = PaymentIntentConfirmRequest.Builder(
+            requestId = "test-request-id"
+        )
+            .setCustomerId("")
+            .build()
+
+        val paramMap = requestWithEmptyCustomerId.toParamMap()
+        assertFalse(paramMap.containsKey("customer_id"))
+    }
+
+    @Test
+    fun `test toParamMap excludes customer_id when customerId is null`() {
+        val requestWithNullCustomerId = PaymentIntentConfirmRequest.Builder(
+            requestId = "test-request-id"
+        )
+            .setCustomerId(null)
+            .build()
+
+        val paramMap = requestWithNullCustomerId.toParamMap()
+        assertFalse(paramMap.containsKey("customer_id"))
+    }
+
+    @Test
+    fun `test toParamMap includes customer_id when customerId is non-empty`() {
+        val requestWithCustomerId = PaymentIntentConfirmRequest.Builder(
+            requestId = "test-request-id"
+        )
+            .setCustomerId("cus_123")
+            .build()
+
+        val paramMap = requestWithCustomerId.toParamMap()
+        assertEquals("cus_123", paramMap["customer_id"])
     }
 }

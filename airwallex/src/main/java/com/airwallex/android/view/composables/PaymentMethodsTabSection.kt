@@ -38,6 +38,7 @@ import com.airwallex.android.view.util.AnalyticsConstants.PAYMENT_METHOD
 import com.airwallex.android.view.util.AnalyticsConstants.PAYMENT_SELECT
 import com.airwallex.android.view.util.GooglePayUtil
 import com.airwallex.android.view.util.getSinglePaymentMethodOrNull
+import com.google.pay.button.ButtonType
 import kotlinx.coroutines.launch
 import org.json.JSONArray
 
@@ -56,6 +57,8 @@ internal fun PaymentMethodsTabSection(
     airwallex: Airwallex,
     paymentFlowListener: PaymentFlowListener,
     showsGooglePayAsPrimaryButton: Boolean = true,
+    googlePayButtonType: ButtonType,
+    checkoutButtonTitle: String? = null,
 ) {
     val flowViewModel: PaymentFlowViewModel = viewModel(
         factory = PaymentFlowViewModel.Factory(
@@ -74,9 +77,6 @@ internal fun PaymentMethodsTabSection(
         val coroutineScope = rememberCoroutineScope()
 
         var selectedIndex by rememberSaveable { mutableIntStateOf(0) }
-        var type by remember(selectedIndex, availablePaymentMethods) {
-            mutableStateOf(availablePaymentMethods.getOrNull(selectedIndex) ?: availablePaymentMethods.first())
-        }
         val allowedPaymentMethods = remember(availablePaymentMethods) {
             session.googlePayOptions?.let { googlePayOptions ->
                 availablePaymentMethods.firstOrNull {
@@ -97,14 +97,19 @@ internal fun PaymentMethodsTabSection(
                     paymentFlowListener = paymentFlowListener,
                     flowViewModel = flowViewModel,
                     airwallex = airwallex,
+                    googlePayButtonType = googlePayButtonType,
                 )
             }
-            val paymentMethodsList = if (showsGooglePayAsPrimaryButton || allowedPaymentMethods == null) {
+            // Filter out Google Pay from tabs if it's shown as primary button and is available
+            val paymentMethodsList = if (showsGooglePayAsPrimaryButton && allowedPaymentMethods != null) {
                 availablePaymentMethods.filterNot { paymentMethodType ->
                     paymentMethodType.name == PaymentMethodType.GOOGLEPAY.value
                 }
             } else {
                 availablePaymentMethods
+            }
+            var type by remember(selectedIndex, availablePaymentMethods) {
+                mutableStateOf(paymentMethodsList.getOrNull(selectedIndex) ?: availablePaymentMethods.first())
             }
             if (paymentMethodsList.getSinglePaymentMethodOrNull(availablePaymentConsents) == null) {
                 LazyRow(
@@ -155,7 +160,9 @@ internal fun PaymentMethodsTabSection(
                         airwallex,
                         paymentFlowListener,
                         allowedPaymentMethods,
-                        flowViewModel
+                        flowViewModel,
+                        googlePayButtonType,
+                        checkoutButtonTitle
                     ),
             )
         }
@@ -169,7 +176,9 @@ private fun horizontalPagerContent(
     airwallex: Airwallex,
     paymentFlowListener: PaymentFlowListener,
     allowedPaymentMethods: JSONArray?,
-    flowViewModel: PaymentFlowViewModel
+    flowViewModel: PaymentFlowViewModel,
+    googlePayButtonType: ButtonType,
+    checkoutButtonTitle: String? = null,
 ): @Composable PagerScope.(Int) -> Unit = {
     when (type.name) {
         PaymentMethodType.CARD.value -> {
@@ -178,6 +187,7 @@ private fun horizontalPagerContent(
                 airwallex = airwallex,
                 cardSchemes = type.cardSchemes.orEmpty(),
                 paymentFlowListener = paymentFlowListener,
+                checkoutButtonTitle = checkoutButtonTitle,
             )
         }
 
@@ -187,6 +197,7 @@ private fun horizontalPagerContent(
                 paymentFlowListener = paymentFlowListener,
                 flowViewModel = flowViewModel,
                 airwallex = airwallex,
+                googlePayButtonType = googlePayButtonType,
             )
         }
 
@@ -196,6 +207,7 @@ private fun horizontalPagerContent(
                 airwallex = airwallex,
                 type = type,
                 paymentFlowListener = paymentFlowListener,
+                checkoutButtonTitle = checkoutButtonTitle,
             )
         }
     }

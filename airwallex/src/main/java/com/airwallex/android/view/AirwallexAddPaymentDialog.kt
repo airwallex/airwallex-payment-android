@@ -44,11 +44,34 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 class AirwallexAddPaymentDialog @JvmOverloads constructor(
     private val activity: ComponentActivity,
     private val session: AirwallexSession,
-    private val supportedCardBrands: List<AirwallexSupportedCard> =
-        enumValues<AirwallexSupportedCard>().toList(),
+    private val configuration: PaymentElementConfiguration.Card = PaymentElementConfiguration.Card(),
     private val paymentResultListener: Airwallex.PaymentResultListener,
     private val dialogHeight: Int? = null,
 ) : BottomSheetDialog(activity, R.style.AirwallexBottomSheetDialog), TrackablePage {
+
+    /**
+     * Deprecated constructor with supportedCardBrands parameter
+     */
+    @Deprecated(
+        message = "Use constructor with PaymentElementConfiguration.Card instead",
+        replaceWith = ReplaceWith(
+            "AirwallexAddPaymentDialog(activity, session, PaymentElementConfiguration.Card(supportedCardBrands = supportedCardBrands), paymentResultListener, dialogHeight)",
+            "com.airwallex.android.view.composables.PaymentElementConfiguration"
+        )
+    )
+    constructor(
+        activity: ComponentActivity,
+        session: AirwallexSession,
+        supportedCardBrands: List<AirwallexSupportedCard>,
+        paymentResultListener: Airwallex.PaymentResultListener,
+        dialogHeight: Int? = null,
+    ) : this(
+        activity,
+        session,
+        PaymentElementConfiguration.Card(supportedCardBrands = supportedCardBrands),
+        paymentResultListener,
+        dialogHeight
+    )
 
     private val viewBinding: DialogAddCardBinding by lazy {
         val root = layoutInflater.inflate(R.layout.dialog_add_card, null, false)
@@ -59,7 +82,7 @@ class AirwallexAddPaymentDialog @JvmOverloads constructor(
         get() = CARD_PAYMENT_VIEW
 
     override val additionalInfo: Map<String, Any>
-        get() = mapOf(SUPPORTED_SCHEMES to supportedCardBrands.map { it.brandName })
+        get() = mapOf(SUPPORTED_SCHEMES to configuration.supportedCardBrands.map { it.brandName })
 
     private val airwallex: Airwallex by lazy {
         Airwallex(activity)
@@ -136,9 +159,7 @@ class AirwallexAddPaymentDialog @JvmOverloads constructor(
             PaymentElement.create(
                 session = session,
                 airwallex = airwallex,
-                configuration = PaymentElementConfiguration.Card(
-                    supportedCardBrands = supportedCardBrands
-                ),
+                configuration = configuration,
                 launchType = AnalyticsLogger.LaunchType.HPP,
                 onLoadingStateChanged = { isLoading ->
                     setLoadingProgress(isLoading)

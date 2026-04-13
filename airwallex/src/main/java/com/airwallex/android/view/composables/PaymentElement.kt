@@ -2,6 +2,7 @@ package com.airwallex.android.view.composables
 
 import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
@@ -17,6 +18,8 @@ import com.airwallex.android.core.log.AnalyticsLogger.Field
 import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.core.toAnalyticsLayoutString
 import com.airwallex.android.ui.composables.AirwallexTheme
+import com.airwallex.android.ui.composables.AirwallexThemeConfig
+import com.airwallex.android.ui.composables.DarkMode
 import com.airwallex.android.view.PaymentFlowListener
 import com.airwallex.android.view.PaymentFlowViewModel
 import com.airwallex.android.view.util.AnalyticsConstants
@@ -83,6 +86,7 @@ class PaymentElement private constructor(
             if (configuration is PaymentElementConfiguration.Card && configuration.supportedCardBrands.isEmpty()) {
                 return Result.failure(InvalidParamsException("supportedCardBrands should not be empty"))
             }
+            configureAppearance(configuration)
 
             // Bind session's PaymentIntentProvider to this Activity's lifecycle
             session.bindToActivity(airwallex.activity)
@@ -105,18 +109,11 @@ class PaymentElement private constructor(
                 else -> null
             }
             val showsGooglePayAsPrimaryButton = when (configuration) {
-                is PaymentElementConfiguration.PaymentSheet -> configuration.showsGooglePayAsPrimaryButton
+                is PaymentElementConfiguration.PaymentSheet -> configuration.googlePayButton.showsAsPrimaryButton
                 else -> null
             }
             AnalyticsLogger.setupSession(session, launchType, layout, showsGooglePayAsPrimaryButton)
-            val additionalInfo = mutableMapOf<String, String>()
-            if (configuration is PaymentElementConfiguration.Card) {
-                additionalInfo[Field.PAYMENT_METHOD] = PaymentMethodType.CARD.value
-            }
-            AnalyticsLogger.logAction(
-                actionName = AnalyticsConstants.EVENT_PAYMENT_LAUNCHED,
-                additionalInfo = additionalInfo
-            )
+            logPaymentLaunchEvent(configuration)
             val shouldFetch = configuration is PaymentElementConfiguration.PaymentSheet && !alreadyLoaded
 
             return if (shouldFetch) {
@@ -142,6 +139,30 @@ class PaymentElement private constructor(
                     )
                 )
             }
+        }
+
+        private fun configureAppearance(configuration: PaymentElementConfiguration) {
+            configuration.appearance?.let { appearance ->
+                appearance.themeColor?.let { color ->
+                    AirwallexThemeConfig.setThemeColor(Color(color))
+                }
+                appearance.isDarkTheme?.let { isDark ->
+                    AirwallexThemeConfig.setDarkMode(if (isDark) DarkMode.DARK else DarkMode.LIGHT)
+                }
+            }
+        }
+
+        private fun logPaymentLaunchEvent(
+            configuration: PaymentElementConfiguration
+        ) {
+            val additionalInfo = mutableMapOf<String, String>()
+            if (configuration is PaymentElementConfiguration.Card) {
+                additionalInfo[Field.PAYMENT_METHOD] = PaymentMethodType.CARD.value
+            }
+            AnalyticsLogger.logAction(
+                actionName = AnalyticsConstants.EVENT_PAYMENT_LAUNCHED,
+                additionalInfo = additionalInfo
+            )
         }
 
         /**
