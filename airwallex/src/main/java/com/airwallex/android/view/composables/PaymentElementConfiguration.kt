@@ -2,7 +2,7 @@ package com.airwallex.android.view.composables
 
 import android.os.Parcelable
 import com.airwallex.android.core.AirwallexSupportedCard
-import com.airwallex.android.core.PaymentAppearance
+import com.airwallex.android.core.Appearance
 import com.airwallex.android.core.PaymentMethodsLayoutType
 import com.google.pay.button.ButtonType
 import kotlinx.parcelize.Parcelize
@@ -23,7 +23,7 @@ sealed class PaymentElementConfiguration {
      * Payment UI appearance configuration (theme color and dark mode).
      * When null, uses default appearance.
      */
-    abstract val paymentAppearance: PaymentAppearance?
+    abstract val appearance: Appearance?
 
     /**
      * Google Pay button configuration.
@@ -65,13 +65,13 @@ sealed class PaymentElementConfiguration {
      *                            Defaults to all cards from [AirwallexSupportedCard]
      *                            (Visa, Amex, Mastercard, Discover, JCB, Diners Club, UnionPay).
      * @param checkoutButton Checkout button configuration
-     * @param paymentAppearance Payment UI appearance configuration (theme color and dark mode)
+     * @param appearance Payment UI appearance configuration (theme color and dark mode)
      */
     @Parcelize
     data class Card(
         val supportedCardBrands: List<AirwallexSupportedCard> = enumValues<AirwallexSupportedCard>().toList(),
         override val checkoutButton: CheckoutButton = CheckoutButton(),
-        override val paymentAppearance: PaymentAppearance? = null
+        override val appearance: Appearance? = null
     ) : PaymentElementConfiguration(), Parcelable
 
     /**
@@ -81,13 +81,13 @@ sealed class PaymentElementConfiguration {
      * @param layout The layout type - TAB or ACCORDION
      * @param googlePayButton Google Pay button configuration
      * @param checkoutButton Checkout button configuration
-     * @param paymentAppearance Payment UI appearance configuration (theme color and dark mode)
+     * @param appearance Payment UI appearance configuration (theme color and dark mode)
      */
     @Parcelize
     data class PaymentSheet(
         val layout: PaymentMethodsLayoutType = PaymentMethodsLayoutType.TAB,
         val googlePayButton: GooglePayButton = GooglePayButton(),
         override val checkoutButton: CheckoutButton = CheckoutButton(),
-        override val paymentAppearance: PaymentAppearance? = null
+        override val appearance: Appearance? = null
     ) : PaymentElementConfiguration(), Parcelable
 }

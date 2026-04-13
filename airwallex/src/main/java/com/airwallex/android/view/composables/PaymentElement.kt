@@ -112,7 +112,8 @@ class PaymentElement private constructor(
                 is PaymentElementConfiguration.PaymentSheet -> configuration.googlePayButton.showsAsPrimaryButton
                 else -> null
             }
-            setupLogSession(session, launchType, layout, showsGooglePayAsPrimaryButton, configuration)
+            AnalyticsLogger.setupSession(session, launchType, layout, showsGooglePayAsPrimaryButton)
+            logPaymentLaunchEvent(configuration)
             val shouldFetch = configuration is PaymentElementConfiguration.PaymentSheet && !alreadyLoaded
 
             return if (shouldFetch) {
@@ -141,7 +142,7 @@ class PaymentElement private constructor(
         }
 
         private fun configureAppearance(configuration: PaymentElementConfiguration) {
-            configuration.paymentAppearance?.let { appearance ->
+            configuration.appearance?.let { appearance ->
                 appearance.themeColor?.let { color ->
                     AirwallexThemeConfig.setThemeColor(Color(color))
                 }
@@ -151,14 +152,9 @@ class PaymentElement private constructor(
             }
         }
 
-        private fun setupLogSession(
-            session: AirwallexSession,
-            launchType: String,
-            layout: String?,
-            showsGooglePayAsPrimaryButton: Boolean?,
+        private fun logPaymentLaunchEvent(
             configuration: PaymentElementConfiguration
         ) {
-            AnalyticsLogger.setupSession(session, launchType, layout, showsGooglePayAsPrimaryButton)
             val additionalInfo = mutableMapOf<String, String>()
             if (configuration is PaymentElementConfiguration.Card) {
                 additionalInfo[Field.PAYMENT_METHOD] = PaymentMethodType.CARD.value

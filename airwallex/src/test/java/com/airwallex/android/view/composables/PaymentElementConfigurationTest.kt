@@ -4,7 +4,7 @@ import android.graphics.Color
 import androidx.compose.ui.graphics.Color as ComposeColor
 import com.airwallex.android.core.AirwallexConfiguration
 import com.airwallex.android.core.AirwallexPlugins
-import com.airwallex.android.core.PaymentAppearance
+import com.airwallex.android.core.Appearance
 import com.airwallex.android.ui.composables.AirwallexThemeConfig
 import com.airwallex.android.ui.composables.DarkMode
 import org.junit.Before
@@ -31,11 +31,11 @@ class PaymentElementConfigurationTest {
     fun `test PaymentAppearance in Card configuration applies theme color`() {
         val customColor = Color.parseColor("#DA8C21")
         val configuration = PaymentElementConfiguration.Card(
-            paymentAppearance = PaymentAppearance(themeColor = customColor)
+            appearance = Appearance(themeColor = customColor)
         )
 
         // Simulate what PaymentElement.configureAppearance() does
-        configuration.paymentAppearance?.themeColor?.let { color ->
+        configuration.appearance?.themeColor?.let { color ->
             AirwallexThemeConfig.setThemeColor(ComposeColor(color))
         }
 
@@ -45,11 +45,11 @@ class PaymentElementConfigurationTest {
     @Test
     fun `test PaymentAppearance in Card configuration applies dark mode`() {
         val configuration = PaymentElementConfiguration.Card(
-            paymentAppearance = PaymentAppearance(isDarkTheme = true)
+            appearance = Appearance(isDarkTheme = true)
         )
 
         // Simulate what PaymentElement.configureAppearance() does
-        configuration.paymentAppearance?.isDarkTheme?.let { isDark ->
+        configuration.appearance?.isDarkTheme?.let { isDark ->
             AirwallexThemeConfig.setDarkMode(if (isDark) DarkMode.DARK else DarkMode.LIGHT)
         }
 
@@ -60,14 +60,14 @@ class PaymentElementConfigurationTest {
     fun `test PaymentAppearance in Card configuration applies both theme color and dark mode`() {
         val customColor = Color.parseColor("#612FFF")
         val configuration = PaymentElementConfiguration.Card(
-            paymentAppearance = PaymentAppearance(
+            appearance = Appearance(
                 themeColor = customColor,
                 isDarkTheme = false
             )
         )
 
         // Simulate what PaymentElement.configureAppearance() does
-        configuration.paymentAppearance?.let { appearance ->
+        configuration.appearance?.let { appearance ->
             appearance.themeColor?.let { color ->
                 AirwallexThemeConfig.setThemeColor(ComposeColor(color))
             }
@@ -84,11 +84,11 @@ class PaymentElementConfigurationTest {
     fun `test PaymentAppearance in PaymentSheet configuration applies theme color`() {
         val customColor = Color.parseColor("#FF0000")
         val configuration = PaymentElementConfiguration.PaymentSheet(
-            paymentAppearance = PaymentAppearance(themeColor = customColor)
+            appearance = Appearance(themeColor = customColor)
         )
 
         // Simulate what PaymentElement.configureAppearance() does
-        configuration.paymentAppearance?.themeColor?.let { color ->
+        configuration.appearance?.themeColor?.let { color ->
             AirwallexThemeConfig.setThemeColor(ComposeColor(color))
         }
 
@@ -98,11 +98,11 @@ class PaymentElementConfigurationTest {
     @Test
     fun `test PaymentAppearance in PaymentSheet configuration applies dark mode`() {
         val configuration = PaymentElementConfiguration.PaymentSheet(
-            paymentAppearance = PaymentAppearance(isDarkTheme = false)
+            appearance = Appearance(isDarkTheme = false)
         )
 
         // Simulate what PaymentElement.configureAppearance() does
-        configuration.paymentAppearance?.isDarkTheme?.let { isDark ->
+        configuration.appearance?.isDarkTheme?.let { isDark ->
             AirwallexThemeConfig.setDarkMode(if (isDark) DarkMode.DARK else DarkMode.LIGHT)
         }
 
@@ -116,11 +116,11 @@ class PaymentElementConfigurationTest {
         AirwallexThemeConfig.setDarkMode(DarkMode.DARK)
 
         val configuration = PaymentElementConfiguration.Card(
-            paymentAppearance = null
+            appearance = null
         )
 
         // Simulate what PaymentElement.configureAppearance() does
-        configuration.paymentAppearance?.let { appearance ->
+        configuration.appearance?.let { appearance ->
             appearance.themeColor?.let { color ->
                 AirwallexThemeConfig.setThemeColor(ComposeColor(color))
             }
@@ -140,11 +140,11 @@ class PaymentElementConfigurationTest {
         AirwallexThemeConfig.setDarkMode(DarkMode.LIGHT)
 
         val configuration = PaymentElementConfiguration.Card(
-            paymentAppearance = PaymentAppearance(themeColor = customColor, isDarkTheme = null)
+            appearance = Appearance(themeColor = customColor, isDarkTheme = null)
         )
 
         // Simulate what PaymentElement.configureAppearance() does
-        configuration.paymentAppearance?.let { appearance ->
+        configuration.appearance?.let { appearance ->
             appearance.themeColor?.let { color ->
                 AirwallexThemeConfig.setThemeColor(ComposeColor(color))
             }
@@ -163,11 +163,11 @@ class PaymentElementConfigurationTest {
         AirwallexThemeConfig.setThemeColor(programmaticColor)
 
         val configuration = PaymentElementConfiguration.PaymentSheet(
-            paymentAppearance = PaymentAppearance(themeColor = null, isDarkTheme = true)
+            appearance = Appearance(themeColor = null, isDarkTheme = true)
         )
 
         // Simulate what PaymentElement.configureAppearance() does
-        configuration.paymentAppearance?.let { appearance ->
+        configuration.appearance?.let { appearance ->
             appearance.themeColor?.let { color ->
                 AirwallexThemeConfig.setThemeColor(ComposeColor(color))
             }
@@ -190,14 +190,14 @@ class PaymentElementConfigurationTest {
         AirwallexThemeConfig.setDarkMode(DarkMode.LIGHT)
 
         val configuration = PaymentElementConfiguration.Card(
-            paymentAppearance = PaymentAppearance(
+            appearance = Appearance(
                 themeColor = appearanceColor,
                 isDarkTheme = true
             )
         )
 
         // Apply appearance - should override programmatic config
-        configuration.paymentAppearance?.let { appearance ->
+        configuration.appearance?.let { appearance ->
             appearance.themeColor?.let { color ->
                 AirwallexThemeConfig.setThemeColor(ComposeColor(color))
             }

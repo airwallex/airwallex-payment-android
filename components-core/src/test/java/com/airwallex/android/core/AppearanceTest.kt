@@ -4,11 +4,11 @@ import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
-class PaymentAppearanceTest {
+class AppearanceTest {
 
     @Test
     fun `test PaymentAppearance creation`() {
-        val appearance = PaymentAppearance(
+        val appearance = Appearance(
             themeColor = 0xFF612FFF.toInt(),
             isDarkTheme = true
         )
@@ -19,7 +19,7 @@ class PaymentAppearanceTest {
 
     @Test
     fun `test PaymentAppearance default constructor`() {
-        val appearance = PaymentAppearance()
+        val appearance = Appearance()
 
         assertNull(appearance.themeColor)
         assertNull(appearance.isDarkTheme)

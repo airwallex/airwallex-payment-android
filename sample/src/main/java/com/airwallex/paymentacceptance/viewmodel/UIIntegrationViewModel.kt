@@ -12,7 +12,7 @@ import com.airwallex.android.core.AirwallexShippingStatus
 import com.airwallex.android.core.AirwallexSupportedCard
 import com.airwallex.android.core.BillingAddressParameters
 import com.airwallex.android.core.GooglePayOptions
-import com.airwallex.android.core.PaymentAppearance
+import com.airwallex.android.core.Appearance
 import com.airwallex.android.core.PaymentMethodsLayoutType
 import com.airwallex.android.view.AirwallexAddPaymentDialog
 import com.airwallex.android.view.composables.PaymentElementConfiguration
@@ -20,7 +20,6 @@ import com.airwallex.paymentacceptance.Settings
 import com.airwallex.paymentacceptance.shipping
 import com.airwallex.paymentacceptance.ui.EmbeddedElementActivity
 import com.airwallex.paymentacceptance.viewmodel.base.BaseViewModel
-import com.google.pay.button.ButtonType
 
 class UIIntegrationViewModel : BaseViewModel() {
 
@@ -89,7 +88,7 @@ class UIIntegrationViewModel : BaseViewModel() {
                 checkoutButton = PaymentElementConfiguration.CheckoutButton(
 //                    title = "Pay"
                 ),
-                paymentAppearance = PaymentAppearance(
+                appearance = Appearance(
 //                    themeColor = "#DA8C21".toColorInt(), // set theme color here
 //                    isDarkTheme = false // by default will follow system
                 ),

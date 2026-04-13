@@ -12,7 +12,7 @@ import kotlinx.parcelize.Parcelize
  * @param isDarkTheme Optional dark theme preference. If null, follows system setting
  */
 @Parcelize
-data class PaymentAppearance(
+data class Appearance(
     @ColorInt val themeColor: Int? = null,
     val isDarkTheme: Boolean? = null
 ) : Parcelable
