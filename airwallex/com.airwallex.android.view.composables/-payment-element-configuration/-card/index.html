@@ -41,7 +41,7 @@
             </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
         </button>
         <div class="navigation-controls--break ui-kit_mobile-only"></div>
-        <div class="library-version" id="library-version">6.6.0
+        <div class="library-version" id="library-version">6.6.1
         </div>
         <div class="navigation-controls">
         <div class="filter-section filter-section_loading" id="filter-section">
@@ -94,24 +94,24 @@
   <div class="breadcrumbs"><a href="../../../index.html">airwallex</a><span class="delimiter">/</span><a href="../../index.html">com.airwallex.android.view.composables</a><span class="delimiter">/</span><a href="../index.html">PaymentElementConfiguration</a><span class="delimiter">/</span><span class="current">Card</span></div>
   <div class="cover ">
     <h1 class="cover"><span><span>Card</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":airwallex/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="index.html">Card</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>supportedCardBrands<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../../../components-core/com.airwallex.android.core/-airwallex-supported-card/index.html">AirwallexSupportedCard</a><span class="token operator">&gt;</span><span class="token operator"> = </span>enumValues&lt;AirwallexSupportedCard&gt;().toList()</span></span><span class="token punctuation">)</span> : <a href="../index.html">PaymentElementConfiguration</a></div><p class="paragraph">Configuration for standalone card payment element. Shows only card input and saved cards (if available).</p><h4 class="">Parameters</h4><div class="table"><div class="table-row" data-filterable-current=":airwallex/release" data-filterable-set=":airwallex/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>supported</span><wbr><span>Card</span><wbr><span><span>Brands</span></span></u></div></span></div><div><div class="title"><p class="paragraph">List of supported card brands/schemes.     Defaults to all cards from <a href="../../../../components-core/com.airwallex.android.core/-airwallex-supported-card/index.html">AirwallexSupportedCard</a>     (Visa, Amex, Mastercard, Discover, JCB, Diners Club, UnionPay).</p></div></div></div></div></div></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":airwallex/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="index.html">Card</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>supportedCardBrands<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../../../components-core/com.airwallex.android.core/-airwallex-supported-card/index.html">AirwallexSupportedCard</a><span class="token operator">&gt;</span><span class="token operator"> = </span>enumValues&lt;AirwallexSupportedCard&gt;().toList()<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>checkoutButton<span class="token operator">: </span><a href="../-checkout-button/index.html">PaymentElementConfiguration.CheckoutButton</a><span class="token operator"> = </span>CheckoutButton()<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>appearance<span class="token operator">: </span><a href="../../../../components-core/com.airwallex.android.core/-appearance/index.html">Appearance</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span> : <a href="../index.html">PaymentElementConfiguration</a>, <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><p class="paragraph">Configuration for standalone card payment element. Shows only card input and saved cards (if available).</p><h4 class="">Parameters</h4><div class="table"><div class="table-row" data-filterable-current=":airwallex/release" data-filterable-set=":airwallex/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>supported</span><wbr><span>Card</span><wbr><span><span>Brands</span></span></u></div></span></div><div><div class="title"><p class="paragraph">List of supported card brands/schemes.     Defaults to all cards from <a href="../../../../components-core/com.airwallex.android.core/-airwallex-supported-card/index.html">AirwallexSupportedCard</a>     (Visa, Amex, Mastercard, Discover, JCB, Diners Club, UnionPay).</p></div></div></div></div><div class="table-row" data-filterable-current=":airwallex/release" data-filterable-set=":airwallex/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>checkout</span><wbr><span><span>Button</span></span></u></div></span></div><div><div class="title"><p class="paragraph">Checkout button configuration</p></div></div></div></div><div class="table-row" data-filterable-current=":airwallex/release" data-filterable-set=":airwallex/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span><span>appearance</span></span></u></div></span></div><div><div class="title"><p class="paragraph">Payment UI appearance configuration (theme color and dark mode)</p></div></div></div></div></div></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
     <div class="tabs-section-body">
       <div data-togglable="CONSTRUCTOR">
         <h2 class="">Constructors</h2>
-        <div class="table"><a data-name="606625562%2FConstructors%2F1201863744" anchor-label="Card" id="606625562%2FConstructors%2F1201863744" data-filterable-set=":airwallex/release"></a>
+        <div class="table"><a data-name="-1140268249%2FConstructors%2F1201863744" anchor-label="Card" id="-1140268249%2FConstructors%2F1201863744" data-filterable-set=":airwallex/release"></a>
           <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":airwallex/release" data-filterable-set=":airwallex/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="-card.html"><span><span>Card</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="606625562%2FConstructors%2F1201863744"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1140268249%2FConstructors%2F1201863744"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":airwallex/release"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">supportedCardBrands<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../../../components-core/com.airwallex.android.core/-airwallex-supported-card/index.html">AirwallexSupportedCard</a><span class="token operator">&gt;</span><span class="token operator"> = </span>enumValues&lt;AirwallexSupportedCard&gt;().toList()</span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":airwallex/release"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">supportedCardBrands<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../../../components-core/com.airwallex.android.core/-airwallex-supported-card/index.html">AirwallexSupportedCard</a><span class="token operator">&gt;</span><span class="token operator"> = </span>enumValues&lt;AirwallexSupportedCard&gt;().toList()<span class="token punctuation">, </span></span><span class="parameter ">checkoutButton<span class="token operator">: </span><a href="../-checkout-button/index.html">PaymentElementConfiguration.CheckoutButton</a><span class="token operator"> = </span>CheckoutButton()<span class="token punctuation">, </span></span><span class="parameter ">appearance<span class="token operator">: </span><a href="../../../../components-core/com.airwallex.android.core/-appearance/index.html">Appearance</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
@@ -120,7 +120,37 @@
       </div>
       <div data-togglable="PROPERTY">
         <h2 class="">Properties</h2>
-        <div class="table"><a data-name="1297673733%2FProperties%2F1201863744" anchor-label="supportedCardBrands" id="1297673733%2FProperties%2F1201863744" data-filterable-set=":airwallex/release"></a>
+        <div class="table"><a data-name="1803028551%2FProperties%2F1201863744" anchor-label="appearance" id="1803028551%2FProperties%2F1201863744" data-filterable-set=":airwallex/release"></a>
+          <div class="table-row" data-filterable-current=":airwallex/release" data-filterable-set=":airwallex/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="appearance.html"><span><span>appearance</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1803028551%2FProperties%2F1201863744"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":airwallex/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">val </span><a href="appearance.html">appearance</a><span class="token operator">: </span><a href="../../../../components-core/com.airwallex.android.core/-appearance/index.html">Appearance</a><span class="token operator">?</span><span class="token operator"> = </span>null</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="323443731%2FProperties%2F1201863744" anchor-label="checkoutButton" id="323443731%2FProperties%2F1201863744" data-filterable-set=":airwallex/release"></a>
+          <div class="table-row" data-filterable-current=":airwallex/release" data-filterable-set=":airwallex/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="checkout-button.html"><span>checkout</span><wbr><span><span>Button</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="323443731%2FProperties%2F1201863744"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":airwallex/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">val </span><a href="checkout-button.html">checkoutButton</a><span class="token operator">: </span><a href="../-checkout-button/index.html">PaymentElementConfiguration.CheckoutButton</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1297673733%2FProperties%2F1201863744" anchor-label="supportedCardBrands" id="1297673733%2FProperties%2F1201863744" data-filterable-set=":airwallex/release"></a>
           <div class="table-row" data-filterable-current=":airwallex/release" data-filterable-set=":airwallex/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
@@ -131,6 +161,40 @@
               <div>
                 <div class="title">
                   <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":airwallex/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="supported-card-brands.html">supportedCardBrands</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../../../components-core/com.airwallex.android.core/-airwallex-supported-card/index.html">AirwallexSupportedCard</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="-1578325224%2FFunctions%2F1201863744" anchor-label="describeContents" id="-1578325224%2FFunctions%2F1201863744" data-filterable-set=":airwallex/release"></a>
+          <div class="table-row" data-filterable-current=":airwallex/release" data-filterable-set=":airwallex/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-payment-sheet/index.html#-1578325224%2FFunctions%2F1201863744"><span>describe</span><wbr><span><span>Contents</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1578325224%2FFunctions%2F1201863744"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":airwallex/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="../-payment-sheet/index.html#-1578325224%2FFunctions%2F1201863744"><span class="token function">describeContents</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1754457655%2FFunctions%2F1201863744" anchor-label="writeToParcel" id="-1754457655%2FFunctions%2F1201863744" data-filterable-set=":airwallex/release"></a>
+          <div class="table-row" data-filterable-current=":airwallex/release" data-filterable-set=":airwallex/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-payment-sheet/index.html#-1754457655%2FFunctions%2F1201863744"><span>write</span><wbr><span>To</span><wbr><span><span>Parcel</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1754457655%2FFunctions%2F1201863744"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":airwallex/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="../-payment-sheet/index.html#-1754457655%2FFunctions%2F1201863744"><span class="token function">writeToParcel</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/os/Parcel.html">Parcel</a><span class="token punctuation">, </span></span><span class="parameter ">p1<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
