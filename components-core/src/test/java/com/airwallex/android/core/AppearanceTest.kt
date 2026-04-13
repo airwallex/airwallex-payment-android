@@ -7,7 +7,7 @@ import kotlin.test.assertNull
 class AppearanceTest {
 
     @Test
-    fun `test PaymentAppearance creation`() {
+    fun `test Appearance creation`() {
         val appearance = Appearance(
             themeColor = 0xFF612FFF.toInt(),
             isDarkTheme = true
@@ -18,7 +18,7 @@ class AppearanceTest {
     }
 
     @Test
-    fun `test PaymentAppearance default constructor`() {
+    fun `test Appearance default constructor`() {
         val appearance = Appearance()
 
         assertNull(appearance.themeColor)

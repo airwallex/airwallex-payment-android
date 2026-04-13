@@ -49,7 +49,7 @@ class AirwallexThemeConfigTest {
     }
 
     @Test
-    fun `test programmatic setThemeColor works when no PaymentAppearance`() {
+    fun `test programmatic setThemeColor works when no Appearance`() {
         val customColor = ComposeColor.Red
         AirwallexPlugins.initialize(AirwallexConfiguration.Builder().build())
         AirwallexThemeConfig.setThemeColor(customColor)
