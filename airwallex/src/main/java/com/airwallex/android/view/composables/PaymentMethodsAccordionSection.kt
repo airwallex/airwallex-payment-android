@@ -55,6 +55,7 @@ import com.airwallex.android.view.util.AnalyticsConstants.PAYMENT_SELECT
 import com.airwallex.android.view.util.GooglePayUtil
 import com.airwallex.android.view.util.getSinglePaymentMethodOrNull
 import com.airwallex.android.view.util.toSupportedIcons
+import com.google.pay.button.ButtonType
 
 @Suppress("ComplexMethod", "LongMethod", "LongParameterList")
 @Composable
@@ -63,6 +64,8 @@ internal fun PaymentMethodsAccordionSection(
     airwallex: Airwallex,
     paymentFlowListener: PaymentFlowListener,
     showsGooglePayAsPrimaryButton: Boolean = true,
+    googlePayButtonType: ButtonType,
+    checkoutButtonTitle: String? = null,
 ) {
     val flowViewModel: PaymentFlowViewModel = viewModel(
         factory = PaymentFlowViewModel.Factory(
@@ -95,6 +98,7 @@ internal fun PaymentMethodsAccordionSection(
                 paymentFlowListener = paymentFlowListener,
                 flowViewModel = flowViewModel,
                 airwallex = airwallex,
+                googlePayButtonType = googlePayButtonType,
             )
         }
         // Filter out Google Pay from accordion if it's shown as primary button and is available
@@ -212,6 +216,7 @@ internal fun PaymentMethodsAccordionSection(
                                     airwallex = airwallex,
                                     cardSchemes = type.cardSchemes.orEmpty(),
                                     paymentFlowListener = paymentFlowListener,
+                                    checkoutButtonTitle = checkoutButtonTitle,
                                 )
                             }
 
@@ -221,6 +226,7 @@ internal fun PaymentMethodsAccordionSection(
                                     paymentFlowListener = paymentFlowListener,
                                     flowViewModel = flowViewModel,
                                     airwallex = airwallex,
+                                    googlePayButtonType = googlePayButtonType,
                                 )
                             }
 
@@ -230,6 +236,7 @@ internal fun PaymentMethodsAccordionSection(
                                     airwallex = airwallex,
                                     type = type,
                                     paymentFlowListener = paymentFlowListener,
+                                    checkoutButtonTitle = checkoutButtonTitle,
                                 )
                             }
                         }

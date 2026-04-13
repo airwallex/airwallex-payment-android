@@ -27,6 +27,7 @@ internal fun ConsentDetailSection(
     onCheckoutWithoutCvv: () -> Unit,
     onScreenViewed: () -> Unit,
     modifier: Modifier = Modifier,
+    checkoutButtonTitle: String? = null,
 ) {
     val focusManager = LocalFocusManager.current
 
@@ -58,7 +59,7 @@ internal fun ConsentDetailSection(
     Spacer(modifier = Modifier.height(16.dp))
 
     StandardSolidButton(
-        text = stringResource(viewModel.ctaRes),
+        text = checkoutButtonTitle ?: stringResource(viewModel.ctaRes),
         onClick = {
             if (isCvcRequired) {
                 cvvErrorMessage = viewModel.getCvvValidationMessage(cvv, cardBrand)
