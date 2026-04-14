@@ -2,6 +2,7 @@ package com.airwallex.android.core
 
 import android.os.Parcelable
 import com.airwallex.android.core.model.ObjectBuilder
+import com.airwallex.android.core.model.PaymentConsentOptions
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.Shipping
 import kotlinx.parcelize.IgnoredOnParcel
@@ -9,11 +10,17 @@ import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 
 /**
- * For one-off payment
+ * Unified session for payment with payment consent options.
+ * Replaces AirwallexPaymentSession with support for both static PaymentIntent and PaymentIntentProvider.
+ *
+ * This session simplifies the SDK by unifying all payment flows:
+ * - One-off payments
+ * - Recurring payments with consent creation
+ * - MIT consent used for CIT transactions
  */
 @Suppress("LongParameterList")
 @Parcelize
-class AirwallexPaymentSession internal constructor(
+class Session internal constructor(
     /**
      * The [PaymentIntent] object, optional when using paymentIntentProvider.
      */
@@ -24,6 +31,11 @@ class AirwallexPaymentSession internal constructor(
      * This is set when bindToActivity is called.
      */
     override var paymentIntentProviderId: String? = null,
+
+    /**
+     * Details for payment consent. optional.
+     */
+    val paymentConsentOptions: PaymentConsentOptions? = null,
 
     /**
      * Amount currency. required.
@@ -83,7 +95,7 @@ class AirwallexPaymentSession internal constructor(
     val autoCapture: Boolean = true,
 
     /**
-     *  control whether saved cards are displayed on the list screen
+     * Control whether saved cards are displayed on the list screen
      */
     val hidePaymentConsents: Boolean = false
 
@@ -97,7 +109,13 @@ class AirwallexPaymentSession internal constructor(
     @Transient
     override var paymentIntentProvider: PaymentIntentProvider? = null
 
-    class Builder : ObjectBuilder<AirwallexPaymentSession> {
+    /**
+     * Returns true if this is a one-off payment session (no recurring setup)
+     */
+    val isOneOffPayment: Boolean
+        get() = paymentConsentOptions == null
+
+    class Builder : ObjectBuilder<Session> {
         private var paymentIntent: PaymentIntent? = null
         private var paymentIntentProvider: PaymentIntentProvider? = null
         private val countryCode: String
@@ -118,9 +136,8 @@ class AirwallexPaymentSession internal constructor(
             this.countryCode = countryCode
             this.currency = paymentIntent.currency
             this.amount = paymentIntent.amount
-            this.customerId = paymentIntent.customerId?.takeIf { it.isNotEmpty() }
+            this.customerId = paymentIntent.customerId
             this.googlePayOptions = googlePayOptions
-
             paymentIntent.clientSecret?.apply {
                 TokenManager.updateClientSecret(this)
             }
@@ -139,7 +156,7 @@ class AirwallexPaymentSession internal constructor(
             this.countryCode = countryCode
             this.currency = paymentIntentProvider.currency
             this.amount = paymentIntentProvider.amount
-            this.customerId = customerId?.takeIf { it.isNotEmpty() }
+            this.customerId = customerId
             this.googlePayOptions = googlePayOptions
         }
 
@@ -157,10 +174,11 @@ class AirwallexPaymentSession internal constructor(
             this.countryCode = countryCode
             this.currency = paymentIntentSource.currency
             this.amount = paymentIntentSource.amount
-            this.customerId = customerId?.takeIf { it.isNotEmpty() }
+            this.customerId = customerId
             this.googlePayOptions = googlePayOptions
         }
 
+        private var paymentConsentOptions: PaymentConsentOptions? = null
         private var isBillingInformationRequired: Boolean = true
         private var isEmailRequired: Boolean = false
         private var returnUrl: String? = null
@@ -168,6 +186,16 @@ class AirwallexPaymentSession internal constructor(
         private var hidePaymentConsents: Boolean = false
         private var paymentMethods: List<String>? = null
         private var shipping: Shipping? = null
+
+        init {
+            paymentIntent?.clientSecret?.apply {
+                TokenManager.updateClientSecret(this)
+            }
+        }
+
+        fun setPaymentConsentOptions(paymentConsentOptions: PaymentConsentOptions?): Builder = apply {
+            this.paymentConsentOptions = paymentConsentOptions
+        }
 
         fun setRequireBillingInformation(requiresBillingInformation: Boolean): Builder = apply {
             this.isBillingInformationRequired = requiresBillingInformation
@@ -197,13 +225,14 @@ class AirwallexPaymentSession internal constructor(
             this.shipping = shipping
         }
 
-        override fun build(): AirwallexPaymentSession {
+        override fun build(): Session {
             require(paymentIntent != null || paymentIntentProvider != null) {
                 "Either paymentIntent or paymentIntentProvider must be provided"
             }
 
-            val session = AirwallexPaymentSession(
+            val session = Session(
                 paymentIntent = paymentIntent,
+                paymentConsentOptions = paymentConsentOptions,
                 currency = currency,
                 countryCode = countryCode,
                 amount = amount,
@@ -215,16 +244,10 @@ class AirwallexPaymentSession internal constructor(
                 googlePayOptions = googlePayOptions,
                 autoCapture = autoCapture,
                 hidePaymentConsents = hidePaymentConsents,
-                paymentMethods = paymentMethods,
+                paymentMethods = paymentMethods
             ).apply {
                 // Set the provider directly on the session (transient field, won't be parceled)
                 paymentIntentProvider = this@Builder.paymentIntentProvider
-
-                // If provider exists, store it in repository immediately so it survives parcelling
-                // The providerId will survive parcelling and can be used to retrieve the provider later
-                paymentIntentProvider?.let { provider ->
-                    paymentIntentProviderId = PaymentIntentProviderRepository.store(provider)
-                }
             }
             return session
         }

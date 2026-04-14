@@ -1,7 +1,10 @@
 package com.airwallex.android.core.model
 
 import org.junit.Test
+import java.math.BigDecimal
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertFalse
 
 class PaymentIntentConfirmRequestTest {
@@ -88,6 +91,61 @@ class PaymentIntentConfirmRequestTest {
             ),
             paramMap
         )
+        assertNull(paramMap["payment_consent"])
+    }
+
+    @Test
+    fun `test toParamMap with payment consent options - full configuration`() {
+        val paymentConsentOptions = PaymentConsentOptions(
+            nextTriggeredBy = PaymentConsent.NextTriggeredBy.MERCHANT,
+            merchantTriggerReason = PaymentConsent.MerchantTriggerReason.SCHEDULED,
+            termsOfUse = PaymentConsentOptions.TermsOfUse(
+                paymentAmountType = PaymentConsentOptions.PaymentAmountType.FIXED,
+                fixedPaymentAmount = BigDecimal("100.00"),
+                paymentCurrency = "USD",
+                billingCycleChargeDay = 15,
+                startDate = "2024-01-01T00:00:00Z",
+                endDate = "2025-12-31T00:00:00Z",
+                totalBillingCycles = 12,
+                paymentSchedule = PaymentConsentOptions.PaymentSchedule(
+                    period = 1,
+                    periodUnit = PaymentConsentOptions.PeriodUnit.MONTH,
+                )
+            )
+        )
+
+        val request = PaymentIntentConfirmRequest.Builder("request-123")
+            .setCustomerId("customer-456")
+            .setPaymentConsent(paymentConsentOptions)
+            .build()
+
+        val paramMap = request.toParamMap()
+
+        // Verify payment_consent is in the map
+        assertNotNull(paramMap["payment_consent"])
+        val consentMap = paramMap["payment_consent"] as Map<*, *>
+
+        // Verify top-level consent fields
+        assertEquals("merchant", consentMap["next_triggered_by"])
+        assertEquals("scheduled", consentMap["merchant_trigger_reason"])
+
+        // Verify terms_of_use
+        assertNotNull(consentMap["terms_of_use"])
+        val termsMap = consentMap["terms_of_use"] as Map<*, *>
+        assertEquals("FIXED", termsMap["payment_amount_type"])
+        // BigDecimal is stored directly in the map
+        assertEquals(BigDecimal("100.00"), termsMap["fixed_payment_amount"])
+        assertEquals("USD", termsMap["payment_currency"])
+        assertEquals(15, termsMap["billing_cycle_charge_day"])
+        assertEquals("2025-12-31T00:00:00Z", termsMap["end_date"])
+        assertEquals("2024-01-01T00:00:00Z", termsMap["start_date"])
+        assertEquals(12, termsMap["total_billing_cycles"])
+
+        // Verify payment_schedule
+        assertNotNull(termsMap["payment_schedule"])
+        val scheduleMap = termsMap["payment_schedule"] as Map<*, *>
+        assertEquals(1, scheduleMap["period"])
+        assertEquals("MONTH", scheduleMap["period_unit"])
     }
 
     @Test
