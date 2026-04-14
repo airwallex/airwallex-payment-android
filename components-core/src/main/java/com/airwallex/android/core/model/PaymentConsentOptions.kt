@@ -14,7 +14,7 @@ data class PaymentConsentOptions(
      */
     val nextTriggeredBy: PaymentConsent.NextTriggeredBy,
     /**
-     * Only applicable when next_triggered_by is merchant. One of scheduled, unscheduled (optional)
+     * Only applicable when next_triggered_by is merchant. One of scheduled, unscheduled, installments (optional)
      */
     val merchantTriggerReason: PaymentConsent.MerchantTriggerReason? = null,
     /**

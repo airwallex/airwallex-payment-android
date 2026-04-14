@@ -11,10 +11,10 @@ import io.mockk.every
 import io.mockk.just
 import io.mockk.mockkObject
 import io.mockk.runs
-import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import java.math.BigDecimal
+import kotlinx.coroutines.test.runTest
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull

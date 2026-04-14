@@ -30,7 +30,7 @@ data class PaymentConsentCreateRequest internal constructor(
     val nextTriggeredBy: PaymentConsent.NextTriggeredBy? = null,
 
     /**
-     * Only applicable when next_triggered_by is merchant. One of scheduled, unscheduled.
+     * Only applicable when next_triggered_by is merchant. One of scheduled, unscheduled, installments.
      * Default: unscheduled
      */
     val merchantTriggerReason: PaymentConsent.MerchantTriggerReason? = PaymentConsent.MerchantTriggerReason.UNSCHEDULED,

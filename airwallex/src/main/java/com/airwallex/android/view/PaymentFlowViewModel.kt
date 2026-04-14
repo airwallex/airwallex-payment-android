@@ -116,9 +116,9 @@ class PaymentFlowViewModel(
         val grouped = consents.groupBy { it.paymentMethod?.card?.fingerprint }
 
         return grouped.flatMap { (fingerprint, consentsGroup) ->
-            // If fingerprint is null, keep all (can't deduplicate)
+            // If fingerprint is null, discard (indicates invalid consent data)
             if (fingerprint == null) {
-                return@flatMap consentsGroup
+                return@flatMap emptyList()
             }
 
             // Find CIT consent (only 1 per fingerprint)
