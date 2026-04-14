@@ -43,6 +43,10 @@ class PaymentFlowViewModel(
     private val _availablePaymentMethods = MutableStateFlow<List<AvailablePaymentMethodType>>(emptyList())
     val availablePaymentMethods: StateFlow<List<AvailablePaymentMethodType>> = _availablePaymentMethods.asStateFlow()
 
+    // Store original list of consents
+    private val _originalPaymentConsents = MutableStateFlow<List<PaymentConsent>>(emptyList())
+
+    // Deduplicated list for display
     private val _availablePaymentConsents = MutableStateFlow<List<PaymentConsent>>(emptyList())
     val availablePaymentConsents: StateFlow<List<PaymentConsent>> = _availablePaymentConsents.asStateFlow()
 
@@ -91,7 +95,8 @@ class PaymentFlowViewModel(
         result.fold(
             onSuccess = { (methods, consents) ->
                 _availablePaymentMethods.value = methods
-                _availablePaymentConsents.value = consents
+                _originalPaymentConsents.value = consents
+                _availablePaymentConsents.value = deduplicateConsents(consents)
             },
             onFailure = { _ ->
                 // nothing, we return the entire result
@@ -99,6 +104,38 @@ class PaymentFlowViewModel(
         )
 
         return result
+    }
+
+    /**
+     * Deduplicates payment consents by fingerprint with the following rules:
+     * 1. If CIT and MIT share the same fingerprint, prioritize the CIT consent (only 1 CIT per fingerprint)
+     * 2. When multiple MIT consents exist with the same fingerprint, keep the first one
+     */
+    private fun deduplicateConsents(consents: List<PaymentConsent>): List<PaymentConsent> {
+        val grouped = consents.groupBy { it.paymentMethod?.card?.fingerprint }
+
+        return grouped.flatMap { (fingerprint, consentsGroup) ->
+            // If fingerprint is null, discard (indicates invalid consent data)
+            if (fingerprint == null) {
+                return@flatMap emptyList()
+            }
+
+            // Find CIT consent (only 1 per fingerprint)
+            val citConsent = consentsGroup.find {
+                it.nextTriggeredBy == PaymentConsent.NextTriggeredBy.CUSTOMER
+            }
+
+            // If there's a CIT consent, prioritize it and ignore MIT
+            if (citConsent != null) {
+                listOf(citConsent)
+            } else {
+                // If only MIT consents exist, keep the first one
+                val mitConsent = consentsGroup.find {
+                    it.nextTriggeredBy == PaymentConsent.NextTriggeredBy.MERCHANT
+                }
+                listOfNotNull(mitConsent)
+            }
+        }
     }
 
     fun deletePaymentConsent(paymentConsent: PaymentConsent) = viewModelScope.launch {
@@ -128,6 +165,13 @@ class PaymentFlowViewModel(
 
                     override fun onSuccess(response: PaymentConsent) {
                         viewModelScope.launch {
+                            // Remove from original list
+                            val updatedOriginalList = _originalPaymentConsents.value.filter { it.id != paymentConsent.id }
+                            _originalPaymentConsents.value = updatedOriginalList
+
+                            // Re-deduplicate to potentially show MIT if CIT was deleted
+                            _availablePaymentConsents.value = deduplicateConsents(updatedOriginalList)
+
                             _deleteConsentResult.emit(DeleteConsentResult.Success(paymentConsent))
                         }
                         continuation.resume(Unit)

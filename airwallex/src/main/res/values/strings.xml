@@ -56,6 +56,8 @@
     <string name="airwallex_consent_detail_button_title">Change</string>
     <string name="airwallex_delete_consent_alert_title">Remove %s?</string>
     <string name="airwallex_delete_consent_alert_content">This option will be permanently removed from your saved payment methods.</string>
+    <string name="airwallex_merchant_consent_info_title">Cannot remove card</string>
+    <string name="airwallex_merchant_consent_info_content">This payment method is used for other payments you\'ve set up with %1$s. Please contact %2$s to update the payment method for these payments before removing this card.</string>
     <string name="airwallex_schema_payment_redirect_message">You will be redirected to complete your payment upon confirmation.</string>
     <string name="airwallex_google_payment_redirect_message">Click the Google Pay button below to securely complete your purchase.</string>
     <string name="airwallex_invalid_scheme_message">Invalid schema</string>

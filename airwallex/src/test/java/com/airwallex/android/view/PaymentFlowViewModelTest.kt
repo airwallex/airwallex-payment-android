@@ -48,6 +48,7 @@ import org.junit.Rule
 import org.junit.Test
 import java.math.BigDecimal
 
+@Suppress("LongMethod")
 class PaymentFlowViewModelTest {
     private lateinit var airwallex: Airwallex
     private val testDispatcher = StandardTestDispatcher()
@@ -92,11 +93,20 @@ class PaymentFlowViewModelTest {
 
     private fun createMockPaymentConsent(
         id: String = "test_consent_id",
-        paymentMethod: PaymentMethod? = createPaymentMethod("card")
+        paymentMethod: PaymentMethod? = createPaymentMethod("card"),
+        fingerprint: String? = "default_fingerprint",
+        nextTriggeredBy: PaymentConsent.NextTriggeredBy = PaymentConsent.NextTriggeredBy.CUSTOMER
     ): PaymentConsent {
         return mockk {
             every { this@mockk.id } returns id
-            every { this@mockk.paymentMethod } returns paymentMethod
+            every { this@mockk.paymentMethod } returns paymentMethod?.let {
+                mockk {
+                    every { card } returns mockk {
+                        every { this@mockk.fingerprint } returns fingerprint
+                    }
+                }
+            }
+            every { this@mockk.nextTriggeredBy } returns nextTriggeredBy
         }
     }
 
@@ -129,6 +139,12 @@ class PaymentFlowViewModelTest {
         val mockConsents = listOf(
             mockk<PaymentConsent> {
                 every { id } returns "consent_1"
+                every { paymentMethod } returns mockk {
+                    every { card } returns mockk {
+                        every { fingerprint } returns "test_fp_1"
+                    }
+                }
+                every { nextTriggeredBy } returns PaymentConsent.NextTriggeredBy.CUSTOMER
             }
         )
 
@@ -181,6 +197,87 @@ class PaymentFlowViewModelTest {
         assertTrue(result.getOrNull()?.second?.isEmpty() == true)
         assertTrue(viewModel.availablePaymentMethods.value.isEmpty())
         assertTrue(viewModel.availablePaymentConsents.value.isEmpty())
+    }
+
+    // ========== Consent Deduplication Tests ==========
+
+    @Test
+    fun `test consent deduplication - CIT takes priority over MIT, then MIT appears after CIT deletion`() = runTest {
+        val session = createPaymentSession()
+
+        // Create consents with various scenarios
+        val consentWithNullFingerprint = mockk<PaymentConsent> {
+            every { id } returns "consent_null_fp"
+            every { paymentMethod } returns mockk {
+                every { card } returns mockk {
+                    every { fingerprint } returns null
+                }
+            }
+            every { nextTriggeredBy } returns PaymentConsent.NextTriggeredBy.CUSTOMER
+        }
+
+        val citConsent = mockk<PaymentConsent> {
+            every { id } returns "consent_cit"
+            every { paymentMethod } returns mockk {
+                every { card } returns mockk {
+                    every { fingerprint } returns "fp1"
+                }
+            }
+            every { nextTriggeredBy } returns PaymentConsent.NextTriggeredBy.CUSTOMER
+        }
+
+        val mitConsent1 = mockk<PaymentConsent> {
+            every { id } returns "consent_mit_1"
+            every { paymentMethod } returns mockk {
+                every { card } returns mockk {
+                    every { fingerprint } returns "fp1"
+                }
+            }
+            every { nextTriggeredBy } returns PaymentConsent.NextTriggeredBy.MERCHANT
+        }
+
+        val mitConsent2 = mockk<PaymentConsent> {
+            every { id } returns "consent_mit_2"
+            every { paymentMethod } returns mockk {
+                every { card } returns mockk {
+                    every { fingerprint } returns "fp1"
+                }
+            }
+            every { nextTriggeredBy } returns PaymentConsent.NextTriggeredBy.MERCHANT
+        }
+
+        val allConsents = listOf(consentWithNullFingerprint, citConsent, mitConsent1, mitConsent2)
+        val mockMethods = listOf(mockk<AvailablePaymentMethodType> { every { name } returns "card" })
+
+        coEvery {
+            airwallex.fetchAvailablePaymentMethodsAndConsents(session)
+        } returns Result.success(Pair(mockMethods, allConsents))
+
+        val viewModel = createViewModel(session)
+        viewModel.fetchAvailablePaymentMethodsAndConsents()
+        advanceUntilIdle()
+
+        // Assert: Should show only CIT consent (null fingerprint is discarded, MIT consents are hidden)
+        assertEquals(1, viewModel.availablePaymentConsents.value.size)
+        assertTrue(viewModel.availablePaymentConsents.value.contains(citConsent))
+
+        // Now delete the CIT consent
+        val slot = slot<Airwallex.PaymentListener<PaymentConsent>>()
+        coEvery { airwallex.getClientSecret(session) } returns "test_client_secret"
+        coEvery {
+            airwallex.disablePaymentConsent(any(), capture(slot))
+        } answers {
+            slot.captured.onSuccess(citConsent)
+        }
+
+        viewModel.deletePaymentConsent(citConsent)
+        advanceUntilIdle()
+
+        // Assert: After CIT deletion, should show only first MIT consent (null fingerprint is discarded)
+        assertEquals(1, viewModel.availablePaymentConsents.value.size)
+        assertTrue(viewModel.availablePaymentConsents.value.contains(mitConsent1))
+        // mitConsent2 should still be filtered out (only first MIT is kept)
+        assertTrue(!viewModel.availablePaymentConsents.value.contains(mitConsent2))
     }
 
     // ========== Delete Payment Consent Tests ==========
