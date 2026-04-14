@@ -257,9 +257,8 @@ class PaymentFlowViewModelTest {
         viewModel.fetchAvailablePaymentMethodsAndConsents()
         advanceUntilIdle()
 
-        // Assert: Should show null fingerprint consent and CIT consent only (MIT consents are hidden)
-        assertEquals(2, viewModel.availablePaymentConsents.value.size)
-        assertTrue(viewModel.availablePaymentConsents.value.contains(consentWithNullFingerprint))
+        // Assert: Should show only CIT consent (null fingerprint is discarded, MIT consents are hidden)
+        assertEquals(1, viewModel.availablePaymentConsents.value.size)
         assertTrue(viewModel.availablePaymentConsents.value.contains(citConsent))
 
         // Now delete the CIT consent
@@ -274,9 +273,8 @@ class PaymentFlowViewModelTest {
         viewModel.deletePaymentConsent(citConsent)
         advanceUntilIdle()
 
-        // Assert: After CIT deletion, should show null fingerprint consent and first MIT consent
-        assertEquals(2, viewModel.availablePaymentConsents.value.size)
-        assertTrue(viewModel.availablePaymentConsents.value.contains(consentWithNullFingerprint))
+        // Assert: After CIT deletion, should show only first MIT consent (null fingerprint is discarded)
+        assertEquals(1, viewModel.availablePaymentConsents.value.size)
         assertTrue(viewModel.availablePaymentConsents.value.contains(mitConsent1))
         // mitConsent2 should still be filtered out (only first MIT is kept)
         assertTrue(!viewModel.availablePaymentConsents.value.contains(mitConsent2))
