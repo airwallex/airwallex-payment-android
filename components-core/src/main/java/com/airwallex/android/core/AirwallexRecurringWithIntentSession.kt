@@ -11,7 +11,19 @@ import java.math.BigDecimal
 
 /**
  * For recurring payment (need create payment intent)
+ *
+ * @deprecated Use [Session] instead. AirwallexRecurringWithIntentSession will be removed in a future version.
+ * Session provides a unified API for all payment scenarios with support for both static PaymentIntent
+ * and PaymentIntentProvider.
  */
+@Deprecated(
+    message = "Use Session instead. AirwallexRecurringWithIntentSession will be removed in a future version.",
+    replaceWith = ReplaceWith(
+        "Session.Builder(paymentIntent, countryCode, googlePayOptions)",
+        "com.airwallex.android.core.Session"
+    ),
+    level = DeprecationLevel.WARNING
+)
 @Suppress("LongParameterList")
 @Parcelize
 class AirwallexRecurringWithIntentSession internal constructor(
@@ -99,7 +111,13 @@ class AirwallexRecurringWithIntentSession internal constructor(
      * Indicate if the payment shall be captured immediately after authorized. Only applicable to Card.
      * Default: true
      */
-    override val autoCapture: Boolean = true
+    override val autoCapture: Boolean = true,
+
+    /**
+     * Control whether saved cards are displayed on the list screen
+     */
+    override val hidePaymentConsents: Boolean = false
+
 ) : AirwallexSession(), PaymentIntentResolvableSession, Parcelable {
 
     /**
@@ -185,6 +203,7 @@ class AirwallexRecurringWithIntentSession internal constructor(
             PaymentConsent.MerchantTriggerReason.UNSCHEDULED
         private var returnUrl: String? = null
         private var autoCapture: Boolean = true
+        private var hidePaymentConsents: Boolean = false
         private var paymentMethods: List<String>? = null
         private var googlePayOptions: GooglePayOptions? = null
         private var shipping: Shipping? = null
@@ -212,6 +231,10 @@ class AirwallexRecurringWithIntentSession internal constructor(
 
         fun setAutoCapture(autoCapture: Boolean): Builder = apply {
             this.autoCapture = autoCapture
+        }
+
+        fun setHidePaymentConsents(hidePaymentConsents: Boolean): Builder = apply {
+            this.hidePaymentConsents = hidePaymentConsents
         }
 
         fun setPaymentMethods(paymentMethods: List<String>?): Builder = apply {
@@ -244,6 +267,7 @@ class AirwallexRecurringWithIntentSession internal constructor(
                 isEmailRequired = isEmailRequired,
                 returnUrl = returnUrl,
                 autoCapture = autoCapture,
+                hidePaymentConsents = hidePaymentConsents,
                 paymentMethods = paymentMethods,
                 googlePayOptions = googlePayOptions,
                 merchantTriggerReason = merchantTriggerReason

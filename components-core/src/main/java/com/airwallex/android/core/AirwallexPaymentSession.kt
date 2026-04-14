@@ -97,7 +97,7 @@ class AirwallexPaymentSession internal constructor(
     /**
      *  control whether saved cards are displayed on the list screen
      */
-    val hidePaymentConsents: Boolean = false
+    override val hidePaymentConsents: Boolean = false
 
 ) : AirwallexSession(), PaymentIntentResolvableSession, Parcelable {
 

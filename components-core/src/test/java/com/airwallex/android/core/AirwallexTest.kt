@@ -10,6 +10,7 @@ import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.Page
 import com.airwallex.android.core.model.PaymentConsent
+import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.PaymentIntentFixtures
 import com.airwallex.android.core.model.PaymentMethodFixtures
 import com.airwallex.android.core.model.PaymentMethodType
@@ -159,10 +160,12 @@ class AirwallexTest {
         every { mockPaymentSession.hidePaymentConsents } returns false
 
         every { mockRecurringSession.clientSecret } returns testClientSecret
+        every { mockRecurringSession.hidePaymentConsents } returns true
 
         every { mockRecurringWithIntentSession.paymentIntent } returns testPaymentIntent
         val clientSecret = testPaymentIntent.clientSecret ?: ""
         every { mockRecurringWithIntentSession.clientSecret } returns clientSecret
+        every { mockRecurringWithIntentSession.hidePaymentConsents } returns false
         every { mockPaymentSession.clientSecret } returns clientSecret
 
         // Create Airwallex instance with mocked dependencies
@@ -179,24 +182,74 @@ class AirwallexTest {
         unmockkAll()
     }
 
+    // Helper functions to create real session instances for testing
+    private fun createRealPaymentSession(paymentIntent: PaymentIntent = testPaymentIntent): AirwallexPaymentSession {
+        return AirwallexPaymentSession.Builder(
+            paymentIntent = paymentIntent,
+            countryCode = "US"
+        ).build()
+    }
+
+    private fun createRealRecurringSession(clientSecret: String = testClientSecret): AirwallexRecurringSession {
+        return AirwallexRecurringSession.Builder(
+            nextTriggerBy = PaymentConsent.NextTriggeredBy.CUSTOMER,
+            customerId = "test_customer",
+            currency = "USD",
+            amount = java.math.BigDecimal.valueOf(100),
+            countryCode = "US",
+            clientSecret = clientSecret
+        ).build()
+    }
+
+    private fun createRealRecurringWithIntentSession(paymentIntent: PaymentIntent = testPaymentIntent): AirwallexRecurringWithIntentSession {
+        return AirwallexRecurringWithIntentSession.Builder(
+            paymentIntent = paymentIntent,
+            customerId = "test_customer",
+            nextTriggerBy = PaymentConsent.NextTriggeredBy.CUSTOMER,
+            countryCode = "US"
+        ).build()
+    }
+
+    private fun createRealSession(paymentIntent: PaymentIntent = testPaymentIntent): Session {
+        return Session.Builder(
+            paymentIntent = paymentIntent,
+            countryCode = "US"
+        ).build()
+    }
+
     // Tests for getPaymentIntent()
     @Test
     fun `getPaymentIntent returns paymentIntent for AirwallexPaymentSession`() {
-        val result = airwallex.getPaymentIntent(mockPaymentSession)
+        val realSession = createRealPaymentSession()
+
+        val result = airwallex.getPaymentIntent(realSession)
 
         assertEquals(testPaymentIntent, result)
     }
 
     @Test
     fun `getPaymentIntent returns paymentIntent for AirwallexRecurringWithIntentSession`() {
-        val result = airwallex.getPaymentIntent(mockRecurringWithIntentSession)
+        val realSession = createRealRecurringWithIntentSession()
+
+        val result = airwallex.getPaymentIntent(realSession)
+
+        assertEquals(testPaymentIntent, result)
+    }
+
+    @Test
+    fun `getPaymentIntent returns paymentIntent for Session`() {
+        val realSession = createRealSession()
+
+        val result = airwallex.getPaymentIntent(realSession)
 
         assertEquals(testPaymentIntent, result)
     }
 
     @Test
     fun `getPaymentIntent returns null for AirwallexRecurringSession`() {
-        val result = airwallex.getPaymentIntent(mockRecurringSession)
+        val realSession = createRealRecurringSession()
+
+        val result = airwallex.getPaymentIntent(realSession)
 
         assertEquals(null, result)
     }
@@ -210,29 +263,45 @@ class AirwallexTest {
     // Tests for getClientSecret()
     @Test
     fun `getClientSecret returns clientSecret for AirwallexPaymentSession`() {
-        val result = airwallex.getClientSecret(mockPaymentSession)
+        val realSession = createRealPaymentSession()
+
+        val result = airwallex.getClientSecret(realSession)
 
         assertEquals(testPaymentIntent.clientSecret, result)
     }
 
     @Test
     fun `getClientSecret returns clientSecret for AirwallexRecurringWithIntentSession`() {
-        val result = airwallex.getClientSecret(mockRecurringWithIntentSession)
+        val realSession = createRealRecurringWithIntentSession()
+
+        val result = airwallex.getClientSecret(realSession)
+
+        assertEquals(testPaymentIntent.clientSecret, result)
+    }
+
+    @Test
+    fun `getClientSecret returns clientSecret for Session`() {
+        val realSession = createRealSession()
+
+        val result = airwallex.getClientSecret(realSession)
 
         assertEquals(testPaymentIntent.clientSecret, result)
     }
 
     @Test
     fun `getClientSecret returns clientSecret for AirwallexRecurringSession`() {
-        val result = airwallex.getClientSecret(mockRecurringSession)
+        val realSession = createRealRecurringSession(clientSecret = testClientSecret)
+
+        val result = airwallex.getClientSecret(realSession)
 
         assertEquals(testClientSecret, result)
     }
 
     @Test
     fun `getClientSecret returns null for unsupported session type`() {
-        val unsupportedSession = mockk<AirwallexSession>()
-        every { unsupportedSession.clientSecret } returns null
+        val unsupportedSession = mockk<AirwallexSession> {
+            every { clientSecret } returns null
+        }
         val result = airwallex.getClientSecret(unsupportedSession)
 
         assertEquals(null, result)
@@ -241,39 +310,68 @@ class AirwallexTest {
     // Tests for shouldHidePaymentConsents()
     @Test
     fun `shouldHidePaymentConsents returns true when hidePaymentConsents is true`() {
-        every { mockPaymentSession.hidePaymentConsents } returns true
+        val realPaymentSession = AirwallexPaymentSession.Builder(
+            paymentIntent = testPaymentIntent,
+            countryCode = "US"
+        ).setHidePaymentConsents(true).build()
 
-        val result = airwallex.shouldHidePaymentConsents(mockPaymentSession)
+        val result = airwallex.shouldHidePaymentConsents(realPaymentSession)
 
         assertEquals(true, result)
+        assertEquals(true, realPaymentSession.hidePaymentConsents)
     }
 
     @Test
     fun `shouldHidePaymentConsents returns false when hidePaymentConsents is false`() {
-        every { mockPaymentSession.hidePaymentConsents } returns false
+        val realPaymentSession = AirwallexPaymentSession.Builder(
+            paymentIntent = testPaymentIntent,
+            countryCode = "US"
+        ).build() // Default is false, no need to set explicitly
 
-        val result = airwallex.shouldHidePaymentConsents(mockPaymentSession)
+        val result = airwallex.shouldHidePaymentConsents(realPaymentSession)
 
         assertEquals(false, result)
+        assertEquals(false, realPaymentSession.hidePaymentConsents)
     }
 
     @Test
-    fun `shouldHidePaymentConsents returns false for AirwallexRecurringSession`() {
-        val result = airwallex.shouldHidePaymentConsents(mockRecurringSession)
+    fun `shouldHidePaymentConsents returns true for AirwallexRecurringSession`() {
+        val realRecurringSession = AirwallexRecurringSession.Builder(
+            nextTriggerBy = PaymentConsent.NextTriggeredBy.CUSTOMER,
+            customerId = "test_customer",
+            currency = "USD",
+            amount = java.math.BigDecimal.valueOf(100),
+            countryCode = "US",
+            clientSecret = "test_secret"
+        ).build()
 
-        assertEquals(false, result)
+        val result = airwallex.shouldHidePaymentConsents(realRecurringSession)
+
+        assertEquals(true, result)
+        assertEquals(true, realRecurringSession.hidePaymentConsents)
     }
 
     @Test
     fun `shouldHidePaymentConsents returns false for AirwallexRecurringWithIntentSession`() {
-        val result = airwallex.shouldHidePaymentConsents(mockRecurringWithIntentSession)
+        val realRecurringWithIntentSession = AirwallexRecurringWithIntentSession.Builder(
+            paymentIntent = testPaymentIntent,
+            customerId = "test_customer",
+            nextTriggerBy = PaymentConsent.NextTriggeredBy.CUSTOMER,
+            countryCode = "US"
+        ).build()
+
+        val result = airwallex.shouldHidePaymentConsents(realRecurringWithIntentSession)
 
         assertEquals(false, result)
+        // Also verify the property directly
+        assertEquals(false, realRecurringWithIntentSession.hidePaymentConsents)
     }
 
     @Test
     fun `shouldHidePaymentConsents returns false for unsupported session type`() {
-        val unsupportedSession = mockk<AirwallexSession>()
+        val unsupportedSession = mockk<AirwallexSession> {
+            every { hidePaymentConsents } returns false
+        }
         val result = airwallex.shouldHidePaymentConsents(unsupportedSession)
 
         assertEquals(false, result)
@@ -1019,6 +1117,7 @@ class AirwallexTest {
         every { mockRecurringWithIntentSession.customerId } returns testCustomerId
         every { mockRecurringWithIntentSession.clientSecret } returns testPaymentIntent.clientSecret
         every { mockRecurringWithIntentSession.paymentMethods } returns null
+        every { mockRecurringWithIntentSession.hidePaymentConsents } returns true
 
         // Mock payment methods
         val cardMethod = mockk<AvailablePaymentMethodType> {

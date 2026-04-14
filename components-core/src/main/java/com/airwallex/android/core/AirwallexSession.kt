@@ -69,6 +69,12 @@ abstract class AirwallexSession : Parcelable {
      * Used for authenticating API requests.
      */
     abstract val clientSecret: String?
+
+    /**
+     * Control whether saved cards are displayed on the list screen
+     */
+    open val hidePaymentConsents: Boolean
+        get() = false
 }
 
 /**

@@ -252,20 +252,22 @@ abstract class BaseViewModel : ViewModel() {
     /**
      * this method will create different types of Sessions based on the different modes.
      */
-    internal suspend fun createSessionForUI(
+    internal suspend fun createLegacySessionForUI(
         googlePayOptions: GooglePayOptions? = null,
         paymentMethods: List<String>? = listOf(),
-        returnUrl: DemoReturnUrl = DemoReturnUrl.UIIntegration
+        returnUrl: DemoReturnUrl = DemoReturnUrl.UIIntegration,
+        force3DS: Boolean = com.airwallex.paymentacceptance.force3DS
     ): AirwallexSession {
         return when (Settings.checkoutMode) {
             AirwallexCheckoutMode.PAYMENT -> {
                 if (Settings.expressCheckout == "Enabled") {
                     // Use PaymentIntentProvider for on-demand payment intent creation
-                    buildAirwallexPaymentSessionWithProvider(googlePayOptions, paymentMethods, returnUrl)
+                    // Use cached customerId if available
+                    buildAirwallexPaymentSessionWithProvider(googlePayOptions, paymentMethods, returnUrl, Settings.cachedCustomerId, force3DS)
                 } else {
                     //get the paymentIntent object from your server
                     //please do not directly copy this method!
-                    val paymentIntent = getPaymentIntentFromServer(force3DS = force3DS, returnUrl = returnUrl)
+                    val paymentIntent = getPaymentIntentFromServer(force3DS = force3DS, customerId = null, returnUrl = returnUrl)
                     // build an AirwallexPaymentSession based on the paymentIntent
                     buildAirwallexPaymentSession(googlePayOptions, paymentIntent, paymentMethods, returnUrl)
                 }
@@ -293,7 +295,8 @@ abstract class BaseViewModel : ViewModel() {
                         googlePayOptions,
                         customerId,
                         paymentMethods,
-                        returnUrl
+                        returnUrl,
+                        force3DS
                     )
                 } else {
                     //get the customerId and paymentIntent from your server
@@ -392,17 +395,19 @@ abstract class BaseViewModel : ViewModel() {
     protected fun buildAirwallexPaymentSessionWithProvider(
         googlePayOptions: GooglePayOptions? = null,
         paymentMethods: List<String>? = listOf(),
-        returnUrl: DemoReturnUrl = DemoReturnUrl.UIIntegration
+        returnUrl: DemoReturnUrl = DemoReturnUrl.UIIntegration,
+        customerId: String? = Settings.cachedCustomerId,
+        force3DS: Boolean = com.airwallex.paymentacceptance.force3DS
     ) = AirwallexPaymentSession.Builder(
         // You can use paymentIntentSource (Kotlin coroutine pattern) or paymentIntentProvider (Java callback pattern) based on your preference
         // Example with paymentIntentProvider: paymentIntentProvider = DemoPaymentIntentProvider(force3DS = force3DS, customerId = Settings.cachedCustomerId)
         paymentIntentSource = DemoPaymentIntentSource(
             force3DS = force3DS,
-            customerId = Settings.cachedCustomerId,
+            customerId = customerId,
             returnUrl = returnUrl
         ),
         countryCode = Settings.countryCode,
-        customerId = Settings.cachedCustomerId,
+        customerId = customerId,
         googlePayOptions = googlePayOptions
     )
         .setRequireBillingInformation(true)
@@ -421,7 +426,8 @@ abstract class BaseViewModel : ViewModel() {
         googlePayOptions: GooglePayOptions? = null,
         customerId: String,
         paymentMethods: List<String>? = listOf(),
-        returnUrl: DemoReturnUrl = DemoReturnUrl.UIIntegration
+        returnUrl: DemoReturnUrl = DemoReturnUrl.UIIntegration,
+        force3DS: Boolean = com.airwallex.paymentacceptance.force3DS
     ) = AirwallexRecurringWithIntentSession.Builder(
         // You can use paymentIntentSource (Kotlin coroutine pattern) or paymentIntentProvider (Java callback pattern) based on your preference
         // Example with paymentIntentSource: PaymentIntentSource = DemoPaymentIntentSource(force3DS = force3DS, customerId = Settings.cachedCustomerId)
@@ -450,7 +456,8 @@ abstract class BaseViewModel : ViewModel() {
     protected fun buildSessionForExpressCheckout(
         googlePayOptions: GooglePayOptions? = null,
         paymentMethods: List<String>? = listOf(),
-        returnUrl: DemoReturnUrl = DemoReturnUrl.UIIntegration
+        returnUrl: DemoReturnUrl = DemoReturnUrl.UIIntegration,
+        force3DS: Boolean = com.airwallex.paymentacceptance.force3DS
     ): Session {
         // Determine amount and paymentConsentOptions based on checkout mode
         val (amount, paymentConsentOptions) = when (Settings.checkoutMode) {
@@ -497,7 +504,8 @@ abstract class BaseViewModel : ViewModel() {
     protected suspend fun createSessionForTraditional(
         googlePayOptions: GooglePayOptions? = null,
         paymentMethods: List<String>? = listOf(),
-        returnUrl: DemoReturnUrl = DemoReturnUrl.UIIntegration
+        returnUrl: DemoReturnUrl = DemoReturnUrl.UIIntegration,
+        force3DS: Boolean = com.airwallex.paymentacceptance.force3DS
     ): Session {
         val customerId = getCustomerIdFromServer()
         // Determine amount and paymentConsentOptions based on checkout mode
@@ -540,6 +548,45 @@ abstract class BaseViewModel : ViewModel() {
             .setPaymentConsentOptions(paymentConsentOptions)
             .build()
     }
+
+    /**
+     * Create Session using the new unified Session API
+     * Handles both express and traditional checkout based on Settings.expressCheckout
+     * Supports all checkout modes (PAYMENT, RECURRING, RECURRING_WITH_INTENT)
+     */
+    protected suspend fun createSessionForUI(
+        googlePayOptions: GooglePayOptions? = null,
+        paymentMethods: List<String>? = listOf(),
+        returnUrl: DemoReturnUrl = DemoReturnUrl.UIIntegration,
+        force3DS: Boolean = com.airwallex.paymentacceptance.force3DS
+    ): Session {
+        return if (Settings.expressCheckout == "Enabled") {
+            buildSessionForExpressCheckout(googlePayOptions, paymentMethods, returnUrl, force3DS)
+        } else {
+            createSessionForTraditional(googlePayOptions, paymentMethods, returnUrl, force3DS)
+        }
+    }
+
+    /**
+     * Create session based on Settings.useSession flag
+     * Automatically handles:
+     * - New unified Session API vs legacy session classes
+     * - Express checkout vs traditional flow
+     * - All checkout modes (PAYMENT, RECURRING, RECURRING_WITH_INTENT)
+     */
+    protected suspend fun createSession(
+        googlePayOptions: GooglePayOptions? = null,
+        paymentMethods: List<String>? = listOf(),
+        returnUrl: DemoReturnUrl = DemoReturnUrl.UIIntegration,
+        force3DS: Boolean = com.airwallex.paymentacceptance.force3DS
+    ): AirwallexSession {
+        return if (Settings.useSession == "Enabled") {
+            createSessionForUI(googlePayOptions, paymentMethods, returnUrl, force3DS)
+        } else {
+            createLegacySessionForUI(googlePayOptions, paymentMethods, returnUrl)
+        }
+    }
+
     companion object {
         private const val TAG = "BaseViewModel"
     }

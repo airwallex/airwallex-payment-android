@@ -387,15 +387,19 @@ class PaymentFlowViewModelTest {
     @Test
     fun `test checkoutWithoutCvc with invalid session`() = runTest {
         val session = createRecurringSession()
-        val paymentConsent = mockk<PaymentConsent>(relaxed = true)
+        val paymentConsent = mockk<PaymentConsent>(relaxed = true) {
+            every { paymentMethod } returns mockk(relaxed = true)
+        }
         val error = AirwallexCheckoutException(message = "confirm with paymentConsent only support AirwallexPaymentSession")
         val expectedStatus = AirwallexPaymentStatus.Failure(error)
 
         val slot = slot<Airwallex.PaymentResultListener>()
         coEvery {
-            airwallex.confirmPaymentIntent(
+            airwallex.checkout(
                 session = session,
+                paymentMethod = any(),
                 paymentConsent = paymentConsent,
+                cvc = null,
                 listener = capture(slot)
             )
         } answers {
@@ -430,9 +434,11 @@ class PaymentFlowViewModelTest {
 
         val slot = slot<Airwallex.PaymentResultListener>()
         coEvery {
-            airwallex.confirmPaymentIntent(
+            airwallex.checkout(
                 session = session,
+                paymentMethod = any(),
                 paymentConsent = paymentConsent,
+                cvc = null,
                 listener = capture(slot)
             )
         } answers {
@@ -695,16 +701,18 @@ class PaymentFlowViewModelTest {
     @Test
     fun `test checkoutWithNewCard success with saveCard true and billing`() = runTest {
         val session = createPaymentSession()
-        val card = mockk<PaymentMethod.Card>(relaxed = true)
+        val card = mockk<PaymentMethod.Card>(relaxed = true) {
+            every { cvc } returns "123"
+        }
         val billing = mockk<Billing>(relaxed = true)
         val expectedStatus = AirwallexPaymentStatus.Success("test_payment_intent_id")
 
         val slot = slot<Airwallex.PaymentResultListener>()
         coEvery {
-            airwallex.confirmPaymentIntent(
+            airwallex.checkout(
                 session = session,
-                card = card,
-                billing = billing,
+                paymentMethod = any(),
+                cvc = "123",
                 saveCard = true,
                 listener = capture(slot)
             )
@@ -724,10 +732,14 @@ class PaymentFlowViewModelTest {
         assertEquals(expectedStatus, result.status)
 
         coVerify {
-            airwallex.confirmPaymentIntent(
+            airwallex.checkout(
                 session = session,
-                card = card,
-                billing = billing,
+                paymentMethod = match {
+                    it.type == PaymentMethodType.CARD.value &&
+                    it.card == card &&
+                    it.billing == billing
+                },
+                cvc = "123",
                 saveCard = true,
                 listener = any()
             )
@@ -739,15 +751,17 @@ class PaymentFlowViewModelTest {
     @Test
     fun `test checkoutWithNewCard with saveCard false`() = runTest {
         val session = createPaymentSession()
-        val card = mockk<PaymentMethod.Card>(relaxed = true)
+        val card = mockk<PaymentMethod.Card>(relaxed = true) {
+            every { cvc } returns "123"
+        }
         val expectedStatus = AirwallexPaymentStatus.Success("test_payment_intent_id")
 
         val slot = slot<Airwallex.PaymentResultListener>()
         coEvery {
-            airwallex.confirmPaymentIntent(
+            airwallex.checkout(
                 session = session,
-                card = card,
-                billing = null,
+                paymentMethod = any(),
+                cvc = "123",
                 saveCard = false,
                 listener = capture(slot)
             )
@@ -765,10 +779,10 @@ class PaymentFlowViewModelTest {
         assertEquals(expectedStatus, results.first().status)
 
         coVerify {
-            airwallex.confirmPaymentIntent(
+            airwallex.checkout(
                 session = session,
-                card = card,
-                billing = null,
+                paymentMethod = any(),
+                cvc = "123",
                 saveCard = false,
                 listener = any()
             )
@@ -780,15 +794,17 @@ class PaymentFlowViewModelTest {
     @Test
     fun `test checkoutWithNewCard with non-payment session`() = runTest {
         val session = createRecurringSession()
-        val card = mockk<PaymentMethod.Card>(relaxed = true)
+        val card = mockk<PaymentMethod.Card>(relaxed = true) {
+            every { cvc } returns "123"
+        }
         val expectedStatus = AirwallexPaymentStatus.Success("test_payment_intent_id", "test_consent_id")
 
         val slot = slot<Airwallex.PaymentResultListener>()
         coEvery {
-            airwallex.confirmPaymentIntent(
+            airwallex.checkout(
                 session = session,
-                card = card,
-                billing = null,
+                paymentMethod = any(),
+                cvc = "123",
                 saveCard = true,
                 listener = capture(slot)
             )
