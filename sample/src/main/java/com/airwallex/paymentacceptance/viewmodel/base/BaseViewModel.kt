@@ -283,7 +283,8 @@ abstract class BaseViewModel : ViewModel() {
                     googlePayOptions,
                     customerId,
                     clientSecret,
-                    paymentMethods
+                    paymentMethods,
+                    returnUrl
                 )
             }
 
@@ -343,12 +344,14 @@ abstract class BaseViewModel : ViewModel() {
      * build an AirwallexRecurringSession based on the customerId and clientSecret
      * @param customerId get this from your sever
      * @param clientSecret get this from your sever
+     * @param returnUrl the return URL for redirect-based payment methods
      */
     protected fun buildAirwallexRecurringSession(
         googlePayOptions: GooglePayOptions? = null,
         customerId: String,
         clientSecret: String,
-        paymentMethods: List<String>? = listOf()
+        paymentMethods: List<String>? = listOf(),
+        returnUrl: DemoReturnUrl = DemoReturnUrl.UIIntegration
     ) = AirwallexRecurringSession.Builder(
         customerId = customerId,
         clientSecret = clientSecret,
@@ -361,7 +364,7 @@ abstract class BaseViewModel : ViewModel() {
         .setShipping(shipping)
         .setMerchantTriggerReason(PaymentConsent.MerchantTriggerReason.SCHEDULED)
         .setGooglePayOptions(googlePayOptions)
-        .setReturnUrl(DemoReturnUrl.UIIntegration.fullUrl)
+        .setReturnUrl(returnUrl.fullUrl)
         .setPaymentMethods(paymentMethods)
         .build()
 
