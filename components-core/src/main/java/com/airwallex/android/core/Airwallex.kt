@@ -1002,9 +1002,9 @@ class Airwallex internal constructor(
         val useOldFlow = session is AirwallexRecurringSession || !isCardOrGooglePay
         val paymentConsentIdValue = paymentConsentId ?: paymentConsent?.id
 
-        if (paymentConsentIdValue != null && paymentMethod.type == PaymentMethodType.CARD.value) {
-            logPaymentLaunchedIfNeeded(paymentConsentIdValue)
-        }
+        // Log payment_launched for API integration
+        logPaymentLaunchedIfNeeded(paymentConsentIdValue, paymentMethod.type)
+
         if (useOldFlow) {
             checkoutOldFlowRouting(session, paymentMethod, cvc, additionalInfo, flow, listener)
             return
@@ -1119,15 +1119,6 @@ class Airwallex internal constructor(
         setupAnalyticsLogger(session)
         // Wrap listener at entry point to log payment result once
         val loggingListener = wrapListenerWithLogging(listener, paymentMethod.type ?: "unknown")
-        // Only log payment_launched for true API integration (not embedded elements or UI integration)
-        if (!isAirwallexUIActivity && AnalyticsLogger.getLaunchType() == AnalyticsLogger.LaunchType.API) {
-            AnalyticsLogger.logAction(
-                actionName = "payment_launched",
-                additionalInfo = mutableMapOf<String, Any>().apply {
-                    paymentMethod.type?.let { put(Field.PAYMENT_METHOD, it) }
-                }
-            )
-        }
         AirwallexLogger.info("Airwallex checkout: saveCard = $saveCard, paymentMethod.type = ${paymentMethod.type} session type = ${session.javaClass}")
 
         // Legacy flow implementation
@@ -1203,15 +1194,6 @@ class Airwallex internal constructor(
         setupAnalyticsLogger(session)
         // Wrap listener at entry point to log payment result once
         val loggingListener = wrapListenerWithLogging(listener, paymentMethod.type ?: "unknown")
-        // Only log payment_launched for true API integration (not embedded elements or UI integration)
-        if (!isAirwallexUIActivity && AnalyticsLogger.getLaunchType() == AnalyticsLogger.LaunchType.API) {
-            AnalyticsLogger.logAction(
-                actionName = "payment_launched",
-                additionalInfo = mutableMapOf<String, Any>().apply {
-                    paymentMethod.type?.let { put("paymentMethod", it) }
-                }
-            )
-        }
         AirwallexLogger.info("Airwallex unified checkout: saveCard = $saveCard, paymentMethod.type = ${paymentMethod.type} session type = ${session.javaClass}")
 
         // Handle Google Pay separately (different flow)
@@ -1279,7 +1261,7 @@ class Airwallex internal constructor(
     ) {
         // Determine PaymentConsentOptions based on context
         val paymentConsentOptions = when {
-            // 1. Session already has consent options (e.g. from RecurringSession) → use them
+            // 1. Session already has consent options (e.g. from previous transaction) → use them
             session.paymentConsentOptions != null -> session.paymentConsentOptions
 
             // 2. MIT consent used for one-off payment → override to create CIT consent
@@ -2211,14 +2193,14 @@ class Airwallex internal constructor(
             }
         }
     }
-    private fun logPaymentLaunchedIfNeeded(paymentConsentId: String) {
+    private fun logPaymentLaunchedIfNeeded(paymentConsentId: String?, paymentMethod: String?) {
         if (!isAirwallexUIActivity && AnalyticsLogger.getLaunchType() == AnalyticsLogger.LaunchType.API) {
             AnalyticsLogger.logAction(
                 actionName = "payment_launched",
-                additionalInfo = mutableMapOf<String, Any>(
-                    Field.PAYMENT_METHOD to PaymentMethodType.CARD.value,
-                    Field.CONSENT_ID to paymentConsentId
-                )
+                additionalInfo = mutableMapOf<String, Any>().apply {
+                    paymentMethod?.let { put(Field.PAYMENT_METHOD, it) }
+                    paymentConsentId?.let { put(Field.CONSENT_ID, it) }
+                }
             )
         }
     }
