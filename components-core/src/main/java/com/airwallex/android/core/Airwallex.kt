@@ -207,10 +207,23 @@ class Airwallex internal constructor(
         saveCard: Boolean = false,
         listener: PaymentResultListener
     ) {
-        // Log payment_launched for this deprecated entry point
-        logPaymentLaunchedIfNeeded(null, PaymentMethodType.CARD.value)
-        // Delegate to shared card creation + checkout logic
-        checkoutWithCardCreation(session, card, billing, saveCard, listener)
+        // Bind session's PaymentIntentProvider to this Activity's lifecycle
+        session.bindToActivity(activity)
+        setupAnalyticsLogger(session)
+        // Wrap listener at entry point to log payment result once
+        val loggingListener = wrapListenerWithLogging(listener, PaymentMethodType.CARD.value)
+
+        val paymentMethod = PaymentMethod.Builder()
+            .setType(PaymentMethodType.CARD.value)
+            .setCard(card)
+            .setBilling(billing)
+            .build()
+        checkout(
+            session = session,
+            paymentMethod = paymentMethod,
+            listener = loggingListener,
+            saveCard = saveCard
+        )
     }
 
     /**
@@ -912,37 +925,6 @@ class Airwallex internal constructor(
     }
 
     /**
-     * Checkout the one-off payment
-     *
-     * @param session a [AirwallexSession] used to present the Checkout flow, required.
-     * @param paymentMethod a [PaymentMethod] used to present the Checkout flow, required.
-     * @param cvc the CVC of the Credit Card, optional.
-     * @param saveCard whether card will be saved as a payment consent, optional.
-     * @param listener The callback of checkout
-     */
-    @UiThread
-    internal fun checkout(
-        session: AirwallexSession,
-        paymentMethod: PaymentMethod,
-        cvc: String? = null,
-        saveCard: Boolean = false,
-        listener: PaymentResultListener
-    ) {
-        val loggingListener = wrapListenerWithLogging(listener, paymentMethod.type ?: PaymentMethodType.CARD.value)
-        this.checkout(
-            session,
-            paymentMethod,
-            null,
-            null,
-            cvc,
-            null,
-            null,
-            loggingListener,
-            saveCard
-        )
-    }
-
-    /**
      * Checkout the payment. This should be the entry point to handle all checkout cases
      *
      * @param session a [AirwallexSession] used to present the Checkout flow, required.
@@ -1033,8 +1015,26 @@ class Airwallex internal constructor(
                 )
                 return
             }
-            // Delegate to shared card creation + checkout logic
-            checkoutWithCardCreation(session, card, paymentMethod.billing, false, listener)
+            createCardPaymentMethod(
+                session = session,
+                card = card,
+                billing = paymentMethod.billing,
+                saveCard = false,
+                listener = object : PaymentListener<PaymentMethod> {
+                    override fun onSuccess(response: PaymentMethod) {
+                        checkoutLegacySession(
+                            session = session,
+                            paymentMethod = response,
+                            cvc = card.cvc,
+                            listener = listener
+                        )
+                    }
+
+                    override fun onFailed(exception: AirwallexException) {
+                        listener.onCompleted(AirwallexPaymentStatus.Failure(exception))
+                    }
+                }
+            )
             return
         }
 
@@ -2170,45 +2170,6 @@ class Airwallex internal constructor(
             }
         }
     }
-
-    /**
-     * INTERNAL: Shared logic for card payment flow that creates PaymentMethod from Card+Billing,
-     * then proceeds to checkoutLegacySession.
-     * Used by confirmPaymentIntent(card) and checkoutOldFlowRouting for AirwallexRecurringSession.
-     */
-    private fun checkoutWithCardCreation(
-        session: AirwallexSession,
-        card: PaymentMethod.Card,
-        billing: Billing?,
-        saveCard: Boolean,
-        listener: PaymentResultListener
-    ) {
-        session.bindToActivity(activity)
-        setupAnalyticsLogger(session)
-        val loggingListener = wrapListenerWithLogging(listener, PaymentMethodType.CARD.value)
-        createCardPaymentMethod(
-            session = session,
-            card = card,
-            billing = billing,
-            saveCard = saveCard,
-            listener = object : PaymentListener<PaymentMethod> {
-                override fun onSuccess(response: PaymentMethod) {
-                    checkoutLegacySession(
-                        session = session,
-                        paymentMethod = response,
-                        cvc = card.cvc,
-                        saveCard = saveCard,
-                        listener = loggingListener
-                    )
-                }
-
-                override fun onFailed(exception: AirwallexException) {
-                    loggingListener.onCompleted(AirwallexPaymentStatus.Failure(exception))
-                }
-            }
-        )
-    }
-
     private fun logPaymentLaunchedIfNeeded(paymentConsentId: String?, paymentMethod: String?) {
         if (!isAirwallexUIActivity && AnalyticsLogger.getLaunchType() == AnalyticsLogger.LaunchType.API) {
             AnalyticsLogger.logAction(
