@@ -1041,7 +1041,7 @@ class Airwallex internal constructor(
         // OLD FLOW: Use legacy implementation for AirwallexRecurringSession and LPMs
         // Convert Session to legacy if needed
         if (session is Session) {
-            CoroutineScope(Dispatchers.Main).launch {
+            activity.lifecycleScope.launch {
                 try {
                     val legacySession = session.convertToLegacySession()
                     checkoutLegacySession(
