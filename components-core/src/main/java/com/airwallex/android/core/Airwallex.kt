@@ -72,6 +72,7 @@ import java.math.BigDecimal
 import java.util.Collections
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.coroutines.cancellation.CancellationException
 
 @Suppress("LongMethod, LargeClass, LongParameterList")
 class Airwallex internal constructor(
@@ -664,6 +665,9 @@ class Airwallex internal constructor(
         // if the customerId is null or empty ,there is no need to request consents
         if (session.customerId.isNullOrEmpty()) return false
         if (session is AirwallexRecurringSession) return false
+        // if payment methods is not empty and does not contain CARD, no need to request consents
+        val paymentMethods = session.paymentMethods
+        if (!paymentMethods.isNullOrEmpty() && !paymentMethods.contains(PaymentMethodType.CARD.value)) return false
         // if user wants to hide consents,there is no need to request consents
         return !shouldHidePaymentConsents(session)
     }
@@ -1002,7 +1006,7 @@ class Airwallex internal constructor(
             logPaymentLaunchedIfNeeded(paymentConsentIdValue)
         }
         if (useOldFlow) {
-            checkoutOldFlowRouting(session, paymentMethod, paymentConsentId, paymentConsent, cvc, additionalInfo, flow, listener, saveCard)
+            checkoutOldFlowRouting(session, paymentMethod, cvc, additionalInfo, flow, listener)
             return
         }
 
@@ -1035,38 +1039,26 @@ class Airwallex internal constructor(
     private fun checkoutOldFlowRouting(
         session: AirwallexSession,
         paymentMethod: PaymentMethod,
-        paymentConsentId: String? = null,
-        paymentConsent: PaymentConsent? = null,
         cvc: String? = null,
         additionalInfo: Map<String, String>? = null,
         flow: AirwallexPaymentRequestFlow? = null,
         listener: PaymentResultListener,
-        saveCard: Boolean = false,
     ) {
         // SPECIAL HANDLING: AirwallexRecurringSession with card payments
+        // Note: AirwallexRecurringSession always creates NEW payment consents, never uses existing ones
         if (session is AirwallexRecurringSession && paymentMethod.type == PaymentMethodType.CARD.value) {
-            // Case 1: No payment consent/consentId - new card payment
-            if (paymentConsent == null && paymentConsentId == null) {
-                val card = paymentMethod.card
-                if (card == null) {
-                    listener.onCompleted(
-                        AirwallexPaymentStatus.Failure(
-                            AirwallexCheckoutException(message = "Card is required for card payment")
-                        )
+            val card = paymentMethod.card
+            if (card == null) {
+                listener.onCompleted(
+                    AirwallexPaymentStatus.Failure(
+                        AirwallexCheckoutException(message = "Card is required for card payment")
                     )
-                    return
-                }
-                // Call confirmPaymentIntent(session, card, billing, saveCard, listener)
-                confirmPaymentIntent(session, card, paymentMethod.billing, saveCard, listener)
+                )
                 return
             }
-            // Case 2: Has payment consent object - existing card payment
-            if (paymentConsent != null) {
-                // Call confirmPaymentIntent(session, paymentConsent, listener)
-                confirmPaymentIntent(session, paymentConsent, listener)
-                return
-            }
-            // Case 3: Only has consentId but no consent object - fall through to legacy flow
+            // Call confirmPaymentIntent(session, card, billing, saveCard, listener)
+            confirmPaymentIntent(session, card, paymentMethod.billing, false, listener)
+            return
         }
 
         // OLD FLOW: Use legacy implementation for AirwallexRecurringSession and LPMs
@@ -1075,13 +1067,35 @@ class Airwallex internal constructor(
             CoroutineScope(Dispatchers.Main).launch {
                 try {
                     val legacySession = session.convertToLegacySession()
-                    checkoutLegacySession(legacySession, paymentMethod, paymentConsentId, paymentConsent, cvc, additionalInfo, flow, listener, saveCard)
-                } catch (error: Throwable) {
-                    listener.onCompleted(AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = error.message, e = error)))
+                    checkoutLegacySession(
+                        session = legacySession,
+                        paymentMethod = paymentMethod,
+                        cvc = cvc,
+                        additionalInfo = additionalInfo,
+                        flow = flow,
+                        listener = listener
+                    )
+                } catch (error: Exception) {
+                    if (error is CancellationException) throw error
+                    listener.onCompleted(
+                        AirwallexPaymentStatus.Failure(
+                            AirwallexCheckoutException(
+                                message = error.message,
+                                e = error
+                            )
+                        )
+                    )
                 }
             }
         } else {
-            checkoutLegacySession(session, paymentMethod, paymentConsentId, paymentConsent, cvc, additionalInfo, flow, listener, saveCard)
+            checkoutLegacySession(
+                session = session,
+                paymentMethod = paymentMethod,
+                cvc = cvc,
+                additionalInfo = additionalInfo,
+                flow = flow,
+                listener = listener
+            )
         }
     }
 

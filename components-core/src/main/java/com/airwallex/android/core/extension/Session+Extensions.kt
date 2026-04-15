@@ -33,44 +33,31 @@ suspend fun Session.convertToLegacySession(): AirwallexSession {
 
     return when {
         consentOptions == null -> {
-            // One-off payment → AirwallexPaymentSession
-            // Preserve provider if available (Express Checkout), otherwise resolve PaymentIntent
-            val provider = (this as? PaymentIntentResolvableSession)?.paymentIntentProvider
-            if (provider != null) {
-                oneOffPaymentSession(null) // Provider will be used
-            } else {
-                val paymentIntent = resolvePaymentIntentSuspend()
-                oneOffPaymentSession(paymentIntent)
-            }
+            oneOffPaymentSession()
         }
 
         amount.compareTo(java.math.BigDecimal.ZERO) == 0 -> {
-            // Recurring without intent → AirwallexRecurringSession
-            // Must resolve PaymentIntent to get clientSecret
-            val paymentIntent = resolvePaymentIntentSuspend()
-            recurringSession(paymentIntent, consentOptions)
+            recurringSession(consentOptions)
         }
 
         else -> {
-            // Recurring with intent → AirwallexRecurringWithIntentSession
-            // Preserve provider if available (Express Checkout), otherwise resolve PaymentIntent
-            val provider = (this as? PaymentIntentResolvableSession)?.paymentIntentProvider
-            if (provider != null) {
-                recurringWithIntentSession(null, consentOptions) // Provider will be used
-            } else {
-                val paymentIntent = resolvePaymentIntentSuspend()
-                recurringWithIntentSession(paymentIntent, consentOptions)
-            }
+            recurringWithIntentSession(consentOptions)
         }
     }
 }
 
-private fun Session.recurringWithIntentSession(
-    paymentIntent: PaymentIntent?,
+private suspend fun Session.recurringWithIntentSession(
     consentOptions: PaymentConsentOptions
 ): AirwallexRecurringWithIntentSession {
     // Preserve provider if Session was created with one (Express Checkout)
     val provider = (this as? PaymentIntentResolvableSession)?.paymentIntentProvider
+
+    // Only resolve PaymentIntent if provider is not available
+    val paymentIntent = if (provider == null) {
+        resolvePaymentIntentSuspend()
+    } else {
+        null
+    }
 
     val builder = if (provider != null) {
         // Use provider constructor for Express Checkout sessions
@@ -106,34 +93,42 @@ private fun Session.recurringWithIntentSession(
     }.build()
 }
 
-private fun Session.recurringSession(
-    paymentIntent: PaymentIntent,
+private suspend fun Session.recurringSession(
     consentOptions: PaymentConsentOptions
-): AirwallexRecurringSession = AirwallexRecurringSession.Builder(
-    customerId = requireNotNull(customerId) { "CustomerId required for recurring session" },
-    clientSecret = requireNotNull(paymentIntent.clientSecret) { "ClientSecret required for recurring session" },
-    currency = currency,
-    amount = amount,
-    nextTriggerBy = consentOptions.nextTriggeredBy,
-    countryCode = countryCode,
-).apply {
-    setMerchantTriggerReason(
-        consentOptions.merchantTriggerReason
-            ?: PaymentConsent.MerchantTriggerReason.UNSCHEDULED
-    )
-    setRequireBillingInformation(isBillingInformationRequired)
-    setRequireEmail(isEmailRequired)
-    setAutoCapture(autoCapture)
-    shipping?.let { setShipping(it) }
-    consentOptions.merchantTriggerReason?.let { setMerchantTriggerReason(it) }
-    googlePayOptions?.let { setGooglePayOptions(it) }
-    returnUrl?.let { setReturnUrl(it) }
-    paymentMethods?.let { setPaymentMethods(it) }
-}.build()
+): AirwallexRecurringSession {
+    val paymentIntent = resolvePaymentIntentSuspend()
+    return AirwallexRecurringSession.Builder(
+        customerId = requireNotNull(customerId) { "CustomerId required for recurring session" },
+        clientSecret = requireNotNull(paymentIntent.clientSecret) { "ClientSecret required for recurring session" },
+        currency = currency,
+        amount = amount,
+        nextTriggerBy = consentOptions.nextTriggeredBy,
+        countryCode = countryCode,
+    ).apply {
+        setMerchantTriggerReason(
+            consentOptions.merchantTriggerReason
+                ?: PaymentConsent.MerchantTriggerReason.UNSCHEDULED
+        )
+        setRequireBillingInformation(isBillingInformationRequired)
+        setRequireEmail(isEmailRequired)
+        setAutoCapture(autoCapture)
+        shipping?.let { setShipping(it) }
+        googlePayOptions?.let { setGooglePayOptions(it) }
+        returnUrl?.let { setReturnUrl(it) }
+        paymentMethods?.let { setPaymentMethods(it) }
+    }.build()
+}
 
-private fun Session.oneOffPaymentSession(paymentIntent: PaymentIntent?): AirwallexPaymentSession {
+private suspend fun Session.oneOffPaymentSession(): AirwallexPaymentSession {
     // Preserve provider if Session was created with one (Express Checkout)
     val provider = (this as? PaymentIntentResolvableSession)?.paymentIntentProvider
+
+    // Only resolve PaymentIntent if provider is not available
+    val paymentIntent = if (provider == null) {
+        resolvePaymentIntentSuspend()
+    } else {
+        null
+    }
 
     val builder = if (provider != null) {
         // Use provider constructor for Express Checkout sessions
