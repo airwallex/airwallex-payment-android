@@ -6,6 +6,7 @@ import com.airwallex.android.core.ActionComponentProviderType
 import com.airwallex.android.core.AirwallexRecurringSession
 import com.airwallex.android.core.AirwallexRecurringWithIntentSession
 import com.airwallex.android.core.AirwallexSession
+import com.airwallex.android.core.Session
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.NextAction
@@ -54,6 +55,7 @@ class GooglePayComponentProvider : ActionComponentProvider<GooglePayComponent> {
         val isCreatingCITConsent = when (session) {
             is AirwallexRecurringSession -> session.nextTriggerBy == PaymentConsent.NextTriggeredBy.CUSTOMER
             is AirwallexRecurringWithIntentSession -> session.nextTriggerBy == PaymentConsent.NextTriggeredBy.CUSTOMER
+            is Session -> session.paymentConsentOptions != null && session.paymentConsentOptions?.nextTriggeredBy == PaymentConsent.NextTriggeredBy.CUSTOMER
             else -> false
         }
         if (isCreatingCITConsent) {

@@ -641,8 +641,9 @@ class PaymentFlowViewModelTest {
 
         val slot = slot<Airwallex.PaymentResultListener>()
         coEvery {
-            airwallex.startGooglePay(
+            airwallex.checkout(
                 session = session,
+                paymentMethod = match { it.type == PaymentMethodType.GOOGLEPAY.value },
                 listener = capture(slot)
             )
         } answers {
@@ -671,8 +672,9 @@ class PaymentFlowViewModelTest {
 
         val slot = slot<Airwallex.PaymentResultListener>()
         coEvery {
-            airwallex.startGooglePay(
+            airwallex.checkout(
                 session = session,
+                paymentMethod = match { it.type == PaymentMethodType.GOOGLEPAY.value },
                 listener = capture(slot)
             )
         } answers {
