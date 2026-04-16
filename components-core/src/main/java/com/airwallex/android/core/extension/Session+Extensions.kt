@@ -111,7 +111,6 @@ private suspend fun Session.recurringSession(
         )
         setRequireBillingInformation(isBillingInformationRequired)
         setRequireEmail(isEmailRequired)
-        setAutoCapture(autoCapture)
         shipping?.let { setShipping(it) }
         googlePayOptions?.let { setGooglePayOptions(it) }
         returnUrl?.let { setReturnUrl(it) }

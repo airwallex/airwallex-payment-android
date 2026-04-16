@@ -199,7 +199,7 @@ object Settings {
             }
         }
         get() {
-            return sharedPreferences.getString("use_session", "Disabled") ?: "Disabled"
+            return sharedPreferences.getString("use_session", "Enabled") ?: "Enabled"
         }
 
     var apiKey: String

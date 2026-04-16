@@ -111,7 +111,7 @@ class AirwallexRecurringWithIntentSession internal constructor(
      * Indicate if the payment shall be captured immediately after authorized. Only applicable to Card.
      * Default: true
      */
-    override val autoCapture: Boolean = true,
+    val autoCapture: Boolean = true,
 
     /**
      * Control whether saved cards are displayed on the list screen
@@ -274,12 +274,6 @@ class AirwallexRecurringWithIntentSession internal constructor(
             ).apply {
                 // Set the provider directly on the session (transient field, won't be parceled)
                 paymentIntentProvider = this@Builder.paymentIntentProvider
-
-                // If provider exists, store it in repository immediately so it survives parcelling
-                // The providerId will survive parcelling and can be used to retrieve the provider later
-                paymentIntentProvider?.let { provider ->
-                    paymentIntentProviderId = PaymentIntentProviderRepository.store(provider)
-                }
             }
             return session
         }

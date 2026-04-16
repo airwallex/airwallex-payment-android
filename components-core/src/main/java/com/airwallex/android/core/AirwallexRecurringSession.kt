@@ -95,12 +95,6 @@ class AirwallexRecurringSession internal constructor(
      */
     override val paymentMethods: List<String>? = null,
 
-    /**
-     * Indicate if the payment shall be captured immediately after authorized. Only applicable to Card.
-     * Default: true
-     */
-    override val autoCapture: Boolean = true
-
 ) : AirwallexSession(), Parcelable {
 
     /**
@@ -128,7 +122,6 @@ class AirwallexRecurringSession internal constructor(
         private var returnUrl: String? = null
         private var paymentMethods: List<String>? = null
         private var googlePayOptions: GooglePayOptions? = null
-        private var autoCapture: Boolean = true
 
         init {
             TokenManager.updateClientSecret(clientSecret)
@@ -167,10 +160,6 @@ class AirwallexRecurringSession internal constructor(
             this.googlePayOptions = googlePayOptions
         }
 
-        fun setAutoCapture(autoCapture: Boolean): Builder = apply {
-            this.autoCapture = autoCapture
-        }
-
         override fun build(): AirwallexRecurringSession {
             return AirwallexRecurringSession(
                 nextTriggerBy = nextTriggerBy,
@@ -187,7 +176,6 @@ class AirwallexRecurringSession internal constructor(
                 paymentMethods = paymentMethods,
                 clientSecret = clientSecret,
                 googlePayOptions = googlePayOptions,
-                autoCapture = autoCapture
             )
         }
     }

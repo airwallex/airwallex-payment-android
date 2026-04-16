@@ -200,7 +200,6 @@ class SessionTest {
         assertEquals(PaymentConsent.NextTriggeredBy.MERCHANT, recurringSession.nextTriggerBy)
         assertEquals(PaymentConsent.MerchantTriggerReason.SCHEDULED, recurringSession.merchantTriggerReason)
         assertEquals(true, recurringSession.isEmailRequired)
-        assertEquals(false, recurringSession.autoCapture)
     }
 
     @Test

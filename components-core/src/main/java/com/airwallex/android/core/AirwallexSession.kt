@@ -58,13 +58,6 @@ abstract class AirwallexSession : Parcelable {
     abstract val paymentMethods: List<String>?
 
     /**
-     * Indicate if the payment shall be captured immediately after authorized. Only applicable to Card.
-     * Default: true
-     */
-    open val autoCapture: Boolean
-        get() = true
-
-    /**
      * The client secret for this session.
      * Used for authenticating API requests.
      */
