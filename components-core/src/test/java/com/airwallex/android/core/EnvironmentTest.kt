@@ -22,6 +22,14 @@ class EnvironmentTest {
     }
 
     @Test
+    fun testThreeDsReturnUrl() {
+        assertNotNull(Environment.STAGING.threeDsReturnUrl())
+        assertNotNull(Environment.DEMO.threeDsReturnUrl())
+        assertNotNull(Environment.PRODUCTION.threeDsReturnUrl())
+        assertNotNull(Environment.PREVIEW.threeDsReturnUrl())
+    }
+
+    @Test
     fun testRiskEnvironment() {
         assertEquals(Environment.STAGING.riskEnvironment, com.airwallex.risk.Environment.STAGING)
         assertEquals(Environment.DEMO.riskEnvironment, com.airwallex.risk.Environment.DEMO)
