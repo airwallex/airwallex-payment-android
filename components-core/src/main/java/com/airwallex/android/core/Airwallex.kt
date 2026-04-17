@@ -245,8 +245,10 @@ class Airwallex internal constructor(
         paymentConsent: PaymentConsent,
         listener: PaymentResultListener
     ) {
+        val paymentMethod = paymentConsent.paymentMethod
+        val loggingListener = wrapListenerWithLogging(listener, paymentMethod?.type ?: "unknown")
         if (session !is Session && session !is AirwallexPaymentSession) {
-            listener.onCompleted(
+            loggingListener.onCompleted(
                 AirwallexPaymentStatus.Failure(
                     AirwallexCheckoutException(message = "checkout with paymentConsent only support AirwallexPaymentSession or Session")
                 )
@@ -254,9 +256,8 @@ class Airwallex internal constructor(
             return
         }
 
-        val paymentMethod = paymentConsent.paymentMethod
         if (paymentMethod == null) {
-            listener.onCompleted(AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "paymentMethod is required")))
+            loggingListener.onCompleted(AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "paymentMethod is required")))
             return
         }
 
@@ -266,7 +267,7 @@ class Airwallex internal constructor(
             paymentMethod = paymentMethod,
             paymentConsentId = paymentConsent.id,
             paymentConsent = paymentConsent,
-            listener = listener
+            listener = loggingListener
         )
     }
 
@@ -945,7 +946,7 @@ class Airwallex internal constructor(
         // 1. session is AirwallexRecurringSession (no unified flow support yet)
         // 2. OR paymentMethod.type is NOT card/googlepay (LPMs use legacy flow)
         // Otherwise: use new unified flow with Session
-
+        val loggingListener = wrapListenerWithLogging(listener, paymentMethod.type ?: "unknown")
         val isCardOrGooglePay = paymentMethod.type == PaymentMethodType.GOOGLEPAY.value ||
                                 paymentMethod.type == PaymentMethodType.CARD.value
         val useOldFlow = session is AirwallexRecurringSession || !isCardOrGooglePay
@@ -955,7 +956,7 @@ class Airwallex internal constructor(
         logPaymentLaunchedIfNeeded(paymentConsentIdValue, paymentMethod.type)
 
         if (useOldFlow) {
-            checkoutOldFlowRouting(session, paymentMethod, cvc, additionalInfo, flow, listener)
+            checkoutOldFlowRouting(session, paymentMethod, cvc, additionalInfo, flow, loggingListener)
             return
         }
 
@@ -966,7 +967,7 @@ class Airwallex internal constructor(
                 is AirwallexPaymentSession -> session.convertToSession()
                 is AirwallexRecurringWithIntentSession -> session.convertToSession()
                 else -> {
-                    listener.onCompleted(
+                    loggingListener.onCompleted(
                         AirwallexPaymentStatus.Failure(
                             AirwallexCheckoutException(message = "Unknown session type: ${session.javaClass}")
                         )
@@ -976,7 +977,7 @@ class Airwallex internal constructor(
             }
 
         // Call unified Session checkout
-        checkoutUnified(unifiedSession, paymentMethod, cvc, saveCard, paymentConsent, listener)
+        checkoutUnified(unifiedSession, paymentMethod, cvc, saveCard, paymentConsent, loggingListener)
     }
 
     /**
@@ -1175,14 +1176,13 @@ class Airwallex internal constructor(
     ) {
         setupAnalyticsLogger(session)
         // Wrap listener at entry point to log payment result once
-        val loggingListener = wrapListenerWithLogging(listener, paymentMethod.type ?: "unknown")
         AirwallexLogger.info("Airwallex unified checkout: saveCard = $saveCard, paymentMethod.type = ${paymentMethod.type} session type = ${session.javaClass}")
 
         // Handle Google Pay - fetch googlePay object then continue with normal flow
         if (paymentMethod.type == PaymentMethodType.GOOGLEPAY.value) {
             checkoutGooglePay(
                 session = session,
-                listener = loggingListener,
+                listener = listener,
                 onGooglePayReady = { googlePay ->
                     // Build complete PaymentMethod with googlePay and continue
                     val gPaymentMethod = paymentMethod.copy(googlePay = googlePay)
@@ -1192,7 +1192,7 @@ class Airwallex internal constructor(
                         cvc = null,
                         saveCard = saveCard,
                         paymentConsent = paymentConsent,
-                        listener = loggingListener
+                        listener = listener
                     )
                 }
             )
@@ -1200,7 +1200,7 @@ class Airwallex internal constructor(
         }
 
         // Regular flow for card and other payment methods
-        proceedWithUnifiedPayment(session, paymentMethod, cvc, saveCard, paymentConsent, loggingListener)
+        proceedWithUnifiedPayment(session, paymentMethod, cvc, saveCard, paymentConsent, listener)
     }
 
     /**
@@ -1612,7 +1612,16 @@ class Airwallex internal constructor(
 
                             when (session) {
                                 is Session -> {
-                                    onGooglePayReady?.invoke(googlePay)
+                                    if (onGooglePayReady != null) {
+                                        onGooglePayReady.invoke(googlePay)
+                                    } else {
+                                        listener.onCompleted(
+                                            AirwallexPaymentStatus.Failure(
+                                                AirwallexCheckoutException(message = "Missing onGooglePayReady implementation.")
+                                            )
+                                        )
+                                    }
+                                    return
                                 }
 
                                 is AirwallexPaymentSession -> {
