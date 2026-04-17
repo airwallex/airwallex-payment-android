@@ -18,6 +18,7 @@ object PACheckoutEnvironment {
         get() = when (Settings.getEnvironment()) {
             Environment.STAGING -> "https://staging-pacheckoutdemo.airwallex.com/"
             Environment.DEMO -> "https://demo-pacheckoutdemo.airwallex.com/"
+            Environment.PREVIEW -> "https://pacheckoutdemo.sandbox.airwallex.com/"
             else -> null // Our demo does not support PRODUCTION. Please validate it within your own app.
         }
 }

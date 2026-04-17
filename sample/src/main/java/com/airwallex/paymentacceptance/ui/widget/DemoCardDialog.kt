@@ -49,8 +49,7 @@ class DemoCardDialog(context: Context) : Dialog(context) {
                 binding.etExpiresYY.isEnabled = this.isEnabled
                 binding.etExpiresMM.isEnabled = this.isEnabled
                 binding.etCVC.isEnabled = this.isEnabled
-                binding.tvEnvironment.text =
-                    if (Settings.getEnvironment() == Environment.STAGING) "STAGING" else "DEMO"
+                binding.tvEnvironment.text = Settings.getEnvironment().value.uppercase()
             }
         }
     }

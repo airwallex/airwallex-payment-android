@@ -84,6 +84,7 @@ object Settings {
         return when (sdkEnv) {
             sdkEnvArray.getOrNull(0) -> Environment.STAGING
             sdkEnvArray.getOrNull(1) -> Environment.DEMO
+            sdkEnvArray.getOrNull(2) -> Environment.PREVIEW
             else -> Environment.PRODUCTION
         }
     }

@@ -48,6 +48,7 @@ object PACheckoutEnvironment {
         get() = when (AirwallexPlugins.environment) {
             Environment.STAGING -> "https://staging-pacheckoutdemo.airwallex.com/"
             Environment.DEMO -> "https://demo-pacheckoutdemo.airwallex.com/"
+            Environment.PREVIEW -> "https://pacheckoutdemo.sandbox.airwallex.com/"
             else -> AirwallexPlugins.environment.baseUrl()
         }
 }
