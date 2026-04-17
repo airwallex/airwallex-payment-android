@@ -14,6 +14,7 @@ import com.airwallex.android.core.AirwallexRecurringSession
 import com.airwallex.android.core.AirwallexRecurringWithIntentSession
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.PaymentMethodsLayoutType
+import com.airwallex.android.core.Session
 import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.view.PaymentFlowListener
@@ -71,7 +72,7 @@ internal fun PaymentElementComponent(
                 // Resolve Google Pay button type once based on session type
                 val googlePayButtonType = configuration.googlePayButton.buttonType ?: run {
                     val isRecurring = session is AirwallexRecurringSession ||
-                        session is AirwallexRecurringWithIntentSession
+                        session is AirwallexRecurringWithIntentSession || (session is Session && !session.isOneOffPayment)
                     if (isRecurring) ButtonType.Subscribe else ButtonType.Buy
                 }
 

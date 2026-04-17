@@ -325,15 +325,6 @@ class Airwallex internal constructor(
         session.bindToActivity(activity)
 
         setupAnalyticsLogger(session)
-        // Only log payment_launched for true API integration (not embedded elements or UI integration)
-        if (!isAirwallexUIActivity && AnalyticsLogger.getLaunchType() == AnalyticsLogger.LaunchType.API) {
-            AnalyticsLogger.logAction(
-                actionName = "payment_launched",
-                additionalInfo = mapOf(
-                    Field.PAYMENT_METHOD to PaymentMethodType.GOOGLEPAY.value,
-                )
-            )
-        }
         // Wrap listener at entry point to log payment result once
         val loggingListener = wrapListenerWithLogging(listener, PaymentMethodType.GOOGLEPAY.value)
         val googlePayProvider = AirwallexPlugins.getProvider(ActionComponentProviderType.GOOGLEPAY)
@@ -359,8 +350,9 @@ class Airwallex internal constructor(
                     activity
                 )
                 if (canMakePayment) {
-                    checkoutGooglePay(
+                    checkout(
                         session = session,
+                        paymentMethod = PaymentMethod(type = PaymentMethodType.GOOGLEPAY.value),
                         listener = loggingListener
                     )
                 } else {
@@ -1186,13 +1178,43 @@ class Airwallex internal constructor(
         val loggingListener = wrapListenerWithLogging(listener, paymentMethod.type ?: "unknown")
         AirwallexLogger.info("Airwallex unified checkout: saveCard = $saveCard, paymentMethod.type = ${paymentMethod.type} session type = ${session.javaClass}")
 
-        // Handle Google Pay separately (different flow)
+        // Handle Google Pay - fetch googlePay object then continue with normal flow
         if (paymentMethod.type == PaymentMethodType.GOOGLEPAY.value) {
-            checkoutGooglePay(session, loggingListener)
+            checkoutGooglePay(
+                session = session,
+                listener = loggingListener,
+                onGooglePayReady = { googlePay ->
+                    // Build complete PaymentMethod with googlePay and continue
+                    val gPaymentMethod = paymentMethod.copy(googlePay = googlePay)
+                    proceedWithUnifiedPayment(
+                        session = session,
+                        paymentMethod = gPaymentMethod,
+                        cvc = null,
+                        saveCard = saveCard,
+                        paymentConsent = paymentConsent,
+                        listener = loggingListener
+                    )
+                }
+            )
             return
         }
 
-        // Resolve PaymentIntent and confirm with appropriate parameters
+        // Regular flow for card and other payment methods
+        proceedWithUnifiedPayment(session, paymentMethod, cvc, saveCard, paymentConsent, loggingListener)
+    }
+
+    /**
+     * Helper to proceed with unified payment flow - resolves PaymentIntent and confirms
+     */
+    @Suppress("LongParameterList")
+    private fun proceedWithUnifiedPayment(
+        session: Session,
+        paymentMethod: PaymentMethod,
+        cvc: String?,
+        saveCard: Boolean,
+        paymentConsent: PaymentConsent?,
+        listener: PaymentResultListener
+    ) {
         session.resolvePaymentIntent(object : PaymentIntentProvider.PaymentIntentCallback {
             override fun onSuccess(paymentIntent: PaymentIntent) {
                 confirmPaymentIntentUnified(
@@ -1203,16 +1225,16 @@ class Airwallex internal constructor(
                     cvc = cvc,
                     saveCard = saveCard,
                     paymentConsent = paymentConsent,
-                    returnUrl = if (paymentMethod.type == PaymentMethodType.CARD.value) {
+                    returnUrl = if (paymentMethod.type == PaymentMethodType.CARD.value || paymentMethod.type == PaymentMethodType.GOOGLEPAY.value) {
                         AirwallexPlugins.environment.threeDsReturnUrl()
                     } else session.returnUrl,
                     autoCapture = session.autoCapture,
-                    listener = loggingListener
+                    listener = listener
                 )
             }
 
             override fun onError(error: Throwable) {
-                loggingListener.onCompleted(
+                listener.onCompleted(
                     AirwallexPaymentStatus.Failure(
                         AirwallexCheckoutException(message = error.message, e = error)
                     )
@@ -1270,17 +1292,35 @@ class Airwallex internal constructor(
             else -> null
         }
 
-        val params = ConfirmPaymentIntentParams.createCardParams(
-            paymentIntentId = paymentIntentId,
-            clientSecret = clientSecret,
-            paymentMethod = paymentMethod,
-            cvc = cvc,
-            customerId = session.customerId,
-            paymentConsentId = paymentConsent?.id,
-            paymentConsentOptions = paymentConsentOptions,
-            returnUrl = returnUrl,
-            autoCapture = autoCapture
-        )
+        val params = when (paymentMethod.type) {
+            PaymentMethodType.GOOGLEPAY.value -> {
+                ConfirmPaymentIntentParams.createGooglePayParams(
+                    paymentIntentId = paymentIntentId,
+                    clientSecret = clientSecret,
+                    paymentMethod = paymentMethod,
+                    cvc = cvc,
+                    customerId = session.customerId,
+                    paymentConsentId = paymentConsent?.id,
+                    paymentConsentOptions = paymentConsentOptions,
+                    returnUrl = returnUrl,
+                    autoCapture = autoCapture
+                )
+            }
+
+            else -> {
+                ConfirmPaymentIntentParams.createCardParams(
+                    paymentIntentId = paymentIntentId,
+                    clientSecret = clientSecret,
+                    paymentMethod = paymentMethod,
+                    cvc = cvc,
+                    customerId = session.customerId,
+                    paymentConsentId = paymentConsent?.id,
+                    paymentConsentOptions = paymentConsentOptions,
+                    returnUrl = returnUrl,
+                    autoCapture = autoCapture
+                )
+            }
+        }
 
         confirmPaymentIntent(params, listener)
     }
@@ -1520,108 +1560,22 @@ class Airwallex internal constructor(
         })
     }
 
-    private fun createGooglePayConsentAndVerify(
-        session: Session,
-        listener: PaymentResultListener,
-        googlePay: PaymentMethod.GooglePay
-    ) {
-        val paymentMethod = PaymentMethod.Builder()
-            .setType(PaymentMethodType.GOOGLEPAY.value)
-            .setGooglePay(googlePay)
+    /**
+     * Helper to build GooglePay object from additionalInfo map
+     */
+    private fun buildGooglePayFromAdditionalInfo(additionalInfo: Map<String, Any>?): PaymentMethod.GooglePay? {
+        if (additionalInfo == null) return null
+        return PaymentMethod.GooglePay.Builder()
+            .setBilling(additionalInfo["billing"] as? Billing)
+            .setPaymentDataType(additionalInfo["payment_data_type"] as? String)
+            .setEncryptedPaymentToken(additionalInfo["encrypted_payment_token"] as? String)
             .build()
-
-        session.resolvePaymentIntent(object : PaymentIntentProvider.PaymentIntentCallback {
-            override fun onSuccess(paymentIntent: PaymentIntent) {
-                val consentOptions = requireNotNull(session.paymentConsentOptions) {
-                    "Payment consent options required for recurring session"
-                }
-                createPaymentConsent(
-                    clientSecret = requireNotNull(paymentIntent.clientSecret),
-                    customerId = requireNotNull(session.customerId) { "Customer ID required for recurring session" },
-                    paymentMethod = paymentMethod,
-                    nextTriggeredBy = consentOptions.nextTriggeredBy,
-                    requiresCvc = false,
-                    merchantTriggerReason = consentOptions.merchantTriggerReason
-                        ?: PaymentConsent.MerchantTriggerReason.UNSCHEDULED,
-                    listener = object : PaymentListener<PaymentConsent> {
-                        override fun onFailed(exception: AirwallexException) {
-                            listener.onCompleted(AirwallexPaymentStatus.Failure(exception))
-                        }
-
-                        override fun onSuccess(response: PaymentConsent) {
-                            verifyPaymentConsent(
-                                paymentConsent = response,
-                                currency = session.currency,
-                                amount = session.amount,
-                                cvc = null,
-                                returnUrl = AirwallexPlugins.environment.threeDsReturnUrl(),
-                                listener = listener
-                            )
-                        }
-                    }
-                )
-            }
-
-            override fun onError(error: Throwable) {
-                listener.onCompleted(AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = error.message, e = error)))
-            }
-        })
-    }
-
-    private fun createGooglePayConsentAndConfirm(
-        session: Session,
-        listener: PaymentResultListener,
-        googlePay: PaymentMethod.GooglePay
-    ) {
-        val paymentMethod = PaymentMethod.Builder()
-            .setType(PaymentMethodType.GOOGLEPAY.value)
-            .setGooglePay(googlePay)
-            .build()
-
-        session.resolvePaymentIntent(object : PaymentIntentProvider.PaymentIntentCallback {
-            override fun onSuccess(paymentIntent: PaymentIntent) {
-                val consentOptions = requireNotNull(session.paymentConsentOptions) {
-                    "Payment consent options required for recurring with intent session"
-                }
-                createPaymentConsent(
-                    clientSecret = requireNotNull(paymentIntent.clientSecret),
-                    customerId = requireNotNull(session.customerId) { "Customer ID required for recurring session" },
-                    paymentMethod = paymentMethod,
-                    nextTriggeredBy = consentOptions.nextTriggeredBy,
-                    requiresCvc = false,
-                    merchantTriggerReason = consentOptions.merchantTriggerReason
-                        ?: PaymentConsent.MerchantTriggerReason.UNSCHEDULED,
-                    listener = object : PaymentListener<PaymentConsent> {
-                        override fun onFailed(exception: AirwallexException) {
-                            listener.onCompleted(AirwallexPaymentStatus.Failure(exception))
-                        }
-
-                        override fun onSuccess(response: PaymentConsent) {
-                            confirmPaymentIntent(
-                                paymentIntentId = paymentIntent.id,
-                                clientSecret = requireNotNull(paymentIntent.clientSecret),
-                                paymentMethod = paymentMethod,
-                                cvc = null,
-                                customerId = session.customerId,
-                                paymentConsentId = response.id,
-                                returnUrl = AirwallexPlugins.environment.threeDsReturnUrl(),
-                                autoCapture = true,
-                                listener = listener
-                            )
-                        }
-                    }
-                )
-            }
-
-            override fun onError(error: Throwable) {
-                listener.onCompleted(AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = error.message, e = error)))
-            }
-        })
     }
 
     private fun checkoutGooglePay(
         session: AirwallexSession,
-        listener: PaymentResultListener
+        listener: PaymentResultListener,
+        onGooglePayReady: ((PaymentMethod.GooglePay) -> Unit)? = null
     ) {
         val googlePayProvider = AirwallexPlugins.getProvider(ActionComponentProviderType.GOOGLEPAY)
         if (googlePayProvider == null) {
@@ -1645,8 +1599,8 @@ class Airwallex internal constructor(
                 override fun onCompleted(status: AirwallexPaymentStatus) {
                     when (status) {
                         is AirwallexPaymentStatus.Success -> {
-                            val mutableInfo = status.additionalInfo?.toMutableMap()
-                            if (mutableInfo == null) {
+                            val googlePay = buildGooglePayFromAdditionalInfo(status.additionalInfo?.toMutableMap())
+                            if (googlePay == null) {
                                 AirwallexLogger.error("Airwallex checkoutGooglePay: failed , Missing Google Pay token response")
                                 listener.onCompleted(
                                     AirwallexPaymentStatus.Failure(
@@ -1655,15 +1609,10 @@ class Airwallex internal constructor(
                                 )
                                 return
                             }
-                            val googlePay = PaymentMethod.GooglePay.Builder()
-                                .setBilling(mutableInfo["billing"] as? Billing)
-                                .setPaymentDataType(mutableInfo["payment_data_type"] as? String)
-                                .setEncryptedPaymentToken(mutableInfo["encrypted_payment_token"] as? String)
-                                .build()
 
                             when (session) {
                                 is Session -> {
-                                    handleSessionCheckoutGooglePaySuccess(session, googlePayProvider, googlePay, listener)
+                                    onGooglePayReady?.invoke(googlePay)
                                 }
 
                                 is AirwallexPaymentSession -> {
@@ -1705,52 +1654,6 @@ class Airwallex internal constructor(
                 }
             }
         )
-    }
-
-    private fun Airwallex.handleSessionCheckoutGooglePaySuccess(
-        session: Session,
-        googlePayProvider: ActionComponentProvider<out ActionComponent>,
-        googlePay: PaymentMethod.GooglePay,
-        listener: PaymentResultListener
-    ) {
-        when {
-            session.isOneOffPayment -> {
-                // One-off payment - same as AirwallexPaymentSession
-                session.resolvePaymentIntent(object : PaymentIntentProvider.PaymentIntentCallback {
-                    override fun onSuccess(paymentIntent: PaymentIntent) {
-                        googlePayProvider.get().confirmGooglePayIntent(
-                            fragment = fragment,
-                            activityProvider = { activity },
-                            paymentManager = paymentManager,
-                            applicationContext = applicationContext,
-                            paymentIntentId = paymentIntent.id,
-                            clientSecret = requireNotNull(paymentIntent.clientSecret),
-                            googlePay = googlePay,
-                            autoCapture = session.autoCapture,
-                            listener = listener
-                        )
-                    }
-
-                    override fun onError(error: Throwable) {
-                        listener.onCompleted(
-                            AirwallexPaymentStatus.Failure(
-                                AirwallexCheckoutException(message = error.message, e = error)
-                            )
-                        )
-                    }
-                })
-            }
-
-            session.amount.compareTo(BigDecimal.ZERO) == 0 -> {
-                // Recurring with amount = 0 - same as AirwallexRecurringSession
-                createGooglePayConsentAndVerify(session, listener, googlePay)
-            }
-
-            else -> {
-                // Recurring with intent (amount > 0) - same as AirwallexRecurringWithIntentSession
-                createGooglePayConsentAndConfirm(session, listener, googlePay)
-            }
-        }
     }
 
     private fun confirmPaymentIntent(
@@ -2036,11 +1939,19 @@ class Airwallex internal constructor(
         params: ConfirmPaymentIntentParams
     ): PaymentMethodRequest? {
         val paymentMethodRequest = when {
-            // Scenario 1: OLD flow - CIT consent without consent options
+            // Scenario 1: Google Pay payment
+            // → payment_method: { type: "googlepay", googlepay: {...} }
+            params.paymentMethod?.type == PaymentMethodType.GOOGLEPAY.value -> {
+                PaymentMethodRequest.Builder(PaymentMethodType.GOOGLEPAY.value)
+                    .setGooglePayPaymentMethodRequest(params.paymentMethod.googlePay)
+                    .build()
+            }
+
+            // Scenario 2: OLD flow - CIT consent without consent options
             // → No payment_method in request body (uses payment_consent_reference)
             paymentConsentReference != null -> null
 
-            // Scenario 2: NEW flow - Saved card with payment method ID AND consent options
+            // Scenario 3: NEW flow - Saved card with payment method ID AND consent options
             // → payment_method: { type, id, card?: { cvc } }
             hasPaymentMethodId && params.paymentConsentOptions != null -> {
                 val builder = PaymentMethodRequest.Builder(params.paymentMethodType)
@@ -2058,7 +1969,7 @@ class Airwallex internal constructor(
                 builder.build()
             }
 
-            // Scenario 3: New card payment (with or without saveCard)
+            // Scenario 4: New card payment (with or without saveCard)
             // → payment_method: { type, card: {...}, billing: {...} }
             else -> {
                 PaymentMethodRequest.Builder(params.paymentMethodType)
