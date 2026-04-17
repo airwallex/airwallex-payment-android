@@ -255,7 +255,6 @@ class Airwallex internal constructor(
             )
             return
         }
-
         if (paymentMethod == null) {
             loggingListener.onCompleted(AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "paymentMethod is required")))
             return

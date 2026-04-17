@@ -195,12 +195,12 @@ class Session internal constructor(
                 this.paymentConsentOptions = paymentConsentOptions
             }
 
-        fun setRequireBillingInformation(requiresBillingInformation: Boolean): Builder = apply {
-            this.isBillingInformationRequired = requiresBillingInformation
+        fun setRequireBillingInformation(requireBillingInformation: Boolean): Builder = apply {
+            this.isBillingInformationRequired = requireBillingInformation
         }
 
-        fun setRequireEmail(requiresEmail: Boolean): Builder = apply {
-            this.isEmailRequired = requiresEmail
+        fun setRequireEmail(requireEmail: Boolean): Builder = apply {
+            this.isEmailRequired = requireEmail
         }
 
         fun setReturnUrl(returnUrl: String?): Builder = apply {
