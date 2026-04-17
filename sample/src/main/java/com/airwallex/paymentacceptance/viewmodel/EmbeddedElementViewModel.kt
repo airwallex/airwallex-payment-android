@@ -1,6 +1,5 @@
 package com.airwallex.paymentacceptance.viewmodel
 
-import androidx.activity.ComponentActivity
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.BillingAddressParameters
@@ -56,7 +55,7 @@ class EmbeddedElementViewModel : BaseViewModel() {
 
         launch {
             try {
-                val createdSession = createSessionForUI(
+                val createdSession = createSession(
                     googlePayOptions = googlePayOptions,
                     paymentMethods = paymentMethods,
                     returnUrl = DemoReturnUrl.EmbeddedElement

@@ -97,7 +97,7 @@ class Session internal constructor(
     /**
      * Control whether saved cards are displayed on the list screen
      */
-    val hidePaymentConsents: Boolean = false
+    override val hidePaymentConsents: Boolean = false
 
 ) : AirwallexSession(), PaymentIntentResolvableSession, Parcelable {
 
@@ -114,6 +114,9 @@ class Session internal constructor(
      */
     val isOneOffPayment: Boolean
         get() = paymentConsentOptions == null
+
+    override val clientSecret: String?
+        get() = paymentIntent?.clientSecret
 
     class Builder : ObjectBuilder<Session> {
         private var paymentIntent: PaymentIntent? = null
@@ -192,12 +195,12 @@ class Session internal constructor(
                 this.paymentConsentOptions = paymentConsentOptions
             }
 
-        fun setRequireBillingInformation(requiresBillingInformation: Boolean): Builder = apply {
-            this.isBillingInformationRequired = requiresBillingInformation
+        fun setRequireBillingInformation(requireBillingInformation: Boolean): Builder = apply {
+            this.isBillingInformationRequired = requireBillingInformation
         }
 
-        fun setRequireEmail(requiresEmail: Boolean): Builder = apply {
-            this.isEmailRequired = requiresEmail
+        fun setRequireEmail(requireEmail: Boolean): Builder = apply {
+            this.isEmailRequired = requireEmail
         }
 
         fun setReturnUrl(returnUrl: String?): Builder = apply {

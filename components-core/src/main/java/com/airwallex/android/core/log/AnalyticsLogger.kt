@@ -9,6 +9,7 @@ import com.airwallex.android.core.AirwallexPlugins
 import com.airwallex.android.core.AirwallexRecurringSession
 import com.airwallex.android.core.AirwallexRecurringWithIntentSession
 import com.airwallex.android.core.AirwallexSession
+import com.airwallex.android.core.Session
 import com.airwallex.android.core.TokenManager
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.extension.getAppName
@@ -33,6 +34,7 @@ object AnalyticsLogger {
     private var expressCheckout: Boolean? = null
     private var layout: String? = null
 
+    private var legacyConsentFlow: Boolean? = null
     private var showsGooglePayAsPrimaryButton: Boolean? = null
 
     // Track current session for session-aware setup
@@ -58,6 +60,7 @@ object AnalyticsLogger {
         const val LAUNCH_TYPE = "launchType"
         const val EXPRESS_CHECKOUT = "expressCheckout"
         const val LAYOUT = "layout"
+        const val LEGACY_CONSENT_FLOW = "legacyConsentFlow"
         const val SHOWS_GOOGLE_PAY_AS_PRIMARY_BUTTON = "showsGooglePayAsPrimaryButton"
         const val ACCOUNT_ID = "accountId"
         const val MERCHANT_APP_NAME = "merchantAppName"
@@ -242,7 +245,8 @@ object AnalyticsLogger {
         expressCheckout: Boolean,
         layout: String? = null,
         paymentIntentId: String? = null,
-        showsGooglePayAsPrimaryButton: Boolean? = null
+        showsGooglePayAsPrimaryButton: Boolean? = null,
+        legacyConsentFlow: Boolean? = null,
     ) {
         this.paymentIntentId = paymentIntentId
         this.transactionMode = transactionMode
@@ -250,6 +254,7 @@ object AnalyticsLogger {
         this.expressCheckout = expressCheckout
         this.layout = layout
         this.showsGooglePayAsPrimaryButton = showsGooglePayAsPrimaryButton
+        this.legacyConsentFlow = legacyConsentFlow
     }
 
     /**
@@ -281,6 +286,16 @@ object AnalyticsLogger {
         this.currentSession = session
         val expressCheckout = session.isExpressCheckout
         when (session) {
+            is Session -> {
+                setSessionInformation(
+                    transactionMode = if (session.isOneOffPayment) TransactionMode.ONE_OFF.value else TransactionMode.RECURRING.value,
+                    paymentIntentId = session.paymentIntent?.id,
+                    expressCheckout = expressCheckout,
+                    layout = layout,
+                    launchType = launchType,
+                    showsGooglePayAsPrimaryButton = showsGooglePayAsPrimaryButton
+                )
+            }
             is AirwallexPaymentSession -> {
                 setSessionInformation(
                     transactionMode = TransactionMode.ONE_OFF.value,
@@ -297,7 +312,8 @@ object AnalyticsLogger {
                     expressCheckout = expressCheckout,
                     layout = layout,
                     launchType = launchType,
-                    showsGooglePayAsPrimaryButton = showsGooglePayAsPrimaryButton
+                    showsGooglePayAsPrimaryButton = showsGooglePayAsPrimaryButton,
+                    legacyConsentFlow = true
                 )
             }
             is AirwallexRecurringWithIntentSession -> {
@@ -345,7 +361,7 @@ object AnalyticsLogger {
             putIfNotNull(Field.EXPRESS_CHECKOUT, expressCheckout)
             putIfNotNull(Field.LAYOUT, layout)
             putIfNotNull(Field.SHOWS_GOOGLE_PAY_AS_PRIMARY_BUTTON, showsGooglePayAsPrimaryButton)
-
+            putIfNotNull(Field.LEGACY_CONSENT_FLOW, legacyConsentFlow)
         }
 
     // endregion

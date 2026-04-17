@@ -10,7 +10,19 @@ import java.math.BigDecimal
 
 /**
  * For one-off payment
+ *
+ * @deprecated Use [Session] instead. AirwallexPaymentSession will be removed in a future version.
+ * Session provides a unified API for all payment scenarios with support for both static PaymentIntent
+ * and PaymentIntentProvider.
  */
+@Deprecated(
+    message = "Use Session instead. AirwallexPaymentSession will be removed in a future version.",
+    replaceWith = ReplaceWith(
+        "Session.Builder(paymentIntent, countryCode, googlePayOptions)",
+        "com.airwallex.android.core.Session"
+    ),
+    level = DeprecationLevel.WARNING
+)
 @Suppress("LongParameterList")
 @Parcelize
 class AirwallexPaymentSession internal constructor(
@@ -85,7 +97,7 @@ class AirwallexPaymentSession internal constructor(
     /**
      *  control whether saved cards are displayed on the list screen
      */
-    val hidePaymentConsents: Boolean = false
+    override val hidePaymentConsents: Boolean = false
 
 ) : AirwallexSession(), PaymentIntentResolvableSession, Parcelable {
 
@@ -96,6 +108,9 @@ class AirwallexPaymentSession internal constructor(
     @IgnoredOnParcel
     @Transient
     override var paymentIntentProvider: PaymentIntentProvider? = null
+
+    override val clientSecret: String?
+        get() = paymentIntent?.clientSecret
 
     class Builder : ObjectBuilder<AirwallexPaymentSession> {
         private var paymentIntent: PaymentIntent? = null
@@ -219,12 +234,6 @@ class AirwallexPaymentSession internal constructor(
             ).apply {
                 // Set the provider directly on the session (transient field, won't be parceled)
                 paymentIntentProvider = this@Builder.paymentIntentProvider
-
-                // If provider exists, store it in repository immediately so it survives parcelling
-                // The providerId will survive parcelling and can be used to retrieve the provider later
-                paymentIntentProvider?.let { provider ->
-                    paymentIntentProviderId = PaymentIntentProviderRepository.store(provider)
-                }
             }
             return session
         }

@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.Airwallex.PaymentResultListener
-import com.airwallex.android.core.AirwallexPaymentSession
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.exception.AirwallexCheckoutException
@@ -18,6 +17,7 @@ import com.airwallex.android.core.model.Billing
 import com.airwallex.android.core.model.DisablePaymentConsentParams
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentMethod
+import com.airwallex.android.core.model.PaymentMethodType
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -181,24 +181,27 @@ class PaymentFlowViewModel(
         }
     }
 
-    fun confirmPaymentIntent(paymentConsent: PaymentConsent) {
+    fun checkoutWithoutCvc(paymentConsent: PaymentConsent) {
         viewModelScope.launch {
-            if (session !is AirwallexPaymentSession) {
+            val paymentMethod = paymentConsent.paymentMethod
+            if (paymentMethod == null) {
                 _paymentResult.send(
                     PaymentResultEvent(
                         flowType = PaymentFlowType.CHECKOUT_WITHOUT_CVC,
                         status = AirwallexPaymentStatus.Failure(
-                            AirwallexCheckoutException(message = "confirm with paymentConsent only support AirwallexPaymentSession")
+                            AirwallexCheckoutException(message = "Payment method is required")
                         )
                     )
                 )
                 return@launch
             }
 
-            airwallex.confirmPaymentIntent(
-                session,
-                paymentConsent,
-                object : PaymentResultListener {
+            airwallex.checkout(
+                session = session,
+                paymentMethod = paymentMethod,
+                paymentConsent = paymentConsent,
+                cvc = null, // No CVC for tokenized cards
+                listener = object : PaymentResultListener {
                     override fun onCompleted(status: AirwallexPaymentStatus) {
                         viewModelScope.launch {
                             _paymentResult.send(
@@ -230,23 +233,13 @@ class PaymentFlowViewModel(
             )
             return@launch
         }
-        if (session !is AirwallexPaymentSession) {
-            _paymentResult.send(
-                PaymentResultEvent(
-                    flowType = PaymentFlowType.CHECKOUT_WITH_CVC,
-                    status = AirwallexPaymentStatus.Failure(
-                        AirwallexCheckoutException(message = "checkout with paymentConsent only support AirwallexPaymentSession")
-                    )
-                )
-            )
-            return@launch
-        }
 
         val status = checkout(
             paymentMethod = paymentMethod,
-            paymentConsentId = paymentConsent.id,
-            cvc = cvc,
+            paymentConsent = paymentConsent,
+            cvc = cvc
         )
+
         _paymentResult.send(
             PaymentResultEvent(
                 flowType = PaymentFlowType.CHECKOUT_WITH_CVC,
@@ -271,11 +264,15 @@ class PaymentFlowViewModel(
         billing: Billing?
     ) = viewModelScope.launch {
         val status = suspendCancellableCoroutine { continuation ->
-            airwallex.confirmPaymentIntent(
+            airwallex.checkout(
                 session = session,
-                card = card,
-                billing = billing,
-                saveCard = saveCard,
+                paymentMethod = PaymentMethod.Builder()
+                    .setType(PaymentMethodType.CARD.value)
+                    .setCard(card)
+                    .setBilling(billing)
+                    .build(),
+                cvc = card.cvc,
+                saveCard = saveCard, // Will create consent inline if true
                 listener = object : PaymentResultListener {
                     override fun onCompleted(status: AirwallexPaymentStatus) {
                         continuation.resume(status)
@@ -300,7 +297,7 @@ class PaymentFlowViewModel(
 
     private suspend fun checkout(
         paymentMethod: PaymentMethod,
-        paymentConsentId: String?,
+        paymentConsent: PaymentConsent?,
         cvc: String,
         flow: AirwallexPaymentRequestFlow = AirwallexPaymentRequestFlow.IN_APP,
     ): AirwallexPaymentStatus {
@@ -308,7 +305,7 @@ class PaymentFlowViewModel(
             airwallex.checkout(
                 session = session,
                 paymentMethod = paymentMethod,
-                paymentConsentId = paymentConsentId,
+                paymentConsent = paymentConsent,
                 cvc = cvc,
                 flow = flow,
                 listener = object : PaymentResultListener {

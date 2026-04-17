@@ -56,6 +56,18 @@ abstract class AirwallexSession : Parcelable {
      * API reference: https://www.airwallex.com/docs/api#/Payment_Acceptance/Config/_api_v1_pa_config_payment_method_types/get JSON Object field: items.name
      */
     abstract val paymentMethods: List<String>?
+
+    /**
+     * The client secret for this session.
+     * Used for authenticating API requests.
+     */
+    abstract val clientSecret: String?
+
+    /**
+     * Control whether saved cards are displayed on the list screen
+     */
+    open val hidePaymentConsents: Boolean
+        get() = false
 }
 
 /**

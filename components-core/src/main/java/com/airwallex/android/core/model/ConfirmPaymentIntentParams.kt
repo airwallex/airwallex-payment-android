@@ -38,6 +38,11 @@ data class ConfirmPaymentIntentParams internal constructor(
     val paymentConsentId: String? = null,
 
     /**
+     * Payment consent options for new unified flow
+     */
+    val paymentConsentOptions: PaymentConsentOptions? = null,
+
+    /**
      * Currency
      */
     val currency: String? = null,
@@ -75,6 +80,7 @@ data class ConfirmPaymentIntentParams internal constructor(
         private var autoCapture: Boolean = true
         private var customerId: String? = null
         private var paymentConsentId: String? = null
+        private var paymentConsentOptions: PaymentConsentOptions? = null
         private var currency: String? = null
         private var countryCode: String? = null
         private var additionalInfo: Map<String, String>? = null
@@ -99,6 +105,10 @@ data class ConfirmPaymentIntentParams internal constructor(
 
         fun setPaymentConsentId(paymentConsentId: String?): Builder = apply {
             this.paymentConsentId = paymentConsentId
+        }
+
+        fun setPaymentConsentOptions(paymentConsentOptions: PaymentConsentOptions?): Builder = apply {
+            this.paymentConsentOptions = paymentConsentOptions
         }
 
         fun setCurrency(currency: String?): Builder = apply {
@@ -131,6 +141,7 @@ data class ConfirmPaymentIntentParams internal constructor(
                 cvc = cvc,
                 autoCapture = autoCapture,
                 paymentConsentId = paymentConsentId,
+                paymentConsentOptions = paymentConsentOptions,
                 currency = currency,
                 countryCode = countryCode,
                 additionalInfo = additionalInfo,
@@ -191,6 +202,7 @@ data class ConfirmPaymentIntentParams internal constructor(
          * @param cvc optional.
          * @param customerId the customerId of [PaymentIntent], optional.
          * @param paymentConsentId the customerId of [PaymentConsent], optional.
+         * @param paymentConsentOptions payment consent options for unified flow, optional.
          * @param returnUrl optional
          */
         @Suppress("LongParameterList")
@@ -201,6 +213,7 @@ data class ConfirmPaymentIntentParams internal constructor(
             cvc: String? = null,
             customerId: String? = null,
             paymentConsentId: String? = null,
+            paymentConsentOptions: PaymentConsentOptions? = null,
             returnUrl: String? = null,
             autoCapture: Boolean = true
         ): ConfirmPaymentIntentParams {
@@ -214,12 +227,13 @@ data class ConfirmPaymentIntentParams internal constructor(
                 .setCVC(cvc)
                 .setAutoCapture(autoCapture)
                 .setPaymentConsentId(paymentConsentId)
+                .setPaymentConsentOptions(paymentConsentOptions)
                 .setReturnUrl(returnUrl)
                 .build()
         }
 
         /**
-         * Return the [ConfirmPaymentIntentParams] for Credit Card Pay
+         * Return the [ConfirmPaymentIntentParams] for Google Pay
          *
          * @param paymentIntentId the ID of the [PaymentIntent], required.
          * @param clientSecret the clientSecret of [PaymentIntent], required.
@@ -227,6 +241,7 @@ data class ConfirmPaymentIntentParams internal constructor(
          * @param cvc optional.
          * @param customerId the customerId of [PaymentIntent], optional.
          * @param paymentConsentId the customerId of [PaymentConsent], optional.
+         * @param paymentConsentOptions payment consent options for unified flow, optional.
          * @param returnUrl optional
          */
         @Suppress("LongParameterList")
@@ -237,6 +252,7 @@ data class ConfirmPaymentIntentParams internal constructor(
             cvc: String? = null,
             customerId: String? = null,
             paymentConsentId: String? = null,
+            paymentConsentOptions: PaymentConsentOptions? = null,
             returnUrl: String? = null,
             autoCapture: Boolean = true
         ): ConfirmPaymentIntentParams {
@@ -250,6 +266,7 @@ data class ConfirmPaymentIntentParams internal constructor(
                 .setCVC(cvc)
                 .setAutoCapture(autoCapture)
                 .setPaymentConsentId(paymentConsentId)
+                .setPaymentConsentOptions(paymentConsentOptions)
                 .setReturnUrl(returnUrl)
                 .build()
         }

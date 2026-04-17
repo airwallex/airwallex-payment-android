@@ -192,6 +192,16 @@ object Settings {
             return sharedPreferences.getString("express_checkout", "Disabled") ?: "Disabled"
         }
 
+    var useSession: String
+        set(value) {
+            sharedPreferences.edit {
+                putString("use_session", value)
+            }
+        }
+        get() {
+            return sharedPreferences.getString("use_session", "Enabled") ?: "Enabled"
+        }
+
     var apiKey: String
         set(value) {
             sharedPreferences.edit { putString(context.getString(R.string.api_key), value) }

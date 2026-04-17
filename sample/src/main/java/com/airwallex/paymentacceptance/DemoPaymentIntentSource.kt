@@ -30,7 +30,8 @@ class DemoPaymentIntentSource(
         return repository.getPaymentIntentFromServer(
             force3DS = force3DS,
             customerId = customerId,
-            returnUrl = returnUrl
+            returnUrl = returnUrl,
+            amount = amount
         )
     }
 }
