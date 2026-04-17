@@ -39,7 +39,6 @@ jobs:
 
   repo-dispatch:
     needs: maven
-    if: ${{ github.event_name == 'release' && !github.event.release.prerelease }}
     uses: ./.github/workflows/repo-dispatch-on-release.yml
     with:
       tag: ${{ github.event.release.tag_name }}
