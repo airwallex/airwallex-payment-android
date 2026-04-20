@@ -19,6 +19,7 @@ import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.WeChat
 import com.airwallex.android.ui.AirwallexActivityLaunch
 import com.airwallex.android.ui.extension.getExtraResult
+import com.airwallex.android.ui.extension.toParcelableSession
 import kotlinx.parcelize.Parceler
 import kotlinx.parcelize.Parcelize
 
@@ -72,9 +73,9 @@ class PaymentCheckoutActivityLaunch :
             fun setAirwallexSession(session: AirwallexSession): Builder = apply {
                 when (session) {
                     is AirwallexRecurringSession -> this.recurringSession = session
-                    is Session -> this.parcelableSession = ParcelableSession.from(session)
-                    is AirwallexPaymentSession -> this.parcelableSession = ParcelableSession.from(session.convertToSession())
-                    is AirwallexRecurringWithIntentSession -> this.parcelableSession = ParcelableSession.from(session.convertToSession())
+                    is Session -> this.parcelableSession = session.toParcelableSession()
+                    is AirwallexPaymentSession -> this.parcelableSession = session.convertToSession().toParcelableSession()
+                    is AirwallexRecurringWithIntentSession -> this.parcelableSession = session.convertToSession().toParcelableSession()
                     else -> error("Unknown session type: ${session::class}")
                 }
             }

@@ -28,7 +28,6 @@ class PaymentConsentCreateRequestTest {
         )
         .setNextTriggeredBy(PaymentConsent.NextTriggeredBy.CUSTOMER)
         .setMerchantTriggerReason()
-        .setRequiresCvc(false)
         .setMetadata(null)
 
     @Test

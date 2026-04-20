@@ -21,7 +21,6 @@ class CreatePaymentConsentParamsTest {
         .setPaymentMethodId("mtd_hkdmtjbfmg1j5g3kdo1")
         .setMerchantTriggerReason(PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
         .setGooglePay(googlePay)
-        .setRequiresCvc(false)
 
     @Test
     fun testParams() {

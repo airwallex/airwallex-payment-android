@@ -80,7 +80,6 @@ private suspend fun Session.recurringWithIntentSession(
     return builder.apply {
         setRequireBillingInformation(isBillingInformationRequired)
         setRequireEmail(isEmailRequired)
-        setRequireCvc(requiresCVC)
         setMerchantTriggerReason(
             consentOptions.merchantTriggerReason
                 ?: PaymentConsent.MerchantTriggerReason.UNSCHEDULED
@@ -112,7 +111,6 @@ private suspend fun Session.recurringSession(
         )
         setRequireBillingInformation(isBillingInformationRequired)
         setRequireEmail(isEmailRequired)
-        setRequireCvc(requiresCVC)
         shipping?.let { setShipping(it) }
         googlePayOptions?.let { setGooglePayOptions(it) }
         returnUrl?.let { setReturnUrl(it) }
@@ -229,7 +227,6 @@ fun AirwallexRecurringWithIntentSession.convertToSession(): Session {
         customerId = customerId,
         returnUrl = returnUrl,
         autoCapture = autoCapture,
-        requiresCVC = requiresCVC,
         isBillingInformationRequired = isBillingInformationRequired,
         isEmailRequired = isEmailRequired,
         hidePaymentConsents = hidePaymentConsents,

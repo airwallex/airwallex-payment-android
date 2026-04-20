@@ -17,6 +17,7 @@ import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.googlepay.GooglePayActivityLaunch.Args
 import com.airwallex.android.ui.AirwallexActivityLaunch
 import com.airwallex.android.ui.extension.getExtraResult
+import com.airwallex.android.ui.extension.toParcelableSession
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.RawValue
 
@@ -63,15 +64,15 @@ internal class GooglePayActivityLaunch :
                         recurringSession = session
                     }
                     is Session -> {
-                        parcelableSession = ParcelableSession.from(session)
+                        parcelableSession = session.toParcelableSession()
                         recurringSession = null
                     }
                     is AirwallexPaymentSession -> {
-                        parcelableSession = ParcelableSession.from(session.convertToSession())
+                        parcelableSession = session.convertToSession().toParcelableSession()
                         recurringSession = null
                     }
                     is AirwallexRecurringWithIntentSession -> {
-                        parcelableSession = ParcelableSession.from(session.convertToSession())
+                        parcelableSession = session.convertToSession().toParcelableSession()
                         recurringSession = null
                     }
                     else -> error("Unknown session type: ${session::class}")

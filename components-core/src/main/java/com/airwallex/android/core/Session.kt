@@ -91,13 +91,6 @@ class Session internal constructor(
     val autoCapture: Boolean = true,
 
     /**
-     * Only applicable when next_triggered_by is customer and the payment_method.type is card.
-     * If true, the customer must provide cvc for the subsequent payment with this PaymentConsent.
-     * Default: false
-     */
-    val requiresCVC: Boolean = false,
-
-    /**
      * Control whether saved cards are displayed on the list screen
      */
     override val hidePaymentConsents: Boolean = false

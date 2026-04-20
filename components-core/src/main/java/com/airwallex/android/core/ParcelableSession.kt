@@ -11,7 +11,7 @@ import java.math.BigDecimal
 @Suppress("LongParameterList")
 @Parcelize
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-class ParcelableSession internal constructor(
+class ParcelableSession(
     val paymentIntent: PaymentIntent?,
     val paymentIntentProviderId: String?,
     val paymentConsentOptions: PaymentConsentOptions?,
@@ -26,7 +26,6 @@ class ParcelableSession internal constructor(
     val googlePayOptions: GooglePayOptions?,
     val paymentMethods: List<String>?,
     val autoCapture: Boolean,
-    val requiresCVC: Boolean,
     val hidePaymentConsents: Boolean
 ) : Parcelable {
 
@@ -49,39 +48,10 @@ class ParcelableSession internal constructor(
             googlePayOptions = googlePayOptions,
             paymentMethods = paymentMethods,
             autoCapture = autoCapture,
-            requiresCVC = requiresCVC,
             hidePaymentConsents = hidePaymentConsents
         ).also {
             it.paymentIntentProvider = provider
         }
     }
 
-    companion object {
-        fun from(session: Session): ParcelableSession {
-            val providerId = session.paymentIntentProviderId
-                ?: session.paymentIntentProvider?.let { provider ->
-                    PaymentIntentProviderRepository.store(provider)
-                        .also { id -> session.paymentIntentProviderId = id }
-                }
-
-            return ParcelableSession(
-                paymentIntent = session.paymentIntent,
-                paymentIntentProviderId = providerId,
-                paymentConsentOptions = session.paymentConsentOptions,
-                currency = session.currency,
-                countryCode = session.countryCode,
-                amount = session.amount,
-                shipping = session.shipping,
-                isBillingInformationRequired = session.isBillingInformationRequired,
-                isEmailRequired = session.isEmailRequired,
-                customerId = session.customerId,
-                returnUrl = session.returnUrl,
-                googlePayOptions = session.googlePayOptions,
-                paymentMethods = session.paymentMethods,
-                autoCapture = session.autoCapture,
-                requiresCVC = session.requiresCVC,
-                hidePaymentConsents = session.hidePaymentConsents
-            )
-        }
-    }
 }
