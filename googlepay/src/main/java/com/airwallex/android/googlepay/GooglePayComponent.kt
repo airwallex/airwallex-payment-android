@@ -78,7 +78,7 @@ class GooglePayComponent : ActionComponent {
             }
             AirwallexLogger.info("GooglePayComponent handlePaymentIntentResponse: launch googlePay Activity")
             googlePayActivityLaunch.launchForResult(
-                GooglePayActivityLaunch.Args(
+                GooglePayActivityLaunch.Args.create(
                     session = session,
                     googlePayOptions = googlePayOptions,
                     paymentMethodType = paymentMethodType
