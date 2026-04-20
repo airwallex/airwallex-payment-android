@@ -13,7 +13,8 @@ appId: com.airwallex.paymentacceptance
       LAYOUT: ${LAYOUT}
       ENVIRONMENT: ${output.settings.environment.demo}
       NEXT_TRIGGERED_BY: ${output.settings.nextTriggeredBy.customer}
-      IS_GUEST: false 
+      IS_GUEST: false
+      USE_NEW_SESSION: false 
 - tapOn: "Launch payment list"
 # remove all consents - in case consents created in previous tests were not removed because of test failure
 - runFlow:
