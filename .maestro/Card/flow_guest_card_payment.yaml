@@ -15,7 +15,8 @@ appId: com.airwallex.paymentacceptance
       LAYOUT: ${LAYOUT}
       ENVIRONMENT: ${output.settings.environment.demo}
       NEXT_TRIGGERED_BY: ${output.settings.nextTriggeredBy.customer}
-      IS_GUEST: true 
+      IS_GUEST: true
+      USE_NEW_SESSION: false 
 - tapOn: "Launch payment list"
 - runFlow:
     file: flow_pay_with_card.yaml

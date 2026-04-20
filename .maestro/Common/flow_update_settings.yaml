@@ -7,6 +7,7 @@ env:
   EXPRESS_CHECKOUT: ${EXPRESS_CHECKOUT || "false"}
   IS_GUEST: ${IS_GUEST || "true"}
   GENERATE_NEW_CUSTOMER_ID: ${GENERATE_NEW_CUSTOMER_ID || "false"}
+  USE_NEW_SESSION: ${USE_NEW_SESSION || "false"}
 ---
 - assertVisible: "Settings"
 - runFlow: # ensure environment
@@ -25,6 +26,7 @@ env:
       - tapOn: setting
 - runFlow: # ensure next triggered by
     when:
+      true: ${NEXT_TRIGGERED_BY && NEXT_TRIGGERED_BY != 'undefined'}
       notVisible: ${NEXT_TRIGGERED_BY}
     commands:
       - tapOn: "Next Trigger By"
@@ -115,8 +117,27 @@ env:
 - scrollUntilVisible:
     element:
       id: "com.airwallex.paymentacceptance:id/swUseSession"
-- runFlow: # ensure "use Session over legacy variants" switch is off
+- runFlow: # ensure value of use Session switch
     when:
+      true: ${USE_NEW_SESSION}
+      visible:
+        childOf:
+          id: "com.airwallex.paymentacceptance:id/swUseSession"
+        id: "com.airwallex.paymentacceptance:id/switchControl"
+        checked: false
+    commands:
+      - tapOn:
+          childOf:
+            id: "com.airwallex.paymentacceptance:id/swUseSession"
+          id: "com.airwallex.paymentacceptance:id/switchControl"
+      - assertVisible:
+          childOf:
+            id: "com.airwallex.paymentacceptance:id/swUseSession"
+          id: "com.airwallex.paymentacceptance:id/switchControl"
+          checked: true
+- runFlow: # ensure value of use Session switch is off when USE_NEW_SESSION is false
+    when:
+      true: ${USE_NEW_SESSION == 'false'}
       visible:
         childOf:
           id: "com.airwallex.paymentacceptance:id/swUseSession"
@@ -148,9 +169,9 @@ env:
                 id: "com.airwallex.paymentacceptance:id/deleteIcon"
       - assertVisible: "Generate"
       - tapOn: "Generate"
-- runFlow: # ensure customerId for registered user - use UI_TESTING_CUSTOMER_ID
+- runFlow: # ensure customerId for registered user - use UI_TESTING_CUSTOMER_ID (only if defined)
     when:
-      true: ${IS_GUEST == 'false' && GENERATE_NEW_CUSTOMER_ID == 'false'}
+      true: ${IS_GUEST == 'false' && GENERATE_NEW_CUSTOMER_ID == 'false' && UI_TESTING_CUSTOMER_ID}
       notVisible: ${UI_TESTING_CUSTOMER_ID}
     commands:
       - runFlow:

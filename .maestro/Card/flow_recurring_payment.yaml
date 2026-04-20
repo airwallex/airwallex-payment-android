@@ -13,29 +13,6 @@ platform:
 - runScript: cards.js
 - launchApp
 - tapOn: "Integrate with Airwallex UI"
-# remove all consents before start recurring payment flow
-- runFlow:
-    file: ../Common/flow_update_checkout_mode.yaml
-    env:
-      CHECKOUT_MODE: ${output.settings.checkoutMode.oneOff}
-- tapOn: setting
-- runFlow:
-    file: ../Common/flow_update_settings.yaml
-    env: 
-      LAYOUT: ${output.settings.layout.tab}
-      ENVIRONMENT: ${output.settings.environment.demo}
-      NEXT_TRIGGERED_BY: ${output.settings.nextTriggeredBy.customer}
-      IS_GUEST: false 
-- tapOn: "Launch payment list"
-- runFlow:
-    file: flow_remove_all_consents.yaml
-- tapOn: "Navigate up"
-- runFlow:
-    file: ../Common/flow_handle_payment_result.yaml
-    env:
-      PAYMENT_RESULT: CANCELLED 
-
-# update checkout mode 
 - runFlow:
     when:
       true: ${WITH_PAYMENT}
@@ -58,7 +35,8 @@ platform:
       LAYOUT: ${output.settings.layout.tab}
       ENVIRONMENT: ${output.settings.environment.demo}
       NEXT_TRIGGERED_BY: ${output.settings.nextTriggeredBy.customer}
-      IS_GUEST: false 
+      IS_GUEST: false
+      USE_NEW_SESSION: false
 - runFlow:
     when:
       true: ${TRIGGER_BY_CUSTOMER == 'false'}
@@ -67,7 +45,9 @@ platform:
       LAYOUT: ${output.settings.layout.tab}
       ENVIRONMENT: ${output.settings.environment.demo}
       NEXT_TRIGGERED_BY: ${output.settings.nextTriggeredBy.merchant}
-      IS_GUEST: false 
+      IS_GUEST: false
+      GENERATE_NEW_CUSTOMER_ID: true
+      USE_NEW_SESSION: false 
 
 # start recurring payment flow
 - tapOn: "Launch payment list"
@@ -88,11 +68,70 @@ platform:
     env:
       PAYMENT_RESULT: SUCCESS # SUCCESS/FAILED/CANCELLED
 
+# test duplicate consent behavior
+- tapOn: "Launch payment list"
+- runFlow:
+    when:
+      true: ${TRIGGER_BY_CUSTOMER}
+    commands:
+      - runFlow:
+          when:
+            true: ${WITH_PAYMENT == 'false'}
+          commands:
+            # For recurring-only customer-triggered: second attempt with same card should fail
+            - runFlow:
+                file: flow_pay_with_card.yaml
+                env:
+                  CARD_NUMBER: ${output.cards.visa}
+                  CAN_SAVE_CARD: false
+                  SHOULD_SAVE_CARD: false
+            - assertVisible: "Payment failed"
+            - tapOn: "OK"
+      - runFlow:
+          when:
+            true: ${WITH_PAYMENT}
+          commands:
+            # For recurring-with-payment customer-triggered: second attempt should succeed
+            - runFlow:
+                file: flow_pay_with_card.yaml
+                env:
+                  CARD_NUMBER: ${output.cards.visa}
+                  CAN_SAVE_CARD: false
+                  SHOULD_SAVE_CARD: false
+            - runFlow:
+                file: ../Common/flow_handle_payment_result.yaml
+                env:
+                  PAYMENT_RESULT: SUCCESS
+- runFlow:
+    when:
+      true: ${TRIGGER_BY_CUSTOMER == 'false'}
+    commands:
+      # For merchant-triggered: second attempt with same card should succeed (both recurring and recurring-with-payment)
+      - runFlow:
+          file: flow_pay_with_card.yaml
+          env:
+            CARD_NUMBER: ${output.cards.visa}
+            CAN_SAVE_CARD: false
+            SHOULD_SAVE_CARD: false
+      - runFlow:
+          file: ../Common/flow_handle_3ds.yaml
+          env:
+            CANCEL_3DS: false
+      - runFlow:
+          file: ../Common/flow_handle_payment_result.yaml
+          env:
+            PAYMENT_RESULT: SUCCESS
+
 # check and remove consents
 - runFlow:
-    file: ../Common/flow_update_checkout_mode.yaml
-    env:
-      CHECKOUT_MODE: ${output.settings.checkoutMode.oneOff}
+    when:
+      true: ${WITH_PAYMENT == 'false'}
+    commands:
+      # For recurring-only: need to switch to oneOff mode to see consents
+      - runFlow:
+          file: ../Common/flow_update_checkout_mode.yaml
+          env:
+            CHECKOUT_MODE: ${output.settings.checkoutMode.oneOff}
 - tapOn: "Launch payment list"
 - runFlow:
     when:
@@ -119,7 +158,12 @@ platform:
     when:
       true: ${TRIGGER_BY_CUSTOMER == 'false'}
     commands:
-      - assertVisible: "Card information" # verify no consent saved
+      # For merchant-triggered: 2nd save succeeded but deduplicated, only 1 consent shown
+      - assertVisible:
+          id: "saved-consent"
+          index: 0
+      - runFlow:
+          file: ../MerchantTriggered/flow_assert_merchant_consent.yaml
       - tapOn: "Navigate up"
       - runFlow:
           file: ../Common/flow_handle_payment_result.yaml

@@ -1,0 +1,57 @@
+appId: com.airwallex.paymentacceptance
+tags:
+  - card
+  - user
+  - express-checkout
+  - session
+platform:
+  android:
+    disableAnimations: true  # Disables system animations on the Android emulator
+env:
+  IS_GUEST: false
+onFlowStart:
+  - runFlow:
+      when:
+        true: ${IS_RECORDING}
+      commands:
+        - startRecording: test_user_express_checkout_recurring_customer_session
+onFlowComplete:
+  - runFlow:
+      when:
+        true: ${IS_RECORDING}
+      commands:
+        - stopRecording
+---
+- launchApp
+- runScript: ../../../Card/cards.js
+- runScript: ../../../Common/settings.js
+- tapOn: "Integrate with Airwallex UI"
+# start recurring express checkout with customer-initiated payment
+- runFlow:
+    file: ../../../ExpressCheckout/flow_card_express_checkout.yaml
+    env:
+      CHECKOUT_MODE: ${output.settings.checkoutMode.recurringAndPayment}
+      CARD_NUMBER: ${output.cards.visa3DS}
+      HANDLE_3DS: true
+      NEXT_TRIGGERED_BY: ${output.settings.nextTriggeredBy.customer}
+      GENERATE_NEW_CUSTOMER_ID: false
+      USE_NEW_SESSION: true
+# NEW SESSION: To verify consent exists, turn off express checkout first
+- tapOn: setting
+- runFlow:
+    file: ../../../Common/flow_update_settings.yaml
+    env:
+      IS_GUEST: false
+      EXPRESS_CHECKOUT: false
+      USE_NEW_SESSION: true
+- tapOn: "Launch payment list"
+- assertVisible:
+    id: "saved-consent"
+    index: 0
+- runFlow:
+    file: ../../../Card/flow_remove_all_consents.yaml
+- tapOn: "Navigate up"
+- runFlow:
+    file: ../../../Common/flow_handle_payment_result.yaml
+    env:
+      PAYMENT_RESULT: CANCELLED

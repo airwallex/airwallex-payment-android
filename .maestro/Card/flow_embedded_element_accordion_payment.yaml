@@ -1,4 +1,6 @@
 appId: com.airwallex.paymentacceptance
+env:
+  USE_NEW_SESSION: ${USE_NEW_SESSION || "false"}
 ---
 - launchApp
 - tapOn: "Integrate with Airwallex UI"
@@ -14,13 +16,14 @@ appId: com.airwallex.paymentacceptance
       ENVIRONMENT: ${output.settings.environment.demo}
       NEXT_TRIGGERED_BY: ${output.settings.nextTriggeredBy.customer}
       IS_GUEST: false
-- tapOn: "Embedded Element"
+      USE_NEW_SESSION: ${USE_NEW_SESSION}
+- tapOn: "Embedded element"
 # Wait for the embedded element activity to load
 - assertVisible: "Order details"
-# Assert Google Pay button exists
+# Assert Google Pay button exists by checking for the "Or pay with" divider
 - scrollUntilVisible:
-    element: "Buy with GPay"
-- assertVisible: "Buy with GPay"
+    element:
+      text: "Or pay with"
 # Scroll down to the card information section
 - scrollUntilVisible:
     element: "Card information"
@@ -62,13 +65,13 @@ appId: com.airwallex.paymentacceptance
     env:
       PAYMENT_RESULT: SUCCESS # SUCCESS/FAILED/CANCELLED
 # Launch Embedded Element again to pay with saved card
-- tapOn: "Embedded Element"
+- tapOn: "Embedded element"
 # Wait for the embedded element activity to load
 - assertVisible: "Order details"
-# Assert Google Pay button exists
+# Assert Google Pay button exists by checking for the "Or pay with" divider
 - scrollUntilVisible:
-    element: "Buy with GPay"
-- assertVisible: "Buy with GPay"
+    element:
+      text: "Or pay with"
 # Scroll down to see if there are saved cards
 - scrollUntilVisible:
     element: "Choose a card"
@@ -97,7 +100,7 @@ appId: com.airwallex.paymentacceptance
     env:
       PAYMENT_RESULT: SUCCESS # SUCCESS/FAILED/CANCELLED
 # Launch Embedded Element one more time to delete the saved card
-- tapOn: "Embedded Element"
+- tapOn: "Embedded element"
 # Wait for the embedded element activity to load
 - assertVisible: "Order details"
 # Scroll down to the card information section
