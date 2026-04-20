@@ -224,13 +224,6 @@ class AirwallexApiRepository : ApiRepository {
         }
 
         /**
-         *  `/api/v1/checkout/collect`
-         */
-        internal fun trackerUrl(): String {
-            return "${AirwallexPlugins.environment.trackerUrl()}/collect"
-        }
-
-        /**
          *  `/api/v1/pa/payment_consents/create`
          */
         internal fun createPaymentConsentUrl(baseUrl: String): String {

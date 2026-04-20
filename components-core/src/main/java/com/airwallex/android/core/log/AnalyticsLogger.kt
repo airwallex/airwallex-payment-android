@@ -322,6 +322,7 @@ object AnalyticsLogger {
             AirwallexEnvironment.STAGING -> Environment.STAGING
             AirwallexEnvironment.DEMO -> Environment.DEMO
             AirwallexEnvironment.PRODUCTION -> Environment.PROD
+            AirwallexEnvironment.PREVIEW -> Environment.PREVIEW
         }
     }
 
