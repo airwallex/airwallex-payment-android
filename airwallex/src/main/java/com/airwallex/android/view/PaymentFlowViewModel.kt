@@ -319,8 +319,9 @@ class PaymentFlowViewModel(
 
     private suspend fun checkoutGooglePay(): AirwallexPaymentStatus {
         return suspendCancellableCoroutine { continuation ->
-            airwallex.startGooglePay(
+            airwallex.checkout(
                 session = session,
+                paymentMethod = PaymentMethod.Builder().setType(PaymentMethodType.GOOGLEPAY.value).build(),
                 listener = object : PaymentResultListener {
                     override fun onCompleted(status: AirwallexPaymentStatus) {
                         continuation.resume(status)
