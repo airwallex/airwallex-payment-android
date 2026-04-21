@@ -97,6 +97,30 @@ abstract class BasePaymentActivity<VB : ViewBinding, VM : BaseViewModel> : AppCo
             .show()
     }
 
+    fun showAlert(
+        title: String,
+        message: String,
+        positiveButtonText: String,
+        negativeButtonText: String,
+        onPositive: (() -> Unit)? = null,
+        onNegative: (() -> Unit)? = null
+    ) {
+        AlertDialog.Builder(this)
+            .setTitle(title)
+            .setMessage(message)
+            .setCancelable(false)
+            .setPositiveButton(positiveButtonText) { dialogInterface, _ ->
+                dialogInterface.dismiss()
+                onPositive?.invoke()
+            }
+            .setNegativeButton(negativeButtonText) { dialogInterface, _ ->
+                dialogInterface.dismiss()
+                onNegative?.invoke()
+            }
+            .create()
+            .show()
+    }
+
     private fun startWait(cancellable: Boolean = false) {
         // If dialog already showing, just update cancelable state (reentrant)
         if (dialog?.isShowing == true) {
