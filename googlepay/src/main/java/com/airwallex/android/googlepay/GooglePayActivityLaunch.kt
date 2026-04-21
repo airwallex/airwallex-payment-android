@@ -4,13 +4,20 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
+import com.airwallex.android.core.AirwallexPaymentSession
+import com.airwallex.android.core.AirwallexRecurringSession
+import com.airwallex.android.core.AirwallexRecurringWithIntentSession
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.GooglePayOptions
+import com.airwallex.android.core.ParcelableSession
+import com.airwallex.android.core.Session
 import com.airwallex.android.core.exception.AirwallexException
+import com.airwallex.android.core.extension.convertToSession
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.googlepay.GooglePayActivityLaunch.Args
 import com.airwallex.android.ui.AirwallexActivityLaunch
 import com.airwallex.android.ui.extension.getExtraResult
+import com.airwallex.android.ui.extension.toParcelableSession
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.RawValue
 
@@ -31,10 +38,54 @@ internal class GooglePayActivityLaunch :
 
     @Parcelize
     internal data class Args(
-        val session: AirwallexSession,
+        internal val parcelableSession: ParcelableSession? = null,
+        @Suppress("DEPRECATION") internal val recurringSession: AirwallexRecurringSession? = null,
         val googlePayOptions: GooglePayOptions,
         val paymentMethodType: AvailablePaymentMethodType
-    ) : AirwallexActivityLaunch.Args
+    ) : AirwallexActivityLaunch.Args {
+
+        val session: AirwallexSession
+            get() = parcelableSession?.toSession()
+                ?: recurringSession
+                ?: error("No session provided in Args")
+
+        companion object {
+            @Suppress("DEPRECATION")
+            fun create(
+                session: AirwallexSession,
+                googlePayOptions: GooglePayOptions,
+                paymentMethodType: AvailablePaymentMethodType
+            ): Args {
+                val parcelableSession: ParcelableSession?
+                val recurringSession: AirwallexRecurringSession?
+                when (session) {
+                    is AirwallexRecurringSession -> {
+                        parcelableSession = null
+                        recurringSession = session
+                    }
+                    is Session -> {
+                        parcelableSession = session.toParcelableSession()
+                        recurringSession = null
+                    }
+                    is AirwallexPaymentSession -> {
+                        parcelableSession = session.convertToSession().toParcelableSession()
+                        recurringSession = null
+                    }
+                    is AirwallexRecurringWithIntentSession -> {
+                        parcelableSession = session.convertToSession().toParcelableSession()
+                        recurringSession = null
+                    }
+                    else -> error("Unknown session type: ${session::class}")
+                }
+                return Args(
+                    parcelableSession = parcelableSession,
+                    recurringSession = recurringSession,
+                    googlePayOptions = googlePayOptions,
+                    paymentMethodType = paymentMethodType
+                )
+            }
+        }
+    }
 
     internal sealed class Result : AirwallexActivityLaunch.Result {
         @Parcelize

@@ -1,12 +1,9 @@
 package com.airwallex.android.core
 
-import android.os.Parcelable
 import com.airwallex.android.core.model.ObjectBuilder
 import com.airwallex.android.core.model.PaymentConsentOptions
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.Shipping
-import kotlinx.parcelize.IgnoredOnParcel
-import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 
 /**
@@ -19,7 +16,6 @@ import java.math.BigDecimal
  * - MIT consent used for CIT transactions
  */
 @Suppress("LongParameterList")
-@Parcelize
 class Session internal constructor(
     /**
      * The [PaymentIntent] object, optional when using paymentIntentProvider.
@@ -99,14 +95,8 @@ class Session internal constructor(
      */
     override val hidePaymentConsents: Boolean = false
 
-) : AirwallexSession(), PaymentIntentResolvableSession, Parcelable {
+) : AirwallexSession(), PaymentIntentResolvableSession {
 
-    /**
-     * PaymentIntentProvider instance. This field is transient and not parceled.
-     * It is stored only in memory and bound to the Activity lifecycle via PaymentIntentProviderRepository.
-     */
-    @IgnoredOnParcel
-    @Transient
     override var paymentIntentProvider: PaymentIntentProvider? = null
 
     /**

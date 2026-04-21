@@ -1,10 +1,9 @@
 package com.airwallex.android.core
 
-import android.os.Parcelable
 import com.airwallex.android.core.model.Shipping
 import java.math.BigDecimal
 
-abstract class AirwallexSession : Parcelable {
+abstract class AirwallexSession {
 
     /**
      * The Customer who is paying for this PaymentIntent. This field is not required if the Customer is unknown (guest checkout). But it is required if the PaymentIntent is created for recurring payment.

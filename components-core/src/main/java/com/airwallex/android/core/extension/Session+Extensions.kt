@@ -234,7 +234,6 @@ fun AirwallexRecurringWithIntentSession.convertToSession(): Session {
         paymentMethods = paymentMethods,
         shipping = shipping
     ).also {
-        // Preserve the transient provider field (not parceled, must be set manually)
         it.paymentIntentProvider = (this as? PaymentIntentResolvableSession)?.paymentIntentProvider
     }
 }

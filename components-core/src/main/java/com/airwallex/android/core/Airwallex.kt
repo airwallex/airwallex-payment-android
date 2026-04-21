@@ -1370,7 +1370,6 @@ class Airwallex internal constructor(
                             customerId = requireNotNull(session.customerId),
                             paymentMethod = paymentMethod,
                             nextTriggeredBy = PaymentConsent.NextTriggeredBy.CUSTOMER,
-                            requiresCvc = true,
                             merchantTriggerReason = null,
                             listener = object : PaymentListener<PaymentConsent> {
                                 override fun onFailed(exception: AirwallexException) {
@@ -1398,7 +1397,6 @@ class Airwallex internal constructor(
                     customerId = customerId,
                     paymentMethod = paymentMethod,
                     nextTriggeredBy = session.nextTriggerBy,
-                    requiresCvc = session.requiresCVC,
                     merchantTriggerReason = session.merchantTriggerReason,
                     listener = object : PaymentListener<PaymentConsent> {
                         override fun onFailed(exception: AirwallexException) {
@@ -1429,7 +1427,6 @@ class Airwallex internal constructor(
                             customerId = session.customerId,
                             paymentMethod = paymentMethod,
                             nextTriggeredBy = session.nextTriggerBy,
-                            requiresCvc = session.requiresCVC,
                             merchantTriggerReason = session.merchantTriggerReason,
                             listener = object : PaymentListener<PaymentConsent> {
                                 override fun onFailed(exception: AirwallexException) {
@@ -1490,7 +1487,6 @@ class Airwallex internal constructor(
             customerId = session.customerId,
             paymentMethod = paymentMethod,
             nextTriggeredBy = session.nextTriggerBy,
-            requiresCvc = session.requiresCVC,
             merchantTriggerReason = session.merchantTriggerReason,
             listener = object : PaymentListener<PaymentConsent> {
                 override fun onFailed(exception: AirwallexException) {
@@ -1529,7 +1525,6 @@ class Airwallex internal constructor(
                     customerId = session.customerId,
                     paymentMethod = paymentMethod,
                     nextTriggeredBy = session.nextTriggerBy,
-                    requiresCvc = session.requiresCVC,
                     merchantTriggerReason = session.merchantTriggerReason,
                     listener = object : PaymentListener<PaymentConsent> {
                         override fun onFailed(exception: AirwallexException) {
@@ -1882,7 +1877,6 @@ class Airwallex internal constructor(
                     }
                 )
                 .setMerchantTriggerReason(params.merchantTriggerReason)
-                .setRequiresCvc(params.requiresCvc)
                 .build()
         )
     }
@@ -2045,7 +2039,6 @@ class Airwallex internal constructor(
         customerId: String,
         paymentMethod: PaymentMethod,
         nextTriggeredBy: PaymentConsent.NextTriggeredBy = PaymentConsent.NextTriggeredBy.MERCHANT,
-        requiresCvc: Boolean,
         merchantTriggerReason: PaymentConsent.MerchantTriggerReason? = PaymentConsent.MerchantTriggerReason.UNSCHEDULED,
         listener: PaymentListener<PaymentConsent>
     ) {
@@ -2058,7 +2051,6 @@ class Airwallex internal constructor(
                         paymentMethodId = requireNotNull(paymentMethod.id),
                         nextTriggeredBy = nextTriggeredBy,
                         merchantTriggerReason = merchantTriggerReason,
-                        requiresCvc = requiresCvc
                     )
                 }
 
@@ -2069,7 +2061,6 @@ class Airwallex internal constructor(
                         googlePay = requireNotNull(paymentMethod.googlePay),
                         nextTriggeredBy = nextTriggeredBy,
                         merchantTriggerReason = merchantTriggerReason,
-                        requiresCvc = requiresCvc
                     )
                 }
 
