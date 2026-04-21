@@ -193,12 +193,15 @@ env:
       - hideKeyboard
 - runFlow: # ensure no customerId for guest checkout
     when:
-      true: ${IS_GUEST}
-      visible:
-        id: "com.airwallex.paymentacceptance:id/deleteIcon"
+      true: ${IS_GUEST == 'true'}
     commands:
-      - tapOn:
-          id: "com.airwallex.paymentacceptance:id/deleteIcon"
+      - runFlow:
+          when:
+            visible:
+              id: "com.airwallex.paymentacceptance:id/deleteIcon"
+          commands:
+            - tapOn:
+                id: "com.airwallex.paymentacceptance:id/deleteIcon"
       - assertVisible: "Customer ID"
       - assertVisible: "Generate"
 - scrollUntilVisible:
