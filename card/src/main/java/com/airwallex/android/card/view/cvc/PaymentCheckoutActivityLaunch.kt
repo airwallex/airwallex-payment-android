@@ -6,13 +6,20 @@ import android.os.Bundle
 import android.os.Parcel
 import androidx.fragment.app.Fragment
 import com.airwallex.android.card.view.cvc.PaymentCheckoutActivityLaunch.Args
+import com.airwallex.android.core.AirwallexPaymentSession
+import com.airwallex.android.core.AirwallexRecurringSession
+import com.airwallex.android.core.AirwallexRecurringWithIntentSession
 import com.airwallex.android.core.AirwallexSession
+import com.airwallex.android.core.ParcelableSession
+import com.airwallex.android.core.Session
 import com.airwallex.android.core.exception.AirwallexException
+import com.airwallex.android.core.extension.convertToSession
 import com.airwallex.android.core.model.ObjectBuilder
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.WeChat
 import com.airwallex.android.ui.AirwallexActivityLaunch
 import com.airwallex.android.ui.extension.getExtraResult
+import com.airwallex.android.ui.extension.toParcelableSession
 import kotlinx.parcelize.Parceler
 import kotlinx.parcelize.Parcelize
 
@@ -33,15 +40,23 @@ class PaymentCheckoutActivityLaunch :
 
     @Parcelize
     data class Args internal constructor(
-        val session: AirwallexSession,
+        internal val parcelableSession: ParcelableSession? = null,
+        @Suppress("DEPRECATION") internal val recurringSession: AirwallexRecurringSession? = null,
         val paymentMethod: PaymentMethod,
         val paymentConsentId: String?,
         val cvc: String?
     ) : AirwallexActivityLaunch.Args {
 
+        val session: AirwallexSession
+            get() = parcelableSession?.toSession()
+                ?: recurringSession
+                ?: error("No session provided in Args")
+
         class Builder : ObjectBuilder<Args> {
 
-            private lateinit var session: AirwallexSession
+            private var parcelableSession: ParcelableSession? = null
+            @Suppress("DEPRECATION")
+            private var recurringSession: AirwallexRecurringSession? = null
             private lateinit var paymentMethod: PaymentMethod
             private var paymentConsentId: String? = null
             private var cvc: String? = null
@@ -54,8 +69,15 @@ class PaymentCheckoutActivityLaunch :
                 this.paymentConsentId = paymentConsentId
             }
 
+            @Suppress("DEPRECATION")
             fun setAirwallexSession(session: AirwallexSession): Builder = apply {
-                this.session = session
+                when (session) {
+                    is AirwallexRecurringSession -> this.recurringSession = session
+                    is Session -> this.parcelableSession = session.toParcelableSession()
+                    is AirwallexPaymentSession -> this.parcelableSession = session.convertToSession().toParcelableSession()
+                    is AirwallexRecurringWithIntentSession -> this.parcelableSession = session.convertToSession().toParcelableSession()
+                    else -> error("Unknown session type: ${session::class}")
+                }
             }
 
             fun setPaymentMethod(paymentMethod: PaymentMethod): Builder = apply {
@@ -64,7 +86,8 @@ class PaymentCheckoutActivityLaunch :
 
             override fun build(): Args {
                 return Args(
-                    session = session,
+                    parcelableSession = parcelableSession,
+                    recurringSession = recurringSession,
                     paymentMethod = paymentMethod,
                     paymentConsentId = paymentConsentId,
                     cvc = cvc

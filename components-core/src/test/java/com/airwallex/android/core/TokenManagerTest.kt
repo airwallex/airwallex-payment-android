@@ -69,17 +69,19 @@ class TokenManagerTest {
     }
 
     @Test
-    fun `test updateClientSecret with different clientSecret updates accountId`() {
+    fun `test updateClientSecret with different clientSecret updates accountId and business name`() {
         val payload1 = """
             {
               "type":"client-secret",
-              "account_id": "account-id-1"
+              "account_id": "account-id-1",
+              "business_name": "Test Business"
             }
         """.trimIndent()
         val payload2 = """
             {
               "type":"client-secret",
-              "account_id": "account-id-2"
+              "account_id": "account-id-2",
+              "business_name": "Test Business2"
             }
         """.trimIndent()
         every { Base64.decode("payload1", Base64.DEFAULT) } returns payload1.toByteArray()
@@ -88,10 +90,12 @@ class TokenManagerTest {
         // First update
         TokenManager.updateClientSecret("header.payload1.signature")
         assertEquals("account-id-1", TokenManager.accountId)
+        assertEquals("Test Business", TokenManager.businessName)
 
         // Second update with different clientSecret - should trigger accountId update
         TokenManager.updateClientSecret("header.payload2.signature")
         assertEquals("account-id-2", TokenManager.accountId)
+        assertEquals("Test Business2", TokenManager.businessName)
 
         // Verify that AnalyticsLogger.updateAccountId was called twice
         verify(exactly = 1) { AnalyticsLogger.updateAccountId("account-id-1") }

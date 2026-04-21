@@ -33,12 +33,6 @@ data class CreatePaymentConsentParams constructor(
      * Default: unscheduled
      */
     val merchantTriggerReason: PaymentConsent.MerchantTriggerReason? = PaymentConsent.MerchantTriggerReason.UNSCHEDULED,
-
-    /**
-     * Only applicable when next_triggered_by is customer. If false, the customer must provide cvc for subsequent payments with this PaymentConsent.
-     * Default: false
-     */
-    val requiresCvc: Boolean? = null
 ) {
 
     class Builder(
@@ -54,8 +48,6 @@ data class CreatePaymentConsentParams constructor(
         private var merchantTriggerReason: PaymentConsent.MerchantTriggerReason? =
             PaymentConsent.MerchantTriggerReason.UNSCHEDULED
 
-        private var requiresCvc: Boolean? = null
-
         fun setPaymentMethodId(paymentMethodId: String?): Builder = apply {
             this.paymentMethodId = paymentMethodId
         }
@@ -69,10 +61,6 @@ data class CreatePaymentConsentParams constructor(
                 this.merchantTriggerReason = merchantTriggerReason
             }
 
-        fun setRequiresCvc(requiresCvc: Boolean?): Builder = apply {
-            this.requiresCvc = requiresCvc
-        }
-
         override fun build(): CreatePaymentConsentParams {
             return CreatePaymentConsentParams(
                 clientSecret = clientSecret,
@@ -82,7 +70,6 @@ data class CreatePaymentConsentParams constructor(
                 paymentMethodType = paymentMethodType,
                 nextTriggeredBy = nextTriggeredBy,
                 merchantTriggerReason = merchantTriggerReason,
-                requiresCvc = requiresCvc
             )
         }
     }
@@ -94,7 +81,6 @@ data class CreatePaymentConsentParams constructor(
             paymentMethodId: String,
             nextTriggeredBy: PaymentConsent.NextTriggeredBy,
             merchantTriggerReason: PaymentConsent.MerchantTriggerReason?,
-            requiresCvc: Boolean
         ): CreatePaymentConsentParams {
             return Builder(
                 clientSecret = clientSecret,
@@ -104,7 +90,6 @@ data class CreatePaymentConsentParams constructor(
             )
                 .setMerchantTriggerReason(merchantTriggerReason = merchantTriggerReason)
                 .setPaymentMethodId(paymentMethodId)
-                .setRequiresCvc(requiresCvc)
                 .build()
         }
 
@@ -115,7 +100,6 @@ data class CreatePaymentConsentParams constructor(
             googlePay: PaymentMethod.GooglePay?,
             nextTriggeredBy: PaymentConsent.NextTriggeredBy,
             merchantTriggerReason: PaymentConsent.MerchantTriggerReason?,
-            requiresCvc: Boolean
         ): CreatePaymentConsentParams {
             return Builder(
                 clientSecret = clientSecret,
@@ -125,7 +109,6 @@ data class CreatePaymentConsentParams constructor(
             )
                 .setMerchantTriggerReason(merchantTriggerReason = merchantTriggerReason)
                 .setGooglePay(googlePay)
-                .setRequiresCvc(requiresCvc)
                 .build()
         }
 

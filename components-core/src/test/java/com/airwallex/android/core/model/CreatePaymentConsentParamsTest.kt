@@ -21,7 +21,6 @@ class CreatePaymentConsentParamsTest {
         .setPaymentMethodId("mtd_hkdmtjbfmg1j5g3kdo1")
         .setMerchantTriggerReason(PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
         .setGooglePay(googlePay)
-        .setRequiresCvc(false)
 
     @Test
     fun testParams() {
@@ -36,7 +35,6 @@ class CreatePaymentConsentParamsTest {
         assertEquals(PaymentConsent.MerchantTriggerReason.UNSCHEDULED, params.merchantTriggerReason)
         assertEquals("encrypted_payment_token", params.googlePay?.paymentDataType)
         assertEquals("demo_encrypted_payment_token", params.googlePay?.encryptedPaymentToken)
-        assertEquals(false, params.requiresCvc)
     }
 
     @Test
@@ -47,14 +45,12 @@ class CreatePaymentConsentParamsTest {
             paymentMethodId = "abcd",
             nextTriggeredBy = PaymentConsent.NextTriggeredBy.MERCHANT,
             merchantTriggerReason = null,
-            requiresCvc = true
         )
         assertEquals(params.clientSecret, "asdfqrfqrfag")
         assertEquals(params.customerId, "cus_hkdmnb922g1j36140vv")
         assertEquals(params.paymentMethodId, "abcd")
         assertEquals(params.nextTriggeredBy, PaymentConsent.NextTriggeredBy.MERCHANT)
         assertNull(params.merchantTriggerReason)
-        assertEquals(params.requiresCvc, true)
     }
 
     @Test

@@ -43,6 +43,7 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
         mBinding.sw3DS.setChecked(Settings.force3DS == "True")
         mBinding.swAutoCapture.setChecked(Settings.autoCapture == "Enabled")
         mBinding.swExpressCheckout.setChecked(Settings.expressCheckout == "Enabled")
+        mBinding.swUseSession.setChecked(Settings.useSession == "Enabled")
         mBinding.swEmail.setChecked(Settings.requiresEmail == "True")
 
         mBinding.etReturnUrl.setText(Settings.returnUrl)
@@ -53,28 +54,29 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
             finish()
         }
         mBinding.etCustomerId.setActionClickListener {
-            mViewModel.generateCustomerId()
+            val selectedEnv = mBinding.selectViewEnvironment.currentOption
+            if (selectedEnv != Settings.sdkEnv) {
+                // Environment changed but not saved yet
+                showAlert(
+                    "",
+                    "You need to save the new environment first to generate customer id",
+                    positiveButtonText = "Save",
+                    negativeButtonText = "Cancel",
+                    onPositive = {
+                        saveAllSettings()
+                        finish()
+                    }
+                )
+            } else {
+                mViewModel.generateCustomerId()
+            }
+        }
+        mBinding.selectViewEnvironment.setOnOptionSelectedCallback { selectedEnv ->
+            // Only load cached values, don't save environment yet
+            loadCachedValuesForEnvironment(selectedEnv)
         }
         mBinding.btnSave.setOnClickListener {
-            Settings.sdkEnv = mBinding.selectViewEnvironment.currentOption
-            Settings.nextTriggerBy = mBinding.selectViewTrigger.currentOption
-            Settings.paymentLayout = mBinding.selectPaymentLayout.currentOption
-
-            Settings.price = mBinding.etPrice.getText()
-            Settings.currency = mBinding.etCurrency.getText()
-            Settings.countryCode = mBinding.etCountryCode.getText()
-
-            Settings.cachedCustomerId = mBinding.etCustomerId.getText()
-            Settings.apiKey = mBinding.etAPIKey.getText()
-            Settings.clientId = mBinding.etClientId.getText()
-            Settings.weChatAppId = mBinding.etWeChatAppId.getText()
-            Settings.returnUrl = mBinding.etReturnUrl.getText()
-
-            Settings.force3DS = if (mBinding.sw3DS.isChecked()) "True" else "False"
-            Settings.autoCapture = if (mBinding.swAutoCapture.isChecked()) "Enabled" else "Disabled"
-            Settings.expressCheckout = if (mBinding.swExpressCheckout.isChecked()) "Enabled" else "Disabled"
-            Settings.requiresEmail = if (mBinding.swEmail.isChecked()) "True" else "False"
-            Settings.cachedCustomerId = mBinding.etCustomerId.getText()
+            saveAllSettings()
             showAlert("", "settings saved") {
                 finish()
             }
@@ -92,6 +94,7 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
             mBinding.sw3DS.setChecked(false)
             mBinding.swAutoCapture.setChecked(false)
             mBinding.swExpressCheckout.setChecked(false)
+            mBinding.swUseSession.setChecked(true)
             mBinding.swEmail.setChecked(false)
             mBinding.selectViewEnvironment.setSelectOption("DEMO")
             mBinding.selectViewTrigger.setSelectOption("Merchant")
@@ -114,6 +117,40 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
                 )
             }
         }
+    }
+
+    private fun loadCachedValuesForEnvironment(env: String) {
+        mBinding.etCustomerId.setText(Settings.getCachedCustomerIdForEnv(env))
+        mBinding.etAPIKey.setText(Settings.getApiKeyForEnv(env))
+        mBinding.etClientId.setText(Settings.getClientIdForEnv(env))
+    }
+
+    private fun saveAllSettings() {
+        val selectedEnv = mBinding.selectViewEnvironment.currentOption
+
+        // Save environment selection
+        Settings.sdkEnv = selectedEnv
+
+        Settings.nextTriggerBy = mBinding.selectViewTrigger.currentOption
+        Settings.paymentLayout = mBinding.selectPaymentLayout.currentOption
+
+        Settings.price = mBinding.etPrice.getText()
+        Settings.currency = mBinding.etCurrency.getText()
+        Settings.countryCode = mBinding.etCountryCode.getText()
+
+        // Save per-environment values to cache
+        Settings.saveCachedCustomerIdForEnv(selectedEnv, mBinding.etCustomerId.getText())
+        Settings.saveApiKeyForEnv(selectedEnv, mBinding.etAPIKey.getText())
+        Settings.saveClientIdForEnv(selectedEnv, mBinding.etClientId.getText())
+
+        Settings.weChatAppId = mBinding.etWeChatAppId.getText()
+        Settings.returnUrl = mBinding.etReturnUrl.getText()
+
+        Settings.force3DS = if (mBinding.sw3DS.isChecked()) "True" else "False"
+        Settings.autoCapture = if (mBinding.swAutoCapture.isChecked()) "Enabled" else "Disabled"
+        Settings.expressCheckout = if (mBinding.swExpressCheckout.isChecked()) "Enabled" else "Disabled"
+        Settings.useSession = if (mBinding.swUseSession.isChecked()) "Enabled" else "Disabled"
+        Settings.requiresEmail = if (mBinding.swEmail.isChecked()) "True" else "False"
     }
 
     override fun getViewBinding(): ActivitySettingBinding {

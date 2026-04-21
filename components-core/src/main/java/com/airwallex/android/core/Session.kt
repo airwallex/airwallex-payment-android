@@ -1,33 +1,22 @@
 package com.airwallex.android.core
 
-import android.os.Parcelable
 import com.airwallex.android.core.model.ObjectBuilder
-import com.airwallex.android.core.model.PaymentConsent
+import com.airwallex.android.core.model.PaymentConsentOptions
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.Shipping
-import kotlinx.parcelize.IgnoredOnParcel
-import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 
 /**
- * For recurring payment (need create payment intent)
+ * Unified session for payment with payment consent options.
+ * Replaces AirwallexPaymentSession with support for both static PaymentIntent and PaymentIntentProvider.
  *
- * @deprecated Use [Session] instead. AirwallexRecurringWithIntentSession will be removed in a future version.
- * Session provides a unified API for all payment scenarios with support for both static PaymentIntent
- * and PaymentIntentProvider.
+ * This session simplifies the SDK by unifying all payment flows:
+ * - One-off payments
+ * - Recurring payments with consent creation
+ * - MIT consent used for CIT transactions
  */
-@Deprecated(
-    message = "Use Session instead. AirwallexRecurringWithIntentSession will be removed in a future version.",
-    replaceWith = ReplaceWith(
-        "Session.Builder(paymentIntent, countryCode, googlePayOptions)",
-        "com.airwallex.android.core.Session"
-    ),
-    level = DeprecationLevel.WARNING
-)
 @Suppress("LongParameterList")
-@Parcelize
-class AirwallexRecurringWithIntentSession internal constructor(
-
+class Session internal constructor(
     /**
      * The [PaymentIntent] object, optional when using paymentIntentProvider.
      */
@@ -40,21 +29,9 @@ class AirwallexRecurringWithIntentSession internal constructor(
     override var paymentIntentProviderId: String? = null,
 
     /**
-     * The party to trigger subsequent payments. Can be one of merchant, customer. required.
+     * Details for payment consent. optional.
      */
-    val nextTriggerBy: PaymentConsent.NextTriggeredBy,
-
-    /**
-     * Only applicable when next_triggered_by is customer and the payment_method.type is card.If true, the customer must provide cvc for the subsequent payment with this PaymentConsent.
-     * Default: false
-     */
-    val requiresCVC: Boolean = false,
-
-    /**
-     * Indicate whether the subsequent payments are scheduled. Only applicable when next_triggered_by is merchant. One of scheduled, unscheduled.
-     * Default: unscheduled
-     */
-    val merchantTriggerReason: PaymentConsent.MerchantTriggerReason = PaymentConsent.MerchantTriggerReason.UNSCHEDULED,
+    val paymentConsentOptions: PaymentConsentOptions? = null,
 
     /**
      * Amount currency. required.
@@ -77,7 +54,7 @@ class AirwallexRecurringWithIntentSession internal constructor(
     override val shipping: Shipping? = null,
 
     /**
-     * Whether or not billing information is required for payments. When set to `false`, any billing information will be ignored.
+     * Whether or not billing information is required for card payments. When set to `false`, any billing information will be ignored.
      */
     override val isBillingInformationRequired: Boolean = true,
 
@@ -87,12 +64,12 @@ class AirwallexRecurringWithIntentSession internal constructor(
     override val isEmailRequired: Boolean = false,
 
     /**
-     * It is required if the PaymentIntent is created for recurring payment
+     * The Customer who is paying for this PaymentIntent. This field is not required if the Customer is unknown (guest checkout).
      */
-    override val customerId: String,
+    override val customerId: String?,
 
     /**
-     * The URL to redirect your customer back to after they authenticate or cancel their payment on the PaymentMethod’s app or site. If you’d prefer to redirect to a mobile application, you can alternatively supply an application URI scheme.
+     * The URL to redirect your customer back to after they authenticate or cancel their payment on the PaymentMethod's app or site. If you'd prefer to redirect to a mobile application, you can alternatively supply an application URI scheme.
      */
     override val returnUrl: String?,
 
@@ -118,44 +95,42 @@ class AirwallexRecurringWithIntentSession internal constructor(
      */
     override val hidePaymentConsents: Boolean = false
 
-) : AirwallexSession(), PaymentIntentResolvableSession, Parcelable {
+) : AirwallexSession(), PaymentIntentResolvableSession {
+
+    override var paymentIntentProvider: PaymentIntentProvider? = null
 
     /**
-     * PaymentIntentProvider instance. This field is transient and not parceled.
-     * It is stored only in memory and bound to the Activity lifecycle via PaymentIntentProviderRepository.
+     * Returns true if this is a one-off payment session (no recurring setup)
      */
-    @IgnoredOnParcel
-    @Transient
-    override var paymentIntentProvider: PaymentIntentProvider? = null
+    val isOneOffPayment: Boolean
+        get() = paymentConsentOptions == null
 
     override val clientSecret: String?
         get() = paymentIntent?.clientSecret
 
-    class Builder : ObjectBuilder<AirwallexRecurringWithIntentSession> {
+    class Builder : ObjectBuilder<Session> {
         private var paymentIntent: PaymentIntent? = null
         private var paymentIntentProvider: PaymentIntentProvider? = null
-        private val customerId: String
-        private val nextTriggerBy: PaymentConsent.NextTriggeredBy
         private val countryCode: String
         private val currency: String
         private val amount: BigDecimal
+        private var customerId: String? = null
+        private val googlePayOptions: GooglePayOptions?
 
         /**
          * Constructor for static PaymentIntent
          */
         constructor(
             paymentIntent: PaymentIntent,
-            customerId: String,
-            nextTriggerBy: PaymentConsent.NextTriggeredBy,
-            countryCode: String
+            countryCode: String,
+            googlePayOptions: GooglePayOptions? = null
         ) {
             this.paymentIntent = paymentIntent
-            this.customerId = customerId
-            this.nextTriggerBy = nextTriggerBy
             this.countryCode = countryCode
             this.currency = paymentIntent.currency
             this.amount = paymentIntent.amount
-
+            this.customerId = paymentIntent.customerId
+            this.googlePayOptions = googlePayOptions
             paymentIntent.clientSecret?.apply {
                 TokenManager.updateClientSecret(this)
             }
@@ -166,16 +141,16 @@ class AirwallexRecurringWithIntentSession internal constructor(
          */
         constructor(
             paymentIntentProvider: PaymentIntentProvider,
-            customerId: String,
-            nextTriggerBy: PaymentConsent.NextTriggeredBy,
-            countryCode: String
+            countryCode: String,
+            customerId: String? = null,
+            googlePayOptions: GooglePayOptions? = null
         ) {
             this.paymentIntentProvider = paymentIntentProvider
-            this.customerId = customerId
-            this.nextTriggerBy = nextTriggerBy
             this.countryCode = countryCode
             this.currency = paymentIntentProvider.currency
             this.amount = paymentIntentProvider.amount
+            this.customerId = customerId
+            this.googlePayOptions = googlePayOptions
         }
 
         /**
@@ -183,47 +158,40 @@ class AirwallexRecurringWithIntentSession internal constructor(
          */
         constructor(
             paymentIntentSource: PaymentIntentSource,
-            customerId: String,
-            nextTriggerBy: PaymentConsent.NextTriggeredBy,
-            countryCode: String
+            countryCode: String,
+            customerId: String? = null,
+            googlePayOptions: GooglePayOptions? = null
         ) {
             // Automatically wrap suspend source with callback adapter
             this.paymentIntentProvider = SourceToProviderAdapter(paymentIntentSource)
-            this.customerId = customerId
-            this.nextTriggerBy = nextTriggerBy
             this.countryCode = countryCode
             this.currency = paymentIntentSource.currency
             this.amount = paymentIntentSource.amount
+            this.customerId = customerId
+            this.googlePayOptions = googlePayOptions
         }
 
-        private var requiresCVC: Boolean = false
+        private var paymentConsentOptions: PaymentConsentOptions? = null
         private var isBillingInformationRequired: Boolean = true
         private var isEmailRequired: Boolean = false
-        private var merchantTriggerReason: PaymentConsent.MerchantTriggerReason =
-            PaymentConsent.MerchantTriggerReason.UNSCHEDULED
         private var returnUrl: String? = null
         private var autoCapture: Boolean = true
         private var hidePaymentConsents: Boolean = false
         private var paymentMethods: List<String>? = null
-        private var googlePayOptions: GooglePayOptions? = null
         private var shipping: Shipping? = null
 
-        fun setRequireBillingInformation(requiresBillingInformation: Boolean): Builder = apply {
-            this.isBillingInformationRequired = requiresBillingInformation
-        }
-
-        fun setRequireEmail(requiresEmail: Boolean): Builder = apply {
-            this.isEmailRequired = requiresEmail
-        }
-
-        fun setRequireCvc(requiresCVC: Boolean): Builder = apply {
-            this.requiresCVC = requiresCVC
-        }
-
-        fun setMerchantTriggerReason(merchantTriggerReason: PaymentConsent.MerchantTriggerReason): Builder =
+        fun setPaymentConsentOptions(paymentConsentOptions: PaymentConsentOptions?): Builder =
             apply {
-                this.merchantTriggerReason = merchantTriggerReason
+                this.paymentConsentOptions = paymentConsentOptions
             }
+
+        fun setRequireBillingInformation(requireBillingInformation: Boolean): Builder = apply {
+            this.isBillingInformationRequired = requireBillingInformation
+        }
+
+        fun setRequireEmail(requireEmail: Boolean): Builder = apply {
+            this.isEmailRequired = requireEmail
+        }
 
         fun setReturnUrl(returnUrl: String?): Builder = apply {
             this.returnUrl = returnUrl
@@ -241,36 +209,30 @@ class AirwallexRecurringWithIntentSession internal constructor(
             this.paymentMethods = paymentMethods
         }
 
-        fun setGooglePayOptions(googlePayOptions: GooglePayOptions?): Builder = apply {
-            this.googlePayOptions = googlePayOptions
-        }
-
         fun setShipping(shipping: Shipping?): Builder = apply {
             this.shipping = shipping
         }
 
-        override fun build(): AirwallexRecurringWithIntentSession {
+        override fun build(): Session {
             require(paymentIntent != null || paymentIntentProvider != null) {
                 "Either paymentIntent or paymentIntentProvider must be provided"
             }
 
-            val session = AirwallexRecurringWithIntentSession(
+            val session = Session(
                 paymentIntent = paymentIntent,
-                nextTriggerBy = nextTriggerBy,
-                requiresCVC = requiresCVC,
-                customerId = customerId,
+                paymentConsentOptions = paymentConsentOptions,
                 currency = currency,
                 countryCode = countryCode,
                 amount = amount,
                 shipping = shipping,
                 isBillingInformationRequired = isBillingInformationRequired,
                 isEmailRequired = isEmailRequired,
+                customerId = customerId,
                 returnUrl = returnUrl,
+                googlePayOptions = googlePayOptions,
                 autoCapture = autoCapture,
                 hidePaymentConsents = hidePaymentConsents,
-                paymentMethods = paymentMethods,
-                googlePayOptions = googlePayOptions,
-                merchantTriggerReason = merchantTriggerReason
+                paymentMethods = paymentMethods
             ).apply {
                 // Set the provider directly on the session (transient field, won't be parceled)
                 paymentIntentProvider = this@Builder.paymentIntentProvider

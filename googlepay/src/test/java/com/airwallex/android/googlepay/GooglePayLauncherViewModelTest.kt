@@ -1,7 +1,7 @@
 package com.airwallex.android.googlepay
 
 import android.app.Application
-import com.airwallex.android.core.AirwallexSession
+import com.airwallex.android.core.AirwallexPaymentSession
 import com.airwallex.android.core.GooglePayOptions
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.google.android.gms.tasks.Task
@@ -25,7 +25,8 @@ class GooglePayLauncherViewModelTest {
         mockkStatic(Wallet::class)
 
         val application = mockk<Application>()
-        val session = mockk<AirwallexSession>(relaxed = true)
+        @Suppress("DEPRECATION")
+        val session = mockk<AirwallexPaymentSession>(relaxed = true)
         val googlePayOptions = GooglePayOptions()
         val paymentMethodType = mockk<AvailablePaymentMethodType>(relaxed = true)
         val mockClient = mockk<PaymentsClient>()
@@ -37,7 +38,7 @@ class GooglePayLauncherViewModelTest {
 
         val viewModel = GooglePayLauncherViewModel.Factory(
             application = application,
-            args = GooglePayActivityLaunch.Args(session, googlePayOptions, paymentMethodType)
+            args = GooglePayActivityLaunch.Args.create(session, googlePayOptions, paymentMethodType)
         ).create(GooglePayLauncherViewModel::class.java)
         viewModel.getLoadPaymentDataTask()
         verify { mockClient.loadPaymentData(mockRequest) }

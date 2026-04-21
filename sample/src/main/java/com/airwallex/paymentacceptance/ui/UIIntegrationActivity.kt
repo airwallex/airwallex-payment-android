@@ -90,8 +90,8 @@ class UIIntegrationActivity :
                 mViewModel.launchCardDialog(this)
             }
 
-            LAUNCH_EMBEDDED_ELEMENT -> mViewModel.launchEmbeddedElement(this)
-            LAUNCH_EMBEDDED_ELEMENT_INLINE_GPAY -> mViewModel.launchEmbeddedElementInlineGPay(this)
+            LAUNCH_EMBEDDED_ELEMENT -> mViewModel.launchEmbeddedElement(this, true)
+            LAUNCH_EMBEDDED_ELEMENT_INLINE_GPAY -> mViewModel.launchEmbeddedElement(this, false)
             LAUNCH_EMBEDDED_ELEMENT_CARD_ONLY -> mViewModel.launchEmbeddedElementCardOnly(this)
 
             LAUNCH_SHIPPING_ADDRESS_DIALOG -> {
