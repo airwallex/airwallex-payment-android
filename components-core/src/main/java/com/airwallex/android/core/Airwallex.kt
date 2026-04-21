@@ -2034,6 +2034,7 @@ class Airwallex internal constructor(
         return paymentManager.createPaymentConsent(buildCreatePaymentConsentOptions(params))
     }
 
+    @Suppress("LongParameterList")
     private fun createPaymentConsent(
         clientSecret: String,
         customerId: String,

@@ -57,7 +57,6 @@ class PaymentConsentCreateRequestTest {
             PaymentConsent.MerchantTriggerReason.UNSCHEDULED,
             request.merchantTriggerReason
         )
-        assertEquals(false, request.requiresCvc)
         assertEquals(null, request.metadata)
         assertEquals(
             PaymentConsent.MerchantTriggerReason.UNSCHEDULED,
@@ -86,7 +85,6 @@ class PaymentConsentCreateRequestTest {
                 ),
                 "next_triggered_by" to "customer",
                 "merchant_trigger_reason" to "unscheduled",
-                "requires_cvc" to false
             ),
             paramMap
         )
