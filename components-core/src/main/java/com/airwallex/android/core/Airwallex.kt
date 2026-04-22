@@ -291,10 +291,10 @@ class Airwallex internal constructor(
         paymentConsentId: String,
         listener: PaymentResultListener
     ) {
-        if (session !is Session && session !is AirwallexPaymentSession) {
+        if (session !is AirwallexPaymentSession) {
             listener.onCompleted(
                 AirwallexPaymentStatus.Failure(
-                    AirwallexCheckoutException(message = "checkout with paymentConsent only support AirwallexPaymentSession or Session")
+                    AirwallexCheckoutException(message = "checkout with paymentConsent only support AirwallexPaymentSession")
                 )
             )
             return
@@ -305,7 +305,7 @@ class Airwallex internal constructor(
         checkout(
             session = session,
             paymentMethod = PaymentMethod(type = PaymentMethodType.CARD.value),
-            paymentConsentId = paymentConsentId,
+            paymentConsent = PaymentConsent(id = paymentConsentId, nextTriggeredBy = PaymentConsent.NextTriggeredBy.CUSTOMER),
             listener = listener
         )
     }
