@@ -13,6 +13,7 @@ import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.AirwallexShippingStatus
 import com.airwallex.android.core.AirwallexSupportedCard
 import com.airwallex.android.core.PaymentMethodsLayoutType
+import com.airwallex.android.core.bindToActivity
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
@@ -97,6 +98,7 @@ class AirwallexStarter {
             configuration: PaymentElementConfiguration.Card,
             paymentResultListener: Airwallex.PaymentResultListener,
         ) {
+            session.bindToActivity(activity)
             AnalyticsLogger.setupSession(
                 session = session,
                 launchType = AnalyticsLogger.LaunchType.HPP,
