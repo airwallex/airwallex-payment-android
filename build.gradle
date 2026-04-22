@@ -55,7 +55,7 @@ ext {
 
     kotlinCoroutinesVersion = '1.8.1'
 
-    wechatPayVersion = "6.8.0"
+    wechatPayVersion = "6.8.34"
 
     junitVersion = '4.13.2'
     robolectricVersion = '4.14.1'
