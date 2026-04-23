@@ -295,10 +295,10 @@ class Airwallex internal constructor(
         paymentConsentId: String,
         listener: PaymentResultListener
     ) {
-        if (session !is AirwallexPaymentSession) {
+        if (session !is Session && session !is AirwallexPaymentSession) {
             listener.onCompleted(
                 AirwallexPaymentStatus.Failure(
-                    AirwallexCheckoutException(message = "checkout with paymentConsent only support AirwallexPaymentSession")
+                    AirwallexCheckoutException(message = "checkout with paymentConsent only support AirwallexPaymentSession or Session")
                 )
             )
             return
@@ -309,7 +309,7 @@ class Airwallex internal constructor(
         checkout(
             session = session,
             paymentMethod = PaymentMethod(type = PaymentMethodType.CARD.value),
-            paymentConsent = PaymentConsent(id = paymentConsentId, nextTriggeredBy = PaymentConsent.NextTriggeredBy.CUSTOMER),
+            paymentConsentId = paymentConsentId,
             listener = listener
         )
     }
@@ -950,10 +950,26 @@ class Airwallex internal constructor(
         // 2. OR paymentMethod.type is NOT card/googlepay (LPMs use legacy flow)
         // Otherwise: use new unified flow with Session
         val loggingListener = wrapListenerWithLogging(listener, paymentMethod.type ?: "unknown")
+        val effectivePaymentConsent = if (paymentConsentId != null && paymentConsent == null) {
+            val isOneOff = session is AirwallexPaymentSession || (session is Session && session.isOneOffPayment)
+            if (!isOneOff) {
+                loggingListener.onCompleted(
+                    AirwallexPaymentStatus.Failure(
+                        AirwallexCheckoutException(message = "checkout with paymentConsentId only support oneoff payment")
+                    )
+                )
+                return
+            }
+            PaymentConsent(
+                id = paymentConsentId,
+                nextTriggeredBy = PaymentConsent.NextTriggeredBy.CUSTOMER,
+            )
+        } else {
+            paymentConsent
+        }
         val isCardOrGooglePay = paymentMethod.type == PaymentMethodType.GOOGLEPAY.value ||
                                 paymentMethod.type == PaymentMethodType.CARD.value
         val useOldFlow = session is AirwallexRecurringSession || !isCardOrGooglePay
-        val latestConsentObject = createPaymentConsentFromId(paymentConsent, paymentConsentId, session)
         val paymentConsentIdValue = paymentConsentId ?: paymentConsent?.id
 
         // Log payment_launched for API integration
@@ -992,7 +1008,7 @@ class Airwallex internal constructor(
             }
 
         // Call unified Session checkout
-        checkoutUnified(unifiedSession, paymentMethod, cvc, saveCard, latestConsentObject, loggingListener)
+        checkoutUnified(unifiedSession, paymentMethod, cvc, saveCard, effectivePaymentConsent, loggingListener)
     }
 
     private fun handleCheckoutApiWithCvc(
@@ -1026,27 +1042,6 @@ class Airwallex internal constructor(
                 )
             )
         }
-    }
-
-    private fun createPaymentConsentFromId(
-        paymentConsent: PaymentConsent?,
-        paymentConsentId: String?,
-        session: AirwallexSession
-    ): PaymentConsent? {
-        return paymentConsent
-            ?: if (paymentConsentId != null) {
-                val nextTriggeredBy = when (session) {
-                    is Session ->
-                        session.paymentConsentOptions?.nextTriggeredBy
-                        ?: PaymentConsent.NextTriggeredBy.CUSTOMER
-
-                    is AirwallexPaymentSession -> PaymentConsent.NextTriggeredBy.CUSTOMER
-                    is AirwallexRecurringSession -> session.nextTriggerBy
-                    is AirwallexRecurringWithIntentSession -> session.nextTriggerBy
-                    else -> PaymentConsent.NextTriggeredBy.CUSTOMER
-                }
-                PaymentConsent(id = paymentConsentId, nextTriggeredBy = nextTriggeredBy)
-            } else null
     }
 
     /**
