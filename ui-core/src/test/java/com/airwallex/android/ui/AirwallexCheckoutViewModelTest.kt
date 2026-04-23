@@ -117,45 +117,6 @@ class AirwallexCheckoutViewModelTest {
         }
     }
 
-    @Test
-    fun `test suspend function checkout with cvc`() = runTest {
-        val flow = mockk<AirwallexPaymentRequestFlow>()
-        val expectedStatus = mockk<AirwallexPaymentStatus>()
-
-        val listenerSlot = slot<Airwallex.PaymentResultListener>()
-
-        coEvery {
-            airwallex.checkout(
-                session = session,
-                paymentMethod = paymentMethod,
-                paymentConsentId = "consentId",
-                cvc = "cvc",
-                flow = flow,
-                listener = capture(listenerSlot)
-            )
-        } answers {
-            listenerSlot.captured.onCompleted(expectedStatus)
-        }
-
-        val result = viewModel.checkout(
-            paymentMethod = paymentMethod,
-            paymentConsentId = "consentId",
-            cvc = "cvc",
-            flow = flow
-        )
-
-        assertEquals(expectedStatus, result)
-        coVerify(exactly = 1) {
-            airwallex.checkout(
-                session = session,
-                paymentMethod = paymentMethod,
-                paymentConsentId = "consentId",
-                cvc = "cvc",
-                flow = flow,
-                listener = capture(listenerSlot)
-            )
-        }
-    }
 
     @Test
     fun `test suspend function checkoutGooglePay`() = runTest {

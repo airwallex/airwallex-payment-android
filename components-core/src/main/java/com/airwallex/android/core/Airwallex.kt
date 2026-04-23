@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.airwallex.android.core.Airwallex.Companion.initialize
+import com.airwallex.android.core.data.AirwallexCheckoutParam
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.exception.AirwallexComponentDependencyException
 import com.airwallex.android.core.exception.AirwallexException
@@ -259,8 +260,11 @@ class Airwallex internal constructor(
             loggingListener.onCompleted(AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "paymentMethod is required")))
             return
         }
-
-        // Redirect to checkout()
+        if (paymentConsent.id.isNullOrEmpty()) {
+            AirwallexLogger.info("confirmPaymentIntent, paymentConsentId isNullOrEmpty")
+            loggingListener.onCompleted(AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "paymentConsentId is required")))
+            return
+        }
         checkout(
             session = session,
             paymentMethod = paymentMethod,
@@ -949,10 +953,55 @@ class Airwallex internal constructor(
         val isCardOrGooglePay = paymentMethod.type == PaymentMethodType.GOOGLEPAY.value ||
                                 paymentMethod.type == PaymentMethodType.CARD.value
         val useOldFlow = session is AirwallexRecurringSession || !isCardOrGooglePay
+        val latestConsentObject = paymentConsent
+            ?: if (paymentConsentId != null) {
+                val nextTriggeredBy = when(session) {
+                    is Session -> session.paymentConsentOptions?.nextTriggeredBy ?: PaymentConsent.NextTriggeredBy.CUSTOMER
+                    is AirwallexPaymentSession -> PaymentConsent.NextTriggeredBy.CUSTOMER
+                    is AirwallexRecurringSession -> session.nextTriggerBy
+                    is AirwallexRecurringWithIntentSession -> session.nextTriggerBy
+                    else -> PaymentConsent.NextTriggeredBy.CUSTOMER
+                }
+                PaymentConsent(id = paymentConsentId, nextTriggeredBy = nextTriggeredBy)
+            } else null
         val paymentConsentIdValue = paymentConsentId ?: paymentConsent?.id
 
         // Log payment_launched for API integration
         logPaymentLaunchedIfNeeded(paymentConsentIdValue, paymentMethod.type)
+
+        // Saved-card via API: capture CVC through the card provider before continuing if PAN.
+        if (!paymentConsentIdValue.isNullOrEmpty() &&
+            paymentMethod.card?.numberType == PaymentMethod.Card.NumberType.PAN &&
+            !isAirwallexUIActivity &&
+            AnalyticsLogger.getLaunchType() == AnalyticsLogger.LaunchType.API
+        ) {
+            AirwallexLogger.info("checkout, need cvc")
+            val provider = AirwallexPlugins.getProvider(ActionComponentProviderType.CARD)
+            provider?.get()?.let { paymentProvider ->
+                paymentProvider.handlePaymentData(
+                    AirwallexCheckoutParam(
+                        activity,
+                        paymentMethod,
+                        session,
+                        paymentConsentIdValue
+                    )
+                ) { status: AirwallexPaymentStatus? ->
+                    loggingListener.onCompleted(
+                        status ?: AirwallexPaymentStatus.Failure(
+                            AirwallexCheckoutException(message = "cvc unknown error")
+                        )
+                    )
+                }
+            } ?: run {
+                AirwallexLogger.error("checkout, Provider is null, unable to handle payment data")
+                loggingListener.onCompleted(
+                    AirwallexPaymentStatus.Failure(
+                        AirwallexComponentDependencyException(dependency = Dependency.CARD)
+                    )
+                )
+            }
+            return
+        }
 
         if (useOldFlow) {
             checkoutOldFlowRouting(session, paymentMethod, cvc, additionalInfo, flow, loggingListener)
@@ -976,7 +1025,7 @@ class Airwallex internal constructor(
             }
 
         // Call unified Session checkout
-        checkoutUnified(unifiedSession, paymentMethod, cvc, saveCard, paymentConsent, loggingListener)
+        checkoutUnified(unifiedSession, paymentMethod, cvc, saveCard, latestConsentObject, loggingListener)
     }
 
     /**
