@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.airwallex.android.core.Airwallex.Companion.initialize
+import com.airwallex.android.core.data.AirwallexCheckoutParam
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.exception.AirwallexComponentDependencyException
 import com.airwallex.android.core.exception.AirwallexException
@@ -259,8 +260,11 @@ class Airwallex internal constructor(
             loggingListener.onCompleted(AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "paymentMethod is required")))
             return
         }
-
-        // Redirect to checkout()
+        if (paymentConsent.id.isNullOrEmpty()) {
+            AirwallexLogger.info("confirmPaymentIntent, paymentConsentId isNullOrEmpty")
+            loggingListener.onCompleted(AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "paymentConsentId is required")))
+            return
+        }
         checkout(
             session = session,
             paymentMethod = paymentMethod,
@@ -946,6 +950,23 @@ class Airwallex internal constructor(
         // 2. OR paymentMethod.type is NOT card/googlepay (LPMs use legacy flow)
         // Otherwise: use new unified flow with Session
         val loggingListener = wrapListenerWithLogging(listener, paymentMethod.type ?: "unknown")
+        val effectivePaymentConsent = if (paymentConsentId != null && paymentConsent == null) {
+            val isOneOff = session is AirwallexPaymentSession || (session is Session && session.isOneOffPayment)
+            if (!isOneOff) {
+                loggingListener.onCompleted(
+                    AirwallexPaymentStatus.Failure(
+                        AirwallexCheckoutException(message = "checkout with paymentConsentId only support oneoff payment")
+                    )
+                )
+                return
+            }
+            PaymentConsent(
+                id = paymentConsentId,
+                nextTriggeredBy = PaymentConsent.NextTriggeredBy.CUSTOMER,
+            )
+        } else {
+            paymentConsent
+        }
         val isCardOrGooglePay = paymentMethod.type == PaymentMethodType.GOOGLEPAY.value ||
                                 paymentMethod.type == PaymentMethodType.CARD.value
         val useOldFlow = session is AirwallexRecurringSession || !isCardOrGooglePay
@@ -954,29 +975,81 @@ class Airwallex internal constructor(
         // Log payment_launched for API integration
         logPaymentLaunchedIfNeeded(paymentConsentIdValue, paymentMethod.type)
 
+        // Saved-card via API: capture CVC through the card provider before continuing if PAN.
+        if (isCheckoutApiWithCvc(paymentMethod, paymentConsentIdValue)) {
+            handleCheckoutApiWithCvc(paymentMethod, session, paymentConsentIdValue, loggingListener)
+            return
+        }
+
         if (useOldFlow) {
             checkoutOldFlowRouting(session, paymentMethod, cvc, additionalInfo, flow, loggingListener)
             return
         }
 
         // NEW FLOW: Use unified Session flow for card/googlepay
-        // Convert legacy to Session if needed
-        val unifiedSession = session as? Session
+        val unifiedSession = toUnifiedSession(session)
+        if (unifiedSession == null) {
+            loggingListener.onCompleted(
+                AirwallexPaymentStatus.Failure(
+                    AirwallexCheckoutException(message = "Unknown session type: ${session.javaClass}")
+                )
+            )
+            return
+        }
+        checkoutUnified(unifiedSession, paymentMethod, cvc, saveCard, effectivePaymentConsent, loggingListener)
+    }
+
+    private fun toUnifiedSession(session: AirwallexSession): Session? {
+        return session as? Session
             ?: when (session) {
                 is AirwallexPaymentSession -> session.convertToSession()
                 is AirwallexRecurringWithIntentSession -> session.convertToSession()
-                else -> {
-                    loggingListener.onCompleted(
-                        AirwallexPaymentStatus.Failure(
-                            AirwallexCheckoutException(message = "Unknown session type: ${session.javaClass}")
-                        )
-                    )
-                    return
-                }
+                else -> null
             }
+    }
 
-        // Call unified Session checkout
-        checkoutUnified(unifiedSession, paymentMethod, cvc, saveCard, paymentConsent, loggingListener)
+    private fun isCheckoutApiWithCvc(
+        paymentMethod: PaymentMethod,
+        paymentConsentIdValue: String?,
+    ): Boolean {
+        val isFromApi = !isAirwallexUIActivity &&
+                AnalyticsLogger.getLaunchType() == AnalyticsLogger.LaunchType.API
+        return !paymentConsentIdValue.isNullOrEmpty() &&
+                paymentMethod.card?.numberType == PaymentMethod.Card.NumberType.PAN &&
+                isFromApi
+    }
+
+    private fun handleCheckoutApiWithCvc(
+        paymentMethod: PaymentMethod,
+        session: AirwallexSession,
+        paymentConsentIdValue: String?,
+        loggingListener: PaymentResultListener
+    ) {
+        AirwallexLogger.info("checkout, need cvc")
+        val provider = AirwallexPlugins.getProvider(ActionComponentProviderType.CARD)
+        provider?.get()?.let { paymentProvider ->
+            paymentProvider.handlePaymentData(
+                AirwallexCheckoutParam(
+                    activity,
+                    paymentMethod,
+                    session,
+                    paymentConsentIdValue
+                )
+            ) { status: AirwallexPaymentStatus? ->
+                loggingListener.onCompleted(
+                    status ?: AirwallexPaymentStatus.Failure(
+                        AirwallexCheckoutException(message = "cvc unknown error")
+                    )
+                )
+            }
+        } ?: run {
+            AirwallexLogger.error("checkout, Provider is null, unable to handle payment data")
+            loggingListener.onCompleted(
+                AirwallexPaymentStatus.Failure(
+                    AirwallexComponentDependencyException(dependency = Dependency.CARD)
+                )
+            )
+        }
     }
 
     /**
