@@ -953,53 +953,20 @@ class Airwallex internal constructor(
         val isCardOrGooglePay = paymentMethod.type == PaymentMethodType.GOOGLEPAY.value ||
                                 paymentMethod.type == PaymentMethodType.CARD.value
         val useOldFlow = session is AirwallexRecurringSession || !isCardOrGooglePay
-        val latestConsentObject = paymentConsent
-            ?: if (paymentConsentId != null) {
-                val nextTriggeredBy = when(session) {
-                    is Session -> session.paymentConsentOptions?.nextTriggeredBy ?: PaymentConsent.NextTriggeredBy.CUSTOMER
-                    is AirwallexPaymentSession -> PaymentConsent.NextTriggeredBy.CUSTOMER
-                    is AirwallexRecurringSession -> session.nextTriggerBy
-                    is AirwallexRecurringWithIntentSession -> session.nextTriggerBy
-                    else -> PaymentConsent.NextTriggeredBy.CUSTOMER
-                }
-                PaymentConsent(id = paymentConsentId, nextTriggeredBy = nextTriggeredBy)
-            } else null
+        val latestConsentObject = createPaymentConsentFromId(paymentConsent, paymentConsentId, session)
         val paymentConsentIdValue = paymentConsentId ?: paymentConsent?.id
 
         // Log payment_launched for API integration
         logPaymentLaunchedIfNeeded(paymentConsentIdValue, paymentMethod.type)
 
         // Saved-card via API: capture CVC through the card provider before continuing if PAN.
+        val isFromApi = !isAirwallexUIActivity &&
+                AnalyticsLogger.getLaunchType() == AnalyticsLogger.LaunchType.API
         if (!paymentConsentIdValue.isNullOrEmpty() &&
             paymentMethod.card?.numberType == PaymentMethod.Card.NumberType.PAN &&
-            !isAirwallexUIActivity &&
-            AnalyticsLogger.getLaunchType() == AnalyticsLogger.LaunchType.API
+            isFromApi
         ) {
-            AirwallexLogger.info("checkout, need cvc")
-            val provider = AirwallexPlugins.getProvider(ActionComponentProviderType.CARD)
-            provider?.get()?.let { paymentProvider ->
-                paymentProvider.handlePaymentData(
-                    AirwallexCheckoutParam(
-                        activity,
-                        paymentMethod,
-                        session,
-                        paymentConsentIdValue
-                    )
-                ) { status: AirwallexPaymentStatus? ->
-                    loggingListener.onCompleted(
-                        status ?: AirwallexPaymentStatus.Failure(
-                            AirwallexCheckoutException(message = "cvc unknown error")
-                        )
-                    )
-                }
-            } ?: run {
-                AirwallexLogger.error("checkout, Provider is null, unable to handle payment data")
-                loggingListener.onCompleted(
-                    AirwallexPaymentStatus.Failure(
-                        AirwallexComponentDependencyException(dependency = Dependency.CARD)
-                    )
-                )
-            }
+            handleCheckoutApiWithCvc(paymentMethod, session, paymentConsentIdValue, loggingListener)
             return
         }
 
@@ -1026,6 +993,60 @@ class Airwallex internal constructor(
 
         // Call unified Session checkout
         checkoutUnified(unifiedSession, paymentMethod, cvc, saveCard, latestConsentObject, loggingListener)
+    }
+
+    private fun handleCheckoutApiWithCvc(
+        paymentMethod: PaymentMethod,
+        session: AirwallexSession,
+        paymentConsentIdValue: String,
+        loggingListener: PaymentResultListener
+    ) {
+        AirwallexLogger.info("checkout, need cvc")
+        val provider = AirwallexPlugins.getProvider(ActionComponentProviderType.CARD)
+        provider?.get()?.let { paymentProvider ->
+            paymentProvider.handlePaymentData(
+                AirwallexCheckoutParam(
+                    activity,
+                    paymentMethod,
+                    session,
+                    paymentConsentIdValue
+                )
+            ) { status: AirwallexPaymentStatus? ->
+                loggingListener.onCompleted(
+                    status ?: AirwallexPaymentStatus.Failure(
+                        AirwallexCheckoutException(message = "cvc unknown error")
+                    )
+                )
+            }
+        } ?: run {
+            AirwallexLogger.error("checkout, Provider is null, unable to handle payment data")
+            loggingListener.onCompleted(
+                AirwallexPaymentStatus.Failure(
+                    AirwallexComponentDependencyException(dependency = Dependency.CARD)
+                )
+            )
+        }
+    }
+
+    private fun createPaymentConsentFromId(
+        paymentConsent: PaymentConsent?,
+        paymentConsentId: String?,
+        session: AirwallexSession
+    ): PaymentConsent? {
+        return paymentConsent
+            ?: if (paymentConsentId != null) {
+                val nextTriggeredBy = when (session) {
+                    is Session ->
+                        session.paymentConsentOptions?.nextTriggeredBy
+                        ?: PaymentConsent.NextTriggeredBy.CUSTOMER
+
+                    is AirwallexPaymentSession -> PaymentConsent.NextTriggeredBy.CUSTOMER
+                    is AirwallexRecurringSession -> session.nextTriggerBy
+                    is AirwallexRecurringWithIntentSession -> session.nextTriggerBy
+                    else -> PaymentConsent.NextTriggeredBy.CUSTOMER
+                }
+                PaymentConsent(id = paymentConsentId, nextTriggeredBy = nextTriggeredBy)
+            } else null
     }
 
     /**

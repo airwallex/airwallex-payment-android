@@ -117,7 +117,6 @@ class AirwallexCheckoutViewModelTest {
         }
     }
 
-
     @Test
     fun `test suspend function checkoutGooglePay`() = runTest {
         val listenerSlot = slot<Airwallex.PaymentResultListener>()
