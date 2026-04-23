@@ -111,6 +111,12 @@
             tools:ignore="LockedOrientationActivity" />
 
         <activity
+            android:name=".ui.RestartActivity"
+            android:exported="false"
+            android:process=":restart"
+            tools:ignore="LockedOrientationActivity" />
+
+        <activity
             android:name=".ui.EmbeddedElementActivity"
             android:exported="true"
             android:launchMode="singleTask"
