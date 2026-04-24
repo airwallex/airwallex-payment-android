@@ -1,5 +1,7 @@
 package com.airwallex.paymentacceptance.ui
 
+import android.content.Intent
+import android.os.Process
 import com.airwallex.android.core.AirwallexCheckoutMode
 import com.airwallex.paymentacceptance.R
 import com.airwallex.paymentacceptance.SampleApplication
@@ -56,16 +58,12 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
         mBinding.etCustomerId.setActionClickListener {
             val selectedEnv = mBinding.selectViewEnvironment.currentOption
             if (selectedEnv != Settings.sdkEnv) {
-                // Environment changed but not saved yet
                 showAlert(
                     "",
-                    "You need to save the new environment first to generate customer id",
-                    positiveButtonText = "Save",
+                    "The app needs to restart before generating customer ID in the new environment.",
+                    positiveButtonText = "Restart",
                     negativeButtonText = "Cancel",
-                    onPositive = {
-                        saveAllSettings()
-                        finish()
-                    }
+                    onPositive = { saveAndRestart() }
                 )
             } else {
                 mViewModel.generateCustomerId()
@@ -76,9 +74,18 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
             loadCachedValuesForEnvironment(selectedEnv)
         }
         mBinding.btnSave.setOnClickListener {
-            saveAllSettings()
-            showAlert("", "settings saved") {
-                finish()
+            if (mBinding.selectViewEnvironment.currentOption != Settings.sdkEnv) {
+                showAlert(
+                    "",
+                    "The app will restart to apply the new environment."
+                ) {
+                    saveAndRestart()
+                }
+            } else {
+                saveAllSettings()
+                showAlert("", "settings saved") {
+                    finish()
+                }
             }
         }
 
@@ -119,6 +126,12 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
         }
     }
 
+    private fun saveAndRestart() {
+        saveAllSettings()
+        startActivity(Intent(this, RestartActivity::class.java))
+        Process.killProcess(Process.myPid())
+    }
+
     private fun loadCachedValuesForEnvironment(env: String) {
         mBinding.etCustomerId.setText(Settings.getCachedCustomerIdForEnv(env))
         mBinding.etAPIKey.setText(Settings.getApiKeyForEnv(env))
@@ -151,6 +164,7 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
         Settings.expressCheckout = if (mBinding.swExpressCheckout.isChecked()) "Enabled" else "Disabled"
         Settings.useSession = if (mBinding.swUseSession.isChecked()) "Enabled" else "Disabled"
         Settings.requiresEmail = if (mBinding.swEmail.isChecked()) "True" else "False"
+        Settings.flush()
     }
 
     override fun getViewBinding(): ActivitySettingBinding {
