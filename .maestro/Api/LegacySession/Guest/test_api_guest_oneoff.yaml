@@ -1,0 +1,71 @@
+appId: com.airwallex.paymentacceptance
+tags:
+  - card
+  - guest
+  - api-integration
+platform:
+  android:
+    disableAnimations: true  # Disables system animations on the Android emulator
+---
+- runFlow:
+    when:
+      true: ${IS_RECORDING}
+    commands:
+      - startRecording: test_api_guest_oneoff
+- launchApp
+- runScript: ../../../Card/cards.js
+- runScript: ../../../Common/settings.js
+- tapOn: "Integrate with low-level API"
+- runFlow:
+    file: ../../../Common/flow_update_checkout_mode.yaml
+    env:
+      CHECKOUT_MODE: ${output.settings.checkoutMode.oneOff}
+# Update settings
+- tapOn: setting
+- runFlow:
+    file: ../../../Common/flow_update_settings.yaml
+    env:
+      USE_NEW_SESSION: false
+      EXPRESS_CHECKOUT: false
+      IS_GUEST: true
+# Verify no saved cards (guest users cannot have saved cards)
+- scrollUntilVisible:
+    element: "Get saved cards"
+    direction: DOWN
+- tapOn: "Get saved cards"
+- assertVisible: "Customer Dialog"
+- assertNotVisible: "PAY"
+- assertNotVisible: "Visa"
+- assertNotVisible: "Mastercard"
+- back
+# Pay with card (without saving) - should be successful
+- scrollUntilVisible:
+    element: "Pay with card"
+    direction: UP
+- tapOn: "Pay with card"
+- tapOn: "PAY"
+- assertVisible: "Payment successful"
+- tapOn: "OK"
+# Verify still no saved cards (card was not saved for guest)
+- scrollUntilVisible:
+    element: "Get saved cards"
+    direction: DOWN
+- tapOn: "Get saved cards"
+- assertVisible: "Customer Dialog"
+- assertNotVisible: "PAY"
+- assertNotVisible: "Visa"
+- assertNotVisible: "Mastercard"
+- back
+# Pay with redirect payment - should be successful
+- scrollUntilVisible:
+    element: "Redirect Payment"
+    direction: DOWN
+- tapOn: "Redirect Payment"
+- runFlow:
+    file: ../../../Common/flow_handle_redirect.yaml
+# No cleanup needed for guest (no saved cards)
+- runFlow:
+    when:
+      true: ${IS_RECORDING}
+    commands:
+      - stopRecording
