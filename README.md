@@ -201,7 +201,191 @@ Create an appropriate session object based on your payment scenario. You can cho
 > - **For Hosted Payment Page (HPP)** using `AirwallexStarter`: Create the session in your calling activity, then pass it to `AirwallexStarter.presentEntirePaymentFlow()` or similar methods. The SDK will launch its own activities to handle the payment flow.
 > - **For Embedded Element** using `PaymentElement`: Create the session in the Activity (or its ViewModel) that hosts the `PaymentElement`. The session should be created before calling `PaymentElement.create()`. For better architecture, store the session in a ViewModel to survive configuration changes (e.g., screen rotation).
 
-#### Standard Payment Session
+#### Unified `Session` (Recommended)
+
+`Session` is the unified session type that replaces `AirwallexPaymentSession`, `AirwallexRecurringSession`, and `AirwallexRecurringWithIntentSession`. It supports one-off payments, recurring payments, and MIT consents through a single API. Which flow you get is determined by `PaymentConsentOptions` and the PaymentIntent `amount`:
+
+> **📝 Note on PaymentIntent creation:** Previously, the recurring flow built on `AirwallexRecurringSession` requires calling `/generate_client_secret`. With the unified `Session`, this is no longer needed — all three flows (one-off, recurring, and recurring with intent) follow the same path: create a `PaymentIntent`.
+
+| Flow | `PaymentConsentOptions` | `amount` | `customerId` | Equivalent legacy session |
+|---|---|---|---|---|
+| One-off payment | not set | > 0 | optional | `AirwallexPaymentSession` |
+| Recurring (consent only, no charge) | set | **0** | **required** | `AirwallexRecurringSession` |
+| Recurring with intent (consent + charge) | set | **> 0** | **required** | `AirwallexRecurringWithIntentSession` |
+
+**`PaymentConsentOptions` enum values** — the examples below use `MERCHANT` / `UNSCHEDULED` as one valid combination; pick the values that match your business scenario:
+- `nextTriggeredBy` — `MERCHANT` (MIT) or `CUSTOMER` (CIT)
+- `merchantTriggerReason` (only applicable when `nextTriggeredBy = MERCHANT`) — `SCHEDULED`, `UNSCHEDULED`, or `INSTALLMENTS`
+
+**One-off payment** (no consent created):
+```kotlin
+import com.airwallex.android.core.Session
+import com.airwallex.android.core.model.PaymentIntent
+
+
+// call https://www.airwallex.com/docs/api#/Payment_Acceptance/Payment_Intents/_api_v1_pa_payment_intents_create/post api
+// and get intent id, client secret from response.
+val paymentIntent = PaymentIntent(
+    id = "REPLACE_WITH_YOUR_PAYMENT_INTENT_ID",
+    clientSecret = "REPLACE_WITH_YOUR_CLIENT_SECRET",
+    amount = 1.toBigDecimal(),
+    currency = "USD"
+)
+
+val session = Session.Builder(
+    paymentIntent = paymentIntent,
+    countryCode = countryCode,
+    googlePayOptions = googlePayOptions // Only if you need Gpay
+)
+    .setRequireBillingInformation(true)
+    .setRequireEmail(requireEmail)
+    .setReturnUrl(returnUrl)
+    .setAutoCapture(autoCapture)
+    .setHidePaymentConsents(false)
+    .setPaymentMethods(listOf()) // Empty list for all available methods
+    .build()
+```
+
+**Recurring payment** — consent only, no charge (requires `amount == 0`):
+```kotlin
+import com.airwallex.android.core.Session
+import com.airwallex.android.core.model.PaymentConsent
+import com.airwallex.android.core.model.PaymentConsentOptions
+import com.airwallex.android.core.model.PaymentIntent
+import java.math.BigDecimal
+
+val consentOptions = PaymentConsentOptions(
+    nextTriggeredBy = PaymentConsent.NextTriggeredBy.MERCHANT,
+    merchantTriggerReason = PaymentConsent.MerchantTriggerReason.UNSCHEDULED
+)
+
+// PaymentIntent.amount MUST be 0 for the recurring (no-charge) flow.
+// customerId on the PaymentIntent is REQUIRED for recurring flows.
+val paymentIntent = PaymentIntent(
+    id = "REPLACE_WITH_YOUR_PAYMENT_INTENT_ID",
+    clientSecret = "REPLACE_WITH_YOUR_CLIENT_SECRET",
+    amount = BigDecimal.ZERO,
+    currency = "USD",
+    customerId = customerId
+)
+
+val session = Session.Builder(
+    paymentIntent = paymentIntent,
+    countryCode = countryCode
+)
+    .setPaymentConsentOptions(consentOptions)
+    .setRequireBillingInformation(true)
+    .setReturnUrl(returnUrl)
+    .build()
+```
+
+**Recurring with intent** — consent + immediate charge (requires `amount > 0`):
+```kotlin
+import com.airwallex.android.core.Session
+import com.airwallex.android.core.model.PaymentConsent
+import com.airwallex.android.core.model.PaymentConsentOptions
+
+val consentOptions = PaymentConsentOptions(
+    nextTriggeredBy = PaymentConsent.NextTriggeredBy.MERCHANT,
+    merchantTriggerReason = PaymentConsent.MerchantTriggerReason.UNSCHEDULED
+)
+
+// paymentIntent.amount MUST be > 0 for the recurring-with-intent flow.
+// customerId on the PaymentIntent is REQUIRED for recurring flows.
+val session = Session.Builder(
+    paymentIntent = paymentIntent,
+    countryCode = countryCode,
+    googlePayOptions = googlePayOptions // Only if you need Gpay
+)
+    .setPaymentConsentOptions(consentOptions)
+    .setRequireBillingInformation(true)
+    .setReturnUrl(returnUrl)
+    .setAutoCapture(autoCapture)
+    .build()
+```
+
+**Express Checkout** (PaymentIntent created on demand — use `PaymentIntentProvider` or `PaymentIntentSource`):
+
+Express Checkout supports the same three flows as above — the same rules apply: the `amount` you expose on your `PaymentIntentSource` / `PaymentIntentProvider` (and echo in the returned `PaymentIntent`) drives which flow runs, and `setPaymentConsentOptions(...)` is required for both recurring variants. `customerId` on the builder is **required for recurring flows** and optional for one-off payments.
+
+```kotlin
+import com.airwallex.android.core.PaymentIntentSource
+import com.airwallex.android.core.Session
+import com.airwallex.android.core.model.PaymentConsent
+import com.airwallex.android.core.model.PaymentConsentOptions
+import com.airwallex.android.core.model.PaymentIntent
+import java.math.BigDecimal
+
+// Option 1: suspend-based (recommended for Kotlin)
+class MyPaymentIntentSource(
+    override val amount: BigDecimal,      // 0 for recurring (no charge), > 0 otherwise
+    override val currency: String = "USD"
+) : PaymentIntentSource {
+    override suspend fun getPaymentIntent(): PaymentIntent {
+        // Call your server to create a PaymentIntent here.
+        // Its `amount` must match the `amount` exposed by this source.
+        return myApiService.createPaymentIntent(amount = amount, currency = currency)
+    }
+}
+
+// One-off (no consent): amount > 0, no PaymentConsentOptions
+val oneOffSession = Session.Builder(
+    paymentIntentSource = MyPaymentIntentSource(amount = BigDecimal("10.00")),
+    countryCode = countryCode,
+    customerId = customerId, // optional
+    googlePayOptions = googlePayOptions // Only if you need Gpay
+)
+    .setRequireBillingInformation(true)
+    .setReturnUrl(returnUrl)
+    .setAutoCapture(autoCapture)
+    .build()
+
+// Recurring (consent only, no charge): amount = 0, customerId required
+val recurringSession = Session.Builder(
+    paymentIntentSource = MyPaymentIntentSource(amount = BigDecimal.ZERO),
+    countryCode = countryCode,
+    customerId = customerId // required for recurring
+)
+    .setPaymentConsentOptions(
+        PaymentConsentOptions(
+            nextTriggeredBy = PaymentConsent.NextTriggeredBy.MERCHANT,
+            merchantTriggerReason = PaymentConsent.MerchantTriggerReason.UNSCHEDULED
+        )
+    )
+    .setReturnUrl(returnUrl)
+    .build()
+
+// Recurring with intent (consent + charge): amount > 0, customerId required
+val recurringWithIntentSession = Session.Builder(
+    paymentIntentSource = MyPaymentIntentSource(amount = BigDecimal("10.00")),
+    countryCode = countryCode,
+    customerId = customerId, // required for recurring
+    googlePayOptions = googlePayOptions // Only if you need Gpay
+)
+    .setPaymentConsentOptions(
+        PaymentConsentOptions(
+            nextTriggeredBy = PaymentConsent.NextTriggeredBy.MERCHANT,
+            merchantTriggerReason = PaymentConsent.MerchantTriggerReason.UNSCHEDULED
+        )
+    )
+    .setRequireBillingInformation(true)
+    .setReturnUrl(returnUrl)
+    .setAutoCapture(autoCapture)
+    .build()
+```
+
+> Prefer `PaymentIntentSource` for Kotlin/coroutine code. For Java, use the callback-based `PaymentIntentProvider` constructor instead — the builder and `PaymentConsentOptions` rules are identical.
+
+---
+
+#### Legacy Sessions (Deprecated)
+
+> **⚠️ Deprecated:** `AirwallexPaymentSession`, `AirwallexRecurringSession`, and `AirwallexRecurringWithIntentSession` are deprecated and will be removed in a future version. Use the unified `Session` above instead.
+
+<details>
+<summary>Legacy examples (click to expand)</summary>
+
+##### `AirwallexPaymentSession` (deprecated — use `Session`)
 
 **Standard Flow** (PaymentIntent created upfront):
 ```kotlin
@@ -298,7 +482,7 @@ val session = AirwallexPaymentSession.Builder(
     .build()
 ```
 
-#### Recurring Payment Session
+##### `AirwallexRecurringSession` (deprecated — use `Session` with `PaymentConsentOptions`)
 ```kotlin
 import com.airwallex.android.core.AirwallexRecurringSession
 
@@ -320,7 +504,7 @@ val recurringSession = AirwallexRecurringSession.Builder(
     .build()
 ```
 
-#### Recurring Payment with Intent Session
+##### `AirwallexRecurringWithIntentSession` (deprecated — use `Session` with `PaymentConsentOptions`)
 
 **Standard Flow** (PaymentIntent created upfront):
 ```kotlin
@@ -382,6 +566,8 @@ val session = AirwallexRecurringWithIntentSession.Builder(
     .setPaymentMethods(listOf())
     .build()
 ```
+
+</details>
 
 ### 3. Present the Payment UI
 
@@ -525,10 +711,6 @@ Unlike Hosted Payment Page Integration where the SDK launches its own activities
 - Integrate seamlessly with your app's navigation flow
 
 Both integration methods support the same customization options via `PaymentElementConfiguration` (theme color, dark mode, button text, Google Pay display).
-
-**Key Difference - Session Creation:**
-- **Hosted Payment Page (HPP)**: Create session in your calling activity → Pass to `AirwallexStarter` methods
-- **Embedded Element**: Create session in the activity that hosts `PaymentElement` (or its ViewModel) → Pass to `PaymentElement.create()`
 
 **Key Difference - Session Creation:**
 - **Hosted Payment Page (HPP)**: Create session in your calling activity → Pass to `AirwallexStarter` methods
@@ -961,8 +1143,8 @@ import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
 
 
-// NOTE: We only support AirwallexPaymentSession (one off session), no recurring session for Google Pay at the moment.
-// Also make sure you pass GooglePayOptions to the session. Refer to [Set up Google Pay].
+// NOTE: Google Pay doesn't support recurring & recurring with intent for CIT payment. Make sure you pass GooglePayOptions to the session.
+// Refer to [Set up Google Pay].
 airwallex.startGooglePay(
     session = session,
     listener = object : Airwallex.PaymentResultListener {
@@ -987,24 +1169,35 @@ airwallex.startRedirectPay(
     }
 )
 ```
-### Confirm payment with card and billing details
+> **⚠️ Deprecated:** `airwallex.confirmPaymentIntent(...)` is deprecated. Use `airwallex.checkout(...)` for all card and consent-based payments, and `airwallex.startGooglePay(...)` for Google Pay.
+
+### Checkout with card and billing details
 ```kotlin
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
+import com.airwallex.android.core.model.PaymentMethod
+import com.airwallex.android.core.model.PaymentMethodType
 
 
-// Confirm intent with card and billing
-airwallex.confirmPaymentIntent(
+val paymentMethod = PaymentMethod.Builder()
+    .setType(PaymentMethodType.CARD.value)
+    .setCard(
+        PaymentMethod.Card.Builder()
+            .setNumber("4012000300000021")
+            .setName("John Citizen")
+            .setExpiryMonth("12")
+            .setExpiryYear("2029")
+            .setCvc("737")
+            .build()
+    )
+    .setBilling(null)
+    .build()
+
+airwallex.checkout(
     session = session,
-    card = PaymentMethod.Card.Builder()
-        .setNumber("4012000300000021")
-        .setName("John Citizen")
-        .setExpiryMonth("12")
-        .setExpiryYear("2029")
-        .setCvc("737")
-        .build(),
-    billing = null,
-    saveCard = false,//set saveCard to true to save the card information while making the payment.
+    paymentMethod = paymentMethod,
+    cvc = "737",
+    saveCard = false, // set to true to save the card as a consent while making the payment
     listener = object : Airwallex.PaymentResultListener {
         override fun onCompleted(status: AirwallexPaymentStatus) {
             // You can handle different payment statuses and perform UI action respectively here
@@ -1012,37 +1205,43 @@ airwallex.confirmPaymentIntent(
     }
 )
 ```
-### Confirm payment with Consent ID
-```kotlin
-    import com.airwallex.android.core.Airwallex
-    import com.airwallex.android.core.AirwallexPaymentStatus
+### Checkout with Consent ID
 
-     airwallex.confirmPaymentIntent(
-        session = session,
-        paymentConsentId = "cst_xxxxxxxxxx",
-        listener = object : Airwallex.PaymentResultListener {
-            override fun onCompleted(status: AirwallexPaymentStatus) {
-              // You can handle different payment statuses and perform UI action respectively here
-            }
+> **⚠️ Deprecated:** This flow is deprecated. Use [Checkout with PaymentConsent](#checkout-with-paymentconsent) instead, passing a `PaymentConsent` that contains at least `id` and `nextTriggeredBy`. The `paymentConsentId` parameter on `airwallex.checkout(...)` is retained only for backwards compatibility with legacy integrations and should not be used in new code.
+
+```kotlin
+import com.airwallex.android.core.Airwallex
+import com.airwallex.android.core.AirwallexPaymentStatus
+import com.airwallex.android.core.model.PaymentMethod
+import com.airwallex.android.core.model.PaymentMethodType
+
+airwallex.checkout(
+    session = session,
+    paymentMethod = PaymentMethod(type = PaymentMethodType.CARD.value),
+    paymentConsentId = "cst_xxxxxxxxxx", // ⚠️ Deprecated — kept only for legacy support; prefer the `paymentConsent` parameter shown below
+    listener = object : Airwallex.PaymentResultListener {
+        override fun onCompleted(status: AirwallexPaymentStatus) {
+            // You can handle different payment statuses and perform UI action respectively here
         }
-     )
+    }
+)
 ```
-### Confirm payment with PaymentConsent
+### Checkout with PaymentConsent
 ```kotlin
-    import com.airwallex.android.core.Airwallex
-    import com.airwallex.android.core.AirwallexPaymentStatus
-    import com.airwallex.android.core.AirwallexPaymentSession
-    import com.airwallex.android.core.model.PaymentConsent
+import com.airwallex.android.core.Airwallex
+import com.airwallex.android.core.AirwallexPaymentStatus
+import com.airwallex.android.core.model.PaymentConsent
 
-     airwallex.confirmPaymentIntent(
-        session = session,
-        paymentConsent = paymentConsent,
-        listener = object : Airwallex.PaymentResultListener {
-            override fun onCompleted(status: AirwallexPaymentStatus) {
-              // You can handle different payment statuses and perform UI action respectively here
-            }
+airwallex.checkout(
+    session = session,
+    paymentMethod = paymentConsent.paymentMethod!!,
+    paymentConsent = paymentConsent,
+    listener = object : Airwallex.PaymentResultListener {
+        override fun onCompleted(status: AirwallexPaymentStatus) {
+            // You can handle different payment statuses and perform UI action respectively here
         }
-     )
+    }
+)
 ```
 ### Retrieve the list of payment methods
 ```kotlin
@@ -1052,7 +1251,7 @@ airwallex.confirmPaymentIntent(
      val methods = airwallex.retrieveAvailablePaymentMethods(
         session = session,
         params = RetrieveAvailablePaymentMethodParams.Builder(
-           clientSecret = session.clientSecretion(session),
+           clientSecret = session.clientSecret,
            pageNum = 1
         )
             .setActive(true)

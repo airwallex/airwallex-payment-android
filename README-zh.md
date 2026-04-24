@@ -279,6 +279,8 @@ val session = AirwallexPaymentSession.Builder(
 
 ##### 循环支付 Session
 
+> **📝 关于 PaymentIntent 创建的说明：** 此前基于 `AirwallexRecurringSession` 的循环支付流程需要调用 `/generate_client_secret` 接口。在统一的 `Session` 中已不再需要此步骤——三种流程（一次性支付、循环支付、带 Intent 的循环支付）现在遵循相同的方式：创建一个 `PaymentIntent` 即可。
+
 ```kotlin
 val recurringSession = AirwallexRecurringSession.Builder(
     customerId = customerId,
@@ -960,10 +962,12 @@ airwallex.confirmPaymentIntent(
 
 ### 用 Consent ID 确认支付
 
+> **⚠️ 已废弃：** 此流程已废弃，请改用 [用 PaymentConsent 确认支付](#用-paymentconsent-确认支付)，并传入至少包含 `id` 和 `nextTriggeredBy` 的 `PaymentConsent`。`paymentConsentId` 参数仅为兼容旧版集成而保留，不应在新代码中使用。
+
 ```kotlin
 airwallex.confirmPaymentIntent(
     session = session,
-    paymentConsentId = "cst_xxxxxxxxxx",
+    paymentConsentId = "cst_xxxxxxxxxx", // ⚠️ 已废弃——仅为兼容旧版而保留；推荐使用下方的 `paymentConsent` 参数
     listener = object : Airwallex.PaymentResultListener {
         override fun onCompleted(status: AirwallexPaymentStatus) {
             // 处理不同支付状态
