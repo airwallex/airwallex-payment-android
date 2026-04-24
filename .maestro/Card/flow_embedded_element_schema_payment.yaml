@@ -30,20 +30,5 @@ env:
 - scrollUntilVisible:
     element: "^(Pay|Confirm)$"
 - tapOn: "^(Pay|Confirm)$"
-# WebView opens - handle Chrome sign-in prompt if it appears
 - runFlow:
-    when:
-      visible: "Use without an account"
-    commands:
-      - tapOn: "Use without an account"
-# Click "Pay Now"
-- assertVisible: "Pay Now"
-- tapOn: "Pay Now"
-# Wait for "Return to Merchant" text with countdown
-- assertVisible: "Return to Merchant \\(\\d+\\)"
-# Close the webview by tapping the X icon at top-left toolbar
-- tapOn:
-    point: "10%,5%"
-# Wait for payment result popup
-- assertVisible: "SUCCEED"
-- tapOn: "OK"
+    file: ../Common/flow_handle_redirect.yaml
