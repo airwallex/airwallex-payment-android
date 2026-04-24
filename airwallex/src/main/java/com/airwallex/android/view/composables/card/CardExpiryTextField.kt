@@ -36,6 +36,7 @@ import com.airwallex.risk.AirwallexRisk
 fun CardExpiryTextField(
     modifier: Modifier = Modifier,
     initialValue: String = "",
+    cardAutoFillEnabled: Boolean = true,
     onTextChanged: (TextFieldValue) -> Unit,
     onComplete: (String) -> Unit,
     onFocusLost: (String) -> Unit,
@@ -99,7 +100,9 @@ fun CardExpiryTextField(
             }
             .semantics {
                 testTagsAsResourceId = true
-                contentType = ContentType.CreditCardExpirationDate
+                if (cardAutoFillEnabled) {
+                    contentType = ContentType.CreditCardExpirationDate
+                }
             }
             .testTag("card-expiry-text-field"),
         options = StandardTextFieldOptions(

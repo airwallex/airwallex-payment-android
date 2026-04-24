@@ -66,6 +66,7 @@ internal fun PaymentMethodsAccordionSection(
     showsGooglePayAsPrimaryButton: Boolean = true,
     googlePayButtonType: ButtonType,
     checkoutButtonTitle: String? = null,
+    cardAutoFillEnabled: Boolean = true,
 ) {
     val flowViewModel: PaymentFlowViewModel = viewModel(
         factory = PaymentFlowViewModel.Factory(
@@ -217,6 +218,7 @@ internal fun PaymentMethodsAccordionSection(
                                     cardSchemes = type.cardSchemes.orEmpty(),
                                     paymentFlowListener = paymentFlowListener,
                                     checkoutButtonTitle = checkoutButtonTitle,
+                                    cardAutoFillEnabled = cardAutoFillEnabled,
                                 )
                             }
 
@@ -250,7 +252,8 @@ internal fun PaymentMethodsAccordionSection(
             airwallex = airwallex,
             cardSchemes = availablePaymentMethods.first().cardSchemes.orEmpty(),
             isSinglePaymentMethod = true,
-            paymentFlowListener = paymentFlowListener
+            paymentFlowListener = paymentFlowListener,
+            cardAutoFillEnabled = cardAutoFillEnabled,
         )
     }
 }

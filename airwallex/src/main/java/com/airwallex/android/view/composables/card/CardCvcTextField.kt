@@ -44,6 +44,7 @@ fun CardCvcTextField(
     modifier: Modifier = Modifier,
     cardBrand: CardBrand,
     initialValue: String = "",
+    cardAutoFillEnabled: Boolean = true,
     onTextChanged: (TextFieldValue) -> Unit,
     onComplete: (String) -> Unit,
     onFocusLost: (String) -> Unit,
@@ -117,7 +118,9 @@ fun CardCvcTextField(
             }
             .semantics {
                 testTagsAsResourceId = true
-                contentType = ContentType.CreditCardSecurityCode
+                if (cardAutoFillEnabled) {
+                    contentType = ContentType.CreditCardSecurityCode
+                }
             }
             .testTag("card-cvc-text-field"),
         options = StandardTextFieldOptions(

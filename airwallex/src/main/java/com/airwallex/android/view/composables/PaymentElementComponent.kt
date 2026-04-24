@@ -65,6 +65,7 @@ internal fun PaymentElementComponent(
                     isSinglePaymentMethod = isSinglePaymentMethod,
                     paymentFlowListener = paymentFlowListener,
                     checkoutButtonTitle = configuration.checkoutButton.title,
+                    cardAutoFillEnabled = configuration.cardAutoFillEnabled,
                 )
             }
 
@@ -85,6 +86,7 @@ internal fun PaymentElementComponent(
                             showsGooglePayAsPrimaryButton = configuration.googlePayButton.showsAsPrimaryButton,
                             googlePayButtonType = googlePayButtonType,
                             checkoutButtonTitle = configuration.checkoutButton.title,
+                            cardAutoFillEnabled = configuration.cardAutoFillEnabled,
                         )
                     }
 
@@ -96,6 +98,7 @@ internal fun PaymentElementComponent(
                             showsGooglePayAsPrimaryButton = configuration.googlePayButton.showsAsPrimaryButton,
                             googlePayButtonType = googlePayButtonType,
                             checkoutButtonTitle = configuration.checkoutButton.title,
+                            cardAutoFillEnabled = configuration.cardAutoFillEnabled,
                         )
                     }
                 }

@@ -46,6 +46,7 @@ fun CardNumberTextField(
     onFocusLost: (String) -> Unit,
     modifier: Modifier = Modifier,
     initialValue: String = "",
+    cardAutoFillEnabled: Boolean = true,
     isError: Boolean = false,
     shape: Shape = OutlinedTextFieldDefaults.shape,
 ) {
@@ -94,7 +95,9 @@ fun CardNumberTextField(
         }
             .semantics {
                 testTagsAsResourceId = true
-                contentType = ContentType.CreditCardNumber
+                if (cardAutoFillEnabled) {
+                    contentType = ContentType.CreditCardNumber
+                }
             }
             .testTag("card-number-text-field"),
         options = StandardTextFieldOptions(

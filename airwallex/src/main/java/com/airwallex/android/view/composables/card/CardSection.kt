@@ -51,6 +51,7 @@ internal fun CardSection(
     isSinglePaymentMethod: Boolean = false,
     paymentFlowListener: PaymentFlowListener,
     checkoutButtonTitle: String? = null,
+    cardAutoFillEnabled: Boolean = true,
 ) {
     val paymentFlowViewModel: PaymentFlowViewModel = viewModel(
         factory = PaymentFlowViewModel.Factory(
@@ -140,6 +141,7 @@ internal fun CardSection(
                     paymentFlowListener = paymentFlowListener,
                     activity = airwallex.activity,
                     checkoutButtonTitle = checkoutButtonTitle,
+                    cardAutoFillEnabled = cardAutoFillEnabled,
                 )
             }
 
@@ -235,6 +237,7 @@ internal fun CardSection(
                     viewModel = addPaymentMethodViewModel,
                     isCvcRequired = addPaymentMethodViewModel.isCvcRequired(consent),
                     cardBrand = cardBrand,
+                    cardAutoFillEnabled = cardAutoFillEnabled,
                     onCheckoutWithCvc = { cvc ->
                         onCheckoutWithCvcOperationStart(
                             consent = consent,

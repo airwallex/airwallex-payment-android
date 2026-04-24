@@ -67,6 +67,7 @@ internal fun AddCardSection(
     paymentFlowListener: PaymentFlowListener,
     activity: ComponentActivity,
     checkoutButtonTitle: String? = null,
+    cardAutoFillEnabled: Boolean = true,
 ) {
     val focusManager = LocalFocusManager.current
     val expiryFocusRequester = remember { FocusRequester() }
@@ -133,6 +134,7 @@ internal fun AddCardSection(
         CardNumberTextField(
             cardSchemes = cardSchemes,
             initialValue = cardNumber,
+            cardAutoFillEnabled = cardAutoFillEnabled,
             onValueChange = { value, cardBrand ->
                 viewModel.updateCardNumber(value.text, cardBrand)
                 cardNumberErrorMessage = null
@@ -158,6 +160,7 @@ internal fun AddCardSection(
         Row {
             CardExpiryTextField(
                 initialValue = expiryDate,
+                cardAutoFillEnabled = cardAutoFillEnabled,
                 onTextChanged = { value ->
                     viewModel.updateExpiryDate(value.text)
                     expiryDateErrorMessage = null
@@ -183,6 +186,7 @@ internal fun AddCardSection(
             CardCvcTextField(
                 cardBrand = brand,
                 initialValue = cvv,
+                cardAutoFillEnabled = cardAutoFillEnabled,
                 onTextChanged = { value ->
                     viewModel.updateCvv(value.text)
                     cvvErrorMessage = null

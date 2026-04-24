@@ -26,6 +26,14 @@ sealed class PaymentElementConfiguration {
     abstract val appearance: Appearance?
 
     /**
+     * Whether autofill is enabled for card input fields.
+     * When true (default), card fields are tagged with credit card content types,
+     * enabling autofill suggestions and save prompts from the system autofill service.
+     * When false, card fields are not tagged, preventing the system "Save credit card?" prompt.
+     */
+    abstract val cardAutoFillEnabled: Boolean
+
+    /**
      * Google Pay button configuration.
      * Controls how the Google Pay button is displayed in the payment sheet.
      */
@@ -71,7 +79,8 @@ sealed class PaymentElementConfiguration {
     data class Card(
         val supportedCardBrands: List<AirwallexSupportedCard> = enumValues<AirwallexSupportedCard>().toList(),
         override val checkoutButton: CheckoutButton = CheckoutButton(),
-        override val appearance: Appearance? = null
+        override val appearance: Appearance? = null,
+        override val cardAutoFillEnabled: Boolean = true
     ) : PaymentElementConfiguration(), Parcelable
 
     /**
@@ -88,6 +97,7 @@ sealed class PaymentElementConfiguration {
         val layout: PaymentMethodsLayoutType = PaymentMethodsLayoutType.TAB,
         val googlePayButton: GooglePayButton = GooglePayButton(),
         override val checkoutButton: CheckoutButton = CheckoutButton(),
-        override val appearance: Appearance? = null
+        override val appearance: Appearance? = null,
+        override val cardAutoFillEnabled: Boolean = true
     ) : PaymentElementConfiguration(), Parcelable
 }

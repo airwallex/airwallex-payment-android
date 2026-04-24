@@ -59,6 +59,7 @@ internal fun PaymentMethodsTabSection(
     showsGooglePayAsPrimaryButton: Boolean = true,
     googlePayButtonType: ButtonType,
     checkoutButtonTitle: String? = null,
+    cardAutoFillEnabled: Boolean = true,
 ) {
     val flowViewModel: PaymentFlowViewModel = viewModel(
         factory = PaymentFlowViewModel.Factory(
@@ -162,7 +163,8 @@ internal fun PaymentMethodsTabSection(
                         allowedPaymentMethods,
                         flowViewModel,
                         googlePayButtonType,
-                        checkoutButtonTitle
+                        checkoutButtonTitle,
+                        cardAutoFillEnabled,
                     ),
             )
         }
@@ -179,6 +181,7 @@ private fun horizontalPagerContent(
     flowViewModel: PaymentFlowViewModel,
     googlePayButtonType: ButtonType,
     checkoutButtonTitle: String? = null,
+    cardAutoFillEnabled: Boolean = true,
 ): @Composable PagerScope.(Int) -> Unit = {
     when (type.name) {
         PaymentMethodType.CARD.value -> {
@@ -188,6 +191,7 @@ private fun horizontalPagerContent(
                 cardSchemes = type.cardSchemes.orEmpty(),
                 paymentFlowListener = paymentFlowListener,
                 checkoutButtonTitle = checkoutButtonTitle,
+                cardAutoFillEnabled = cardAutoFillEnabled,
             )
         }
 

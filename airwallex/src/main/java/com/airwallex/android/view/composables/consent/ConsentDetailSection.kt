@@ -23,6 +23,7 @@ internal fun ConsentDetailSection(
     viewModel: AddPaymentMethodViewModel,
     isCvcRequired: Boolean,
     cardBrand: CardBrand,
+    cardAutoFillEnabled: Boolean = true,
     onCheckoutWithCvc: (String) -> Unit,
     onCheckoutWithoutCvv: () -> Unit,
     onScreenViewed: () -> Unit,
@@ -39,6 +40,7 @@ internal fun ConsentDetailSection(
     if (isCvcRequired) {
         CardCvcTextField(
             cardBrand = cardBrand,
+            cardAutoFillEnabled = cardAutoFillEnabled,
             onTextChanged = { value ->
                 cvv = value.text
                 cvvErrorMessage = null
