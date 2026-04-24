@@ -40,6 +40,7 @@ import com.airwallex.android.view.composables.consent.ConsentDetailSection
 import com.airwallex.android.view.composables.consent.ConsentListSection
 import com.airwallex.android.view.util.AnalyticsConstants.PAYMENT_METHOD
 import com.airwallex.android.view.util.AnalyticsConstants.TAP_PAY_BUTTON
+import com.airwallex.risk.AirwallexRisk
 import java.util.Locale
 
 @Suppress("ComplexMethod", "LongMethod", "LongParameterList")
@@ -253,6 +254,7 @@ internal fun CardSection(
                         )
                     },
                     onScreenViewed = {
+                        AirwallexRisk.log(event = "show_consent", screen = "page_consent")
                         addPaymentMethodViewModel.trackScreenViewed(
                             PaymentMethodType.CARD.value,
                             mapOf(Field.SUBTYPE to "consent")
@@ -275,6 +277,7 @@ private fun onCheckoutWithoutCvcOperationStart(
     paymentFlowViewModel: PaymentFlowViewModel,
 ) {
     paymentFlowListener.onLoadingStateChanged(true, airwallex.activity)
+    AirwallexRisk.log(event = "click_payment_button", screen = "page_consent")
     consent.paymentMethod?.type?.let {
         AnalyticsLogger.logAction(TAP_PAY_BUTTON, mapOf(PAYMENT_METHOD to it))
     }
@@ -289,6 +292,7 @@ private fun onCheckoutWithCvcOperationStart(
     paymentFlowViewModel: PaymentFlowViewModel,
 ) {
     paymentFlowListener.onLoadingStateChanged(true, airwallex.activity)
+    AirwallexRisk.log(event = "click_payment_button", screen = "page_consent")
     consent.paymentMethod?.type?.let {
         AnalyticsLogger.logAction(TAP_PAY_BUTTON, mapOf(PAYMENT_METHOD to it))
     }

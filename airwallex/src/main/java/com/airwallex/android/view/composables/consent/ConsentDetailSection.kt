@@ -39,6 +39,7 @@ internal fun ConsentDetailSection(
     if (isCvcRequired) {
         CardCvcTextField(
             cardBrand = cardBrand,
+            riskScreen = "page_consent",
             onTextChanged = { value ->
                 cvv = value.text
                 cvvErrorMessage = null
