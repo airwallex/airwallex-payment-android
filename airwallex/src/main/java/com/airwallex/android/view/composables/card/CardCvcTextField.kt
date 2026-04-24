@@ -50,6 +50,7 @@ fun CardCvcTextField(
     isError: Boolean = false,
     errorMessage: String? = null,
     shape: Shape = OutlinedTextFieldDefaults.shape,
+    riskScreen: String = "page_create_card",
 ) {
     val cvcLength = remember(cardBrand) {
         when (cardBrand) {
@@ -97,9 +98,11 @@ fun CardCvcTextField(
         errorText = errorMessage,
         modifier = modifier
             .onFocusEvent { focusState ->
-                if (focusState.hasFocus && textFieldValue.text.isNotEmpty()) {
-                    showClearButton = true
-                    AirwallexRisk.log(event = "input_card_cvc", screen = "page_create_card")
+                if (focusState.hasFocus) {
+                    if (textFieldValue.text.isNotEmpty()) {
+                        showClearButton = true
+                    }
+                    AirwallexRisk.log(event = "input_card_cvc", screen = riskScreen)
                 }
             }
             .onFocusChanged { focusState ->
