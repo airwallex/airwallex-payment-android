@@ -30,16 +30,10 @@ data class PaymentConsentCreateRequest internal constructor(
     val nextTriggeredBy: PaymentConsent.NextTriggeredBy? = null,
 
     /**
-     * Only applicable when next_triggered_by is merchant. One of scheduled, unscheduled.
+     * Only applicable when next_triggered_by is merchant. One of scheduled, unscheduled, installments.
      * Default: unscheduled
      */
     val merchantTriggerReason: PaymentConsent.MerchantTriggerReason? = PaymentConsent.MerchantTriggerReason.UNSCHEDULED,
-
-    /**
-     * Only applicable when next_triggered_by is customer. If false, the customer must provide cvc for the subsequent payment with this PaymentConsent.
-     * Default: false
-     */
-    val requiresCvc: Boolean? = null,
 
     /**
      * A set of key-value pairs that can be attached to this PaymentConsent
@@ -53,7 +47,6 @@ data class PaymentConsentCreateRequest internal constructor(
         private const val FIELD_PAYMENT_METHOD = "payment_method"
         private const val FIELD_NEXT_TRIGGERED_BY = "next_triggered_by"
         private const val FIELD_MERCHANT_TRIGGER_REASON = "merchant_trigger_reason"
-        private const val FIELD_REQUIRES_CVC = "requires_cvc"
         private const val FIELD_METADATA = "metadata"
     }
 
@@ -85,11 +78,6 @@ data class PaymentConsentCreateRequest internal constructor(
                 }.orEmpty()
             )
             .plus(
-                requiresCvc?.let {
-                    mapOf(FIELD_REQUIRES_CVC to it)
-                }.orEmpty()
-            )
-            .plus(
                 metadata?.let {
                     mapOf(FIELD_METADATA to it)
                 }.orEmpty()
@@ -103,7 +91,6 @@ data class PaymentConsentCreateRequest internal constructor(
         private var nextTriggeredBy: PaymentConsent.NextTriggeredBy? = null
         private var merchantTriggerReason: PaymentConsent.MerchantTriggerReason? =
             PaymentConsent.MerchantTriggerReason.UNSCHEDULED
-        private var requiresCvc: Boolean? = null
         private var metadata: @RawValue Map<String, Any>? = null
 
         fun setRequestId(requestId: String?): Builder = apply {
@@ -129,10 +116,6 @@ data class PaymentConsentCreateRequest internal constructor(
                 this.merchantTriggerReason = merchantTriggerReason
             }
 
-        fun setRequiresCvc(requiresCvc: Boolean?): Builder = apply {
-            this.requiresCvc = requiresCvc
-        }
-
         fun setMetadata(metadata: @RawValue Map<String, Any>?): Builder = apply {
             this.metadata = metadata
         }
@@ -144,7 +127,6 @@ data class PaymentConsentCreateRequest internal constructor(
                 paymentMethodRequest = paymentMethodRequest,
                 nextTriggeredBy = nextTriggeredBy,
                 merchantTriggerReason = merchantTriggerReason,
-                requiresCvc = requiresCvc,
                 metadata = metadata
             )
         }

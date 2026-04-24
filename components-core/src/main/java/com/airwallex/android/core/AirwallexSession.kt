@@ -1,10 +1,9 @@
 package com.airwallex.android.core
 
-import android.os.Parcelable
 import com.airwallex.android.core.model.Shipping
 import java.math.BigDecimal
 
-abstract class AirwallexSession : Parcelable {
+abstract class AirwallexSession {
 
     /**
      * The Customer who is paying for this PaymentIntent. This field is not required if the Customer is unknown (guest checkout). But it is required if the PaymentIntent is created for recurring payment.
@@ -56,6 +55,18 @@ abstract class AirwallexSession : Parcelable {
      * API reference: https://www.airwallex.com/docs/api#/Payment_Acceptance/Config/_api_v1_pa_config_payment_method_types/get JSON Object field: items.name
      */
     abstract val paymentMethods: List<String>?
+
+    /**
+     * The client secret for this session.
+     * Used for authenticating API requests.
+     */
+    abstract val clientSecret: String?
+
+    /**
+     * Control whether saved cards are displayed on the list screen
+     */
+    open val hidePaymentConsents: Boolean
+        get() = false
 }
 
 /**

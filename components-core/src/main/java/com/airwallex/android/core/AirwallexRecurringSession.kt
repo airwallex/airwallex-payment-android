@@ -9,7 +9,19 @@ import java.math.BigDecimal
 
 /**
  * For recurring payment (without create payment intent)
+ *
+ * @deprecated Use [Session] instead. AirwallexRecurringSession will be removed in a future version.
+ * Session provides a unified API for all payment scenarios with support for both static PaymentIntent
+ * and PaymentIntentProvider.
  */
+@Deprecated(
+    message = "Use Session instead. AirwallexRecurringSession will be removed in a future version.",
+    replaceWith = ReplaceWith(
+        "Session.Builder(paymentIntent, countryCode, googlePayOptions)",
+        "com.airwallex.android.core.Session"
+    ),
+    level = DeprecationLevel.WARNING
+)
 @Suppress("LongParameterList")
 @Parcelize
 class AirwallexRecurringSession internal constructor(
@@ -30,7 +42,7 @@ class AirwallexRecurringSession internal constructor(
      */
     val merchantTriggerReason: PaymentConsent.MerchantTriggerReason = PaymentConsent.MerchantTriggerReason.UNSCHEDULED,
 
-    val clientSecret: String,
+    override val clientSecret: String,
 
     /**
      * Amount currency. required.
@@ -84,6 +96,13 @@ class AirwallexRecurringSession internal constructor(
     override val paymentMethods: List<String>? = null,
 
 ) : AirwallexSession(), Parcelable {
+
+    /**
+     * Control whether saved cards are displayed on the list screen.
+     * Always true for recurring sessions.
+     */
+    override val hidePaymentConsents: Boolean
+        get() = true
 
     class Builder(
         private var customerId: String,
@@ -156,7 +175,7 @@ class AirwallexRecurringSession internal constructor(
                 returnUrl = returnUrl,
                 paymentMethods = paymentMethods,
                 clientSecret = clientSecret,
-                googlePayOptions = googlePayOptions
+                googlePayOptions = googlePayOptions,
             )
         }
     }

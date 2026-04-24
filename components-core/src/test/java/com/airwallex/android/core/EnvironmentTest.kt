@@ -16,18 +16,17 @@ class EnvironmentTest {
 
         assertNotNull(Environment.PRODUCTION.baseUrl())
         assertEquals("https://api.airwallex.com", Environment.PRODUCTION.baseUrl())
+
+        assertNotNull(Environment.PREVIEW.baseUrl())
+        assertEquals("https://api.sandbox.airwallex.com", Environment.PREVIEW.baseUrl())
     }
 
     @Test
-    fun testTrackerUrl() {
-        assertNotNull(Environment.STAGING.trackerUrl())
-        assertEquals("https://api-staging.airwallex.com/api/v1/checkout", Environment.STAGING.trackerUrl())
-
-        assertNotNull(Environment.DEMO.trackerUrl())
-        assertEquals("https://api-demo.airwallex.com/api/v1/checkout", Environment.DEMO.trackerUrl())
-
-        assertNotNull(Environment.PRODUCTION.trackerUrl())
-        assertEquals("https://api.airwallex.com/api/v1/checkout", Environment.PRODUCTION.trackerUrl())
+    fun testThreeDsReturnUrl() {
+        assertNotNull(Environment.STAGING.threeDsReturnUrl())
+        assertNotNull(Environment.DEMO.threeDsReturnUrl())
+        assertNotNull(Environment.PRODUCTION.threeDsReturnUrl())
+        assertNotNull(Environment.PREVIEW.threeDsReturnUrl())
     }
 
     @Test
@@ -35,5 +34,6 @@ class EnvironmentTest {
         assertEquals(Environment.STAGING.riskEnvironment, com.airwallex.risk.Environment.STAGING)
         assertEquals(Environment.DEMO.riskEnvironment, com.airwallex.risk.Environment.DEMO)
         assertEquals(Environment.PRODUCTION.riskEnvironment, com.airwallex.risk.Environment.PRODUCTION)
+        assertEquals(Environment.PREVIEW.riskEnvironment, com.airwallex.risk.Environment.PREVIEW)
     }
 }

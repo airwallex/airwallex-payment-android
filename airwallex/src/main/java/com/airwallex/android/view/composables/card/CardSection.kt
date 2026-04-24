@@ -278,7 +278,7 @@ private fun onCheckoutWithoutCvcOperationStart(
     consent.paymentMethod?.type?.let {
         AnalyticsLogger.logAction(TAP_PAY_BUTTON, mapOf(PAYMENT_METHOD to it))
     }
-    paymentFlowViewModel.confirmPaymentIntent(consent)
+    paymentFlowViewModel.checkoutWithoutCvc(consent)
 }
 
 private fun onCheckoutWithCvcOperationStart(

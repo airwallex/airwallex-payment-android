@@ -530,6 +530,10 @@ Both integration methods support the same customization options via `PaymentElem
 - **Hosted Payment Page (HPP)**: Create session in your calling activity → Pass to `AirwallexStarter` methods
 - **Embedded Element**: Create session in the activity that hosts `PaymentElement` (or its ViewModel) → Pass to `PaymentElement.create()`
 
+**Key Difference - Session Creation:**
+- **Hosted Payment Page (HPP)**: Create session in your calling activity → Pass to `AirwallexStarter` methods
+- **Embedded Element**: Create session in the activity that hosts `PaymentElement` (or its ViewModel) → Pass to `PaymentElement.create()`
+
 ## <a name="embedded-installation"></a>Installation
 
 Add the same dependencies as Hosted Payment Page Integration:
@@ -1048,7 +1052,7 @@ airwallex.confirmPaymentIntent(
      val methods = airwallex.retrieveAvailablePaymentMethods(
         session = session,
         params = RetrieveAvailablePaymentMethodParams.Builder(
-           clientSecret = getClientSecretFromSession(session),
+           clientSecret = session.clientSecretion(session),
            pageNum = 1
         )
             .setActive(true)

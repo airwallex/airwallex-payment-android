@@ -10,7 +10,7 @@ android {
 }
 
 dependencies {
-    api project(':ui-core')
+    implementation project(':ui-core')
     api project(':security-3ds')
 
     implementation 'androidx.activity:activity-ktx:1.9.0'

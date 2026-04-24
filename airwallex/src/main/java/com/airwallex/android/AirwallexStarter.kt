@@ -98,6 +98,7 @@ class AirwallexStarter {
             configuration: PaymentElementConfiguration.Card,
             paymentResultListener: Airwallex.PaymentResultListener,
         ) {
+            session.bindToActivity(activity)
             AnalyticsLogger.setupSession(
                 session = session,
                 launchType = AnalyticsLogger.LaunchType.HPP,
@@ -105,9 +106,6 @@ class AirwallexStarter {
             AirwallexRisk.log(AirwallexRisk.Events.TRANSACTION_INITIATED)
             val intentId = getIntentId(session)
             AirwallexLogger.info("AirwallexStarter presentCardPaymentFlow[$intentId]")
-
-            // Bind session's PaymentIntentProvider to this Activity's lifecycle
-            session.bindToActivity(activity)
 
             AddPaymentMethodActivityLaunch(activity)
                 .launchForResult(

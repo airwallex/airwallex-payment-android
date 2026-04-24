@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.Airwallex.PaymentResultListener
-import com.airwallex.android.core.AirwallexPaymentSession
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.exception.AirwallexCheckoutException
@@ -18,6 +17,7 @@ import com.airwallex.android.core.model.Billing
 import com.airwallex.android.core.model.DisablePaymentConsentParams
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentMethod
+import com.airwallex.android.core.model.PaymentMethodType
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -43,6 +43,10 @@ class PaymentFlowViewModel(
     private val _availablePaymentMethods = MutableStateFlow<List<AvailablePaymentMethodType>>(emptyList())
     val availablePaymentMethods: StateFlow<List<AvailablePaymentMethodType>> = _availablePaymentMethods.asStateFlow()
 
+    // Store original list of consents
+    private val _originalPaymentConsents = MutableStateFlow<List<PaymentConsent>>(emptyList())
+
+    // Deduplicated list for display
     private val _availablePaymentConsents = MutableStateFlow<List<PaymentConsent>>(emptyList())
     val availablePaymentConsents: StateFlow<List<PaymentConsent>> = _availablePaymentConsents.asStateFlow()
 
@@ -91,7 +95,8 @@ class PaymentFlowViewModel(
         result.fold(
             onSuccess = { (methods, consents) ->
                 _availablePaymentMethods.value = methods
-                _availablePaymentConsents.value = consents
+                _originalPaymentConsents.value = consents
+                _availablePaymentConsents.value = deduplicateConsents(consents)
             },
             onFailure = { _ ->
                 // nothing, we return the entire result
@@ -99,6 +104,38 @@ class PaymentFlowViewModel(
         )
 
         return result
+    }
+
+    /**
+     * Deduplicates payment consents by fingerprint with the following rules:
+     * 1. If CIT and MIT share the same fingerprint, prioritize the CIT consent (only 1 CIT per fingerprint)
+     * 2. When multiple MIT consents exist with the same fingerprint, keep the first one
+     */
+    private fun deduplicateConsents(consents: List<PaymentConsent>): List<PaymentConsent> {
+        val grouped = consents.groupBy { it.paymentMethod?.card?.fingerprint }
+
+        return grouped.flatMap { (fingerprint, consentsGroup) ->
+            // If fingerprint is null, discard (indicates invalid consent data)
+            if (fingerprint == null) {
+                return@flatMap emptyList()
+            }
+
+            // Find CIT consent (only 1 per fingerprint)
+            val citConsent = consentsGroup.find {
+                it.nextTriggeredBy == PaymentConsent.NextTriggeredBy.CUSTOMER
+            }
+
+            // If there's a CIT consent, prioritize it and ignore MIT
+            if (citConsent != null) {
+                listOf(citConsent)
+            } else {
+                // If only MIT consents exist, keep the first one
+                val mitConsent = consentsGroup.find {
+                    it.nextTriggeredBy == PaymentConsent.NextTriggeredBy.MERCHANT
+                }
+                listOfNotNull(mitConsent)
+            }
+        }
     }
 
     fun deletePaymentConsent(paymentConsent: PaymentConsent) = viewModelScope.launch {
@@ -128,6 +165,13 @@ class PaymentFlowViewModel(
 
                     override fun onSuccess(response: PaymentConsent) {
                         viewModelScope.launch {
+                            // Remove from original list
+                            val updatedOriginalList = _originalPaymentConsents.value.filter { it.id != paymentConsent.id }
+                            _originalPaymentConsents.value = updatedOriginalList
+
+                            // Re-deduplicate to potentially show MIT if CIT was deleted
+                            _availablePaymentConsents.value = deduplicateConsents(updatedOriginalList)
+
                             _deleteConsentResult.emit(DeleteConsentResult.Success(paymentConsent))
                         }
                         continuation.resume(Unit)
@@ -137,24 +181,27 @@ class PaymentFlowViewModel(
         }
     }
 
-    fun confirmPaymentIntent(paymentConsent: PaymentConsent) {
+    fun checkoutWithoutCvc(paymentConsent: PaymentConsent) {
         viewModelScope.launch {
-            if (session !is AirwallexPaymentSession) {
+            val paymentMethod = paymentConsent.paymentMethod
+            if (paymentMethod == null) {
                 _paymentResult.send(
                     PaymentResultEvent(
                         flowType = PaymentFlowType.CHECKOUT_WITHOUT_CVC,
                         status = AirwallexPaymentStatus.Failure(
-                            AirwallexCheckoutException(message = "confirm with paymentConsent only support AirwallexPaymentSession")
+                            AirwallexCheckoutException(message = "Payment method is required")
                         )
                     )
                 )
                 return@launch
             }
 
-            airwallex.confirmPaymentIntent(
-                session,
-                paymentConsent,
-                object : PaymentResultListener {
+            airwallex.checkout(
+                session = session,
+                paymentMethod = paymentMethod,
+                paymentConsent = paymentConsent,
+                cvc = null, // No CVC for tokenized cards
+                listener = object : PaymentResultListener {
                     override fun onCompleted(status: AirwallexPaymentStatus) {
                         viewModelScope.launch {
                             _paymentResult.send(
@@ -186,23 +233,13 @@ class PaymentFlowViewModel(
             )
             return@launch
         }
-        if (session !is AirwallexPaymentSession) {
-            _paymentResult.send(
-                PaymentResultEvent(
-                    flowType = PaymentFlowType.CHECKOUT_WITH_CVC,
-                    status = AirwallexPaymentStatus.Failure(
-                        AirwallexCheckoutException(message = "checkout with paymentConsent only support AirwallexPaymentSession")
-                    )
-                )
-            )
-            return@launch
-        }
 
         val status = checkout(
             paymentMethod = paymentMethod,
-            paymentConsentId = paymentConsent.id,
-            cvc = cvc,
+            paymentConsent = paymentConsent,
+            cvc = cvc
         )
+
         _paymentResult.send(
             PaymentResultEvent(
                 flowType = PaymentFlowType.CHECKOUT_WITH_CVC,
@@ -227,11 +264,15 @@ class PaymentFlowViewModel(
         billing: Billing?
     ) = viewModelScope.launch {
         val status = suspendCancellableCoroutine { continuation ->
-            airwallex.confirmPaymentIntent(
+            airwallex.checkout(
                 session = session,
-                card = card,
-                billing = billing,
-                saveCard = saveCard,
+                paymentMethod = PaymentMethod.Builder()
+                    .setType(PaymentMethodType.CARD.value)
+                    .setCard(card)
+                    .setBilling(billing)
+                    .build(),
+                cvc = card.cvc,
+                saveCard = saveCard, // Will create consent inline if true
                 listener = object : PaymentResultListener {
                     override fun onCompleted(status: AirwallexPaymentStatus) {
                         continuation.resume(status)
@@ -256,7 +297,7 @@ class PaymentFlowViewModel(
 
     private suspend fun checkout(
         paymentMethod: PaymentMethod,
-        paymentConsentId: String?,
+        paymentConsent: PaymentConsent?,
         cvc: String,
         flow: AirwallexPaymentRequestFlow = AirwallexPaymentRequestFlow.IN_APP,
     ): AirwallexPaymentStatus {
@@ -264,7 +305,7 @@ class PaymentFlowViewModel(
             airwallex.checkout(
                 session = session,
                 paymentMethod = paymentMethod,
-                paymentConsentId = paymentConsentId,
+                paymentConsent = paymentConsent,
                 cvc = cvc,
                 flow = flow,
                 listener = object : PaymentResultListener {
@@ -278,8 +319,9 @@ class PaymentFlowViewModel(
 
     private suspend fun checkoutGooglePay(): AirwallexPaymentStatus {
         return suspendCancellableCoroutine { continuation ->
-            airwallex.startGooglePay(
+            airwallex.checkout(
                 session = session,
+                paymentMethod = PaymentMethod.Builder().setType(PaymentMethodType.GOOGLEPAY.value).build(),
                 listener = object : PaymentResultListener {
                     override fun onCompleted(status: AirwallexPaymentStatus) {
                         continuation.resume(status)

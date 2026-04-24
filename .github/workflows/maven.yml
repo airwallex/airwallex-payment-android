@@ -2,9 +2,8 @@ name: Push release to Maven
 
 on:
   workflow_dispatch:
-  push:
-    tags:
-      - '*'
+  release:
+    types: [published]
 
 jobs:
   maven:
@@ -37,3 +36,10 @@ jobs:
           SIGNING_KEY_BASE64: ${{ secrets.SIGNING_KEY_BASE64 }}
           SONATYPE_STAGING_PROFILE_ID: ${{ secrets.SONATYPE_STAGING_PROFILE_ID }}
           AIRWALLEX_VERSION_CODE: ${{ github.run_number }}
+
+  repo-dispatch:
+    needs: maven
+    uses: ./.github/workflows/repo-dispatch-on-release.yml
+    with:
+      tag: ${{ github.event.release.tag_name }}
+    secrets: inherit

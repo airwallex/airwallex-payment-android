@@ -18,6 +18,7 @@ object PACheckoutEnvironment {
         get() = when (Settings.getEnvironment()) {
             Environment.STAGING -> "https://staging-pacheckoutdemo.airwallex.com/"
             Environment.DEMO -> "https://demo-pacheckoutdemo.airwallex.com/"
+            Environment.PREVIEW -> "https://pacheckoutdemo.sandbox.airwallex.com/"
             else -> null // Our demo does not support PRODUCTION. Please validate it within your own app.
         }
 }
@@ -34,13 +35,14 @@ class PACheckoutDemoRepository : BaseRepository {
     override suspend fun getPaymentIntentFromServer(
         force3DS: Boolean?,
         customerId: String?,
-        returnUrl: DemoReturnUrl
+        returnUrl: DemoReturnUrl,
+        amount: java.math.BigDecimal?
     ): PaymentIntent {
         val body = mutableMapOf(
             "apiKey" to Settings.apiKey,
             "clientId" to Settings.clientId,
             "request_id" to UUID.randomUUID().toString(),
-            "amount" to Settings.price.toDouble(),
+            "amount" to (amount ?: Settings.price.toBigDecimal()),
             "currency" to Settings.currency,
             "merchant_order_id" to UUID.randomUUID().toString(),
             "order" to PurchaseOrder.Builder()

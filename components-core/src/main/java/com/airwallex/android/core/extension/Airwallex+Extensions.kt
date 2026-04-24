@@ -7,6 +7,7 @@ import com.airwallex.android.core.AirwallexRecurringSession
 import com.airwallex.android.core.AirwallexRecurringWithIntentSession
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.PaymentIntentProvider
+import com.airwallex.android.core.Session
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.model.Billing
@@ -46,7 +47,13 @@ fun Airwallex.createCardPaymentMethod(
         )
     }
 
-    if (session is AirwallexPaymentSession && !saveCard) {
+    val isOneOffWithoutSave = when (session) {
+        is Session -> session.isOneOffPayment && !saveCard
+        is AirwallexPaymentSession -> !saveCard
+        else -> false
+    }
+
+    if (isOneOffWithoutSave) {
         listener.onSuccess(
             PaymentMethod.Builder()
                 .setType(PaymentMethodType.CARD.value)
@@ -57,7 +64,7 @@ fun Airwallex.createCardPaymentMethod(
     } else {
         when (session) {
             is AirwallexRecurringSession -> createPaymentMethod(session.clientSecret)
-            is AirwallexPaymentSession, is AirwallexRecurringWithIntentSession ->
+            is Session, is AirwallexPaymentSession, is AirwallexRecurringWithIntentSession ->
                 session.resolvePaymentIntent(
                     object : PaymentIntentProvider.PaymentIntentCallback {
                         override fun onSuccess(paymentIntent: PaymentIntent) {

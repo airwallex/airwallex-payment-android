@@ -22,6 +22,7 @@ open class AirwallexCheckoutViewModel(
 
     val transactionMode: TransactionMode by lazy {
         when (session) {
+            is Session -> if (session.isOneOffPayment) TransactionMode.ONE_OFF else TransactionMode.RECURRING
             is AirwallexRecurringSession, is AirwallexRecurringWithIntentSession -> TransactionMode.RECURRING
             is AirwallexPaymentSession -> TransactionMode.ONE_OFF
             else -> TransactionMode.ONE_OFF // Default to one-off if session is unavailable
@@ -51,38 +52,16 @@ open class AirwallexCheckoutViewModel(
             }
         }
         airwallex.checkout(
-            session,
-            paymentMethod,
-            paymentConsentId,
-            cvc,
-            additionalInfo,
-            flow,
-            listener
+            session = session,
+            paymentMethod = paymentMethod,
+            paymentConsentId = paymentConsentId,
+            cvc = cvc,
+            additionalInfo = additionalInfo,
+            flow = flow,
+            listener = listener
         )
 
         return resultData
-    }
-
-    suspend fun checkout(
-        paymentMethod: PaymentMethod,
-        paymentConsentId: String?,
-        cvc: String,
-        flow: AirwallexPaymentRequestFlow = AirwallexPaymentRequestFlow.IN_APP,
-    ): AirwallexPaymentStatus {
-        return suspendCancellableCoroutine { continuation ->
-            airwallex.checkout(
-                session = session,
-                paymentMethod = paymentMethod,
-                paymentConsentId = paymentConsentId,
-                cvc = cvc,
-                flow = flow,
-                listener = object : Airwallex.PaymentResultListener {
-                    override fun onCompleted(status: AirwallexPaymentStatus) {
-                        continuation.resume(status)
-                    }
-                }
-            )
-        }
     }
 
     suspend fun checkout(
@@ -121,7 +100,7 @@ open class AirwallexCheckoutViewModel(
     suspend fun retrieveBanks(paymentMethodTypeName: String): Result<BankResponse> {
         return suspendCancellableCoroutine { continuation ->
             when (session) {
-                is AirwallexPaymentSession -> {
+                is Session, is AirwallexPaymentSession -> {
                     session.resolvePaymentIntent(object : PaymentIntentProvider.PaymentIntentCallback {
                         override fun onSuccess(paymentIntent: PaymentIntent) {
                             airwallex.retrieveBanks(
@@ -184,7 +163,7 @@ open class AirwallexCheckoutViewModel(
             }
 
             when (session) {
-                is AirwallexPaymentSession, is AirwallexRecurringWithIntentSession -> {
+                is Session, is AirwallexPaymentSession, is AirwallexRecurringWithIntentSession -> {
                     session.resolvePaymentIntent(object : PaymentIntentProvider.PaymentIntentCallback {
                         override fun onSuccess(paymentIntent: PaymentIntent) {
                             performRetrieval(paymentIntent.clientSecret)

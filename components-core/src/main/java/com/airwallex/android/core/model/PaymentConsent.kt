@@ -39,7 +39,7 @@ data class PaymentConsent constructor(
     val nextTriggeredBy: NextTriggeredBy? = null,
 
     /**
-     * Only applicable when next_triggered_by is merchant. One of scheduled, unscheduled
+     * Only applicable when next_triggered_by is merchant. One of scheduled, unscheduled, installments
      */
     val merchantTriggerReason: MerchantTriggerReason? = null,
 
@@ -103,7 +103,9 @@ data class PaymentConsent constructor(
     enum class MerchantTriggerReason(val value: String) : Parcelable {
         SCHEDULED("scheduled"),
 
-        UNSCHEDULED("unscheduled");
+        UNSCHEDULED("unscheduled"),
+
+        INSTALLMENTS("installments");
 
         internal companion object {
             internal fun fromValue(value: String?): MerchantTriggerReason? {

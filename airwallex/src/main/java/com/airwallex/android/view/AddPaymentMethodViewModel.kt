@@ -10,6 +10,7 @@ import com.airwallex.android.core.AirwallexPaymentSession
 import com.airwallex.android.core.AirwallexRecurringSession
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.CardBrand
+import com.airwallex.android.core.Session
 import com.airwallex.android.core.model.Address
 import com.airwallex.android.core.model.Billing
 import com.airwallex.android.core.model.CardScheme
@@ -56,7 +57,7 @@ class AddPaymentMethodViewModel(
         session.shipping
     }
 
-    val canSaveCard: Boolean by lazy { session is AirwallexPaymentSession && !session.customerId.isNullOrEmpty() }
+    val canSaveCard: Boolean by lazy { (session is AirwallexPaymentSession || (session is Session && session.isOneOffPayment)) && !session.customerId.isNullOrEmpty() }
 
     val isBillingRequired: Boolean by lazy { session.isBillingInformationRequired }
 

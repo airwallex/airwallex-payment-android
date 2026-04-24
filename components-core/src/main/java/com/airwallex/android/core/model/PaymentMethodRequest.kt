@@ -82,6 +82,7 @@ class PaymentMethodRequest(
     class Builder(
         val type: String
     ) : ObjectBuilder<PaymentMethodRequest> {
+        private var id: String? = null
         private var paymentRequest: AirwallexPaymentRequest? = null
 
         private var card: PaymentMethod.Card? = null
@@ -89,6 +90,13 @@ class PaymentMethodRequest(
         private var billing: Billing? = null
 
         private var googlePay: PaymentMethod.GooglePay? = null
+
+        /**
+         * Set payment method ID for referencing existing payment methods
+         */
+        fun setId(id: String?): Builder = apply {
+            this.id = id
+        }
 
         fun setThirdPartyPaymentMethodRequest(
             additionalInfo: Map<String, String>? = null,
@@ -118,6 +126,7 @@ class PaymentMethodRequest(
 
         override fun build(): PaymentMethodRequest {
             return PaymentMethodRequest(
+                id = id,
                 type = type,
                 paymentRequest = paymentRequest,
                 card = card,

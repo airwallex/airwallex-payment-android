@@ -3,11 +3,11 @@ package com.airwallex.paymentacceptance.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.airwallex.android.core.Airwallex;
 import com.airwallex.android.core.AirwallexPaymentStatus;
@@ -21,6 +21,7 @@ import com.airwallex.android.view.composables.PaymentElementCallback;
 import com.airwallex.android.view.composables.PaymentElementConfiguration;
 import com.airwallex.paymentacceptance.R;
 import com.airwallex.paymentacceptance.databinding.ActivityEmbeddedElementBinding;
+import com.airwallex.paymentacceptance.viewmodel.EmbeddedElementViewModel;
 
 /**
  * Java example of using Embedded Element integration with PaymentElement.
@@ -39,6 +40,7 @@ public class EmbeddedElementJavaActivity extends AppCompatActivity {
 
     private ActivityEmbeddedElementBinding mBinding;
     private Airwallex airwallex;
+    private EmbeddedElementViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,8 +49,9 @@ public class EmbeddedElementJavaActivity extends AppCompatActivity {
         setContentView(mBinding.getRoot());
 
         airwallex = new Airwallex(this);
+        viewModel = new ViewModelProvider(this).get(EmbeddedElementViewModel.class);
         setupUI();
-        setupPaymentElement();
+        createSessionAndSetupPaymentElement();
     }
 
     private void setupUI() {
@@ -56,46 +59,52 @@ public class EmbeddedElementJavaActivity extends AppCompatActivity {
         mBinding.tvTitle.setText("Java Embedded Element Example");
     }
 
-    private void setupPaymentElement() {
-        // Get session from intent (in real app, you'd create this from your backend)
-        Parcelable parcelable = getIntent().getParcelableExtra("session");
-        if (!(parcelable instanceof AirwallexSession)) {
-            showError("Session is required");
-            return;
-        }
-        AirwallexSession session = (AirwallexSession) parcelable;
-
-        // Get layout type from intent (null means card-only mode)
+    private void createSessionAndSetupPaymentElement() {
         String layoutTypeString = getIntent().getStringExtra("layoutType");
+        boolean includeGooglePay = layoutTypeString != null;
 
-        // Get showsGooglePayAsPrimaryButton from intent (default to true)
+        mBinding.progressBar.setVisibility(android.view.View.VISIBLE);
+        mBinding.composeCardInfo.setVisibility(android.view.View.GONE);
+
+        viewModel.createEmbeddedElementSession(
+                includeGooglePay,
+                java.util.Collections.emptyList(),
+                session -> {
+                    setupPaymentElement(session);
+                    return kotlin.Unit.INSTANCE;
+                },
+                error -> {
+                    mBinding.progressBar.setVisibility(android.view.View.GONE);
+                    showError(error.getMessage());
+                    return kotlin.Unit.INSTANCE;
+                }
+        );
+    }
+
+    private void setupPaymentElement(AirwallexSession session) {
+        String layoutTypeString = getIntent().getStringExtra("layoutType");
         boolean showsGooglePayAsPrimaryButton = getIntent().getBooleanExtra("showsGooglePayAsPrimaryButton", true);
 
-        // Configure payment element based on layout type
         PaymentElementConfiguration configuration;
         if (layoutTypeString != null) {
-            // Payment Sheet mode with specified layout
             PaymentMethodsLayoutType layoutType = PaymentMethodsLayoutType.valueOf(layoutTypeString);
             configuration = new PaymentElementConfiguration.PaymentSheet(
                     layoutType,
                     new PaymentElementConfiguration.GooglePayButton(showsGooglePayAsPrimaryButton, null),
                     new PaymentElementConfiguration.CheckoutButton(null),
-                    null // appearance - use default
+                    null
             );
         } else {
-            // Card-only mode (no payment sheet)
             configuration = new PaymentElementConfiguration.Card(
                     java.util.Arrays.asList(AirwallexSupportedCard.values()),
                     new PaymentElementConfiguration.CheckoutButton(null),
-                    null // appearance - use default
+                    null
             );
         }
 
-        // Create payment flow listener
         PaymentFlowListener listener = new PaymentFlowListener() {
             @Override
             public void onLoadingStateChanged(boolean isLoading, @NonNull Context context) {
-                // Handle loading state changes during payment using loading dialog
                 runOnUiThread(() -> {
                     if (isLoading) {
                         AirwallexLoadingDialogFragment.Companion.show(EmbeddedElementJavaActivity.this);
@@ -107,7 +116,6 @@ public class EmbeddedElementJavaActivity extends AppCompatActivity {
 
             @Override
             public void onPaymentResult(@NonNull AirwallexPaymentStatus status) {
-                // Handle payment result
                 if (status instanceof AirwallexPaymentStatus.Success) {
                     AirwallexPaymentStatus.Success success = (AirwallexPaymentStatus.Success) status;
                     showSuccess(success.getPaymentIntentId());
@@ -116,45 +124,31 @@ public class EmbeddedElementJavaActivity extends AppCompatActivity {
                     showError(failure.getException().getMessage());
                 } else if (status instanceof AirwallexPaymentStatus.Cancel) {
                     showCancelled();
-                } else if (status instanceof AirwallexPaymentStatus.InProgress) {
-                    // Payment in progress (loading handled by onLoadingStateChanged)
                 }
             }
 
             @Override
             public void onError(@NonNull Throwable exception, @NonNull Context context) {
-                // Optional: Handle errors during element initialization or payment
                 showError(exception.getMessage());
             }
         };
 
-        // Show loading
-        mBinding.progressBar.setVisibility(android.view.View.VISIBLE);
-        mBinding.composeCardInfo.setVisibility(android.view.View.GONE);
-
-        // Create PaymentElement using the create + renderIn pattern
         PaymentElement.create(
-                session,                        // AirwallexSession
-                airwallex,                      // Airwallex instance
-                configuration,                  // PaymentElementConfiguration
-                listener,                       // PaymentFlowListener
+                session,
+                airwallex,
+                configuration,
+                listener,
                 new PaymentElementCallback() {
                     @Override
                     public void onSuccess(@NonNull PaymentElement element) {
-                        // Hide loading and show content
                         mBinding.progressBar.setVisibility(android.view.View.GONE);
                         mBinding.composeCardInfo.setVisibility(android.view.View.VISIBLE);
-
-                        // Render the PaymentElement in the ComposeView
                         element.renderIn(mBinding.composeCardInfo);
                     }
 
                     @Override
                     public void onFailure(@NonNull Throwable error) {
-                        // Hide loading
                         mBinding.progressBar.setVisibility(android.view.View.GONE);
-
-                        // Handle creation error
                         showError(error.getMessage() != null ? error.getMessage() : "Failed to create payment element");
                     }
                 }
@@ -193,21 +187,18 @@ public class EmbeddedElementJavaActivity extends AppCompatActivity {
     }
 
     /**
-     * Launch EmbeddedElementJavaActivity with a session
+     * Launch EmbeddedElementJavaActivity
      *
      * @param context The context
-     * @param session The payment session
      * @param layoutType The layout type for payment sheet (null for card-only mode)
      * @param showsGooglePayAsPrimaryButton Whether to show Google Pay as primary button (ignored in card-only mode)
      */
     public static void start(
             Context context,
-            AirwallexSession session,
             PaymentMethodsLayoutType layoutType,
             boolean showsGooglePayAsPrimaryButton
     ) {
         Intent intent = new Intent(context, EmbeddedElementJavaActivity.class);
-        intent.putExtra("session", session);
         if (layoutType != null) {
             intent.putExtra("layoutType", layoutType.name());
         }

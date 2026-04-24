@@ -52,15 +52,37 @@ object Settings {
      */
     var cachedCustomerId: String?
         set(value) {
+            val key = "${CUSTOMER_ID}_${sdkEnv}"
             if (value?.isEmpty() == true) {
-                sharedPreferences.edit { remove(CUSTOMER_ID) }
+                sharedPreferences.edit { remove(key) }
             } else {
-                sharedPreferences.edit { putString(CUSTOMER_ID, value) }
+                sharedPreferences.edit { putString(key, value) }
             }
         }
         get() {
-            return sharedPreferences.getString(CUSTOMER_ID, null)
+            val key = "${CUSTOMER_ID}_${sdkEnv}"
+            return sharedPreferences.getString(key, null)
         }
+
+    /**
+     * Get cached customer ID for a specific environment
+     */
+    fun getCachedCustomerIdForEnv(env: String): String {
+        val key = "${CUSTOMER_ID}_${env}"
+        return sharedPreferences.getString(key, null) ?: ""
+    }
+
+    /**
+     * Save customer ID for a specific environment
+     */
+    fun saveCachedCustomerIdForEnv(env: String, value: String) {
+        val key = "${CUSTOMER_ID}_${env}"
+        if (value.isEmpty()) {
+            sharedPreferences.edit { remove(key) }
+        } else {
+            sharedPreferences.edit { putString(key, value) }
+        }
+    }
 
     // Default Staging
     var sdkEnv: String
@@ -84,6 +106,7 @@ object Settings {
         return when (sdkEnv) {
             sdkEnvArray.getOrNull(0) -> Environment.STAGING
             sdkEnvArray.getOrNull(1) -> Environment.DEMO
+            sdkEnvArray.getOrNull(2) -> Environment.PREVIEW
             else -> Environment.PRODUCTION
         }
     }
@@ -192,13 +215,25 @@ object Settings {
             return sharedPreferences.getString("express_checkout", "Disabled") ?: "Disabled"
         }
 
-    var apiKey: String
+    var useSession: String
         set(value) {
-            sharedPreferences.edit { putString(context.getString(R.string.api_key), value) }
+            sharedPreferences.edit {
+                putString("use_session", value)
+            }
         }
         get() {
+            return sharedPreferences.getString("use_session", "Enabled") ?: "Enabled"
+        }
+
+    var apiKey: String
+        set(value) {
+            val key = "${context.getString(R.string.api_key)}_${sdkEnv}"
+            sharedPreferences.edit { putString(key, value) }
+        }
+        get() {
+            val key = "${context.getString(R.string.api_key)}_${sdkEnv}"
             val value = sharedPreferences.getString(
-                context.getString(R.string.api_key),
+                key,
                 getMetadata(METADATA_KEY_API_KEY)
             )
                 ?: API_KEY
@@ -206,19 +241,55 @@ object Settings {
             return value.cleaned().emptyIfReplaceWithApiKey()
         }
 
+    /**
+     * Get cached API key for a specific environment
+     */
+    fun getApiKeyForEnv(env: String): String {
+        val key = "${context.getString(R.string.api_key)}_${env}"
+        val value = sharedPreferences.getString(key, null) ?: ""
+        return value.cleaned().emptyIfReplaceWithApiKey()
+    }
+
+    /**
+     * Save API key for a specific environment
+     */
+    fun saveApiKeyForEnv(env: String, value: String) {
+        val key = "${context.getString(R.string.api_key)}_${env}"
+        sharedPreferences.edit { putString(key, value) }
+    }
+
     var clientId: String
         set(value) {
-            sharedPreferences.edit { putString(context.getString(R.string.client_id), value) }
+            val key = "${context.getString(R.string.client_id)}_${sdkEnv}"
+            sharedPreferences.edit { putString(key, value) }
         }
         get() {
+            val key = "${context.getString(R.string.client_id)}_${sdkEnv}"
             val value = sharedPreferences.getString(
-                context.getString(R.string.client_id),
+                key,
                 getMetadata(METADATA_KEY_CLIENT_ID_KEY)
             )
                 ?: CLIENT_ID
 
             return value.cleaned().emptyIfReplaceWithClientID()
         }
+
+    /**
+     * Get cached client ID for a specific environment
+     */
+    fun getClientIdForEnv(env: String): String {
+        val key = "${context.getString(R.string.client_id)}_${env}"
+        val value = sharedPreferences.getString(key, null) ?: ""
+        return value.cleaned().emptyIfReplaceWithClientID()
+    }
+
+    /**
+     * Save client ID for a specific environment
+     */
+    fun saveClientIdForEnv(env: String, value: String) {
+        val key = "${context.getString(R.string.client_id)}_${env}"
+        sharedPreferences.edit { putString(key, value) }
+    }
 
     var weChatAppId: String
         set(value) {
@@ -275,6 +346,10 @@ object Settings {
                 defaultCountryCode
             )?.takeIf { it.isNotBlank() } ?: defaultCountryCode
         }
+
+    fun flush() {
+        sharedPreferences.edit(commit = true) {}
+    }
 
     private fun getMetadata(key: String): String? {
         return context.packageManager

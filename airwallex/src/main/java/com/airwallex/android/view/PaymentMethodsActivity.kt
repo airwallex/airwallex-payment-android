@@ -97,7 +97,6 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
                 onFailure = { error ->
                     setLoadingProgress(loading = false, cancelable = false)
                     alert(message = error.message ?: error.toString())
-                    finish()
                 }
             )
         }

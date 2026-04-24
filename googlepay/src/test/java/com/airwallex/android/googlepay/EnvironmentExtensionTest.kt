@@ -19,6 +19,12 @@ class EnvironmentExtensionTest {
     }
 
     @Test
+    fun `test googlePayEnvironment if preview`() {
+        val environment = Environment.PREVIEW
+        assertEquals(environment.googlePayEnvironment(), WalletConstants.ENVIRONMENT_TEST)
+    }
+
+    @Test
     fun `test googlePayEnvironment if production`() {
         val environment = Environment.PRODUCTION
         assertEquals(environment.googlePayEnvironment(), WalletConstants.ENVIRONMENT_PRODUCTION)
