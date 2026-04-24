@@ -347,6 +347,10 @@ object Settings {
             )?.takeIf { it.isNotBlank() } ?: defaultCountryCode
         }
 
+    fun flush() {
+        sharedPreferences.edit(commit = true) {}
+    }
+
     private fun getMetadata(key: String): String? {
         return context.packageManager
             .getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
