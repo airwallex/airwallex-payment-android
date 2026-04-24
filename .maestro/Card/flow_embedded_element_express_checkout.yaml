@@ -13,7 +13,7 @@ env:
     file: ../Common/flow_update_settings.yaml
     env:
       LAYOUT: ${LAYOUT}
-      ENVIRONMENT: ${output.settings.environment.demo}
+      ENVIRONMENT: ${output.settings.environment.preview}
       NEXT_TRIGGERED_BY: ${output.settings.nextTriggeredBy.customer}
       IS_GUEST: true
       EXPRESS_CHECKOUT: true

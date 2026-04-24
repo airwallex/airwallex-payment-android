@@ -23,7 +23,7 @@ platform:
     file: ../Common/flow_update_settings.yaml
     env:
       LAYOUT: ${output.settings.layout.tab} # Tab/Accordion
-      ENVIRONMENT: ${output.settings.environment.demo} # STAGING/DEMO
+      ENVIRONMENT: ${output.settings.environment.preview} # STAGING/DEMO
       NEXT_TRIGGERED_BY: ${output.settings.nextTriggeredBy.customer} # Customer/Merchant
       IS_GUEST: true
       USE_NEW_SESSION: false 

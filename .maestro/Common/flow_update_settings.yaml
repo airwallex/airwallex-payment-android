@@ -1,6 +1,6 @@
 appId: com.airwallex.paymentacceptance
 env:
-  ENVIRONMENT: ${ENVIRONMENT || "DEMO"}
+  ENVIRONMENT: ${ENVIRONMENT || "PREVIEW"}
   NEXT_TRIGGERED_BY: ${NEXT_TRIGGERED_BY || "Customer"}
   LAYOUT: ${LAYOUT || "Tab"}
   FORCE_3DS: ${FORCE_3DS || "false"}
@@ -10,7 +10,7 @@ env:
   USE_NEW_SESSION: ${USE_NEW_SESSION || "false"}
 ---
 - assertVisible: "Settings"
-# Environment must be pre-set via .maestro/setup-env.sh before running this test.
+# Environment must be pre-set before running this test, this is just to assert.
 # Env switching via the UI triggers Process.killProcess (PR #313) which wedges
 # the Maestro on-device driver for the rest of the session.
 - assertVisible: ${ENVIRONMENT}
