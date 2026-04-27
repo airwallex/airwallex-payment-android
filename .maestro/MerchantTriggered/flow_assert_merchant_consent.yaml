@@ -1,0 +1,12 @@
+appId: com.airwallex.paymentacceptance
+---
+# Assert merchant-triggered consent exists and cannot be removed
+# Must be in one-off checkout mode when calling this flow
+- assertVisible: "Choose a card"
+- assertVisible:
+    id: "saved-consent"
+    index: 0
+- tapOn: "three dots"
+- assertVisible: "Cannot remove card"
+- tapOn: "Cancel"
+- assertVisible: "Choose a card"
