@@ -1,0 +1,106 @@
+appId: com.airwallex.paymentacceptance
+tags:
+  - card
+  - user
+  - api-integration
+  - recurring-with-payment
+platform:
+  android:
+    disableAnimations: true  # Disables system animations on the Android emulator
+---
+- runFlow:
+    when:
+      true: ${IS_RECORDING}
+    commands:
+      - startRecording: test_api_customer_recurring_with_payment
+- launchApp
+- runScript: ../../../Card/cards.js
+- runScript: ../../../Common/settings.js
+- tapOn: "Integrate with low-level API"
+- runFlow:
+    file: ../../../Common/flow_update_checkout_mode.yaml
+    env:
+      CHECKOUT_MODE: ${output.settings.checkoutMode.recurringAndPayment}
+# Update settings
+- tapOn: setting
+- runFlow:
+    file: ../../../Common/flow_update_settings.yaml
+    env:
+      USE_NEW_SESSION: false
+      EXPRESS_CHECKOUT: false
+      IS_GUEST: false
+      UI_TESTING_CUSTOMER_ID: ${UI_TESTING_CUSTOMER_ID}
+# Verify no saved cards initially
+- scrollUntilVisible:
+    element: "Get saved cards"
+- tapOn: "Get saved cards"
+- assertVisible: "Customer Dialog"
+- assertNotVisible: "PAY"
+- back
+# Pay with card - should create consent and process payment
+- scrollUntilVisible:
+    element: "Pay with card"
+    direction: UP
+- tapOn: "Pay with card"
+- tapOn: "PAY"
+- assertVisible: "Payment successful"
+- tapOn: "OK"
+# Verify 1 saved card
+- scrollUntilVisible:
+    element: "Get saved cards"
+- tapOn: "Get saved cards"
+- assertVisible: "Visa •••• 1003"
+- back
+# Pay with same card again - should allow duplicate for customer-triggered
+- scrollUntilVisible:
+    element: "Pay with card"
+    direction: UP
+- tapOn: "Pay with card"
+- tapOn: "PAY"
+- assertVisible: "Payment successful"
+- tapOn: "OK"
+# Verify 2 consents (duplicate allowed for customer-triggered)
+- scrollUntilVisible:
+    element: "Get saved cards"
+- tapOn: "Get saved cards"
+- assertVisible: "Visa •••• 1003"
+- back
+# Pay with 3DS card - should create consent, process payment, and trigger 3DS
+- scrollUntilVisible:
+    element: "Pay with card and trigger 3DS"
+    direction: UP
+- tapOn: "Pay with card and trigger 3DS"
+- tapOn: "PAY"
+- runFlow:
+    file: ../../../Common/flow_handle_3ds.yaml
+    env:
+      CANCEL_3DS: false
+- assertVisible: "Payment successful"
+- tapOn: "OK"
+# Verify 3 saved cards
+- scrollUntilVisible:
+    element: "Get saved cards"
+- tapOn: "Get saved cards"
+- assertVisible: "Visa •••• 1003"
+- assertVisible: "Visa •••• 0088"
+- back
+# Pay with redirect payment - should create consent and process payment
+- scrollUntilVisible:
+    element: "Redirect Payment"
+    direction: DOWN
+- tapOn: "Redirect Payment"
+- runFlow:
+    file: ../../../Common/flow_handle_redirect.yaml
+# Recurring with payment: loading overlay appears, press back to dismiss it
+- back
+# Go back to MainActivity from APIIntegrationActivity
+- back
+- tapOn: "Integrate with Airwallex UI"
+- tapOn: "Launch payment list"
+- runFlow:
+    file: ../../../Card/flow_remove_all_consents.yaml
+- runFlow:
+    when:
+      true: ${IS_RECORDING}
+    commands:
+      - stopRecording

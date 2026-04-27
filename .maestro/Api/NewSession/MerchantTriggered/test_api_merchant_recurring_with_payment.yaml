@@ -1,0 +1,115 @@
+appId: com.airwallex.paymentacceptance
+tags:
+  - card
+  - user
+  - api-integration
+  - recurring-with-payment
+  - merchant-triggered
+  - new-session
+platform:
+  android:
+    disableAnimations: true  # Disables system animations on the Android emulator
+---
+- runFlow:
+    when:
+      true: ${IS_RECORDING}
+    commands:
+      - startRecording: test_api_merchant_recurring_with_payment_new_session
+- launchApp
+- runScript: ../../../Card/cards.js
+- runScript: ../../../Common/settings.js
+- tapOn: "Integrate with low-level API"
+- runFlow:
+    file: ../../../Common/flow_update_checkout_mode.yaml
+    env:
+      CHECKOUT_MODE: ${output.settings.checkoutMode.recurringAndPayment}
+# Update settings
+- tapOn: setting
+- runFlow:
+    file: ../../../Common/flow_update_settings.yaml
+    env:
+      USE_NEW_SESSION: true
+      EXPRESS_CHECKOUT: false
+      IS_GUEST: false
+      NEXT_TRIGGERED_BY: ${output.settings.nextTriggeredBy.merchant}
+      UI_TESTING_CUSTOMER_ID: ${UI_TESTING_CUSTOMER_ID}
+# Verify no saved cards initially
+- scrollUntilVisible:
+    element: "Get saved cards"
+    direction: DOWN
+- tapOn: "Get saved cards"
+- assertVisible: "Customer Dialog"
+- assertNotVisible: "PAY"
+- back
+# Pay with card - should create consent and process payment
+# Merchant-triggered recurring+payment: new card always triggers 3DS
+- scrollUntilVisible:
+    element: "Pay with card"
+    direction: UP
+- tapOn: "Pay with card"
+- tapOn: "PAY"
+- runFlow:
+    file: ../../../Common/flow_handle_3ds.yaml
+    env:
+      CANCEL_3DS: false
+- assertVisible: "Payment successful"
+- tapOn: "OK"
+# Verify 1 saved card
+- scrollUntilVisible:
+    element: "Get saved cards"
+    direction: DOWN
+- tapOn: "Get saved cards"
+- assertVisible: "Visa •••• 1003"
+- back
+# Pay with same card again - merchant-triggered allows this (also triggers 3DS)
+- scrollUntilVisible:
+    element: "Pay with card"
+    direction: UP
+- tapOn: "Pay with card"
+- tapOn: "PAY"
+- runFlow:
+    file: ../../../Common/flow_handle_3ds.yaml
+    env:
+      CANCEL_3DS: false
+- assertVisible: "Payment successful"
+- tapOn: "OK"
+# Verify 2 consents created
+- scrollUntilVisible:
+    element: "Get saved cards"
+    direction: DOWN
+- tapOn: "Get saved cards"
+- assertVisible: "Visa •••• 1003"
+- back
+# Pay with 3DS card - should create consent, process payment, and trigger 3DS
+- scrollUntilVisible:
+    element: "Pay with card and trigger 3DS"
+    direction: UP
+- tapOn: "Pay with card and trigger 3DS"
+- tapOn: "PAY"
+- runFlow:
+    file: ../../../Common/flow_handle_3ds.yaml
+    env:
+      CANCEL_3DS: false
+- assertVisible: "Payment successful"
+- tapOn: "OK"
+# Verify 3 saved cards
+- scrollUntilVisible:
+    element: "Get saved cards"
+    direction: DOWN
+- tapOn: "Get saved cards"
+- assertVisible: "Visa •••• 1003"
+- assertVisible: "Visa •••• 0088"
+- back
+# Pay with redirect payment - should create consent and process payment
+- scrollUntilVisible:
+    element: "Redirect Payment"
+    direction: DOWN
+- tapOn: "Redirect Payment"
+- runFlow:
+    file: ../../../Common/flow_handle_redirect.yaml
+# Merchant-triggered consents cannot be deleted - no cleanup needed
+- runFlow:
+    when:
+      true: ${IS_RECORDING}
+    commands:
+      - stopRecording

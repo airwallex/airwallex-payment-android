@@ -1,0 +1,110 @@
+appId: com.airwallex.paymentacceptance
+tags:
+  - card
+  - user
+  - api-integration
+  - new-session
+platform:
+  android:
+    disableAnimations: true  # Disables system animations on the Android emulator
+---
+- runFlow:
+    when:
+      true: ${IS_RECORDING}
+    commands:
+      - startRecording: test_api_customer_oneoff_new_session
+- launchApp
+- runScript: ../../../Card/cards.js
+- runScript: ../../../Common/settings.js
+- tapOn: "Integrate with low-level API"
+- runFlow:
+    file: ../../../Common/flow_update_checkout_mode.yaml
+    env:
+      CHECKOUT_MODE: ${output.settings.checkoutMode.oneOff}
+# Update settings
+- tapOn: setting
+- runFlow:
+    file: ../../../Common/flow_update_settings.yaml
+    env:
+      USE_NEW_SESSION: true
+      EXPRESS_CHECKOUT: false
+      IS_GUEST: false
+      UI_TESTING_CUSTOMER_ID: ${UI_TESTING_CUSTOMER_ID}
+# Verify no saved cards initially
+- scrollUntilVisible:
+    element: "Get saved cards"
+- tapOn: "Get saved cards"
+- assertVisible: "Customer Dialog"
+- assertNotVisible: "PAY"
+- assertNotVisible: "Visa"
+- assertNotVisible: "Mastercard"
+- back
+# Pay with card (without saving) - should be successful
+- scrollUntilVisible:
+    element: "Pay with card"
+    direction: UP
+- tapOn: "Pay with card"
+- tapOn: "PAY"
+- assertVisible: "Payment successful"
+- tapOn: "OK"
+# Verify still no saved cards (card was not saved)
+- scrollUntilVisible:
+    element: "Get saved cards"
+- tapOn: "Get saved cards"
+- assertVisible: "Customer Dialog"
+- assertNotVisible: "PAY"
+- assertNotVisible: "Visa"
+- assertNotVisible: "Mastercard"
+- back
+# Pay with card and save card - should be successful
+- scrollUntilVisible:
+    element: "Pay with card and save card"
+    direction: UP
+- tapOn: "Pay with card and save card"
+- tapOn: "PAY"
+- assertVisible: "Payment successful"
+- tapOn: "OK"
+# Verify 1 saved card
+- scrollUntilVisible:
+    element: "Get saved cards"
+- tapOn: "Get saved cards"
+- assertVisible: "Visa •••• 1003"
+- back
+# Pay with card and trigger 3DS - should be successful after 3DS
+- scrollUntilVisible:
+    element: "Pay with card and trigger 3DS"
+    direction: UP
+- tapOn: "Pay with card and trigger 3DS"
+- tapOn: "PAY"
+- runFlow:
+    file: ../../../Common/flow_handle_3ds.yaml
+    env:
+      CANCEL_3DS: false
+- assertVisible: "Payment successful"
+- tapOn: "OK"
+# Verify 2 saved cards
+- scrollUntilVisible:
+    element: "Get saved cards"
+- tapOn: "Get saved cards"
+- assertVisible: "Visa •••• 1003"
+- assertVisible: "Visa •••• 0088"
+- back
+# Pay with redirect payment - should be successful
+- scrollUntilVisible:
+    element: "Redirect Payment"
+    direction: DOWN
+- tapOn: "Redirect Payment"
+- runFlow:
+    file: ../../../Common/flow_handle_redirect.yaml
+# flow_handle_redirect.yaml completes the payment and dismisses the SUCCEED dialog
+# Now back on APIIntegrationActivity, go back to MainActivity
+- back
+- tapOn: "Integrate with Airwallex UI"
+- tapOn: "Launch payment list"
+- runFlow:
+    file: ../../../Card/flow_remove_all_consents.yaml
+- runFlow:
+    when:
+      true: ${IS_RECORDING}
+    commands:
+      - stopRecording

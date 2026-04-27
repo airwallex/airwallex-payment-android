@@ -1,0 +1,8 @@
+appId: com.airwallex.paymentacceptance
+---
+# Navigate to payment list and clean up all consents
+- launchApp
+- tapOn: "Integrate with Airwallex UI"
+- tapOn: "Launch payment list"
+- runFlow:
+    file: ../Card/flow_remove_all_consents.yaml
