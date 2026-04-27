@@ -94,7 +94,6 @@ class UIIntegrationViewModel : BaseViewModel() {
         AirwallexStarter.presentCardPaymentFlow(
             activity = activity,
             session = session,
-            supportedCards = listOf(AirwallexSupportedCard.VISA),
             paymentResultListener = object : Airwallex.PaymentResultListener {
                 override fun onCompleted(status: AirwallexPaymentStatus) {
                     handlePaymentStatus(session, status)

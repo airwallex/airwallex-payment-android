@@ -25,7 +25,7 @@ platform:
     file: ../Common/flow_update_settings.yaml
     env:
       LAYOUT: ${output.settings.layout.tab}
-      ENVIRONMENT: ${output.settings.environment.demo}
+      ENVIRONMENT: ${output.settings.environment.preview}
       NEXT_TRIGGERED_BY: ${output.settings.nextTriggeredBy.customer}
       IS_GUEST: false
       USE_NEW_SESSION: false 

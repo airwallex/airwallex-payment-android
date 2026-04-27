@@ -84,7 +84,7 @@ object Settings {
         }
     }
 
-    // Default Staging
+    // Default Preview
     var sdkEnv: String
         set(value) {
             sharedPreferences.edit {
@@ -93,7 +93,7 @@ object Settings {
         }
         get() {
             val defaultSdkEnv =
-                SampleApplication.instance.resources.getStringArray(R.array.array_sdk_env)[0]
+                SampleApplication.instance.resources.getStringArray(R.array.array_sdk_env)[2]
             return sharedPreferences.getString(
                 context.getString(R.string.sdk_env_id),
                 defaultSdkEnv
@@ -346,6 +346,10 @@ object Settings {
                 defaultCountryCode
             )?.takeIf { it.isNotBlank() } ?: defaultCountryCode
         }
+
+    fun flush() {
+        sharedPreferences.edit(commit = true) {}
+    }
 
     private fun getMetadata(key: String): String? {
         return context.packageManager
