@@ -1,0 +1,11 @@
+<resources>
+    <string name="airwallex_select_your_currency">Selecteer uw valuta</string>
+    <string name="airwallex_select_your_currency_title">Selecteer de valuta waarmee u wilt betalen</string>
+    <string name="airwallex_card_empty_cvc">Voer de CVC/CVV van uw kaart in</string>
+    <string name="airwallex_card_invalid_cvc">Voer een geldige beveiligingscode in</string>
+    <string name="airwallex_card_enter_cvv">Voer CVC/CVV in voor\n%s</string>
+    <string name="airwallex_card_pay_now">Betalen</string>
+    <string name="airwallex_card_total">Totaal %s</string>
+    <string name="airwallex_rate">1 %1$s = %2$f %3$s</string>
+    <string name="airwallex_confirm_payment">Betaling bevestigen</string>
+</resources>
