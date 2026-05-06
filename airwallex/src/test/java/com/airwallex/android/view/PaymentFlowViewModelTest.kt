@@ -1036,9 +1036,11 @@ class PaymentFlowViewModelTest {
 
         verify(exactly = 1) { listener.onLoadingStateChanged(false, activity) }
         verify(exactly = 1) {
-            listener.onPaymentResult(match {
-                it is AirwallexPaymentStatus.Success && it.paymentIntentId == "intent_1"
-            })
+            listener.onPaymentResult(
+                match {
+                    it is AirwallexPaymentStatus.Success && it.paymentIntentId == "intent_1"
+                }
+            )
         }
     }
 
