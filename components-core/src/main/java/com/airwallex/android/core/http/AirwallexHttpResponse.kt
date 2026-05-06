@@ -39,6 +39,6 @@ data class AirwallexHttpResponse internal constructor(
     }
 
     private companion object {
-        private const val TRACE_ID_HEADER = "x-awx-traceid"
+        private const val TRACE_ID_HEADER = "x-b3-traceid"
     }
 }

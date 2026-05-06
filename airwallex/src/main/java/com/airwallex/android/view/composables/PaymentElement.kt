@@ -4,10 +4,8 @@ import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
 import com.airwallex.android.core.AirwallexSession
@@ -99,8 +97,8 @@ class PaymentElement private constructor(
                 )
             )[PaymentFlowViewModel::class.java]
             viewModel.updateActivity(airwallex.activity)
-
-            observeState(airwallex, viewModel, paymentFlowListener)
+            viewModel.updateSession(session)
+            viewModel.observeResults(airwallex.activity, paymentFlowListener)
 
             val alreadyLoaded = viewModel.availablePaymentMethods.value.isNotEmpty()
 
@@ -331,21 +329,6 @@ class PaymentElement private constructor(
                 paymentFlowListener = paymentFlowListener,
                 flowViewModel = flowViewModel
             )
-        }
-    }
-}
-
-private fun observeState(
-    airwallex: Airwallex,
-    viewModel: PaymentFlowViewModel,
-    paymentFlowListener: PaymentFlowListener
-) {
-    airwallex.activity.lifecycleScope.launch {
-        airwallex.activity.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            viewModel.paymentResult.collect { result ->
-                paymentFlowListener.onLoadingStateChanged(false, airwallex.activity)
-                paymentFlowListener.onPaymentResult(result.status)
-            }
         }
     }
 }
