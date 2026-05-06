@@ -20,6 +20,9 @@ jobs:
     steps:
       - name: Log version
         run: 'echo "Dispatching for version: ${{ inputs.tag }}"'
+      - name: Wait 20 minutes for Maven Central propagation
+        if: github.event_name == 'workflow_call'
+        run: sleep 1200
       - name: Send repository dispatch to Flutter SDK
         env:
           GH_TOKEN: ${{ secrets.SERVICE_ACCOUNT_PAT }}
