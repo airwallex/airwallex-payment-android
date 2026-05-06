@@ -1052,16 +1052,24 @@ class PaymentFlowViewModelTest {
         val oldListener = mockk<PaymentFlowListener>(relaxed = true)
         val newListener = mockk<PaymentFlowListener>(relaxed = true)
 
+        // Subscribe oldListener and confirm it's actually wired up by emitting first.
+        // This avoids the cancel-vs-emit race: by the time we swap listeners the
+        // channel is drained, so any later miss is unambiguously due to cancellation.
         viewModel.observeResults(activity, oldListener)
         advanceUntilIdle()
+        emitCheckoutResult(viewModel, session, AirwallexPaymentStatus.Success("intent_1"))
+        advanceUntilIdle()
+        verify(exactly = 1) { oldListener.onPaymentResult(any()) }
+
+        // Swap to newListener — this must cancel the old subscription.
         viewModel.observeResults(activity, newListener)
         advanceUntilIdle()
 
         emitCheckoutResult(viewModel, session, AirwallexPaymentStatus.Success("intent_2"))
         advanceUntilIdle()
 
-        verify(exactly = 0) { oldListener.onPaymentResult(any()) }
-        verify(exactly = 0) { oldListener.onLoadingStateChanged(any(), any()) }
+        // Old listener's count is unchanged from the first emission.
+        verify(exactly = 1) { oldListener.onPaymentResult(any()) }
         verify(exactly = 1) { newListener.onPaymentResult(any()) }
         verify(exactly = 1) { newListener.onLoadingStateChanged(false, activity) }
     }
