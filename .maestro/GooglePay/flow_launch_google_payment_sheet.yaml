@@ -11,12 +11,13 @@ appId: com.airwallex.paymentacceptance
 - tapOn: setting
 - runFlow:
     file: ../Common/flow_update_settings.yaml
-    env: 
+    env:
       LAYOUT: ${output.settings.layout.tab}
-      ENVIRONMENT: ${output.settings.environment.demo}
+      ENVIRONMENT: ${output.settings.environment.preview}
       NEXT_TRIGGERED_BY: ${NEXT_TRIGGERED_BY}
       IS_GUEST: false
       FORCE_3DS: ${FORCE_3DS}
+      USE_NEW_SESSION: false
 - tapOn: "Launch payment list"
 - tapOn: "Buy with GPay"
 - runFlow:

@@ -11,16 +11,17 @@ appId: com.airwallex.paymentacceptance
     file: ../Common/flow_update_settings.yaml
     env:
       LAYOUT: ${LAYOUT}
-      ENVIRONMENT: ${output.settings.environment.demo}
+      ENVIRONMENT: ${output.settings.environment.preview}
       NEXT_TRIGGERED_BY: ${output.settings.nextTriggeredBy.customer}
       IS_GUEST: false
-- tapOn: "Embedded Element"
+      USE_NEW_SESSION: false
+- tapOn: "Embedded element"
 # Wait for the embedded element activity to load
 - assertVisible: "Order details"
-# Assert Google Pay button exists
+# Assert Google Pay button exists by checking for the "Or pay with" divider
 - scrollUntilVisible:
-    element: "Buy with GPay"
-- assertVisible: "Buy with GPay"
+    element:
+      text: "Or pay with"
 # Scroll down to the card information section
 - scrollUntilVisible:
     element: "Card information"

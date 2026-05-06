@@ -1,8 +1,11 @@
 package com.airwallex.android.view
 
 import androidx.activity.ComponentActivity
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewModelScope
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.Airwallex.PaymentResultListener
@@ -18,6 +21,7 @@ import com.airwallex.android.core.model.DisablePaymentConsentParams
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.PaymentMethodType
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -37,7 +41,7 @@ import kotlin.coroutines.resume
  */
 class PaymentFlowViewModel(
     private val airwallex: Airwallex,
-    private val session: AirwallexSession
+    private var session: AirwallexSession
 ) : ViewModel() {
 
     private val _availablePaymentMethods = MutableStateFlow<List<AvailablePaymentMethodType>>(emptyList())
@@ -50,9 +54,12 @@ class PaymentFlowViewModel(
     private val _availablePaymentConsents = MutableStateFlow<List<PaymentConsent>>(emptyList())
     val availablePaymentConsents: StateFlow<List<PaymentConsent>> = _availablePaymentConsents.asStateFlow()
 
-    // Payment flow result event - one-time event stream
+    // Payment flow result event - one-time event stream.
+    // need to ensure only one observer for this channel
     private val _paymentResult = Channel<PaymentResultEvent>(capacity = Channel.CONFLATED)
     val paymentResult: Flow<PaymentResultEvent> = _paymentResult.receiveAsFlow()
+
+    private var resultObserverJob: Job? = null
 
     // Delete payment consent result - one-time event stream
     private val _deleteConsentResult = MutableSharedFlow<DeleteConsentResult>(replay = 0)
@@ -83,6 +90,37 @@ class PaymentFlowViewModel(
 
     fun updateActivity(newActivity: ComponentActivity) {
         airwallex.updateActivity(newActivity)
+    }
+
+    /**
+     * Swap the session this VM operates on. The VM is Activity-scoped, so without
+     * this a second checkout on the same Activity would reuse the factory-injected
+     * session and confirm against an already-completed PaymentIntent. Resets
+     * per-session caches so PaymentSheet refetches methods/consents.
+     */
+    fun updateSession(newSession: AirwallexSession) {
+        if (session === newSession) return
+        session = newSession
+        _availablePaymentMethods.value = emptyList()
+        _originalPaymentConsents.value = emptyList()
+        _availablePaymentConsents.value = emptyList()
+    }
+
+    /**
+     * Subscribe [listener] to [paymentResult], cancelling any previous subscription.
+     * The channel is single-receiver, so a stale collector from a dismissed UI
+     * would otherwise swallow results meant for the current one.
+     */
+    fun observeResults(activity: ComponentActivity, listener: PaymentFlowListener) {
+        resultObserverJob?.cancel()
+        resultObserverJob = activity.lifecycleScope.launch {
+            activity.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                paymentResult.collect { result ->
+                    listener.onLoadingStateChanged(false, activity)
+                    listener.onPaymentResult(result.status)
+                }
+            }
+        }
     }
 
     /**

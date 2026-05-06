@@ -24,6 +24,7 @@ platform:
     file: ../Common/flow_update_settings.yaml
     env:
       EXPRESS_CHECKOUT: true
+      USE_NEW_SESSION: false
 # card payment
 - tapOn: "Pay with card and trigger 3DS"
 - tapOn: "PAY"

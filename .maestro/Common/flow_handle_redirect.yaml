@@ -1,0 +1,54 @@
+appId: com.airwallex.paymentacceptance
+---
+# Wait for WebView to load before checking conditionals (they are instant checks, not polls)
+- extendedWaitUntil:
+    visible: "Use without an account|Authorize Now|Pay Now"
+    timeout: 20000
+# WebView opens - handle Chrome sign-in prompt if it appears
+- runFlow:
+    when:
+      visible: "Use without an account"
+    commands:
+      - tapOn: "Use without an account"
+# Handle two different redirect flows:
+# 1. One-off payment: "Pay Now" button (no checkbox)
+# 2. Recurring/RecurringWithIntent: "Authorize Now" button (with checkbox)
+- runFlow:
+    when:
+      visible: "Authorize Now"
+    commands:
+      # Tick the checkbox for Auto Debit Agreement (recurring payments)
+      - tapOn:
+          id: "checkbox"
+      # Click "Authorize Now"
+      - tapOn: "Authorize Now"
+      # Wait for automatic redirect back (no "Return to Merchant" for recurring)
+      # Webview will close automatically and show loading overlay
+      - waitForAnimationToEnd:
+          timeout: 8000
+- runFlow:
+    when:
+      visible: "Pay Now"
+    commands:
+      # Click "Pay Now" (one-off payments)
+      - tapOn: "Pay Now"
+      # Three possible sandbox behaviors after Pay Now:
+      #   (a) Tappable "Return to Merchant" button (need to tap to close webview)
+      #   (b) Non-tappable "Return to Merchant (N)" countdown that auto-closes
+      #   (c) Webview auto-closes immediately, SUCCEED dialog appears
+      # Wait for whichever signal appears first.
+      - extendedWaitUntil:
+          visible: "Return to Merchant|SUCCEED"
+          timeout: 30000
+      # Only tap when it's the exact button text — anchored regex avoids
+      # accidentally tapping the "Return to Merchant (N)" countdown.
+      - runFlow:
+          when:
+            visible: "^Return to Merchant$"
+          commands:
+            - tapOn: "^Return to Merchant$"
+      # All three paths converge on the SUCCEED dialog.
+      - extendedWaitUntil:
+          visible: "SUCCEED"
+          timeout: 30000
+      - tapOn: "OK"

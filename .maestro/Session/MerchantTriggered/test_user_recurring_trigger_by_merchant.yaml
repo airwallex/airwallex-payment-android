@@ -1,7 +1,8 @@
 appId: com.airwallex.paymentacceptance
 tags:
-  - card 
+  - card
   - user
+  - session
 platform:
   android:
     disableAnimations: true  # Disables system animations on the Android emulator
@@ -10,15 +11,14 @@ platform:
     when:
       true: ${IS_RECORDING}
     commands:
-      - startRecording: test_user_recurring_trigger_by_merchant
+      - startRecording: test_user_recurring_trigger_by_merchant_session
 - runScript: ../../Card/cards.js
 - runScript: ../../Common/settings.js
 - runFlow:
-    file: ../../Card/flow_recurring_payment.yaml
+    file: ../flow_recurring_payment.yaml
     env:
       WITH_PAYMENT: false
       TRIGGER_BY_CUSTOMER: false
-
 - runFlow:
     when:
       true: ${IS_RECORDING}

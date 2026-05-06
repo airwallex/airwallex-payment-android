@@ -3,6 +3,7 @@ tags:
   - card
   - user
   - express-checkout
+  - session
 platform:
   android:
     disableAnimations: true  # Disables system animations on the Android emulator
@@ -13,7 +14,7 @@ onFlowStart:
       when:
         true: ${IS_RECORDING}
       commands:
-        - startRecording: test_user_express_checkout_recurring_merchant
+        - startRecording: test_user_express_checkout_recurring_merchant_session
 onFlowComplete:
   - runFlow:
       when:
@@ -22,37 +23,37 @@ onFlowComplete:
         - stopRecording
 ---
 - launchApp
-- runScript: ../../Card/cards.js
-- runScript: ../../Common/settings.js
+- runScript: ../../../Card/cards.js
+- runScript: ../../../Common/settings.js
 - tapOn: "Integrate with Airwallex UI"
 # start recurring express checkout with merchant-initiated payment
-# Note: GENERATE_NEW_CUSTOMER_ID=true means no cleanup needed
 - runFlow:
-    file: ../../ExpressCheckout/flow_card_express_checkout.yaml
+    file: ../../../ExpressCheckout/flow_card_express_checkout.yaml
     env:
       CHECKOUT_MODE: ${output.settings.checkoutMode.recurringAndPayment}
       CARD_NUMBER: ${output.cards.visa3DS}
       HANDLE_3DS: true
       NEXT_TRIGGERED_BY: ${output.settings.nextTriggeredBy.merchant}
       GENERATE_NEW_CUSTOMER_ID: true
-# verify merchant-triggered consent exists but cannot be removed
-- runFlow:
-    file: ../../Common/flow_update_checkout_mode.yaml
-    env:
-      CHECKOUT_MODE: ${output.settings.checkoutMode.oneOff}
+      USE_NEW_SESSION: true
+# NEW SESSION: To verify consent exists, turn off express checkout first
 - tapOn: setting
 - runFlow:
-    file: ../../Common/flow_update_settings.yaml
+    file: ../../../Common/flow_update_settings.yaml
     env:
       IS_GUEST: false
       EXPRESS_CHECKOUT: false
-      USE_NEW_SESSION: false
+      USE_NEW_SESSION: true
+      NEXT_TRIGGERED_BY: ${output.settings.nextTriggeredBy.merchant}
       GENERATE_NEW_CUSTOMER_ID: false
 - tapOn: "Launch payment list"
+- assertVisible:
+    id: "saved-consent"
+    index: 0
 - runFlow:
-    file: ../flow_assert_merchant_consent.yaml
+    file: ../../../MerchantTriggered/flow_assert_merchant_consent.yaml
 - tapOn: "Navigate up"
 - runFlow:
-    file: ../../Common/flow_handle_payment_result.yaml
+    file: ../../../Common/flow_handle_payment_result.yaml
     env:
       PAYMENT_RESULT: CANCELLED

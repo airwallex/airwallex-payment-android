@@ -1,30 +1,22 @@
 appId: com.airwallex.paymentacceptance
 env:
-  ENVIRONMENT: ${ENVIRONMENT || "DEMO"}
+  ENVIRONMENT: ${ENVIRONMENT || "PREVIEW"}
   NEXT_TRIGGERED_BY: ${NEXT_TRIGGERED_BY || "Customer"}
   LAYOUT: ${LAYOUT || "Tab"}
   FORCE_3DS: ${FORCE_3DS || "false"}
   EXPRESS_CHECKOUT: ${EXPRESS_CHECKOUT || "false"}
   IS_GUEST: ${IS_GUEST || "true"}
   GENERATE_NEW_CUSTOMER_ID: ${GENERATE_NEW_CUSTOMER_ID || "false"}
+  USE_NEW_SESSION: ${USE_NEW_SESSION || "false"}
 ---
 - assertVisible: "Settings"
-- runFlow: # ensure environment
-    when:
-      notVisible: ${ENVIRONMENT}
-    commands:
-      - tapOn: "Environment"
-      - tapOn: ${ENVIRONMENT}
-      - assertVisible: ${ENVIRONMENT}
-      - scrollUntilVisible:
-          element: "Save"
-      - tapOn:
-          id: "com.airwallex.paymentacceptance:id/btnSave"
-      - assertVisible: "settings saved"
-      - tapOn: "OK"
-      - tapOn: setting
+# Environment must be pre-set before running this test, this is just to assert.
+# Env switching via the UI triggers Process.killProcess (PR #313) which wedges
+# the Maestro on-device driver for the rest of the session.
+- assertVisible: ${ENVIRONMENT}
 - runFlow: # ensure next triggered by
     when:
+      true: ${NEXT_TRIGGERED_BY && NEXT_TRIGGERED_BY != 'undefined'}
       notVisible: ${NEXT_TRIGGERED_BY}
     commands:
       - tapOn: "Next Trigger By"
@@ -115,8 +107,27 @@ env:
 - scrollUntilVisible:
     element:
       id: "com.airwallex.paymentacceptance:id/swUseSession"
-- runFlow: # ensure "use Session over legacy variants" switch is off
+- runFlow: # ensure value of use Session switch
     when:
+      true: ${USE_NEW_SESSION}
+      visible:
+        childOf:
+          id: "com.airwallex.paymentacceptance:id/swUseSession"
+        id: "com.airwallex.paymentacceptance:id/switchControl"
+        checked: false
+    commands:
+      - tapOn:
+          childOf:
+            id: "com.airwallex.paymentacceptance:id/swUseSession"
+          id: "com.airwallex.paymentacceptance:id/switchControl"
+      - assertVisible:
+          childOf:
+            id: "com.airwallex.paymentacceptance:id/swUseSession"
+          id: "com.airwallex.paymentacceptance:id/switchControl"
+          checked: true
+- runFlow: # ensure value of use Session switch is off when USE_NEW_SESSION is false
+    when:
+      true: ${USE_NEW_SESSION == 'false'}
       visible:
         childOf:
           id: "com.airwallex.paymentacceptance:id/swUseSession"
@@ -148,9 +159,9 @@ env:
                 id: "com.airwallex.paymentacceptance:id/deleteIcon"
       - assertVisible: "Generate"
       - tapOn: "Generate"
-- runFlow: # ensure customerId for registered user - use UI_TESTING_CUSTOMER_ID
+- runFlow: # ensure customerId for registered user - use UI_TESTING_CUSTOMER_ID (only if defined)
     when:
-      true: ${IS_GUEST == 'false' && GENERATE_NEW_CUSTOMER_ID == 'false'}
+      true: ${IS_GUEST == 'false' && GENERATE_NEW_CUSTOMER_ID == 'false' && UI_TESTING_CUSTOMER_ID}
       notVisible: ${UI_TESTING_CUSTOMER_ID}
     commands:
       - runFlow:
@@ -172,12 +183,15 @@ env:
       - hideKeyboard
 - runFlow: # ensure no customerId for guest checkout
     when:
-      true: ${IS_GUEST}
-      visible:
-        id: "com.airwallex.paymentacceptance:id/deleteIcon"
+      true: ${IS_GUEST == 'true'}
     commands:
-      - tapOn:
-          id: "com.airwallex.paymentacceptance:id/deleteIcon"
+      - runFlow:
+          when:
+            visible:
+              id: "com.airwallex.paymentacceptance:id/deleteIcon"
+          commands:
+            - tapOn:
+                id: "com.airwallex.paymentacceptance:id/deleteIcon"
       - assertVisible: "Customer ID"
       - assertVisible: "Generate"
 - scrollUntilVisible:

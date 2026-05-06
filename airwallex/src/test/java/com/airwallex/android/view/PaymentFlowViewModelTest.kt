@@ -1,6 +1,10 @@
 package com.airwallex.android.view
 
+import androidx.activity.ComponentActivity
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentSession
 import com.airwallex.android.core.AirwallexPaymentStatus
@@ -915,6 +919,211 @@ class PaymentFlowViewModelTest {
                 additionalInfo = testAdditionalInfo
             )
         }
+    }
+
+    // ========== updateSession Tests ==========
+
+    @Test
+    fun `updateSession with same instance preserves caches`() = runTest {
+        val session = createPaymentSession()
+        val mockMethods = listOf<AvailablePaymentMethodType>(
+            mockk { every { name } returns "card" }
+        )
+        val mockConsents = listOf(createMockPaymentConsent(id = "c1", fingerprint = "fp1"))
+        coEvery {
+            airwallex.fetchAvailablePaymentMethodsAndConsents(session)
+        } returns Result.success(Pair(mockMethods, mockConsents))
+
+        val viewModel = createViewModel(session)
+        viewModel.fetchAvailablePaymentMethodsAndConsents()
+        advanceUntilIdle()
+        assertEquals(mockMethods, viewModel.availablePaymentMethods.value)
+        assertEquals(1, viewModel.availablePaymentConsents.value.size)
+
+        viewModel.updateSession(session)
+
+        assertEquals(mockMethods, viewModel.availablePaymentMethods.value)
+        assertEquals(1, viewModel.availablePaymentConsents.value.size)
+    }
+
+    @Test
+    fun `updateSession with different instance clears caches`() = runTest {
+        val session = createPaymentSession()
+        val mockMethods = listOf<AvailablePaymentMethodType>(
+            mockk { every { name } returns "card" }
+        )
+        val mockConsents = listOf(createMockPaymentConsent(id = "c1", fingerprint = "fp1"))
+        coEvery {
+            airwallex.fetchAvailablePaymentMethodsAndConsents(session)
+        } returns Result.success(Pair(mockMethods, mockConsents))
+
+        val viewModel = createViewModel(session)
+        viewModel.fetchAvailablePaymentMethodsAndConsents()
+        advanceUntilIdle()
+        assertEquals(mockMethods, viewModel.availablePaymentMethods.value)
+        assertEquals(1, viewModel.availablePaymentConsents.value.size)
+
+        viewModel.updateSession(createPaymentSession())
+
+        assertTrue(viewModel.availablePaymentMethods.value.isEmpty())
+        assertTrue(viewModel.availablePaymentConsents.value.isEmpty())
+    }
+
+    @Test
+    fun `updateSession routes subsequent checkout to new session`() = runTest {
+        val firstSession = createPaymentSession()
+        val secondSession = createPaymentSession()
+        val viewModel = createViewModel(firstSession)
+        val card = mockk<PaymentMethod.Card>(relaxed = true) {
+            every { cvc } returns "123"
+        }
+        val expectedStatus = AirwallexPaymentStatus.Success("intent_2")
+
+        val slot = slot<Airwallex.PaymentResultListener>()
+        coEvery {
+            airwallex.checkout(
+                session = secondSession,
+                paymentMethod = any(),
+                cvc = "123",
+                saveCard = false,
+                listener = capture(slot)
+            )
+        } answers {
+            slot.captured.onCompleted(expectedStatus)
+        }
+
+        viewModel.updateSession(secondSession)
+        val (results, job) = collectFlow(viewModel.paymentResult)
+        viewModel.checkoutWithNewCard(card, saveCard = false, billing = null)
+        advanceUntilIdle()
+
+        assertEquals(expectedStatus, results.first().status)
+        coVerify(exactly = 1) {
+            airwallex.checkout(
+                session = secondSession,
+                paymentMethod = any(),
+                cvc = "123",
+                saveCard = false,
+                listener = any()
+            )
+        }
+        coVerify(exactly = 0) {
+            airwallex.checkout(
+                session = firstSession,
+                paymentMethod = any(),
+                cvc = any(),
+                saveCard = any(),
+                listener = any()
+            )
+        }
+        job.cancel()
+    }
+
+    // ========== observeResults Tests ==========
+
+    @Test
+    fun `observeResults delivers paymentResult to current listener`() = runTest {
+        val session = createPaymentSession()
+        val viewModel = createViewModel(session)
+        val (activity, _) = createTestActivity()
+        val listener = mockk<PaymentFlowListener>(relaxed = true)
+
+        viewModel.observeResults(activity, listener)
+        advanceUntilIdle()
+
+        emitCheckoutResult(viewModel, session, AirwallexPaymentStatus.Success("intent_1"))
+        advanceUntilIdle()
+
+        verify(exactly = 1) { listener.onLoadingStateChanged(false, activity) }
+        verify(exactly = 1) {
+            listener.onPaymentResult(
+                match {
+                    it is AirwallexPaymentStatus.Success && it.paymentIntentId == "intent_1"
+                }
+            )
+        }
+    }
+
+    @Test
+    fun `observeResults cancels previous subscription so old listener does not receive`() = runTest {
+        val session = createPaymentSession()
+        val viewModel = createViewModel(session)
+        val (activity, _) = createTestActivity()
+        val oldListener = mockk<PaymentFlowListener>(relaxed = true)
+        val newListener = mockk<PaymentFlowListener>(relaxed = true)
+
+        // Subscribe oldListener and confirm it's actually wired up by emitting first.
+        // This avoids the cancel-vs-emit race: by the time we swap listeners the
+        // channel is drained, so any later miss is unambiguously due to cancellation.
+        viewModel.observeResults(activity, oldListener)
+        advanceUntilIdle()
+        emitCheckoutResult(viewModel, session, AirwallexPaymentStatus.Success("intent_1"))
+        advanceUntilIdle()
+        verify(exactly = 1) { oldListener.onPaymentResult(any()) }
+
+        // Swap to newListener — this must cancel the old subscription.
+        viewModel.observeResults(activity, newListener)
+        advanceUntilIdle()
+
+        emitCheckoutResult(viewModel, session, AirwallexPaymentStatus.Success("intent_2"))
+        advanceUntilIdle()
+
+        // Old listener's count is unchanged from the first emission.
+        verify(exactly = 1) { oldListener.onPaymentResult(any()) }
+        verify(exactly = 1) { newListener.onPaymentResult(any()) }
+        verify(exactly = 1) { newListener.onLoadingStateChanged(false, activity) }
+    }
+
+    @Test
+    fun `observeResults is safe with no prior subscription`() = runTest {
+        val session = createPaymentSession()
+        val viewModel = createViewModel(session)
+        val (activity, _) = createTestActivity()
+        val listener = mockk<PaymentFlowListener>(relaxed = true)
+
+        viewModel.observeResults(activity, listener)
+        advanceUntilIdle()
+
+        emitCheckoutResult(viewModel, session, AirwallexPaymentStatus.Success("intent_1"))
+        advanceUntilIdle()
+
+        verify(exactly = 1) { listener.onPaymentResult(any()) }
+    }
+
+    private fun createTestActivity(
+        state: Lifecycle.State = Lifecycle.State.RESUMED
+    ): Pair<ComponentActivity, LifecycleOwner> {
+        val owner = object : LifecycleOwner {
+            val registry = LifecycleRegistry.createUnsafe(this)
+            override val lifecycle: Lifecycle get() = registry
+        }
+        owner.registry.currentState = state
+        val activity = mockk<ComponentActivity>(relaxed = true)
+        every { activity.lifecycle } returns owner.lifecycle
+        return activity to owner
+    }
+
+    private fun emitCheckoutResult(
+        viewModel: PaymentFlowViewModel,
+        session: AirwallexSession,
+        status: AirwallexPaymentStatus
+    ) {
+        val card = mockk<PaymentMethod.Card>(relaxed = true) {
+            every { cvc } returns "123"
+        }
+        val slot = slot<Airwallex.PaymentResultListener>()
+        coEvery {
+            airwallex.checkout(
+                session = session,
+                paymentMethod = any(),
+                cvc = "123",
+                saveCard = false,
+                listener = capture(slot)
+            )
+        } answers {
+            slot.captured.onCompleted(status)
+        }
+        viewModel.checkoutWithNewCard(card, saveCard = false, billing = null)
     }
 
     @Test
