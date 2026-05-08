@@ -7,12 +7,22 @@ on:
         description: 'Android SDK version (e.g., 6.3.0)'
         required: true
         type: string
+      wait_minutes:
+        description: 'Minutes to wait before dispatching (0 to skip)'
+        required: false
+        type: number
+        default: 0
   workflow_dispatch:
     inputs:
       tag:
         description: 'Android SDK version (e.g., 6.3.0)'
         required: true
         type: string
+      wait_minutes:
+        description: 'Minutes to wait before dispatching (0 to skip)'
+        required: false
+        type: number
+        default: 0
 
 jobs:
   repo-dispatch-on-release:
@@ -20,9 +30,9 @@ jobs:
     steps:
       - name: Log version
         run: 'echo "Dispatching for version: ${{ inputs.tag }}"'
-      - name: Wait 20 minutes for Maven Central propagation
-        if: github.event_name == 'workflow_call'
-        run: sleep 1200
+      - name: Wait for Maven Central propagation
+        if: inputs.wait_minutes > 0
+        run: sleep ${{ fromJSON(inputs.wait_minutes) * 60 }}
       - name: Send repository dispatch to Flutter SDK
         env:
           GH_TOKEN: ${{ secrets.SERVICE_ACCOUNT_PAT }}
