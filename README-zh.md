@@ -227,8 +227,10 @@ val session = Session.Builder(
     googlePayOptions = googlePayOptions // 如需支持 Google Pay 则必填
 )
     .setPaymentConsentOptions(paymentConsentOptions) // 循环交易信息
+    .setPaymentMethods(listOf("card", "alipayhk")) // 可选：限制并排序展示的支付方式
     .setAutoCapture(autoCapture) // 仅适用于卡支付
     .setRequireBillingInformation(true)
+    .setHidePaymentConsents(false) // 可选：设为 true 可隐藏已保存的支付授权
     .setReturnUrl(returnUrl)
     .build()
 ```
@@ -261,6 +263,8 @@ val session = Session.Builder(
     customerId = customerId, // 循环支付流程必填
     googlePayOptions = googlePayOptions // 如需支持 Google Pay 则必填
 )
+    .setPaymentMethods(listOf("card", "alipayhk")) // 可选：限制并排序展示的支付方式
+    .setHidePaymentConsents(false) // 可选：设为 true 可隐藏已保存的支付授权
     .setReturnUrl(returnUrl)
     .build()
 ```

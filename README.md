@@ -235,8 +235,10 @@ val session = Session.Builder(
     googlePayOptions = googlePayOptions // required if you want to support Google Pay
 )
     .setPaymentConsentOptions(paymentConsentOptions) // info for recurring transactions
+    .setPaymentMethods(listOf("card", "alipayhk")) // optional: limit and order the payment methods displayed
     .setAutoCapture(autoCapture) // only applicable for card payment
     .setRequireBillingInformation(true)
+    .setHidePaymentConsents(false) // optional: set to true to hide saved payment consents
     .setReturnUrl(returnUrl)
     .build()
 ```
@@ -269,6 +271,8 @@ val session = Session.Builder(
     customerId = customerId, // required for recurring flows
     googlePayOptions = googlePayOptions // required if you want to support Google Pay
 )
+    .setPaymentMethods(listOf("card", "alipayhk")) // optional: limit and order the payment methods displayed
+    .setHidePaymentConsents(false) // optional: set to true to hide saved payment consents
     .setReturnUrl(returnUrl)
     .build()
 ```

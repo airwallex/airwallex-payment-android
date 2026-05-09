@@ -34,7 +34,7 @@ open class AirwallexCheckoutViewModel(
      * This should be called in the activity's onCreate or onStart.
      */
     fun updateActivity(newActivity: ComponentActivity) {
-         airwallex.updateActivity(newActivity)
+        airwallex.updateActivity(newActivity)
     }
 
     @Suppress("LongParameterList")
@@ -54,7 +54,21 @@ open class AirwallexCheckoutViewModel(
         airwallex.checkout(
             session = session,
             paymentMethod = paymentMethod,
-            paymentConsentId = paymentConsentId,
+            paymentConsent =
+                if (session is AirwallexPaymentSession || (session is Session && session.isOneOffPayment)) {
+                    PaymentConsent(
+                        id = paymentConsentId,
+                        nextTriggeredBy = PaymentConsent.NextTriggeredBy.CUSTOMER,
+                    )
+                } else {
+                    return MutableLiveData(
+                        AirwallexPaymentStatus.Failure(
+                            AirwallexCheckoutException(
+                                message = "Payment Consent is only supported for one-off payment sessions"
+                            )
+                        )
+                    )
+                },
             cvc = cvc,
             additionalInfo = additionalInfo,
             flow = flow,
@@ -101,7 +115,8 @@ open class AirwallexCheckoutViewModel(
         return suspendCancellableCoroutine { continuation ->
             when (session) {
                 is Session, is AirwallexPaymentSession -> {
-                    session.resolvePaymentIntent(object : PaymentIntentProvider.PaymentIntentCallback {
+                    session.resolvePaymentIntent(object :
+                        PaymentIntentProvider.PaymentIntentCallback {
                         override fun onSuccess(paymentIntent: PaymentIntent) {
                             airwallex.retrieveBanks(
                                 RetrieveBankParams.Builder(
@@ -111,14 +126,14 @@ open class AirwallexCheckoutViewModel(
                                     .setCountryCode(session.countryCode)
                                     .build(),
                                 object : Airwallex.PaymentListener<BankResponse> {
-                            override fun onFailed(exception: AirwallexException) {
-                                continuation.resume(Result.failure(exception))
-                            }
+                                    override fun onFailed(exception: AirwallexException) {
+                                        continuation.resume(Result.failure(exception))
+                                    }
 
-                            override fun onSuccess(response: BankResponse) {
-                                continuation.resume(Result.success(response))
-                            }
-                        }
+                                    override fun onSuccess(response: BankResponse) {
+                                        continuation.resume(Result.success(response))
+                                    }
+                                }
                             )
                         }
 
@@ -164,7 +179,8 @@ open class AirwallexCheckoutViewModel(
 
             when (session) {
                 is Session, is AirwallexPaymentSession, is AirwallexRecurringWithIntentSession -> {
-                    session.resolvePaymentIntent(object : PaymentIntentProvider.PaymentIntentCallback {
+                    session.resolvePaymentIntent(object :
+                        PaymentIntentProvider.PaymentIntentCallback {
                         override fun onSuccess(paymentIntent: PaymentIntent) {
                             performRetrieval(paymentIntent.clientSecret)
                         }
@@ -174,9 +190,11 @@ open class AirwallexCheckoutViewModel(
                         }
                     })
                 }
+
                 is AirwallexRecurringSession -> {
                     performRetrieval(session.clientSecret)
                 }
+
                 else -> {
                     continuation.resume(Result.failure(AirwallexCheckoutException(message = "Session is not available")))
                 }
