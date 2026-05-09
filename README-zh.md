@@ -177,11 +177,16 @@ Airwallex Android SDK 支持两种支付流程：
 
 对于**标准流程**，需要在展示支付 UI 前在服务端创建 PaymentIntent。
 
-对于 **Express Checkout**，你将在 `PaymentIntentProvider` 或 `PaymentIntentSource` 实现中，当 SDK 请求时创建 PaymentIntent。
+对于 **Express Checkout**，PaymentIntent 仍然在你的服务端创建，但创建时机延迟——在 `PaymentIntentProvider` 或 `PaymentIntentSource` 实现中，当 SDK 请求时调用你的服务端创建。
 
 1. 获取 access token：用 Client ID 和 API key 调用认证 API（见 [API keys 设置](https://www.airwallex.com/app/settings/api)）
 2. 创建客户（可选）：用 [`/api/v1/pa/customers/create`](https://www.airwallex.com/docs/api#/Payment_Acceptance/Customers/_api_v1_pa_customers_create/post)
-3. 创建 PaymentIntent：用 [`/api/v1/pa/payment_intents/create`](https://www.airwallex.com/docs/api#/Payment_Acceptance/Payment_Intents/_api_v1_pa_payment_intents_create/post) 并获得 `client_secret`
+3. 创建 PaymentIntent：用 [`/api/v1/pa/payment_intents/create`](https://www.airwallex.com/docs/api#/Payment_Acceptance/Payment_Intents/_api_v1_pa_payment_intents_create/post)
+
+创建 PaymentIntent 时：
+- 如果 **amount = 0**，仅创建支付 consent（不会扣款）。
+- 如果 **amount > 0**，将处理支付（如果设置了 `PaymentConsentOptions`，同时也会创建 consent）。
+- 对于访客结账，`customer_id` 可以省略。
 
 #### 2. 创建 Airwallex Session
 
@@ -193,354 +198,100 @@ Airwallex Android SDK 支持两种支付流程：
 > - **托管支付页面（HPP）** 使用 `AirwallexStarter`：在调用方 Activity 中创建 session，然后传递给 `AirwallexStarter.presentEntirePaymentFlow()` 或类似方法。SDK 会启动自己的 Activity 来处理支付流程。
 > - **嵌入式元素** 使用 `PaymentElement`：在托管 `PaymentElement` 的 Activity（或其 ViewModel）中创建 session。应该在调用 `PaymentElement.create()` 之前创建 session。为了更好的架构设计，建议将 session 存储在 ViewModel 中以应对配置更改（例如屏幕旋转）。
 
-#### 统一的 `Session`（推荐）
+#### Payment Session
 
-`Session` 是统一的 session 类型，用于替代 `AirwallexPaymentSession`、`AirwallexRecurringSession` 和 `AirwallexRecurringWithIntentSession`。它通过单一 API 同时支持一次性支付、循环支付和 MIT consent。具体使用哪种流程由 `PaymentConsentOptions` 和 PaymentIntent 的 `amount` 决定：
+`Session` 提供了统一且简化的集成方式。我们推荐使用 `Session` 来替代旧版的 `AirwallexPaymentSession`、`AirwallexRecurringSession` 和 `AirwallexRecurringWithIntentSession`。
 
-> **📝 关于 PaymentIntent 创建的说明：** 此前基于 `AirwallexRecurringSession` 的循环支付流程需要调用 `/generate_client_secret` 接口。在统一的 `Session` 中已不再需要此步骤——三种流程（一次性支付、循环支付、带 Intent 的循环支付）均遵循相同的方式：创建一个 `PaymentIntent` 即可。
+**方式 1：使用预先创建的 PaymentIntent 初始化**
 
-| 流程 | `PaymentConsentOptions` | `amount` | `customerId` | 对应的旧版 session |
-|---|---|---|---|---|
-| 一次性支付 | 不设置 | > 0 | 可选 | `AirwallexPaymentSession` |
-| 循环支付（仅 consent，不扣款） | 设置 | **0** | **必填** | `AirwallexRecurringSession` |
-| 带 Intent 的循环支付（consent + 扣款） | 设置 | **> 0** | **必填** | `AirwallexRecurringWithIntentSession` |
-
-**`PaymentConsentOptions` 枚举值** —— 下方示例中使用 `MERCHANT` / `UNSCHEDULED` 作为一种有效组合；请根据你的业务场景选择对应的取值：
-- `nextTriggeredBy` —— `MERCHANT`（MIT）或 `CUSTOMER`（CIT）
-- `merchantTriggerReason`（仅当 `nextTriggeredBy = MERCHANT` 时适用）—— `SCHEDULED`、`UNSCHEDULED` 或 `INSTALLMENTS`
-
-**一次性支付**（不创建 consent）：
-```kotlin
-import com.airwallex.android.core.Session
-import com.airwallex.android.core.model.PaymentIntent
-
-
-// 调用 https://www.airwallex.com/docs/api#/Payment_Acceptance/Payment_Intents/_api_v1_pa_payment_intents_create/post 接口
-// 并从响应中获取 intent id 和 client secret。
-val paymentIntent = PaymentIntent(
-    id = "REPLACE_WITH_YOUR_PAYMENT_INTENT_ID",
-    clientSecret = "REPLACE_WITH_YOUR_CLIENT_SECRET",
-    amount = 1.toBigDecimal(),
-    currency = "USD"
-)
-
-val session = Session.Builder(
-    paymentIntent = paymentIntent,
-    countryCode = countryCode,
-    googlePayOptions = googlePayOptions // 仅在需要 Gpay 时
-)
-    .setRequireBillingInformation(true)
-    .setRequireEmail(requireEmail)
-    .setReturnUrl(returnUrl)
-    .setAutoCapture(autoCapture)
-    .setHidePaymentConsents(false)
-    .setPaymentMethods(listOf()) // 空列表表示所有可用方式
-    .build()
-```
-
-**循环支付** —— 仅 consent，不扣款（要求 `amount == 0`）：
 ```kotlin
 import com.airwallex.android.core.Session
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentConsentOptions
 import com.airwallex.android.core.model.PaymentIntent
-import java.math.BigDecimal
 
-val consentOptions = PaymentConsentOptions(
-    nextTriggeredBy = PaymentConsent.NextTriggeredBy.MERCHANT,
-    merchantTriggerReason = PaymentConsent.MerchantTriggerReason.UNSCHEDULED
-)
-
-// 循环支付（不扣款）流程要求 PaymentIntent.amount 必须为 0。
-// 循环支付流程要求 PaymentIntent 上的 customerId 必须提供。
-val paymentIntent = PaymentIntent(
-    id = "REPLACE_WITH_YOUR_PAYMENT_INTENT_ID",
-    clientSecret = "REPLACE_WITH_YOUR_CLIENT_SECRET",
-    amount = BigDecimal.ZERO,
-    currency = "USD",
-    customerId = customerId
-)
+val paymentConsentOptions = if (/* 一次性交易 */) {
+    null
+} else {
+    /* 循环交易 */
+    PaymentConsentOptions(
+        nextTriggeredBy = PaymentConsent.NextTriggeredBy.MERCHANT, // MERCHANT 或 CUSTOMER
+        merchantTriggerReason = PaymentConsent.MerchantTriggerReason.UNSCHEDULED // SCHEDULED、UNSCHEDULED 或 INSTALLMENTS
+    )
+}
 
 val session = Session.Builder(
-    paymentIntent = paymentIntent,
-    countryCode = countryCode
-)
-    .setPaymentConsentOptions(consentOptions)
-    .setRequireBillingInformation(true)
-    .setReturnUrl(returnUrl)
-    .build()
-```
-
-**带 Intent 的循环支付** —— consent + 立即扣款（要求 `amount > 0`）：
-```kotlin
-import com.airwallex.android.core.Session
-import com.airwallex.android.core.model.PaymentConsent
-import com.airwallex.android.core.model.PaymentConsentOptions
-
-val consentOptions = PaymentConsentOptions(
-    nextTriggeredBy = PaymentConsent.NextTriggeredBy.MERCHANT,
-    merchantTriggerReason = PaymentConsent.MerchantTriggerReason.UNSCHEDULED
-)
-
-// 带 Intent 的循环支付流程要求 paymentIntent.amount 必须 > 0。
-// 循环支付流程要求 PaymentIntent 上的 customerId 必须提供。
-val session = Session.Builder(
-    paymentIntent = paymentIntent,
+    paymentIntent = paymentIntent, // 在你的服务端创建的 payment intent
     countryCode = countryCode,
-    googlePayOptions = googlePayOptions // 仅在需要 Gpay 时
+    customerId = customerId, // 循环支付流程必填
+    googlePayOptions = googlePayOptions // 如需支持 Google Pay 则必填
 )
-    .setPaymentConsentOptions(consentOptions)
+    .setPaymentConsentOptions(paymentConsentOptions) // 循环交易信息
+    .setAutoCapture(autoCapture) // 仅适用于卡支付
     .setRequireBillingInformation(true)
     .setReturnUrl(returnUrl)
-    .setAutoCapture(autoCapture)
     .build()
 ```
 
-**Express Checkout**（按需创建 PaymentIntent —— 使用 `PaymentIntentProvider` 或 `PaymentIntentSource`）：
+**方式 2：使用 PaymentIntentProvider 初始化（Express Checkout）**
 
-Express Checkout 支持上述同样的三种流程 —— 适用相同的规则：你在 `PaymentIntentSource` / `PaymentIntentProvider` 上暴露的 `amount`（同时也由返回的 `PaymentIntent` 回传）决定运行哪种流程，两种循环支付变体都需要调用 `setPaymentConsentOptions(...)`。Builder 上的 `customerId` **在循环支付流程中为必填**，在一次性支付中为可选。
+使用 `PaymentIntentSource`（Java 请使用 `PaymentIntentProvider`）可以让 SDK 在支付确认前才创建 PaymentIntent。
 
 ```kotlin
 import com.airwallex.android.core.PaymentIntentSource
 import com.airwallex.android.core.Session
-import com.airwallex.android.core.model.PaymentConsent
-import com.airwallex.android.core.model.PaymentConsentOptions
 import com.airwallex.android.core.model.PaymentIntent
-import java.math.BigDecimal
 
-// 方式 1：基于 suspend（推荐 Kotlin 使用）
+// 1. 实现 PaymentIntentSource
 class MyPaymentIntentSource(
-    override val amount: BigDecimal,      // 循环支付（不扣款）为 0，否则 > 0
+    override val amount: BigDecimal,
     override val currency: String = "USD"
 ) : PaymentIntentSource {
     override suspend fun getPaymentIntent(): PaymentIntent {
-        // 在此调用你的服务端创建 PaymentIntent。
-        // 其 `amount` 必须与该 source 暴露的 `amount` 一致。
+        // 在此调用你的服务端创建 PaymentIntent
         return myApiService.createPaymentIntent(amount = amount, currency = currency)
     }
 }
 
-// 一次性支付（不创建 consent）：amount > 0，无 PaymentConsentOptions
-val oneOffSession = Session.Builder(
-    paymentIntentSource = MyPaymentIntentSource(amount = BigDecimal("10.00")),
+// 2. 使用 provider 创建 session
+val source = MyPaymentIntentSource(amount = BigDecimal("10.00"))
+val session = Session.Builder(
+    paymentIntentSource = source,
     countryCode = countryCode,
-    customerId = customerId, // 可选
-    googlePayOptions = googlePayOptions // 仅在需要 Gpay 时
+    customerId = customerId, // 循环支付流程必填
+    googlePayOptions = googlePayOptions // 如需支持 Google Pay 则必填
 )
-    .setRequireBillingInformation(true)
     .setReturnUrl(returnUrl)
-    .setAutoCapture(autoCapture)
-    .build()
-
-// 循环支付（仅 consent，不扣款）：amount = 0，customerId 必填
-val recurringSession = Session.Builder(
-    paymentIntentSource = MyPaymentIntentSource(amount = BigDecimal.ZERO),
-    countryCode = countryCode,
-    customerId = customerId // 循环支付必填
-)
-    .setPaymentConsentOptions(
-        PaymentConsentOptions(
-            nextTriggeredBy = PaymentConsent.NextTriggeredBy.MERCHANT,
-            merchantTriggerReason = PaymentConsent.MerchantTriggerReason.UNSCHEDULED
-        )
-    )
-    .setReturnUrl(returnUrl)
-    .build()
-
-// 带 Intent 的循环支付（consent + 扣款）：amount > 0，customerId 必填
-val recurringWithIntentSession = Session.Builder(
-    paymentIntentSource = MyPaymentIntentSource(amount = BigDecimal("10.00")),
-    countryCode = countryCode,
-    customerId = customerId, // 循环支付必填
-    googlePayOptions = googlePayOptions // 仅在需要 Gpay 时
-)
-    .setPaymentConsentOptions(
-        PaymentConsentOptions(
-            nextTriggeredBy = PaymentConsent.NextTriggeredBy.MERCHANT,
-            merchantTriggerReason = PaymentConsent.MerchantTriggerReason.UNSCHEDULED
-        )
-    )
-    .setRequireBillingInformation(true)
-    .setReturnUrl(returnUrl)
-    .setAutoCapture(autoCapture)
     .build()
 ```
 
-> Kotlin / 协程代码请优先使用 `PaymentIntentSource`。Java 请使用基于回调的 `PaymentIntentProvider` 构造方式 —— Builder 与 `PaymentConsentOptions` 的规则完全一致。
+> **📝 注意：** 我们将继续支持旧版 session 类型的集成，直到下一个主版本发布。如需使用旧版 session 的集成步骤，请参阅[集成指南 6.6.1](https://github.com/airwallex/airwallex-payment-android/tree/6.6.1?tab=readme-ov-file#2-create-an-airwallex-session)。
 
+```mermaid
 ---
+title: Session 与旧版 Session 的映射关系
+---
+flowchart LR
+    A{Session}
+    B1[AirwallexPaymentSession]
+    B2{循环交易}
+    C1[AirwallexRecurringSession]
+    C2[AirwallexRecurringWithIntentSession]
 
-#### 旧版 Session（已废弃）
+subgraph Session.kt
+    A
+end
 
-> **⚠️ 已废弃：** `AirwallexPaymentSession`、`AirwallexRecurringSession` 和 `AirwallexRecurringWithIntentSession` 已废弃，并将在未来版本中移除。请改用上方的统一 `Session`。
+A -- paymentConsentOptions == null --> B1
+A -- paymentConsentOptions != null --> B2
 
-<details>
-<summary>旧版示例（点击展开）</summary>
+subgraph 旧版 Session
+    B1;C1;C2
+end
 
-##### `AirwallexPaymentSession`（已废弃 —— 请使用 `Session`）
-
-**标准流程**（预先创建 PaymentIntent）：
-```kotlin
-val paymentSession = AirwallexPaymentSession.Builder(
-    paymentIntent = paymentIntent,
-    countryCode = countryCode,
-    googlePayOptions = googlePayOptions // 可选
-)
-    .setRequireBillingInformation(true)
-    .setRequireEmail(requireEmail)
-    .setReturnUrl(returnUrl)
-    .setAutoCapture(autoCapture)
-    .setHidePaymentConsents(false)
-    .setPaymentMethods(listOf()) // 空列表表示所有可用方式
-    .build()
+B2 -- amount = 0 --> C1
+B2 -- amount \> 0 --> C2
 ```
-
-**Express Checkout 流程**（按需创建 PaymentIntent）：
-```kotlin
-import com.airwallex.android.core.AirwallexPaymentSession
-import com.airwallex.android.core.PaymentIntentProvider
-import com.airwallex.android.core.PaymentIntentSource
-
-
-// 方式 1：使用 PaymentIntentProvider（基于回调，兼容 Java）
-class MyPaymentIntentProvider : PaymentIntentProvider {
-    override val currency: String = "USD"
-    override val amount: BigDecimal = 100.toBigDecimal()
-
-    override fun provide(callback: PaymentIntentProvider.PaymentIntentCallback) {
-        // 在需要时调用 API 创建 PaymentIntent
-        myApiService.createPaymentIntent { result ->
-            when (result) {
-                is Success -> callback.onSuccess(result.paymentIntent)
-                is Error -> callback.onError(result.exception)
-            }
-        }
-    }
-}
-
-val provider = MyPaymentIntentProvider()
-val session = AirwallexPaymentSession.Builder(
-    paymentIntentProvider = provider,
-    countryCode = countryCode,
-    customerId = customerId, // 可选
-    googlePayOptions = googlePayOptions // 可选
-)
-    .setRequireBillingInformation(true)
-    .setRequireEmail(requireEmail)
-    .setReturnUrl(returnUrl)
-    .setAutoCapture(autoCapture)
-    .setHidePaymentConsents(false)
-    .setPaymentMethods(listOf())
-    .build()
-
-
-// 方式 2：使用 PaymentIntentSource（基于 suspend，推荐 Kotlin 使用）
-class MyPaymentIntentSource : PaymentIntentSource {
-    override val currency: String = "USD"
-    override val amount: BigDecimal = 100.toBigDecimal()
-
-    override suspend fun getPaymentIntent(): PaymentIntent {
-        // 使用 suspend 函数调用 API
-        return myApiService.createPaymentIntent()
-    }
-}
-
-val source = MyPaymentIntentSource()
-val session = AirwallexPaymentSession.Builder(
-    paymentIntentSource = source,
-    countryCode = countryCode,
-    customerId = customerId, // 可选
-    googlePayOptions = googlePayOptions // 可选
-)
-    .setRequireBillingInformation(true)
-    .setRequireEmail(requireEmail)
-    .setReturnUrl(returnUrl)
-    .setAutoCapture(autoCapture)
-    .setHidePaymentConsents(false)
-    .setPaymentMethods(listOf())
-    .build()
-```
-
-##### `AirwallexRecurringSession`（已废弃 —— 请使用带 `PaymentConsentOptions` 的 `Session`）
-```kotlin
-val recurringSession = AirwallexRecurringSession.Builder(
-    customerId = customerId,
-    clientSecret = clientSecret,
-    currency = currency,
-    amount = amount,
-    nextTriggerBy = nextTriggerBy,
-    countryCode = countryCode
-)
-    .setRequireEmail(requireEmail)
-    .setShipping(shipping)
-    .setRequireCvc(requireCVC)
-    .setMerchantTriggerReason(merchantTriggerReason)
-    .setReturnUrl(returnUrl)
-    .setPaymentMethods(listOf())
-    .build()
-```
-
-##### `AirwallexRecurringWithIntentSession`（已废弃 —— 请使用带 `PaymentConsentOptions` 的 `Session`）
-
-**标准流程**（预先创建 PaymentIntent）：
-```kotlin
-val recurringWithIntentSession = AirwallexRecurringWithIntentSession.Builder(
-    paymentIntent = paymentIntent,
-    customerId = customerId,
-    nextTriggerBy = nextTriggerBy,
-    countryCode = countryCode
-)
-    .setRequireEmail(requireEmail)
-    .setRequireCvc(requireCVC)
-    .setMerchantTriggerReason(merchantTriggerReason)
-    .setReturnUrl(returnUrl)
-    .setAutoCapture(autoCapture)
-    .setPaymentMethods(listOf())
-    .build()
-```
-
-**Express Checkout 流程**（按需创建 PaymentIntent）：
-```kotlin
-import com.airwallex.android.core.AirwallexRecurringWithIntentSession
-import com.airwallex.android.core.PaymentIntentProvider
-import com.airwallex.android.core.PaymentIntentSource
-
-
-// 方式 1：使用 PaymentIntentProvider
-val provider = MyPaymentIntentProvider() // 同上文的实现
-val session = AirwallexRecurringWithIntentSession.Builder(
-    paymentIntentProvider = provider,
-    customerId = customerId,
-    nextTriggerBy = nextTriggerBy,
-    countryCode = countryCode
-)
-    .setRequireEmail(requireEmail)
-    .setRequireCvc(requireCVC)
-    .setMerchantTriggerReason(merchantTriggerReason)
-    .setReturnUrl(returnUrl)
-    .setAutoCapture(autoCapture)
-    .setPaymentMethods(listOf())
-    .build()
-
-
-// 方式 2：使用 PaymentIntentSource（推荐 Kotlin 使用）
-val source = MyPaymentIntentSource() // 同上文的实现
-val session = AirwallexRecurringWithIntentSession.Builder(
-    paymentIntentSource = source,
-    customerId = customerId,
-    nextTriggerBy = nextTriggerBy,
-    countryCode = countryCode
-)
-    .setRequireEmail(requireEmail)
-    .setRequireCvc(requireCVC)
-    .setMerchantTriggerReason(merchantTriggerReason)
-    .setReturnUrl(returnUrl)
-    .setAutoCapture(autoCapture)
-    .setPaymentMethods(listOf())
-    .build()
-```
-
-</details>
 
 #### 3. 展示支付 UI
 
@@ -1093,6 +844,8 @@ val airwallex = Airwallex(activity)
 请先完成 [Google Pay 配置](#google-pay-集成)
 
 ```kotlin
+// Google Pay 支持一次性支付和 MIT consent 创建，但不支持 CIT consent。
+// 请确保在 session 中传入 GooglePayOptions —— 参见上方"Google Pay 集成"。
 airwallex.startGooglePay(
     session = session,
     listener = object : Airwallex.PaymentResultListener {
@@ -1186,7 +939,7 @@ import com.airwallex.android.core.model.PaymentConsent
 
 airwallex.checkout(
     session = session,
-    paymentMethod = paymentConsent.paymentMethod!!,
+    paymentMethod = paymentConsent.paymentMethod,
     paymentConsent = paymentConsent,
     listener = object : Airwallex.PaymentResultListener {
         override fun onCompleted(status: AirwallexPaymentStatus) {

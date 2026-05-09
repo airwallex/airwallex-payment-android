@@ -1726,15 +1726,10 @@ class Airwallex internal constructor(
                 override fun onCompleted(status: AirwallexPaymentStatus) {
                     when (status) {
                         is AirwallexPaymentStatus.Success -> {
-                            val googlePay =
-                                buildGooglePayFromAdditionalInfo(status.additionalInfo?.toMutableMap())
+                            val googlePay = buildGooglePayFromAdditionalInfo(status.additionalInfo?.toMutableMap())
                             if (googlePay == null) {
                                 AirwallexLogger.error("Airwallex checkoutGooglePay: failed , Missing Google Pay token response")
-                                listener.onCompleted(
-                                    AirwallexPaymentStatus.Failure(
-                                        AirwallexCheckoutException(message = "Missing Google Pay token response")
-                                    )
-                                )
+                                listener.onCompleted(AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = "Missing Google Pay token response")))
                                 return
                             }
 
@@ -1753,8 +1748,7 @@ class Airwallex internal constructor(
                                 }
 
                                 is AirwallexPaymentSession -> {
-                                    session.resolvePaymentIntent(object :
-                                        PaymentIntentProvider.PaymentIntentCallback {
+                                    session.resolvePaymentIntent(object : PaymentIntentProvider.PaymentIntentCallback {
                                         override fun onSuccess(paymentIntent: PaymentIntent) {
                                             googlePayProvider.get().confirmGooglePayIntent(
                                                 fragment = fragment,
@@ -1770,14 +1764,7 @@ class Airwallex internal constructor(
                                         }
 
                                         override fun onError(error: Throwable) {
-                                            listener.onCompleted(
-                                                AirwallexPaymentStatus.Failure(
-                                                    AirwallexCheckoutException(
-                                                        message = error.message,
-                                                        e = error
-                                                    )
-                                                )
-                                            )
+                                            listener.onCompleted(AirwallexPaymentStatus.Failure(AirwallexCheckoutException(message = error.message, e = error)))
                                         }
                                     })
                                 }
