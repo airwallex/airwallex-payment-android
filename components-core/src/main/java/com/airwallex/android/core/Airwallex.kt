@@ -22,6 +22,7 @@ import com.airwallex.android.core.extension.createCardPaymentMethod
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.AnalyticsLogger.Field
+import com.airwallex.android.core.log.Crasher
 import com.airwallex.android.core.model.AirwallexPaymentRequest
 import com.airwallex.android.core.model.AirwallexPaymentRequestFlow
 import com.airwallex.android.core.model.AvailablePaymentMethodType
@@ -2279,6 +2280,7 @@ class Airwallex internal constructor(
                 configuration.enableLogging,
                 configuration.saveLogToLocal
             )
+            Crasher.initialize()
             AirwallexLogger.debug("Airwallex SDK v${BuildConfigHelper.versionName} initialized")
             AirwallexLogger.debug("Current connected domain: ${configuration.environment.baseUrl()}")
             AirwallexRisk.start(
