@@ -306,15 +306,6 @@ class Airwallex internal constructor(
         paymentConsentId: String,
         listener: PaymentResultListener
     ) {
-        if (session !is Session && session !is AirwallexPaymentSession) {
-            listener.onCompleted(
-                AirwallexPaymentStatus.Failure(
-                    AirwallexCheckoutException(message = "checkout with paymentConsent only support AirwallexPaymentSession or Session")
-                )
-            )
-            return
-        }
-
         // Redirect to checkout() with a minimal PaymentMethod (card type)
         // The paymentConsentId will be used to retrieve the actual payment details
         checkout(

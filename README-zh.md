@@ -294,7 +294,7 @@ subgraph 旧版 Session
 end
 
 B2 -- amount = 0 --> C1
-B2 -- amount \> 0 --> C2
+B2 -- amount > 0 --> C2
 ```
 
 #### 3. 展示支付 UI

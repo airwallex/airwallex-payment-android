@@ -302,7 +302,7 @@ subgraph Legacy Sessions
 end
 
 B2 -- amount = 0 --> C1
-B2 -- amount \> 0 --> C2
+B2 -- amount > 0 --> C2
 ```
 
 ### 3. Present the Payment UI
