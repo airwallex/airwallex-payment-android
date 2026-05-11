@@ -97,6 +97,7 @@ sonarqube {
                 '**/*EditText.kt',
                 '**/EditTextColorUtil.kt',
                 '**/SessionUtils.kt',
+                '**/log/Crasher.kt',
                 '**/view/CardWidget.kt',
                 '**/paymentacceptance/**',
                 '**/sample/**',
