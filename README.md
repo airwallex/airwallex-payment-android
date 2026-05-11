@@ -192,8 +192,8 @@ For **Express Checkout**, the PaymentIntent is still created on your server, but
 3. **Create a Payment Intent**: Call [`/api/v1/pa/payment_intents/create`](https://www.airwallex.com/docs/api#/Payment_Acceptance/Payment_Intents/_api_v1_pa_payment_intents_create/post).
 
 While creating the Payment Intent:
-- If **amount = 0**, only a payment consent will be created (no funds will be deducted).
-- If **amount > 0**, a payment will be processed (and a consent will also be created if `PaymentConsentOptions` is set).
+- If **amount = 0**, `PaymentConsentOptions` is required — only a payment consent will be created (no funds will be deducted).
+- If **amount > 0**, a payment will be processed. If `PaymentConsentOptions` is also set, a consent will be created alongside the payment.
 - For guest checkout, `customer_id` can be omitted.
 
 ### 2. Create an Airwallex Session

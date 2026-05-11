@@ -11,14 +11,17 @@
     * `confirmPaymentIntent(session, card, billing, saveCard, listener)` is deprecated, use `Airwallex.checkout(session, paymentMethod, cvc, saveCard, listener)` instead — build the `PaymentMethod` from your card/billing
     * `confirmPaymentIntent(session, paymentConsent, listener)` is deprecated, use `Airwallex.checkout(session, paymentConsent.paymentMethod, paymentConsent, listener)` instead
     * `confirmPaymentIntent(session, paymentConsentId, listener)` is deprecated. Prefer `Airwallex.checkout(session, paymentMethod, paymentConsent, listener)` and pass a `PaymentConsent` object that contains at least `id` and `nextTriggeredBy`. The `paymentConsentId` parameter on `Airwallex.checkout(...)` is deprecated and retained only for backwards compatibility with legacy integrations — it should not be used in new code
-    * `Airwallex.checkout()` is now public and is the single entry point for all card and consent-based payments; `Airwallex.startGooglePay()` remains the entry point for Google Pay
+    * `Airwallex.checkout()` with `paymentConsentId: String?` parameter has been removed. Use the overload with `paymentConsent: PaymentConsent?` instead — pass a `PaymentConsent` object rather than the consent ID string
+
+
+## Migrating from version = 6.5.0
+- `PaymentAppearance` has been moved from `AirwallexConfiguration` to `PaymentElementConfiguration` and renamed into `Appearance`
+- `showsGooglePayAsPrimaryButton` has been moved to `googlePayButton.showsAsPrimaryButton` in `PaymentElementConfiguration.PaymentSheet`
 
 ## Migrating from versions < 6.5.0
 - Changes to `AirwallexStarter`:
     * `presentCardPaymentFlow()` with `supportedCards` parameter is deprecated, use the new overload with `PaymentElementConfiguration.Card` instead
     * `presentEntirePaymentFlow()` with `layoutType` and `showsGooglePayAsPrimaryButton` parameters is deprecated, use the new overload with `PaymentElementConfiguration.PaymentSheet` instead
-- `PaymentAppearance` has been moved from `AirwallexConfiguration` to `PaymentElementConfiguration` and renamed into `Appearance`
-- `showsGooglePayAsPrimaryButton` has been moved to `googlePayButton.showsAsPrimaryButton` in `PaymentElementConfiguration.PaymentSheet`
 
 ## Migrating from versions < 6.0.0
 - Changes to `Airwallex`:

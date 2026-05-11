@@ -184,8 +184,8 @@ Airwallex Android SDK 支持两种支付流程：
 3. 创建 PaymentIntent：用 [`/api/v1/pa/payment_intents/create`](https://www.airwallex.com/docs/api#/Payment_Acceptance/Payment_Intents/_api_v1_pa_payment_intents_create/post)
 
 创建 PaymentIntent 时：
-- 如果 **amount = 0**，仅创建支付 consent（不会扣款）。
-- 如果 **amount > 0**，将处理支付（如果设置了 `PaymentConsentOptions`，同时也会创建 consent）。
+- 如果 **amount = 0**，必须设置 `PaymentConsentOptions` — 仅创建支付 consent（不会扣款）。
+- 如果 **amount > 0**，将处理支付。如果同时设置了 `PaymentConsentOptions`，还会创建 consent。
 - 对于访客结账，`customer_id` 可以省略。
 
 #### 2. 创建 Airwallex Session
