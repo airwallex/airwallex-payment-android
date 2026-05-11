@@ -49,13 +49,8 @@ object Crasher : Thread.UncaughtExceptionHandler {
     }
 
     private fun originatedInSdk(throwable: Throwable): Boolean {
-        var rootCause: Throwable = throwable
-        val seen = mutableSetOf(rootCause)
-        while (true) {
-            val next = rootCause.cause ?: break
-            if (!seen.add(next)) break
-            rootCause = next
-        }
+        val seen = mutableSetOf(throwable)
+        val rootCause = generateSequence(throwable) { it.cause?.takeIf(seen::add) }.last()
         val topClassName = rootCause.stackTrace.firstOrNull()?.className ?: return false
         return topClassName.startsWith(SDK_PACKAGE_PREFIX)
     }
