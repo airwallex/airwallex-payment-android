@@ -2,7 +2,7 @@ appId: com.airwallex.paymentacceptance
 ---
 # Wait for WebView to load before checking conditionals (they are instant checks, not polls)
 - extendedWaitUntil:
-    visible: "Use without an account|Authorize Now|Pay Now"
+    visible: "Use without an account|Authorize Now|Pay Now|Confirm"
     timeout: 20000
 # WebView opens - handle Chrome sign-in prompt if it appears
 - runFlow:
@@ -10,6 +10,29 @@ appId: com.airwallex.paymentacceptance
       visible: "Use without an account"
     commands:
       - tapOn: "Use without an account"
+# New sandbox UI: "Action" dropdown + "Confirm" button (e.g. AlipayHK)
+# Distinguishes from legacy UI by checking the "Action" label is visible.
+- runFlow:
+    when:
+      visible: "Action"
+      notVisible: "Pay Now|Authorize Now"
+    commands:
+      - tapOn:
+          id: "react-select-2-input"
+      - tapOn: "^Pay$"
+      - tapOn: "Confirm"
+      - extendedWaitUntil:
+          visible: "Return to Merchant|SUCCEED"
+          timeout: 30000
+      - runFlow:
+          when:
+            visible: "^Return to Merchant$"
+          commands:
+            - tapOn: "^Return to Merchant$"
+      - extendedWaitUntil:
+          visible: "SUCCEED"
+          timeout: 30000
+      - tapOn: "OK"
 # Handle two different redirect flows:
 # 1. One-off payment: "Pay Now" button (no checkbox)
 # 2. Recurring/RecurringWithIntent: "Authorize Now" button (with checkbox)
