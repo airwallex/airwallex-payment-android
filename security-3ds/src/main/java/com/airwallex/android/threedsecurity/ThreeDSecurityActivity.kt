@@ -1,7 +1,6 @@
 package com.airwallex.android.threedsecurity
 
 import android.content.Intent
-import android.os.Bundle
 import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
 import com.airwallex.android.core.Airwallex
@@ -42,8 +41,8 @@ class ThreeDSecurityActivity : AirwallexActivity() {
         return R.drawable.airwallex_ic_close
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun initView() {
+        super.initView()
 
         val client = ThreeDSecureWebViewClient(
             { lifecycleScope },
