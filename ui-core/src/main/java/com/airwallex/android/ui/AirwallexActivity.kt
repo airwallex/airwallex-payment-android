@@ -1,6 +1,5 @@
 package com.airwallex.android.ui
 
-import android.app.Activity
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.ViewStub
