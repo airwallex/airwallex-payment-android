@@ -40,11 +40,20 @@ open class AirwallexCheckoutViewModel(
     @Suppress("LongParameterList")
     fun checkout(
         paymentMethod: PaymentMethod,
-        paymentConsentId: String?,
+        paymentConsent: PaymentConsent?,
         cvc: String?,
         additionalInfo: Map<String, String>? = null,
         flow: AirwallexPaymentRequestFlow? = null
     ): LiveData<AirwallexPaymentStatus> {
+        if (session is AirwallexRecurringSession) {
+            return MutableLiveData(
+                AirwallexPaymentStatus.Failure(
+                    AirwallexCheckoutException(
+                        message = "AirwallexRecurringSession cannot support payment with consent"
+                    )
+                )
+            )
+        }
         val resultData = MutableLiveData<AirwallexPaymentStatus>()
         val listener = object : Airwallex.PaymentResultListener {
             override fun onCompleted(status: AirwallexPaymentStatus) {
@@ -54,21 +63,7 @@ open class AirwallexCheckoutViewModel(
         airwallex.checkout(
             session = session,
             paymentMethod = paymentMethod,
-            paymentConsent =
-                if (session is AirwallexPaymentSession || (session is Session && session.isOneOffPayment)) {
-                    PaymentConsent(
-                        id = paymentConsentId,
-                        nextTriggeredBy = PaymentConsent.NextTriggeredBy.CUSTOMER,
-                    )
-                } else {
-                    return MutableLiveData(
-                        AirwallexPaymentStatus.Failure(
-                            AirwallexCheckoutException(
-                                message = "Payment Consent is only supported for one-off payment sessions"
-                            )
-                        )
-                    )
-                },
+            paymentConsent = paymentConsent,
             cvc = cvc,
             additionalInfo = additionalInfo,
             flow = flow,

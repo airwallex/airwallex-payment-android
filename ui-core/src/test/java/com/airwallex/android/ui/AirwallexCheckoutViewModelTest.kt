@@ -76,7 +76,7 @@ class AirwallexCheckoutViewModelTest {
 
         vm.checkout(
             paymentMethod = paymentMethod,
-            paymentConsentId = null,
+            paymentConsent = null,
             cvc = null
         )
         verify(exactly = 1) {
@@ -94,7 +94,7 @@ class AirwallexCheckoutViewModelTest {
     }
 
     @Test
-    fun `test checkout with one-off session passes PaymentConsent with correct id and nextTriggeredBy`() {
+    fun `test checkout forwards PaymentConsent unchanged to airwallex`() {
         val paymentSession = mockk<AirwallexPaymentSession>()
         val consentSlot = slot<PaymentConsent>()
         val vm = AirwallexCheckoutViewModel(application, airwallex, paymentSession)
@@ -111,29 +111,32 @@ class AirwallexCheckoutViewModelTest {
             )
         } just runs
 
+        val passedConsent = PaymentConsent(
+            id = "consent_123",
+            nextTriggeredBy = PaymentConsent.NextTriggeredBy.CUSTOMER
+        )
         vm.checkout(
             paymentMethod = paymentMethod,
-            paymentConsentId = "consent_123",
+            paymentConsent = passedConsent,
             cvc = "123"
         )
 
-        assertEquals("consent_123", consentSlot.captured.id)
-        assertEquals(PaymentConsent.NextTriggeredBy.CUSTOMER, consentSlot.captured.nextTriggeredBy)
+        assertEquals(passedConsent, consentSlot.captured)
     }
 
     @Test
-    fun `test checkout with non-one-off session returns failure`() {
+    fun `test checkout with AirwallexRecurringSession returns failure`() {
         val recurringSession = mockk<AirwallexRecurringSession>()
         val vm = AirwallexCheckoutViewModel(application, airwallex, recurringSession)
 
         val result = vm.checkout(
             paymentMethod = paymentMethod,
-            paymentConsentId = "consent_123",
+            paymentConsent = PaymentConsent(id = "consent_123"),
             cvc = null
         )
         assertIs<AirwallexPaymentStatus.Failure>(result.value).apply {
             assertIs<AirwallexCheckoutException>(exception).apply {
-                assertEquals("Payment Consent is only supported for one-off payment sessions", message)
+                assertEquals("AirwallexRecurringSession cannot support payment with consent", message)
             }
         }
         verify(exactly = 0) { airwallex.checkout(any(), any(), any(), any(), any(), any(), any(), any()) }

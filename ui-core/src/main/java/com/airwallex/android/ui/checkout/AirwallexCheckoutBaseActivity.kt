@@ -38,7 +38,7 @@ abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
     @Suppress("LongParameterList")
     fun startCheckout(
         paymentMethod: PaymentMethod,
-        paymentConsentId: String? = null,
+        paymentConsent: PaymentConsent? = null,
         cvc: String? = null,
         additionalInfo: Map<String, String>? = null,
         flow: AirwallexPaymentRequestFlow? = null,
@@ -46,7 +46,7 @@ abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
     ) {
         setLoadingProgress(loading = true, cancelable = false)
         viewModel.checkout(
-            paymentMethod, paymentConsentId, cvc, additionalInfo, flow
+            paymentMethod, paymentConsent, cvc, additionalInfo, flow
         ).observe(this, observer)
     }
 }
