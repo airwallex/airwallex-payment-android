@@ -1045,37 +1045,42 @@ class PaymentFlowViewModelTest {
     }
 
     @Test
-    fun `observeResults cancels previous subscription so old listener does not receive`() = runTest {
-        val session = createPaymentSession()
-        val viewModel = createViewModel(session)
-        val (activity, _) = createTestActivity()
-        val oldListener = mockk<PaymentFlowListener>(relaxed = true)
-        val newListener = mockk<PaymentFlowListener>(relaxed = true)
+    fun `observeResults cancels previous subscription so old listener does not receive`() =
+        // Share the scheduler with Main so advanceUntilIdle drains lifecycleScope launches too —
+        // otherwise the old subscriber's cancellation may not propagate before the second emit.
+        runTest(testDispatcher) {
+            val session = createPaymentSession()
+            val viewModel = createViewModel(session)
+            val (activity, _) = createTestActivity()
+            val oldListener = mockk<PaymentFlowListener>(relaxed = true)
+            val newListener = mockk<PaymentFlowListener>(relaxed = true)
+            val resultObserverJobField = PaymentFlowViewModel::class.java
+                .getDeclaredField("resultObserverJob").apply { isAccessible = true }
 
-        // Subscribe oldListener and confirm it's actually wired up by emitting first.
-        // This avoids the cancel-vs-emit race: by the time we swap listeners the
-        // channel is drained, so any later miss is unambiguously due to cancellation.
-        viewModel.observeResults(activity, oldListener)
-        advanceUntilIdle()
-        emitCheckoutResult(viewModel, session, AirwallexPaymentStatus.Success("intent_1"))
-        advanceUntilIdle()
-        verify(exactly = 1) { oldListener.onPaymentResult(any()) }
+            // Subscribe oldListener and prove it's wired up by delivering the first event.
+            viewModel.observeResults(activity, oldListener)
+            advanceUntilIdle()
+            val oldJob = resultObserverJobField.get(viewModel) as Job
+            emitCheckoutResult(viewModel, session, AirwallexPaymentStatus.Success("intent_1"))
+            advanceUntilIdle()
+            verify(exactly = 1) { oldListener.onPaymentResult(any()) }
 
-        // Swap to newListener — this must cancel the old subscription.
-        viewModel.observeResults(activity, newListener)
-        advanceUntilIdle()
+            // Swap to newListener — this cancels oldJob. Join it so the channel receiver
+            // is fully unregistered before we emit again (eliminates the cancel-vs-send race).
+            viewModel.observeResults(activity, newListener)
+            oldJob.join()
+            advanceUntilIdle()
 
-        emitCheckoutResult(viewModel, session, AirwallexPaymentStatus.Success("intent_2"))
-        advanceUntilIdle()
+            emitCheckoutResult(viewModel, session, AirwallexPaymentStatus.Success("intent_2"))
+            advanceUntilIdle()
 
-        // Old listener's count is unchanged from the first emission.
-        verify(exactly = 1) { oldListener.onPaymentResult(any()) }
-        verify(exactly = 1) { newListener.onPaymentResult(any()) }
-        verify(exactly = 1) { newListener.onLoadingStateChanged(false, activity) }
-    }
+            verify(exactly = 1) { oldListener.onPaymentResult(any()) }
+            verify(exactly = 1) { newListener.onPaymentResult(any()) }
+            verify(exactly = 1) { newListener.onLoadingStateChanged(false, activity) }
+        }
 
     @Test
-    fun `observeResults is safe with no prior subscription`() = runTest {
+    fun `observeResults is safe with no prior subscription`() = runTest(testDispatcher) {
         val session = createPaymentSession()
         val viewModel = createViewModel(session)
         val (activity, _) = createTestActivity()

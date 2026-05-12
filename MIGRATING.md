@@ -1,6 +1,20 @@
 # Migration Guide
 
-## Migrating from version 6.5.0
+## Migrating from versions < 6.7.0
+- Changes to `AirwallexSession`:
+    * `AirwallexPaymentSession`, `AirwallexRecurringSession`, and `AirwallexRecurringWithIntentSession` are deprecated, use the unified `Session` class instead
+    * The flow is now determined by `PaymentConsentOptions` and the PaymentIntent `amount`:
+        - one-off payment: no `PaymentConsentOptions`, `amount > 0`
+        - recurring (consent only, no charge): set `PaymentConsentOptions`, `amount = 0`
+        - recurring with intent (consent + charge): set `PaymentConsentOptions`, `amount > 0`
+- Changes to `Airwallex`:
+    * `confirmPaymentIntent(session, card, billing, saveCard, listener)` is deprecated, use `Airwallex.checkout(session, paymentMethod, cvc, saveCard, listener)` instead — build the `PaymentMethod` from your card/billing
+    * `confirmPaymentIntent(session, paymentConsent, listener)` is deprecated, use `Airwallex.checkout(session, paymentConsent.paymentMethod, paymentConsent, listener)` instead
+    * `confirmPaymentIntent(session, paymentConsentId, listener)` is deprecated. Prefer `Airwallex.checkout(session, paymentMethod, paymentConsent, listener)` and pass a `PaymentConsent` object that contains at least `id` and `nextTriggeredBy`. The `paymentConsentId` parameter on `Airwallex.checkout(...)` is deprecated and retained only for backwards compatibility with legacy integrations — it should not be used in new code
+    * `Airwallex.checkout()` with `paymentConsentId: String?` parameter has been removed. Use the overload with `paymentConsent: PaymentConsent?` instead — pass a `PaymentConsent` object rather than the consent ID string
+
+
+## Migrating from version = 6.5.0
 - `PaymentAppearance` has been moved from `AirwallexConfiguration` to `PaymentElementConfiguration` and renamed into `Appearance`
 - `showsGooglePayAsPrimaryButton` has been moved to `googlePayButton.showsAsPrimaryButton` in `PaymentElementConfiguration.PaymentSheet`
 

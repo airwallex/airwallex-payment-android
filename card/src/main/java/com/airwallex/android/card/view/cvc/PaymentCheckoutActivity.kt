@@ -18,6 +18,7 @@ import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.extension.setOnSingleClickListener
 import com.airwallex.android.core.log.AirwallexLogger
+import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.WeChat
 import com.airwallex.android.core.util.CurrencyUtils.formatPrice
@@ -49,8 +50,8 @@ class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
         args.paymentMethod
     }
 
-    private val paymentConsentId: String? by lazy {
-        args.paymentConsentId
+    private val paymentConsent: PaymentConsent? by lazy {
+        args.paymentConsent
     }
 
     override val session: AirwallexSession by lazy {
@@ -156,7 +157,7 @@ class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
         AirwallexLogger.info("PaymentCheckoutActivity startConfirmPaymentIntent")
         startCheckout(
             paymentMethod = paymentMethod,
-            paymentConsentId = paymentConsentId,
+            paymentConsent = paymentConsent,
             cvc = viewBinding.atlCardCvc.value,
             observer = { result ->
                 when (result) {

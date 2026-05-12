@@ -1,6 +1,7 @@
 package com.airwallex.android.core.data
 import androidx.activity.ComponentActivity
 import com.airwallex.android.core.AirwallexSession
+import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentMethod
 import io.mockk.MockKAnnotations
 import io.mockk.mockk
@@ -31,18 +32,21 @@ class AirwallexCheckoutParamTest {
 
     @Test
     fun `test AirwallexCVCParam creation`() {
-        val paymentConsentId = "12345"
+        val paymentConsent = PaymentConsent(
+            id = "12345",
+            nextTriggeredBy = PaymentConsent.NextTriggeredBy.CUSTOMER
+        )
 
         val airwallexCVCParam = AirwallexCheckoutParam(
             activity = activity,
             paymentMethod = paymentMethod,
             session = session,
-            paymentConsentId = paymentConsentId
+            paymentConsent = paymentConsent
         )
 
         assertEquals(activity, airwallexCVCParam.activity)
         assertEquals(paymentMethod, airwallexCVCParam.paymentMethod)
         assertEquals(session, airwallexCVCParam.session)
-        assertEquals(paymentConsentId, airwallexCVCParam.paymentConsentId)
+        assertEquals(paymentConsent, airwallexCVCParam.paymentConsent)
     }
 }
