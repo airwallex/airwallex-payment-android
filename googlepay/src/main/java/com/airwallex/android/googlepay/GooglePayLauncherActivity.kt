@@ -9,7 +9,7 @@ import com.airwallex.android.core.extension.putIfNotNull
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.AnalyticsLogger.Field
-import com.airwallex.android.ui.extension.getExtraArgs
+import com.airwallex.android.ui.extension.getExtraArgsOrNull
 import com.airwallex.risk.AirwallexRisk
 import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.wallet.AutoResolveHelper
@@ -22,12 +22,12 @@ class GooglePayLauncherActivity : ComponentActivity() {
     private val viewModel: GooglePayLauncherViewModel by lazy {
         ViewModelProvider(
             this,
-            GooglePayLauncherViewModel.Factory(application, args)
+            GooglePayLauncherViewModel.Factory(application, requireNotNull(args))
         )[GooglePayLauncherViewModel::class.java]
     }
 
-    private val args: GooglePayActivityLaunch.Args by lazy {
-        intent.getExtraArgs()
+    private val args: GooglePayActivityLaunch.Args? by lazy {
+        intent.getExtraArgsOrNull()
     }
 
     private val googlePayLauncher = registerForActivityResult(GetPaymentDataResult()) {
@@ -36,6 +36,17 @@ class GooglePayLauncherActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (args == null) {
+            // Launch args were null after process death — fail the activity
+            // instead of crashing so the merchant gets a Cancel result.
+            AirwallexLogger.error("GooglePayLauncherActivity: missing args, finishing")
+            AnalyticsLogger.logError(
+                "googlepay_launcher_init_failed",
+                mapOf("activity" to "GooglePayLauncherActivity"),
+            )
+            finishWithResult(GooglePayActivityLaunch.Result.Cancel)
+            return
+        }
         AirwallexRisk.log(event = "show_google_pay", screen = "page_google_pay")
         val task = viewModel.getLoadPaymentDataTask()
         task.addOnCompleteListener(googlePayLauncher::launch)

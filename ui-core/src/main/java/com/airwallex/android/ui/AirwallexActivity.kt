@@ -39,6 +39,21 @@ abstract class AirwallexActivity : AppCompatActivity(), AirwallexInternalActivit
     companion object {
         private const val KEY_IS_LOADING = "airwallex_is_loading"
         private const val KEY_LOADING_CANCELABLE = "airwallex_loading_cancelable"
+        private const val KEY_LAUNCH_BUNDLE = "airwallex_launch_bundle"
+        internal const val EVENT_INIT_FAILED = "activity_init_failed"
+    }
+
+    /**
+     * Restore the launch bundle from savedInstanceState back into the intent so
+     * args lazy reads succeed after process death. Idempotent — only restores if
+     * the intent doesn't already carry the bundle.
+     */
+    protected fun restoreLaunchBundleIfNeeded(savedInstanceState: Bundle?) {
+        if (savedInstanceState == null) return
+        if (intent.hasExtra(AirwallexActivityLaunch.Args.AIRWALLEX_BUNDLE_EXTRA)) return
+        savedInstanceState.getBundle(KEY_LAUNCH_BUNDLE)?.let { launchBundle ->
+            intent.putExtra(AirwallexActivityLaunch.Args.AIRWALLEX_BUNDLE_EXTRA, launchBundle)
+        }
     }
 
     abstract fun onBackButtonPressed()
@@ -68,19 +83,34 @@ abstract class AirwallexActivity : AppCompatActivity(), AirwallexInternalActivit
     open fun addObserver() = Unit
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        restoreLaunchBundleIfNeeded(savedInstanceState)
         super.onCreate(savedInstanceState)
-        setContentView(viewBinding.root)
-        initView()
-        addListener()
-        addObserver()
+        try {
+            setContentView(viewBinding.root)
+            initView()
+            addListener()
+            addObserver()
 
-        // Restore loading dialog state after configuration change
-        savedInstanceState?.let {
-            isLoadingBeforeConfigChange = it.getBoolean(KEY_IS_LOADING, false)
-            loadingCancelable = it.getBoolean(KEY_LOADING_CANCELABLE, true)
-            if (isLoadingBeforeConfigChange) {
-                setLoadingProgress(loading = true, cancelable = loadingCancelable)
+            // Restore loading dialog state after configuration change
+            savedInstanceState?.let {
+                isLoadingBeforeConfigChange = it.getBoolean(KEY_IS_LOADING, false)
+                loadingCancelable = it.getBoolean(KEY_LOADING_CANCELABLE, true)
+                if (isLoadingBeforeConfigChange) {
+                    setLoadingProgress(loading = true, cancelable = loadingCancelable)
+                }
             }
+        } catch (e: IllegalArgumentException) {
+            // Required launch args were null — typically because the launch
+            // Intent's nested parcelable failed to re-marshal after process
+            // death. Fail the activity instead of crashing the host app so the
+            // merchant gets RESULT_CANCELED and can recover.
+            AirwallexLogger.error("$localClassName: init failed, finishing", e)
+            AnalyticsLogger.logError(
+                EVENT_INIT_FAILED,
+                mapOf("activity" to localClassName),
+            )
+            setResult(RESULT_CANCELED)
+            finish()
         }
     }
 
@@ -89,6 +119,11 @@ abstract class AirwallexActivity : AppCompatActivity(), AirwallexInternalActivit
         // Save loading dialog state before configuration change
         outState.putBoolean(KEY_IS_LOADING, loading)
         outState.putBoolean(KEY_LOADING_CANCELABLE, loadingCancelable)
+        // Backup the launch bundle so process-death recreation can recover args
+        // even if the framework loses the inner parcelable.
+        intent.getBundleExtra(AirwallexActivityLaunch.Args.AIRWALLEX_BUNDLE_EXTRA)?.let {
+            outState.putBundle(KEY_LAUNCH_BUNDLE, it)
+        }
     }
 
     override fun onDestroy() {
