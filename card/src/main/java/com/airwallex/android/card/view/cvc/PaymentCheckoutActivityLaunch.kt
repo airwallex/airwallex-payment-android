@@ -15,6 +15,7 @@ import com.airwallex.android.core.Session
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.extension.convertToSession
 import com.airwallex.android.core.model.ObjectBuilder
+import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.WeChat
 import com.airwallex.android.ui.AirwallexActivityLaunch
@@ -43,7 +44,7 @@ class PaymentCheckoutActivityLaunch :
         internal val parcelableSession: ParcelableSession? = null,
         @Suppress("DEPRECATION") internal val recurringSession: AirwallexRecurringSession? = null,
         val paymentMethod: PaymentMethod,
-        val paymentConsentId: String?,
+        val paymentConsent: PaymentConsent?,
         val cvc: String?
     ) : AirwallexActivityLaunch.Args {
 
@@ -58,15 +59,15 @@ class PaymentCheckoutActivityLaunch :
             @Suppress("DEPRECATION")
             private var recurringSession: AirwallexRecurringSession? = null
             private lateinit var paymentMethod: PaymentMethod
-            private var paymentConsentId: String? = null
+            private var paymentConsent: PaymentConsent? = null
             private var cvc: String? = null
 
             fun setCvc(cvc: String?): Builder = apply {
                 this.cvc = cvc
             }
 
-            fun setPaymentConsentId(paymentConsentId: String?): Builder = apply {
-                this.paymentConsentId = paymentConsentId
+            fun setPaymentConsent(paymentConsent: PaymentConsent?): Builder = apply {
+                this.paymentConsent = paymentConsent
             }
 
             @Suppress("DEPRECATION")
@@ -89,7 +90,7 @@ class PaymentCheckoutActivityLaunch :
                     parcelableSession = parcelableSession,
                     recurringSession = recurringSession,
                     paymentMethod = paymentMethod,
-                    paymentConsentId = paymentConsentId,
+                    paymentConsent = paymentConsent,
                     cvc = cvc
                 )
             }

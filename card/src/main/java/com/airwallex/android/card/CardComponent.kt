@@ -74,11 +74,11 @@ class CardComponent : ActionComponent {
                     PaymentCheckoutActivityLaunch.Args.Builder()
                         .setAirwallexSession(param.session)
                         .setPaymentMethod(param.paymentMethod)
-                        .setPaymentConsentId(param.paymentConsentId)
+                        .setPaymentConsent(param.paymentConsent)
                         .build()
                 ) { _, result ->
                     val paymentStatus = handleCVCActivityResult(
-                        param.paymentConsentId,
+                        param.paymentConsent?.id,
                         result.resultCode,
                         result.data
                     )

@@ -10,6 +10,7 @@ import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.model.AirwallexPaymentRequestFlow
+import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.BankResponse
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.PaymentMethod
@@ -50,7 +51,6 @@ class AirwallexCheckoutViewModelTest {
                 any(),
                 any(),
                 any(),
-                any(),
                 any()
             )
         } just runs
@@ -59,24 +59,87 @@ class AirwallexCheckoutViewModelTest {
 
     @Test
     fun `test checkout when saveCard is false`() {
-        viewModel.checkout(
-            paymentMethod = paymentMethod,
-            paymentConsentId = null,
-            cvc = null
-        )
-        verify(exactly = 1) {
+        val paymentSession = mockk<AirwallexPaymentSession>()
+        val vm = AirwallexCheckoutViewModel(application, airwallex, paymentSession)
+        every {
             airwallex.checkout(
-                session,
+                paymentSession,
                 paymentMethod,
                 any(),
-                null,
                 any(),
                 any(),
                 any(),
                 any(),
                 any()
             )
+        } just runs
+
+        vm.checkout(
+            paymentMethod = paymentMethod,
+            paymentConsent = null,
+            cvc = null
+        )
+        verify(exactly = 1) {
+            airwallex.checkout(
+                paymentSession,
+                paymentMethod,
+                any(),
+                null,
+                any(),
+                any(),
+                any(),
+                any()
+            )
         }
+    }
+
+    @Test
+    fun `test checkout forwards PaymentConsent unchanged to airwallex`() {
+        val paymentSession = mockk<AirwallexPaymentSession>()
+        val consentSlot = slot<PaymentConsent>()
+        val vm = AirwallexCheckoutViewModel(application, airwallex, paymentSession)
+        every {
+            airwallex.checkout(
+                paymentSession,
+                paymentMethod,
+                capture(consentSlot),
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+            )
+        } just runs
+
+        val passedConsent = PaymentConsent(
+            id = "consent_123",
+            nextTriggeredBy = PaymentConsent.NextTriggeredBy.CUSTOMER
+        )
+        vm.checkout(
+            paymentMethod = paymentMethod,
+            paymentConsent = passedConsent,
+            cvc = "123"
+        )
+
+        assertEquals(passedConsent, consentSlot.captured)
+    }
+
+    @Test
+    fun `test checkout with AirwallexRecurringSession returns failure`() {
+        val recurringSession = mockk<AirwallexRecurringSession>()
+        val vm = AirwallexCheckoutViewModel(application, airwallex, recurringSession)
+
+        val result = vm.checkout(
+            paymentMethod = paymentMethod,
+            paymentConsent = PaymentConsent(id = "consent_123"),
+            cvc = null
+        )
+        assertIs<AirwallexPaymentStatus.Failure>(result.value).apply {
+            assertIs<AirwallexCheckoutException>(exception).apply {
+                assertEquals("AirwallexRecurringSession cannot support payment with consent", message)
+            }
+        }
+        verify(exactly = 0) { airwallex.checkout(any(), any(), any(), any(), any(), any(), any(), any()) }
     }
 
     @Test
