@@ -13,7 +13,7 @@ platform:
       true: ${IS_RECORDING}
     commands:
       - startRecording: test_api_customer_recurring
-- launchApp
+# - launchApp  # TEMP for MCP run
 - runScript: ../../../Card/cards.js
 - runScript: ../../../Common/settings.js
 - tapOn: "Integrate with low-level API"
@@ -95,6 +95,11 @@ platform:
     file: ../../../Common/flow_handle_redirect.yaml
 # Recurring payment: loading overlay appears, press back to dismiss it
 - back
+# Get saved cards -> per-card PAY: disabled for legacy AirwallexRecurringSession.
+- runFlow:
+    file: ../../flow_pay_with_saved_consent.yaml
+    env:
+      EXPECT_DISABLED: true
 # Go back to MainActivity from APIIntegrationActivity
 - back
 - tapOn: "Integrate with Airwallex UI"

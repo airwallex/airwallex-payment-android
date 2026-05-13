@@ -48,14 +48,11 @@ platform:
 - tapOn: "PAY"
 - assertVisible: "Payment successful"
 - tapOn: "OK"
-# Verify 1 saved card - PAY button is disabled in recurring mode
+# Verify 1 saved card (per-card PAY behaviour is exercised at end of test)
 - scrollUntilVisible:
     element: "Get saved cards"
 - tapOn: "Get saved cards"
 - assertVisible: "Visa •••• 0008"
-# Verify PAY button is disabled by tapping it and confirming dialog remains open
-- tapOn: "PAY"
-- assertVisible: "Customer Dialog"
 - back
 # Pay with same card again - duplicate should be rejected for recurring (no payment)
 - scrollUntilVisible:
@@ -91,9 +88,6 @@ platform:
 - tapOn: "Get saved cards"
 - assertVisible: "Visa •••• 0008"
 - assertVisible: "Mastercard •••• 4518"
-# Verify PAY buttons are disabled by tapping one and confirming dialog remains open
-- tapOn: "PAY"
-- assertVisible: "Customer Dialog"
 - back
 # Pay with redirect payment - special handling for recurring
 - scrollUntilVisible:
@@ -104,6 +98,11 @@ platform:
     file: ../../../Common/flow_handle_redirect.yaml
 # Recurring payment: loading overlay appears, press back to dismiss it
 - back
+# Get saved cards -> per-card PAY: enabled in new Session even in recurring mode.
+- runFlow:
+    file: ../../flow_pay_with_saved_consent.yaml
+    env:
+      EXPECT_DISABLED: false
 # Go back to MainActivity from APIIntegrationActivity
 - back
 - tapOn: "Integrate with Airwallex UI"

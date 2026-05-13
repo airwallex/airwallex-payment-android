@@ -93,6 +93,11 @@ platform:
     file: ../../../Common/flow_handle_redirect.yaml
 # Recurring with payment: loading overlay appears, press back to dismiss it
 - back
+# Get saved cards -> per-card PAY: enabled in recurring+payment, may or may not prompt for CVC.
+- runFlow:
+    file: ../../flow_pay_with_saved_consent.yaml
+    env:
+      EXPECT_DISABLED: false
 # Go back to MainActivity from APIIntegrationActivity
 - back
 - tapOn: "Integrate with Airwallex UI"

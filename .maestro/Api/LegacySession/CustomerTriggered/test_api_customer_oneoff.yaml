@@ -96,7 +96,13 @@ platform:
 - runFlow:
     file: ../../../Common/flow_handle_redirect.yaml
 # flow_handle_redirect.yaml completes the payment and dismisses the SUCCEED dialog
-# Now back on APIIntegrationActivity, go back to MainActivity
+# Now back on APIIntegrationActivity.
+# Get saved cards -> per-card PAY: enabled in oneoff, may or may not prompt for CVC.
+- runFlow:
+    file: ../../flow_pay_with_saved_consent.yaml
+    env:
+      EXPECT_DISABLED: false
+# Go back to MainActivity
 - back
 - tapOn: "Integrate with Airwallex UI"
 - tapOn: "Launch payment list"
