@@ -7,10 +7,16 @@
     <string name="airwallex_shipping_city_name_hint">Ville</string>
     <string name="airwallex_shipping_email_hint">E-mail (optionnel)</string>
     <string name="airwallex_contact_phone_number_hint">Numéro de téléphone (optionnel)</string>
+    <string name="airwallex_zip_code_hint">Code postal</string>
+    <string name="airwallex_phone_number_hint">Numéro de téléphone</string>
     <string name="airwallex_shipping_country_name_hint">Pays / Région</string>
     <string name="airwallex_empty_country">Veuillez entrer votre pays</string>
     <string name="airwallex_empty_city">Veuillez entrer votre ville</string>
     <string name="airwallex_empty_street">Veuillez entrer votre rue</string>
+    <string name="airwallex_empty_postcode">Veuillez entrer votre code postal</string>
+    <string name="airwallex_empty_phone">Veuillez entrer votre numéro de téléphone</string>
+    <string name="airwallex_invalid_phone">Veuillez entrer un numéro de téléphone valide</string>
+    <string name="airwallex_empty_country_code">Veuillez sélectionner un pays</string>
     <string name="airwallex_empty_last_name">Veuillez entrer votre nom</string>
     <string name="airwallex_empty_first_name">Veuillez entrer votre prénom</string>
     <string name="airwallex_delete_payment_method_negative">Annuler</string>

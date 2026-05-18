@@ -7,10 +7,16 @@
     <string name="airwallex_shipping_city_name_hint">도시</string>
     <string name="airwallex_shipping_email_hint">이메일(선택 사항)</string>
     <string name="airwallex_contact_phone_number_hint">전화번호(선택 사항)</string>
+    <string name="airwallex_zip_code_hint">우편번호</string>
+    <string name="airwallex_phone_number_hint">전화번호</string>
     <string name="airwallex_shipping_country_name_hint">국가 / 지역</string>
     <string name="airwallex_empty_country">국가를 입력하세요</string>
     <string name="airwallex_empty_city">도시를 입력하세요</string>
     <string name="airwallex_empty_street">주소를 입력하세요</string>
+    <string name="airwallex_empty_postcode">우편번호를 입력하세요</string>
+    <string name="airwallex_empty_phone">전화번호를 입력하세요</string>
+    <string name="airwallex_invalid_phone">유효한 전화번호를 입력하세요</string>
+    <string name="airwallex_empty_country_code">국가를 선택하세요</string>
     <string name="airwallex_empty_last_name">성을 입력하세요</string>
     <string name="airwallex_empty_first_name">이름을 입력하세요</string>
     <string name="airwallex_delete_payment_method_negative">취소</string>

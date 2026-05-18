@@ -23,6 +23,7 @@ import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.AnalyticsLogger.Field
 import com.airwallex.android.core.log.Crasher
+import com.airwallex.android.core.util.validateForRequiredFields
 import com.airwallex.android.core.model.AirwallexPaymentRequest
 import com.airwallex.android.core.model.AirwallexPaymentRequestFlow
 import com.airwallex.android.core.model.AvailablePaymentMethodType
@@ -977,6 +978,17 @@ class Airwallex internal constructor(
         val isCardOrGooglePay = paymentMethod.type == PaymentMethodType.GOOGLEPAY.value ||
                 paymentMethod.type == PaymentMethodType.CARD.value
         val useOldFlow = session is AirwallexRecurringSession || !isCardOrGooglePay
+
+        // Low level billing-field validation. Only applies to card payments
+        // LPM/Google-Pay billing isn't merchant-controlled here.
+        if (paymentMethod.type == PaymentMethodType.CARD.value) {
+            paymentMethod.billing
+                .validateForRequiredFields(session.resolvedRequiredBillingContactFields)
+                ?.let {
+                    loggingListener.onCompleted(AirwallexPaymentStatus.Failure(it))
+                    return
+                }
+        }
 
         // Log payment_launched for API integration
         logPaymentLaunchedIfNeeded(paymentConsent?.id, paymentMethod.type)

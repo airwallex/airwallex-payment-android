@@ -54,6 +54,7 @@ class SettingViewModel : BaseViewModel() {
         Settings.weChatAppId = ""
         Settings.autoCapture = "Disabled"
         Settings.requiresEmail = "False"
+        Settings.requiredBillingContactFields = null
         Settings.sdkEnv = "DEMO"
         Settings.nextTriggerBy = "Merchant"
         Settings.returnUrl = ""

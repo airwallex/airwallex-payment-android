@@ -84,6 +84,14 @@
                 android:layout_height="wrap_content"
                 app:labelText="Requires email" />
 
+            <com.airwallex.paymentacceptance.ui.widget.DropdownLabelView
+                android:id="@+id/lvBillingFields"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:clickable="true"
+                android:focusable="true" />
+
             <com.airwallex.paymentacceptance.ui.widget.SwitchView
                 android:id="@+id/sw3DS"
                 android:layout_width="match_parent"

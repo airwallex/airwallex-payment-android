@@ -7,10 +7,16 @@
     <string name="airwallex_shipping_city_name_hint">市区町村</string>
     <string name="airwallex_shipping_email_hint">メールアドレス（任意）</string>
     <string name="airwallex_contact_phone_number_hint">電話番号（任意）</string>
+    <string name="airwallex_zip_code_hint">郵便番号</string>
+    <string name="airwallex_phone_number_hint">電話番号</string>
     <string name="airwallex_shipping_country_name_hint">国／地域</string>
     <string name="airwallex_empty_country">国を入力してください</string>
     <string name="airwallex_empty_city">市区町村を入力してください</string>
     <string name="airwallex_empty_street">住所を入力してください</string>
+    <string name="airwallex_empty_postcode">郵便番号を入力してください</string>
+    <string name="airwallex_empty_phone">電話番号を入力してください</string>
+    <string name="airwallex_invalid_phone">有効な電話番号を入力してください</string>
+    <string name="airwallex_empty_country_code">国を選択してください</string>
     <string name="airwallex_empty_last_name">姓を入力してください</string>
     <string name="airwallex_empty_first_name">名を入力してください</string>
     <string name="airwallex_delete_payment_method_negative">キャンセル</string>

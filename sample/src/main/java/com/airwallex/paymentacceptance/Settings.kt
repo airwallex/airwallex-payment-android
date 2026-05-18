@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import androidx.preference.PreferenceManager
 import com.airwallex.android.core.AirwallexCheckoutMode
 import com.airwallex.android.core.Environment
+import com.airwallex.android.core.RequiredBillingContactField
 import kotlin.properties.Delegates
 import androidx.core.content.edit
 
@@ -171,6 +172,30 @@ object Settings {
                 defaultRequiresEmail
             )
                 ?: defaultRequiresEmail
+        }
+
+    /**
+     * Required billing contact fields for the new-card UI / headless validation.
+     * - `null` (key never written) → derive from the legacy [requiresEmail] /
+     *   `requiresBillingInformation` flags (current Android behavior).
+     * - empty Set → hide the entire billing section.
+     * - non-empty Set → exact list of required fields.
+     */
+    var requiredBillingContactFields: Set<RequiredBillingContactField>?
+        set(value) {
+            val key = context.getString(R.string.required_billing_contact_fields)
+            sharedPreferences.edit {
+                if (value == null) remove(key)
+                else putStringSet(key, value.mapTo(mutableSetOf()) { it.name })
+            }
+        }
+        get() {
+            val key = context.getString(R.string.required_billing_contact_fields)
+            if (!sharedPreferences.contains(key)) return null
+            val raw = sharedPreferences.getStringSet(key, emptySet()) ?: emptySet()
+            return raw.mapNotNullTo(mutableSetOf()) { name ->
+                runCatching { RequiredBillingContactField.valueOf(name) }.getOrNull()
+            }
         }
 
     var force3DS: String

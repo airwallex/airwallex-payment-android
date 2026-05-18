@@ -93,7 +93,15 @@ class Session internal constructor(
     /**
      * Control whether saved cards are displayed on the list screen
      */
-    override val hidePaymentConsents: Boolean = false
+    override val hidePaymentConsents: Boolean = false,
+
+    /**
+     * Billing contact fields the SDK should collect on the new-card screen. `null`
+     * preserves legacy behavior (derived from [isBillingInformationRequired] /
+     * [isEmailRequired]). See [RequiredBillingContactField] and
+     * [resolvedRequiredBillingContactFields].
+     */
+    override val requiredBillingContactFields: Set<RequiredBillingContactField>? = null
 
 ) : AirwallexSession(), PaymentIntentResolvableSession {
 
@@ -179,16 +187,27 @@ class Session internal constructor(
         private var hidePaymentConsents: Boolean = false
         private var paymentMethods: List<String>? = null
         private var shipping: Shipping? = null
+        private var requiredBillingContactFields: Set<RequiredBillingContactField>? = null
 
         fun setPaymentConsentOptions(paymentConsentOptions: PaymentConsentOptions?): Builder =
             apply {
                 this.paymentConsentOptions = paymentConsentOptions
             }
 
+        @Deprecated(
+            message = "Use setRequiredBillingContactFields(...) and include " +
+                "RequiredBillingContactField.ADDRESS & PHONE to require billing info.",
+            replaceWith = ReplaceWith("setRequiredBillingContactFields(fields)"),
+        )
         fun setRequireBillingInformation(requireBillingInformation: Boolean): Builder = apply {
             this.isBillingInformationRequired = requireBillingInformation
         }
 
+        @Deprecated(
+            message = "Use setRequiredBillingContactFields(...) and include " +
+                "RequiredBillingContactField.EMAIL to require email.",
+            replaceWith = ReplaceWith("setRequiredBillingContactFields(fields)"),
+        )
         fun setRequireEmail(requireEmail: Boolean): Builder = apply {
             this.isEmailRequired = requireEmail
         }
@@ -213,6 +232,18 @@ class Session internal constructor(
             this.shipping = shipping
         }
 
+        /**
+         * Configure which billing fields the new-card UI should collect and the headless
+         * checkout should validate. Pass `null` (the default) to derive from the legacy
+         * [setRequireBillingInformation] / [setRequireEmail] flags. An empty set hides
+         * the entire billing section.
+         */
+        fun setRequiredBillingContactFields(
+            fields: Set<RequiredBillingContactField>?
+        ): Builder = apply {
+            this.requiredBillingContactFields = fields
+        }
+
         override fun build(): Session {
             require(paymentIntent != null || paymentIntentProvider != null) {
                 "Either paymentIntent or paymentIntentProvider must be provided"
@@ -232,7 +263,8 @@ class Session internal constructor(
                 googlePayOptions = googlePayOptions,
                 autoCapture = autoCapture,
                 hidePaymentConsents = hidePaymentConsents,
-                paymentMethods = paymentMethods
+                paymentMethods = paymentMethods,
+                requiredBillingContactFields = requiredBillingContactFields
             ).apply {
                 // Set the provider directly on the session (transient field, won't be parceled)
                 paymentIntentProvider = this@Builder.paymentIntentProvider

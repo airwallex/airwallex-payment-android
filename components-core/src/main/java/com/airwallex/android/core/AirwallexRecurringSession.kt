@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION", "DEPRECATION_OVERRIDE")
+
 package com.airwallex.android.core
 
 import android.os.Parcelable
@@ -95,6 +97,13 @@ class AirwallexRecurringSession internal constructor(
      */
     override val paymentMethods: List<String>? = null,
 
+    /**
+     * Billing contact fields the SDK should collect on the new-card screen. `null`
+     * preserves legacy behavior (derived from [isBillingInformationRequired] /
+     * [isEmailRequired]).
+     */
+    override val requiredBillingContactFields: Set<RequiredBillingContactField>? = null,
+
 ) : AirwallexSession(), Parcelable {
 
     /**
@@ -122,6 +131,7 @@ class AirwallexRecurringSession internal constructor(
         private var returnUrl: String? = null
         private var paymentMethods: List<String>? = null
         private var googlePayOptions: GooglePayOptions? = null
+        private var requiredBillingContactFields: Set<RequiredBillingContactField>? = null
 
         init {
             TokenManager.updateClientSecret(clientSecret)
@@ -131,10 +141,20 @@ class AirwallexRecurringSession internal constructor(
             this.shipping = shipping
         }
 
+        @Deprecated(
+            message = "Use setRequiredBillingContactFields(...) and include " +
+                "RequiredBillingContactField.ADDRESS & PHONE to require billing info.",
+            replaceWith = ReplaceWith("setRequiredBillingContactFields(fields)"),
+        )
         fun setRequireBillingInformation(requiresBillingInformation: Boolean): Builder = apply {
             this.isBillingInformationRequired = requiresBillingInformation
         }
 
+        @Deprecated(
+            message = "Use setRequiredBillingContactFields(...) and include " +
+                "RequiredBillingContactField.EMAIL to require email.",
+            replaceWith = ReplaceWith("setRequiredBillingContactFields(fields)"),
+        )
         fun setRequireEmail(requiresEmail: Boolean): Builder = apply {
             this.isEmailRequired = requiresEmail
         }
@@ -160,6 +180,18 @@ class AirwallexRecurringSession internal constructor(
             this.googlePayOptions = googlePayOptions
         }
 
+        /**
+         * Configure which billing fields the new-card UI should collect and the headless
+         * checkout should validate. Pass `null` (the default) to derive from the legacy
+         * [setRequireBillingInformation] / [setRequireEmail] flags. An empty set hides
+         * the entire billing section.
+         */
+        fun setRequiredBillingContactFields(
+            fields: Set<RequiredBillingContactField>?
+        ): Builder = apply {
+            this.requiredBillingContactFields = fields
+        }
+
         override fun build(): AirwallexRecurringSession {
             return AirwallexRecurringSession(
                 nextTriggerBy = nextTriggerBy,
@@ -176,6 +208,7 @@ class AirwallexRecurringSession internal constructor(
                 paymentMethods = paymentMethods,
                 clientSecret = clientSecret,
                 googlePayOptions = googlePayOptions,
+                requiredBillingContactFields = requiredBillingContactFields,
             )
         }
     }

@@ -28,6 +28,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
+@Suppress("LargeClass")
 class AddPaymentMethodViewModelTest {
 
     @get:Rule
@@ -380,24 +381,86 @@ class AddPaymentMethodViewModelTest {
 
     @Test
     fun `test createBillingWithShipping with valid input`() {
-        val viewModel = createViewModel(createBasicMockSession())
+        // Force the resolved set to include every field so createBilling populates everything.
+        val session: AirwallexSession = mockk(relaxed = true) {
+            every { countryCode } returns "US"
+            every { requiredBillingContactFields } returns setOf(
+                com.airwallex.android.core.RequiredBillingContactField.NAME,
+                com.airwallex.android.core.RequiredBillingContactField.EMAIL,
+                com.airwallex.android.core.RequiredBillingContactField.PHONE,
+                com.airwallex.android.core.RequiredBillingContactField.ADDRESS,
+            )
+        }
+        val viewModel = createViewModel(session)
         val billing = viewModel.createBilling(
+            name = "Alice Smith",
+            email = "test@example.com",
+            phoneNumber = "+14155551234",
             countryCode = "US",
             state = "CA",
             city = "San Francisco",
             street = "123 Main St",
             postcode = "94105",
-            phoneNumber = "+14155551234",
-            email = "test@example.com"
         )
 
-        assertEquals("US", billing.address?.countryCode)
-        assertEquals("CA", billing.address?.state)
-        assertEquals("San Francisco", billing.address?.city)
-        assertEquals("123 Main St", billing.address?.street)
-        assertEquals("94105", billing.address?.postcode)
-        assertEquals("+14155551234", billing.phone)
-        assertEquals("test@example.com", billing.email)
+        val nonNullBilling = checkNotNull(billing)
+        assertEquals("US", nonNullBilling.address?.countryCode)
+        assertEquals("CA", nonNullBilling.address?.state)
+        assertEquals("San Francisco", nonNullBilling.address?.city)
+        assertEquals("123 Main St", nonNullBilling.address?.street)
+        assertEquals("94105", nonNullBilling.address?.postcode)
+        assertEquals("+14155551234", nonNullBilling.phone)
+        assertEquals("test@example.com", nonNullBilling.email)
+        assertEquals("Alice", nonNullBilling.firstName)
+        assertEquals("Smith", nonNullBilling.lastName)
+    }
+
+    @Test
+    fun `createBilling returns null when requiredBillingContactFields is empty`() {
+        val session: AirwallexSession = mockk(relaxed = true) {
+            every { countryCode } returns "US"
+            every { requiredBillingContactFields } returns emptySet()
+        }
+        val viewModel = createViewModel(session)
+        val billing = viewModel.createBilling(
+            name = "Alice",
+            email = "x@y.com",
+            phoneNumber = "+15551234",
+            countryCode = "US",
+            state = "CA",
+            city = "City",
+            street = "St",
+            postcode = "94000",
+        )
+        assertNull(billing)
+    }
+
+    @Test
+    fun `createBilling includes only fields explicitly required`() {
+        val session: AirwallexSession = mockk(relaxed = true) {
+            every { countryCode } returns "US"
+            every { requiredBillingContactFields } returns setOf(
+                com.airwallex.android.core.RequiredBillingContactField.EMAIL,
+                com.airwallex.android.core.RequiredBillingContactField.COUNTRY_CODE,
+            )
+        }
+        val viewModel = createViewModel(session)
+        val billing = viewModel.createBilling(
+            name = "Alice Smith",
+            email = "x@y.com",
+            phoneNumber = "+15551234",
+            countryCode = "US",
+            state = "CA",
+            city = "City",
+            street = "St",
+            postcode = "94000",
+        )
+        val nonNullBilling = checkNotNull(billing)
+        assertEquals("x@y.com", nonNullBilling.email)
+        assertEquals("US", nonNullBilling.address?.countryCode)
+        assertNull(nonNullBilling.firstName)
+        assertNull(nonNullBilling.phone)
+        assertNull(nonNullBilling.address?.street)
     }
 
     // Tests for user input state retention (added in commit b6c790b7)
@@ -754,6 +817,11 @@ class AddPaymentMethodViewModelTest {
     private fun createBasicMockSession(): AirwallexSession {
         return mockk(relaxed = true) {
             every { countryCode } returns "US"
+            // Mockk's relaxed mode returns an empty Set for nullable Set<...>? properties,
+            // which would short-circuit the legacy-derive path. Force null so the resolved
+            // set matches the SDK's pre-existing default (NAME-only when both legacy
+            // booleans are false).
+            every { requiredBillingContactFields } returns null
         }
     }
 }

@@ -7,10 +7,16 @@
     <string name="airwallex_shipping_city_name_hint">Город</string>
     <string name="airwallex_shipping_email_hint">Электронная почта (необязательно)</string>
     <string name="airwallex_contact_phone_number_hint">Номер телефона (необязательно)</string>
+    <string name="airwallex_zip_code_hint">Почтовый индекс</string>
+    <string name="airwallex_phone_number_hint">Номер телефона</string>
     <string name="airwallex_shipping_country_name_hint">Страна / Регион</string>
     <string name="airwallex_empty_country">Пожалуйста, введите вашу страну</string>
     <string name="airwallex_empty_city">Пожалуйста, введите ваш город</string>
     <string name="airwallex_empty_street">Пожалуйста, введите вашу улицу</string>
+    <string name="airwallex_empty_postcode">Пожалуйста, введите ваш почтовый индекс</string>
+    <string name="airwallex_empty_phone">Пожалуйста, введите ваш номер телефона</string>
+    <string name="airwallex_invalid_phone">Пожалуйста, введите действительный номер телефона</string>
+    <string name="airwallex_empty_country_code">Пожалуйста, выберите страну</string>
     <string name="airwallex_empty_last_name">Пожалуйста, введите вашу фамилию</string>
     <string name="airwallex_empty_first_name">Пожалуйста, введите ваше имя</string>
     <string name="airwallex_delete_payment_method_negative">Отмена</string>

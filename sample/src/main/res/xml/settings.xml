@@ -33,6 +33,14 @@
             android:key="@string/requires_email"
             android:title="@string/requires_email" />
 
+        <MultiSelectListPreference
+            android:dialogTitle="@string/required_billing_contact_fields"
+            android:entries="@array/array_required_billing_contact_fields"
+            android:entryValues="@array/array_required_billing_contact_fields"
+            android:key="@string/required_billing_contact_fields"
+            android:summary="@string/required_billing_contact_fields_summary"
+            android:title="@string/required_billing_contact_fields" />
+
         <ListPreference
             android:dialogTitle="@string/force_3ds"
             android:entries="@array/array_force_3ds"

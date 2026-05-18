@@ -2,7 +2,6 @@ package com.airwallex.android.core.log
 
 import java.io.PrintWriter
 import java.io.StringWriter
-import kotlin.system.exitProcess
 
 /**
  * Uncaught exception handler that logs crashes originating inside the Airwallex SDK
@@ -41,11 +40,8 @@ object Crasher : Thread.UncaughtExceptionHandler {
             } catch (_: InterruptedException) {
                 Thread.currentThread().interrupt()
             }
-            defaultHandler?.uncaughtException(thread, throwable)
-            exitProcess(2)
-        } else {
-            defaultHandler?.uncaughtException(thread, throwable)
         }
+        defaultHandler?.uncaughtException(thread, throwable)
     }
 
     private fun originatedInSdk(throwable: Throwable): Boolean {
