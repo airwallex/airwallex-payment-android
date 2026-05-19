@@ -14,15 +14,11 @@ import com.airwallex.paymentacceptance.viewmodel.SettingViewModel
 
 class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewModel>() {
 
-    private var selectedBillingFields: Set<RequiredBillingContactField> = DEFAULT_BILLING_FIELDS
-
-    companion object {
-        private val DEFAULT_BILLING_FIELDS = setOf(
-            RequiredBillingContactField.NAME,
-            RequiredBillingContactField.ADDRESS,
-            RequiredBillingContactField.PHONE,
-        )
-    }
+    // `null` means "merchant hasn't picked — derive from legacy
+    // setRequireBillingInformation / setRequireEmail flags."
+    // Empty set means "hide billing section entirely."
+    // Non-empty set means "collect exactly these fields."
+    private var selectedBillingFields: Set<RequiredBillingContactField>? = null
 
     override fun initView() {
 
@@ -61,7 +57,7 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
         mBinding.swEmail.setChecked(Settings.requiresEmail == "True")
 
         mBinding.lvBillingFields.setTitleText("Required Billing Fields")
-        selectedBillingFields = Settings.requiredBillingContactFields ?: DEFAULT_BILLING_FIELDS
+        selectedBillingFields = Settings.requiredBillingContactFields
         renderBillingFieldsSummary()
         mBinding.lvBillingFields.setOnClickListener { showBillingFieldsDialog() }
 
@@ -120,7 +116,7 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
             mBinding.swExpressCheckout.setChecked(false)
             mBinding.swUseSession.setChecked(true)
             mBinding.swEmail.setChecked(false)
-            selectedBillingFields = DEFAULT_BILLING_FIELDS
+            selectedBillingFields = null
             renderBillingFieldsSummary()
             mBinding.selectViewEnvironment.setSelectOption("DEMO")
             mBinding.selectViewTrigger.setSelectOption("Merchant")
@@ -188,10 +184,11 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
     }
 
     private fun renderBillingFieldsSummary() {
-        val summary = if (selectedBillingFields.isEmpty()) {
-            "None (billing section hidden)"
-        } else {
-            selectedBillingFields.joinToString(", ") { it.name }
+        val current = selectedBillingFields
+        val summary = when {
+            current == null -> "Unset (derived from legacy flags)"
+            current.isEmpty() -> "None (billing section hidden)"
+            else -> current.joinToString(", ") { it.name }
         }
         mBinding.lvBillingFields.setSelectedText(summary)
     }
@@ -199,7 +196,11 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
     private fun showBillingFieldsDialog() {
         val options = RequiredBillingContactField.values()
         val labels = options.map { it.name }.toTypedArray()
-        val checked = BooleanArray(options.size) { options[it] in selectedBillingFields }
+        // Pre-tick the boxes the user previously chose; nothing if currently unset.
+        // Unset  → null = derive from legacy setRequireBillingInformation/Email
+        val checked = BooleanArray(options.size) {
+            options[it] in selectedBillingFields.orEmpty()
+        }
         AlertDialog.Builder(this)
             .setTitle("Required Billing Fields")
             .setMultiChoiceItems(labels, checked) { _, which, isChecked ->
@@ -209,6 +210,10 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
                 selectedBillingFields = options
                     .filterIndexed { i, _ -> checked[i] }
                     .toSet()
+                renderBillingFieldsSummary()
+            }
+            .setNeutralButton("Unset") { _, _ ->
+                selectedBillingFields = null
                 renderBillingFieldsSummary()
             }
             .setNegativeButton("Cancel", null)

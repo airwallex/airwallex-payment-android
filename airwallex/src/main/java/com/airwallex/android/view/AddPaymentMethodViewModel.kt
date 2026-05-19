@@ -62,25 +62,31 @@ class AddPaymentMethodViewModel(
 
     val canSaveCard: Boolean by lazy { (session is AirwallexPaymentSession || (session is Session && session.isOneOffPayment)) && !session.customerId.isNullOrEmpty() }
 
-    val requiredBillingContactFields: Set<RequiredBillingContactField> by lazy {
+    /**
+     * Resolved (non-null) set of billing-contact fields to render on this screen.
+     * Distinct from [AirwallexSession.requiredBillingContactFields] which is the
+     * raw nullable merchant configuration; here we've already collapsed the
+     * "null → derive from legacy booleans" rule via [resolvedRequiredBillingContactFields].
+     */
+    val resolvedBillingFields: Set<RequiredBillingContactField> by lazy {
         session.resolvedRequiredBillingContactFields
     }
 
     val showName: Boolean by lazy {
-        RequiredBillingContactField.NAME in requiredBillingContactFields
+        RequiredBillingContactField.NAME in resolvedBillingFields
     }
     val showEmail: Boolean by lazy {
-        RequiredBillingContactField.EMAIL in requiredBillingContactFields
+        RequiredBillingContactField.EMAIL in resolvedBillingFields
     }
     val showPhone: Boolean by lazy {
-        RequiredBillingContactField.PHONE in requiredBillingContactFields
+        RequiredBillingContactField.PHONE in resolvedBillingFields
     }
     val showAddress: Boolean by lazy {
-        RequiredBillingContactField.ADDRESS in requiredBillingContactFields
+        RequiredBillingContactField.ADDRESS in resolvedBillingFields
     }
     /** Country picker without the rest of the address. ADDRESS suppresses this. */
     val showCountryCodeOnly: Boolean by lazy {
-        !showAddress && RequiredBillingContactField.COUNTRY_CODE in requiredBillingContactFields
+        !showAddress && RequiredBillingContactField.COUNTRY_CODE in resolvedBillingFields
     }
     /** Whether the "Billing information" header / section block should appear. */
     val showBillingSection: Boolean by lazy {
@@ -285,7 +291,7 @@ class AddPaymentMethodViewModel(
 
     /**
      * Build a [Billing] containing only the fields the merchant asked for via
-     * [requiredBillingContactFields]. Returns `null` when the set is empty so no
+     * [resolvedBillingFields]. Returns `null` when the set is empty so no
      * billing payload is sent.
      */
     fun createBilling(
@@ -298,7 +304,7 @@ class AddPaymentMethodViewModel(
         street: String,
         postcode: String,
     ): Billing? {
-        if (requiredBillingContactFields.isEmpty()) return null
+        if (resolvedBillingFields.isEmpty()) return null
 
         val builder = Billing.Builder()
 

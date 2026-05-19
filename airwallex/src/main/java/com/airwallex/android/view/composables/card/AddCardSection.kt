@@ -245,7 +245,11 @@ internal fun AddCardSection(
                 onComplete = { _ ->
                     cardHolderNameErrorMessage =
                         viewModel.getCardHolderNameValidationMessage(cardHolderName)
-                    if (viewModel.showEmail || viewModel.showBillingSection) {
+                    // Move to the next visible section: email → phone → billing.
+                    if (viewModel.showEmail ||
+                        viewModel.showPhone ||
+                        viewModel.showBillingSection
+                    ) {
                         focusManager.moveFocus(FocusDirection.Down)
                     } else {
                         focusManager.clearFocus()
@@ -291,7 +295,11 @@ internal fun AddCardSection(
                 },
                 onComplete = { input ->
                     cardHolderEmailErrorMessage = viewModel.getEmailValidationMessage(input)
-                    focusManager.clearFocus()
+                    if (viewModel.showPhone || viewModel.showBillingSection) {
+                        focusManager.moveFocus(FocusDirection.Down)
+                    } else {
+                        focusManager.clearFocus()
+                    }
                 },
                 onFocusLost = { input ->
                     cardHolderEmailErrorMessage = viewModel.getEmailValidationMessage(input)
@@ -328,7 +336,11 @@ internal fun AddCardSection(
                         input,
                         AddPaymentMethodViewModel.BillingFieldType.PHONE
                     )
-                    focusManager.clearFocus()
+                    if (viewModel.showBillingSection) {
+                        focusManager.moveFocus(FocusDirection.Down)
+                    } else {
+                        focusManager.clearFocus()
+                    }
                 },
                 onFocusLost = { input ->
                     phoneErrorMessage = viewModel.getBillingValidationMessage(
