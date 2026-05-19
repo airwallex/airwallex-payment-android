@@ -979,8 +979,9 @@ class Airwallex internal constructor(
                 paymentMethod.type == PaymentMethodType.CARD.value
         val useOldFlow = session is AirwallexRecurringSession || !isCardOrGooglePay
 
-        // Low level billing-field validation. Only applies to card payments
-        // LPM/Google-Pay billing isn't merchant-controlled here.
+        // Low-level billing-field validation for the card flow only.
+        // Google Pay billing is configured via GooglePayOptions and validated by the
+        // Google Pay sheet itself; LPM billing is driven by the LPM-specific flow.
         if (paymentMethod.type == PaymentMethodType.CARD.value) {
             paymentMethod.billing
                 .validateForRequiredFields(session.resolvedRequiredBillingContactFields)

@@ -274,6 +274,10 @@ class AirwallexRecurringWithIntentSession internal constructor(
          * checkout should validate. Pass `null` (the default) to derive from the legacy
          * [setRequireBillingInformation] / [setRequireEmail] flags. An empty set hides
          * the entire billing section.
+         *
+         * **Card payments only.** Google Pay billing is configured separately via
+         * [GooglePayOptions] (`billingAddressRequired`, `emailRequired`); changes here
+         * do not propagate to the Google Pay sheet.
          */
         fun setRequiredBillingContactFields(
             fields: Set<RequiredBillingContactField>?

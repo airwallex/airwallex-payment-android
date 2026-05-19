@@ -15,8 +15,11 @@ class PhoneExtensionsTest {
         assertTrue("+123456789012345".isValidE164Phone())
     }
 
-    @Test fun `rejects missing leading plus`() {
-        assertFalse("15551234567".isValidE164Phone())
+    @Test fun `accepts E164 with leading plus optional`() {
+        // Same numbers without the leading + must also pass — the SDK is tolerant
+        // of merchants who strip the + before passing the value in.
+        assertTrue("15551234567".isValidE164Phone())
+        assertTrue("447700900000".isValidE164Phone())
     }
 
     @Test fun `rejects leading zero after plus`() {

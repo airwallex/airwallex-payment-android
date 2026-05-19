@@ -5,6 +5,12 @@ package com.airwallex.android.core
  * and validate in the headless checkout path. Mirrors iOS's
  * `AWXRequiredBillingContactFields` option set.
  *
+ * **Scope: card payments only.** This setting drives the card-entry UI and the
+ * headless-checkout billing validation for cards. It does NOT propagate to Google
+ * Pay or other LPM (Local Payment Method) flows — Google Pay's billing contact is
+ * configured separately through [com.airwallex.android.core.GooglePayOptions]
+ * (`billingAddressRequired`, `billingAddressParameters`, `emailRequired`).
+ *
  * Configure via [AirwallexSession.requiredBillingContactFields]. An empty set hides
  * the entire billing section; `null` (the default) derives the set from the legacy
  * [AirwallexSession.isBillingInformationRequired] / [AirwallexSession.isEmailRequired]

@@ -56,20 +56,23 @@ class BillingValidationTest {
         assertNull(billing(email = "user@example.com").validateForRequiredFields(req))
     }
 
-    @Test fun `PHONE requires strict E164`() {
+    @Test fun `PHONE requires E164 shape with optional leading plus`() {
         val req = setOf(RequiredBillingContactField.PHONE)
         assertNotNull(billing(phone = null).validateForRequiredFields(req))
-        // missing +
-        assertNotNull(billing(phone = "12345").validateForRequiredFields(req))
-        // leading 0 after +
+        // leading 0 (with or without +) is rejected — country digit must be 1-9
         assertNotNull(billing(phone = "+0123456").validateForRequiredFields(req))
-        // spaces
+        assertNotNull(billing(phone = "0123456").validateForRequiredFields(req))
+        // spaces and formatting are rejected
         assertNotNull(billing(phone = "+1 234 567").validateForRequiredFields(req))
-        // 2 digits ok (min)
+        // 2 digits ok (min), with or without +
         assertNull(billing(phone = "+12").validateForRequiredFields(req))
+        assertNull(billing(phone = "12").validateForRequiredFields(req))
         assertNull(billing(phone = "+15551234567").validateForRequiredFields(req))
-        // 16 digits: "+" + 16 digits = invalid (E.164 max 15)
+        // leading + is optional — merchants may strip it before passing in
+        assertNull(billing(phone = "15551234567").validateForRequiredFields(req))
+        // 16 digits = invalid (E.164 max 15)
         assertNotNull(billing(phone = "+1234567890123456").validateForRequiredFields(req))
+        assertNotNull(billing(phone = "1234567890123456").validateForRequiredFields(req))
     }
 
     @Test fun `ADDRESS requires every field plus valid country code`() {

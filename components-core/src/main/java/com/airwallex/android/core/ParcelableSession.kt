@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION")
-
 package com.airwallex.android.core
 
 import android.os.Parcelable
@@ -32,6 +30,7 @@ class ParcelableSession(
     val requiredBillingContactFields: Set<RequiredBillingContactField>?
 ) : Parcelable {
 
+    @Suppress("DEPRECATION")
     fun toSession(): Session {
         val providerId = paymentIntentProviderId
         val provider = providerId?.let { PaymentIntentProviderRepository.get(it) }

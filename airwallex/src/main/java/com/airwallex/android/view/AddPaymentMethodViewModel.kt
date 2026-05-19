@@ -304,8 +304,8 @@ class AddPaymentMethodViewModel(
 
         if (showName) {
             val parts = name.trim().split(' ', limit = 2)
-            builder.setFirstName(parts.getOrNull(0).orEmpty())
-            if (parts.size > 1) builder.setLastName(parts[1])
+            builder.setFirstName(parts[0])
+            builder.setLastName(parts.getOrNull(1).orEmpty())
         }
         if (showEmail) builder.setEmail(email)
         if (showPhone) builder.setPhone(phoneNumber)

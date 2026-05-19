@@ -416,6 +416,30 @@ class AddPaymentMethodViewModelTest {
     }
 
     @Test
+    fun `createBilling sets empty lastName when name has no space`() {
+        val session: AirwallexSession = mockk(relaxed = true) {
+            every { countryCode } returns "US"
+            every { requiredBillingContactFields } returns setOf(
+                com.airwallex.android.core.RequiredBillingContactField.NAME,
+            )
+        }
+        val viewModel = createViewModel(session)
+        val billing = viewModel.createBilling(
+            name = "Cher",
+            email = "",
+            phoneNumber = "",
+            countryCode = "",
+            state = "",
+            city = "",
+            street = "",
+            postcode = "",
+        )
+        val nonNullBilling = checkNotNull(billing)
+        assertEquals("Cher", nonNullBilling.firstName)
+        assertEquals("", nonNullBilling.lastName)
+    }
+
+    @Test
     fun `createBilling returns null when requiredBillingContactFields is empty`() {
         val session: AirwallexSession = mockk(relaxed = true) {
             every { countryCode } returns "US"
@@ -485,6 +509,15 @@ class AddPaymentMethodViewModelTest {
             every { countryCode } returns "US"
             every { isBillingInformationRequired } returns true
             every { isEmailRequired } returns true
+            // Relaxed mocks default a nullable Set to emptySet(), which would resolve
+            // to "hide the entire billing section". Set an explicit non-null set so
+            // the billing UI (and the shipping-prefill toggle) is enabled.
+            every { requiredBillingContactFields } returns setOf(
+                com.airwallex.android.core.RequiredBillingContactField.NAME,
+                com.airwallex.android.core.RequiredBillingContactField.EMAIL,
+                com.airwallex.android.core.RequiredBillingContactField.PHONE,
+                com.airwallex.android.core.RequiredBillingContactField.ADDRESS,
+            )
         }
 
         val viewModel = createViewModel(mockSession)

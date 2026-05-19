@@ -16,9 +16,13 @@ private fun isValidCountryCode(code: String?): Boolean = code != null && code in
  * invalid field. Mirrors the iOS validation rules in
  * `AWXDefaultProvider+Extensions.swift`.
  *
+ * This is the card-flow validator only. Google Pay billing is configured via
+ * [com.airwallex.android.core.GooglePayOptions] and validated separately by Google
+ * Pay itself — this function is not invoked on the Google Pay path.
+ *
  * - `NAME`: `firstName` must be non-blank.
  * - `EMAIL`: must match the SDK's email regex.
- * - `PHONE`: must be strict E.164 (`+[1-9]\d{1,14}`).
+ * - `PHONE`: must match the E.164 shape (`+?[1-9]\d{1,14}`); the leading `+` is optional
  * - `ADDRESS`: street, city, state, postcode all non-blank, plus a 2-letter
  *   uppercase ISO country code.
  * - `COUNTRY_CODE`: 2-letter uppercase ISO country code (suppressed when ADDRESS
@@ -57,12 +61,16 @@ fun Billing?.validateForRequiredFields(
         when {
             !isValidCountryCode(address?.countryCode) ->
                 return InvalidParamsException(message = "Billing country code is required")
+
             address?.street.isNullOrBlank() ->
                 return InvalidParamsException(message = "Billing street is required")
+
             address?.city.isNullOrBlank() ->
                 return InvalidParamsException(message = "Billing city is required")
+
             address?.state.isNullOrBlank() ->
                 return InvalidParamsException(message = "Billing state is required")
+
             address?.postcode.isNullOrBlank() ->
                 return InvalidParamsException(message = "Billing postcode is required")
         }
