@@ -1,0 +1,274 @@
+appId: com.airwallex.paymentacceptance
+env:
+  # Configuration action:
+  #   UNSET — tap the "Unset" neutral button (selectedBillingFields = null → legacy
+  #            derivation by setRequireBillingInformation / setRequireEmail flags)
+  #   SET   — toggle individual checkboxes to match HAS_* and tap OK (empty set is
+  #            valid: all checkboxes off + OK == "hide billing section")
+  ACTION: ${ACTION}
+
+  # Desired state of each checkbox when ACTION=SET. Use string "true"/"false".
+  HAS_NAME: ${HAS_NAME || "false"}
+  HAS_EMAIL: ${HAS_EMAIL || "false"}
+  HAS_PHONE: ${HAS_PHONE || "false"}
+  HAS_ADDRESS: ${HAS_ADDRESS || "false"}
+  HAS_COUNTRY_CODE: ${HAS_COUNTRY_CODE || "false"}
+
+  # Expected visibility on the AddCardSection screen after the config is applied.
+  # Use string "true"/"false". We assert on the *section labels* (StandardText
+  # composables that always render when the corresponding `showXxx` is true) —
+  # not on placeholder text inside TextFields, since the sample app's default
+  # shipping prefills values and hides the placeholders.
+  EXPECT_NAME_FIELD: ${EXPECT_NAME_FIELD || "false"}
+  EXPECT_EMAIL_FIELD: ${EXPECT_EMAIL_FIELD || "false"}
+  EXPECT_PHONE_FIELD: ${EXPECT_PHONE_FIELD || "false"}
+  EXPECT_BILLING_SECTION: ${EXPECT_BILLING_SECTION || "false"}
+  # `Same as shipping address` toggle only renders when `showAddress &&
+  # shipping != null`. Use it to distinguish full ADDRESS (true) from
+  # COUNTRY_CODE-only (false, but EXPECT_BILLING_SECTION still true).
+  EXPECT_FULL_ADDRESS: ${EXPECT_FULL_ADDRESS || "false"}
+---
+# Precondition: we're on the HPP options screen ("Integrate with Airwallex UI" tile
+# has been tapped previously and the screen exposes the "setting" entry + "Launch
+# payment list" button).
+- assertVisible: "Launch payment list"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Step 1 — Configure billing fields via the Settings screen
+# ─────────────────────────────────────────────────────────────────────────────
+- tapOn: setting
+- assertVisible: "Settings"
+- scrollUntilVisible:
+    element: "Required Billing Fields"
+- tapOn: "Required Billing Fields"
+
+# Branch on ACTION
+- runFlow:
+    when:
+      true: ${ACTION == 'UNSET'}
+    commands:
+      - tapOn: "Unset"
+
+- runFlow:
+    when:
+      true: ${ACTION == 'SET'}
+    commands:
+      # Idempotent toggling: tap only when the current state disagrees with the
+      # desired state. Relies on Android's CheckedTextView exposing `checked`.
+      - runFlow:
+          when:
+            true: ${HAS_NAME == 'true'}
+            visible:
+              text: "NAME"
+              checked: false
+          commands:
+            - tapOn:
+                text: "NAME"
+                checked: false
+      - runFlow:
+          when:
+            true: ${HAS_NAME == 'false'}
+            visible:
+              text: "NAME"
+              checked: true
+          commands:
+            - tapOn:
+                text: "NAME"
+                checked: true
+      - runFlow:
+          when:
+            true: ${HAS_EMAIL == 'true'}
+            visible:
+              text: "EMAIL"
+              checked: false
+          commands:
+            - tapOn:
+                text: "EMAIL"
+                checked: false
+      - runFlow:
+          when:
+            true: ${HAS_EMAIL == 'false'}
+            visible:
+              text: "EMAIL"
+              checked: true
+          commands:
+            - tapOn:
+                text: "EMAIL"
+                checked: true
+      - runFlow:
+          when:
+            true: ${HAS_PHONE == 'true'}
+            visible:
+              text: "PHONE"
+              checked: false
+          commands:
+            - tapOn:
+                text: "PHONE"
+                checked: false
+      - runFlow:
+          when:
+            true: ${HAS_PHONE == 'false'}
+            visible:
+              text: "PHONE"
+              checked: true
+          commands:
+            - tapOn:
+                text: "PHONE"
+                checked: true
+      - runFlow:
+          when:
+            true: ${HAS_ADDRESS == 'true'}
+            visible:
+              text: "ADDRESS"
+              checked: false
+          commands:
+            - tapOn:
+                text: "ADDRESS"
+                checked: false
+      - runFlow:
+          when:
+            true: ${HAS_ADDRESS == 'false'}
+            visible:
+              text: "ADDRESS"
+              checked: true
+          commands:
+            - tapOn:
+                text: "ADDRESS"
+                checked: true
+      - runFlow:
+          when:
+            true: ${HAS_COUNTRY_CODE == 'true'}
+            visible:
+              text: "COUNTRY_CODE"
+              checked: false
+          commands:
+            - tapOn:
+                text: "COUNTRY_CODE"
+                checked: false
+      - runFlow:
+          when:
+            true: ${HAS_COUNTRY_CODE == 'false'}
+            visible:
+              text: "COUNTRY_CODE"
+              checked: true
+          commands:
+            - tapOn:
+                text: "COUNTRY_CODE"
+                checked: true
+      - tapOn: "OK"
+
+# Save settings — returns us to the HPP options screen
+- scrollUntilVisible:
+    element:
+      id: "com.airwallex.paymentacceptance:id/btnSave"
+- tapOn:
+    id: "com.airwallex.paymentacceptance:id/btnSave"
+- assertVisible: "settings saved"
+- tapOn: "OK"
+- assertVisible: "Launch payment list"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Step 2 — Open the new-card form
+# ─────────────────────────────────────────────────────────────────────────────
+- tapOn: "Launch payment list"
+- runFlow:
+    when:
+      visible: "Choose a card"
+    commands:
+      - tapOn: "Add new"
+- assertVisible: "Card information"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Step 3 — Assert which billing-related fields render
+#
+# Strategy:
+# • Phase A — negatives FIRST, while still scrolled at the top. Compose strips
+#   non-rendered sections from the tree entirely, so `assertNotVisible` is
+#   reliable as long as no scroll has shifted other content off-screen.
+# • Phase B — positives via `scrollUntilVisible`. Plain `assertVisible` does
+#   NOT auto-scroll on this app; the form is taller than the viewport when
+#   multiple sections are enabled.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Phase A: negative assertions (at top of form, before any scroll) ──
+- runFlow:
+    when:
+      true: ${EXPECT_NAME_FIELD == 'false'}
+    commands:
+      - assertNotVisible: "Name on card"
+- runFlow:
+    when:
+      true: ${EXPECT_EMAIL_FIELD == 'false'}
+    commands:
+      - assertNotVisible: "Email"
+- runFlow:
+    when:
+      true: ${EXPECT_PHONE_FIELD == 'false'}
+    commands:
+      - assertNotVisible: "Phone number"
+- runFlow:
+    when:
+      true: ${EXPECT_BILLING_SECTION == 'false'}
+    commands:
+      - assertNotVisible: "Billing info"
+- runFlow:
+    when:
+      true: ${EXPECT_FULL_ADDRESS == 'false'}
+    commands:
+      - assertNotVisible: "Same as shipping address"
+
+# ── Phase B: positive assertions (scroll into view) ──
+- runFlow:
+    when:
+      true: ${EXPECT_NAME_FIELD == 'true'}
+    commands:
+      - assertVisible: "Name on card"
+- runFlow:
+    when:
+      true: ${EXPECT_EMAIL_FIELD == 'true'}
+    commands:
+      - scrollUntilVisible:
+          element: "Email"
+- runFlow:
+    when:
+      true: ${EXPECT_PHONE_FIELD == 'true'}
+    commands:
+      - scrollUntilVisible:
+          element: "Phone number"
+- runFlow:
+    when:
+      true: ${EXPECT_BILLING_SECTION == 'true'}
+    commands:
+      - scrollUntilVisible:
+          element: "Billing info"
+- runFlow:
+    when:
+      true: ${EXPECT_FULL_ADDRESS == 'true'}
+    commands:
+      - scrollUntilVisible:
+          element: "Same as shipping address"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Step 4 — Navigate back to the HPP options screen for the next cycle
+#
+# Backing out of AddCardActivity / PaymentMethodsActivity triggers the SDK's
+# "Payment cancelled" dialog every time. Each back step must be paired with a
+# conditional popup dismissal before the next state check.
+# ─────────────────────────────────────────────────────────────────────────────
+- back
+- runFlow:
+    when:
+      visible: "Payment cancelled"
+    commands:
+      - tapOn: "OK"
+- runFlow:
+    when:
+      notVisible: "Launch payment list"
+    commands:
+      - back
+      - runFlow:
+          when:
+            visible: "Payment cancelled"
+          commands:
+            - tapOn: "OK"
+- assertVisible: "Launch payment list"

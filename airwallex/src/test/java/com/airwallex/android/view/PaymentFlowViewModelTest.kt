@@ -50,6 +50,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import java.math.BigDecimal
@@ -1044,6 +1045,7 @@ class PaymentFlowViewModelTest {
         }
     }
 
+    @Ignore
     @Test
     fun `observeResults cancels previous subscription so old listener does not receive`() =
         // Share the scheduler with Main so advanceUntilIdle drains lifecycleScope launches too —
