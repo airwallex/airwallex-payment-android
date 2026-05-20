@@ -377,7 +377,13 @@ internal fun AddCardSection(
                 Spacer(modifier = Modifier.height(12.dp))
 
                 StandardText(
-                    text = stringResource(R.string.airwallex_billing_info),
+                    text = stringResource(
+                        if (viewModel.showCountryCodeOnly) {
+                            R.string.airwallex_billing_country_or_region
+                        } else {
+                            R.string.airwallex_billing_info
+                        }
+                    ),
                     textAlign = TextAlign.Left,
                     typography = AirwallexTypography.Body200,
                     color = AirwallexColor.textPrimary,

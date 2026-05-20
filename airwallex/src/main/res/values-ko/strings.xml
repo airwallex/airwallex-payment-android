@@ -47,6 +47,7 @@
     <string name="airwallex_delete_payment_method_positive">삭제</string>
     <string name="airwallex_new_card">카드</string>
     <string name="airwallex_billing_info">청구 정보</string>
+    <string name="airwallex_billing_country_or_region">청구 국가 / 지역</string>
     <string name="airwallex_payment_methods">결제 수단</string>
     <string name="airwallex_empty_card_number">카드 번호를 입력하세요</string>
     <string name="airwallex_save_card">이 카드를 저장하여 다음 결제에 사용</string>

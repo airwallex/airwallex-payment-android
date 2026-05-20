@@ -47,6 +47,7 @@
     <string name="airwallex_delete_payment_method_positive">削除</string>
     <string name="airwallex_new_card">カード</string>
     <string name="airwallex_billing_info">請求情報</string>
+    <string name="airwallex_billing_country_or_region">請求先の国／地域</string>
     <string name="airwallex_payment_methods">支払い方法</string>
     <string name="airwallex_empty_card_number">カード番号を入力してください</string>
     <string name="airwallex_save_card">今後の支払いのためにこのカードを保存する</string>

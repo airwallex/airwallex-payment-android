@@ -47,6 +47,7 @@
     <string name="airwallex_delete_payment_method_positive">Eliminar</string>
     <string name="airwallex_new_card">Cartão</string>
     <string name="airwallex_billing_info">Informações de faturação</string>
+    <string name="airwallex_billing_country_or_region">País ou região de faturação</string>
     <string name="airwallex_payment_methods">Métodos de pagamento</string>
     <string name="airwallex_empty_card_number">Por favor, introduza o número do seu cartão</string>
     <string name="airwallex_save_card">Guardar este cartão para pagamentos futuros</string>

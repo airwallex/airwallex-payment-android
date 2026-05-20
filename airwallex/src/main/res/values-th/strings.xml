@@ -47,6 +47,7 @@
     <string name="airwallex_delete_payment_method_positive">ลบ</string>
     <string name="airwallex_new_card">บัตร</string>
     <string name="airwallex_billing_info">ข้อมูลการเรียกเก็บเงิน</string>
+    <string name="airwallex_billing_country_or_region">ประเทศหรือภูมิภาคสำหรับการเรียกเก็บเงิน</string>
     <string name="airwallex_payment_methods">วิธีการชำระเงิน</string>
     <string name="airwallex_empty_card_number">กรุณากรอกหมายเลขบัตรของคุณ</string>
     <string name="airwallex_save_card">บันทึกบัตรนี้สำหรับการชำระเงินในอนาคต</string>

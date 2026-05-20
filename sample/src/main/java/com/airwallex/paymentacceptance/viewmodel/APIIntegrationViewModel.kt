@@ -8,7 +8,9 @@ import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.BillingAddressParameters
 import com.airwallex.android.core.GooglePayOptions
 import com.airwallex.android.core.AirwallexPaymentStatus
+import com.airwallex.android.core.model.Address
 import com.airwallex.android.core.model.AvailablePaymentMethodType
+import com.airwallex.android.core.model.Billing
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.PaymentMethodType
@@ -115,9 +117,22 @@ class APIIntegrationViewModel : BaseViewModel() {
         val session = createSession()
         startLoading()
         paymentConsent.paymentMethod?.let { paymentMethod ->
+            val paymentMethodWithBilling = PaymentMethod.Builder()
+                .apply { paymentMethod.id?.let { setId(it) } }
+                .setRequestId(paymentMethod.requestId)
+                .setCustomerId(paymentMethod.customerId)
+                .setType(paymentMethod.type ?: PaymentMethodType.CARD.value)
+                .setCard(paymentMethod.card)
+                .setGooglePay(paymentMethod.googlePay)
+                .setBilling(dummyBilling())
+                .setStatus(paymentMethod.status)
+                .setMetadata(paymentMethod.metadata)
+                .setCreatedAt(paymentMethod.createdAt)
+                .setUpdatedAt(paymentMethod.updatedAt)
+                .build()
             airwallex?.checkout(
                 session = session,
-                paymentMethod = paymentMethod,
+                paymentMethod = paymentMethodWithBilling,
                 paymentConsent = paymentConsent,
                 listener = object : Airwallex.PaymentResultListener {
                     override fun onCompleted(status: AirwallexPaymentStatus) {
@@ -217,7 +232,7 @@ class APIIntegrationViewModel : BaseViewModel() {
                 paymentMethod = PaymentMethod.Builder()
                     .setType(PaymentMethodType.CARD.value)
                     .setCard(card)
-                    .setBilling(null)
+                    .setBilling(dummyBilling())
                     .build(),
                 cvc = card.cvc,
                 saveCard = saveCard,
@@ -245,5 +260,21 @@ class APIIntegrationViewModel : BaseViewModel() {
             force3DS = force3DS
         )
     }
+
+    private fun dummyBilling(): Billing = Billing.Builder()
+        .setFirstName("John")
+        .setLastName("Doe")
+        .setPhone("+1234567890")
+        .setEmail("john.doe@example.com")
+        .setAddress(
+            Address.Builder()
+                .setCountryCode("US")
+                .setState("CA")
+                .setCity("San Francisco")
+                .setStreet("1460 Mission St.#02W101")
+                .setPostcode("94103")
+                .build()
+        )
+        .build()
 
 }

@@ -25,6 +25,7 @@
     <string name="airwallex_delete_payment_method_negative">Abbrechen</string>
     <string name="airwallex_new_card">Karte</string>
     <string name="airwallex_billing_info">Rechnungsinformationen</string>
+    <string name="airwallex_billing_country_or_region">Rechnungsland / -region</string>
     <string name="airwallex_shipping">Versand</string>
     <string name="airwallex_total">Gesamt %s</string>
     <string name="airwallex_pay_now">Bezahlen</string>
