@@ -81,7 +81,7 @@ if [ -z "$CONTENT" ]; then
   # Fresh install: shared_prefs/ may not exist. Launch once to let Android
   # create the dir, then write our XML.
   echo "[ensure-env] fresh install — bootstrapping & writing $TARGET"
-  adb_d shell monkey -p $PKG -c android.intent.category.LAUNCHER 1 >/dev/null
+  adb_d shell am start -n $PKG/.ui.MainActivity >/dev/null
   wait_for_main
   adb_d shell am force-stop $PKG
   write_fresh
@@ -91,7 +91,7 @@ elif echo "$CONTENT" | grep -q '<string name="Environment">'; then
   if [ "$CURRENT" = "$TARGET" ]; then
     echo "[ensure-env] already $TARGET — no change"
     # Still ensure the app is on MainActivity for whatever runs next
-    adb_d shell monkey -p $PKG -c android.intent.category.LAUNCHER 1 >/dev/null
+    adb_d shell am start -n $PKG/.ui.MainActivity >/dev/null
     wait_for_main
     exit 0
   fi
@@ -110,6 +110,6 @@ else
 fi
 
 # Cold-restart so Application#onCreate consumes the new value
-adb_d shell monkey -p $PKG -c android.intent.category.LAUNCHER 1 >/dev/null
+adb_d shell am start -n $PKG/.ui.MainActivity >/dev/null
 wait_for_main
 echo "[ensure-env] done — app on MainActivity, Environment=$TARGET"
