@@ -47,11 +47,13 @@ appId: com.airwallex.paymentacceptance
 # shopping-cart entry (paymentacceptance-checkout-demo) to render in the webview.
 # i18n key shopping_cart.title -> "Order Information"; shopping_cart.submit -> "Check out".
 # Note: the form is taller than the viewport — "Check out" is below the fold.
-# Timeout is generous (60s) because the emulator network occasionally throttles to 3G,
-# and the first WebView load also has to fetch all checkout-demo bundles + i18n.
+# Timeout is generous (90s) because the emulator network occasionally throttles to
+# 3G / HSPA with high packet loss (Cloudflare CDN re-routes through slow edges),
+# and the first WebView load fetches all checkout-demo bundles + i18n + Airwallex
+# Checkout HPP iframe + GPay/ApplePay availability checks.
 - extendedWaitUntil:
     visible: "Order Information"
-    timeout: 60000
+    timeout: 90000
 - scrollUntilVisible:
     element: "Check out"
     direction: DOWN

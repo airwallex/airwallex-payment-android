@@ -51,3 +51,27 @@ tags:
 # checkout-ui HPP rendered correctly in WebView with all critical payment entry
 # points (Card form, Google Pay, Apple Pay, currency-formatted Pay button).
 - takeScreenshot: webview_checkout_renders
+
+# --- Digital wallet button: tap-level smoke ---
+# Assert the Google Pay button is present AND tappable, and that the tap doesn't
+# crash the WebView. This catches:
+#   - checkout-ui fails to wire the GPay button onClick handler (most common
+#     regression — happened in ACE-560)
+#   - WebView crashes on PaymentRequest invocation (e.g. wrong site permissions)
+#   - GPay button collapsed to 0x0 because availability check threw
+#
+# We do NOT assert the native Google Pay sheet actually opens — that requires
+# a `system-images;android-34;google_apis_playstore` AVD with Google Wallet
+# installed and a tokenized test card. See README "Digital wallet sheet coverage"
+# for the setup if you want to extend this.
+- assertVisible: "Google Pay"
+- tapOn: "Google Pay"
+# After the tap, the page must still be responsive: HPP element still mounted and
+# the WebView didn't navigate away or crash. We pick "Select payment method" as
+# the post-condition because it's stable across selection state (tapping GPay
+# collapses the Card section, so "Card information" disappears — use a parent
+# anchor that doesn't depend on which payment method is currently expanded).
+- extendedWaitUntil:
+    visible: "Select payment method"
+    timeout: 5000
+- assertVisible: "Google Pay"

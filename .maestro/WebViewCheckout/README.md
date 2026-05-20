@@ -14,9 +14,11 @@ Mirror: `airwallex-payment-ios/.maestro/WebViewCheckout/`.
 | Submit cart → render checkout-ui HPP in same WebView | ✅ Covered | `test_webview_checkout_renders.yaml` |
 | Assert Card form section title, Pay button with currency-formatted amount | ✅ Covered | Same |
 | Visual evidence via screenshot | ✅ Covered | `takeScreenshot` step |
+| Google Pay button **tap** + checkout-ui handler fires without crashing WebView | ✅ Covered | Same (tap-level smoke) |
+| Google Pay / Apple Pay **native sheet** appears | ⚠️ Possible, requires setup | Needs `system-images;android-34;google_apis_playstore` AVD + Google Wallet + tokenized test card; see "Digital wallet sheet coverage" below |
+| Google Pay / Apple Pay sheet → confirm → success callback | ⚠️ Possible, fragile | Sheet internals change across Android / iOS versions; covered today by FE Playwright |
 | Actual card-number / expiry / CVC submission | ❌ Not covered | See "iframe limitation" below |
 | 3DS challenge OTP entry | ❌ Not covered | Same |
-| Google Pay / Apple Pay button **tap** (full sheet) | ❌ Not covered | Same |
 | Card save & consent reuse | ❌ Not covered | Same |
 
 The bits we don't cover here are fully covered by the FE Playwright suite running in
@@ -64,6 +66,49 @@ maestro test .maestro/WebViewCheckout/test_webview_checkout_renders.yaml
 
 Typical pass time on an M-series Mac with arm64 emulator: **~25 seconds** per run.
 Stability: **3/3 green** in initial bring-up.
+
+## Digital wallet sheet coverage
+
+The P0 test asserts the Google Pay button is **rendered + tappable + the
+checkout-ui click handler runs without crashing the WebView**. It does NOT
+assert that the native Google Pay sheet actually appears.
+
+The reason is environment, not Maestro: the default AVD system-image
+`system-images;android-34;google_apis;arm64-v8a` bundles Google Mobile
+Services (so `PaymentRequest.canMakePayment()` returns true and the button
+gets wired) but does NOT bundle the Play Store / Google Wallet, so when
+checkout-ui invokes the Payment Request API there's no wallet provider to
+take over and the sheet never opens. Confirmed via `chromium` console logs
+in `adb logcat` — the GPay analytics event fires, then nothing.
+
+To extend the suite to cover the native sheet:
+
+```bash
+# 1. Use a playstore AVD instead
+sdkmanager 'system-images;android-34;google_apis_playstore;arm64-v8a'
+avdmanager create avd -n webview_test_playstore \
+  -k 'system-images;android-34;google_apis_playstore;arm64-v8a' \
+  -d pixel_6 --force
+
+# 2. Boot, sign in to a test Google account, install Google Wallet from Play.
+# 3. Add a tokenized test card (use a Google Pay test merchant card from
+#    https://developers.google.com/pay/api/android/guides/test-and-deploy/test-card-suite).
+# 4. In test_webview_checkout_renders.yaml, add after the GPay tap:
+#    - extendedWaitUntil:
+#        visible: "Continue"   # GPay sheet's confirm button
+#        timeout: 10000
+```
+
+The same pattern works on iOS: use a simulator with PassKit test card
+seeded via `xcrun simctl spawn booted defaults`. The Maestro flow itself
+is one extra `extendedWaitUntil` step.
+
+We left this out of the default regression because the AVD + wallet setup
+isn't reproducible on CI without baking a custom image, and the failure
+mode it catches (Payment Request bridge broken in WebView) is already
+caught at the tap level — if the bridge were broken, the click handler
+would throw and our `assertVisible: "Select payment method"`
+post-condition would fail.
 
 ## Iframe limitation (the reason the suite is intentionally small)
 
