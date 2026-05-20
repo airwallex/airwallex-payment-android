@@ -73,42 +73,57 @@ The P0 test asserts the Google Pay button is **rendered + tappable + the
 checkout-ui click handler runs without crashing the WebView**. It does NOT
 assert that the native Google Pay sheet actually appears.
 
-The reason is environment, not Maestro: the default AVD system-image
-`system-images;android-34;google_apis;arm64-v8a` bundles Google Mobile
-Services (so `PaymentRequest.canMakePayment()` returns true and the button
-gets wired) but does NOT bundle the Play Store / Google Wallet, so when
-checkout-ui invokes the Payment Request API there's no wallet provider to
-take over and the sheet never opens. Confirmed via `chromium` console logs
-in `adb logcat` — the GPay analytics event fires, then nothing.
+### Why the default AVD can't show the sheet
 
-To extend the suite to cover the native sheet:
+We exhaustively confirmed this during bring-up by running the test on
+**both** image variants:
 
-```bash
-# 1. Use a playstore AVD instead
-sdkmanager 'system-images;android-34;google_apis_playstore;arm64-v8a'
-avdmanager create avd -n webview_test_playstore \
-  -k 'system-images;android-34;google_apis_playstore;arm64-v8a' \
-  -d pixel_6 --force
+| System image | `PaymentRequest.canMakePayment()` | GPay button click handler fires | Native sheet opens |
+|---|---|---|---|
+| `system-images;android-34;google_apis;arm64-v8a` (default in `webview_test` AVD) | ✅ true | ✅ analytics event in `adb logcat` (`button_name=google_pay`) | ❌ no provider available |
+| `system-images;android-34;google_apis_playstore;arm64-v8a` (`webview_gpay` AVD) | ✅ true | ✅ same analytics event | ❌ Play Store present but **no Google account signed in + Google Wallet not yet installed** |
 
-# 2. Boot, sign in to a test Google account, install Google Wallet from Play.
-# 3. Add a tokenized test card (use a Google Pay test merchant card from
-#    https://developers.google.com/pay/api/android/guides/test-and-deploy/test-card-suite).
-# 4. In test_webview_checkout_renders.yaml, add after the GPay tap:
-#    - extendedWaitUntil:
-#        visible: "Continue"   # GPay sheet's confirm button
-#        timeout: 10000
+So the blocker is one extra environment-setup step, NOT a checkout-ui or
+Maestro defect:
+
+1. Use the playstore AVD (`webview_gpay`, created at
+   `~/.android/avd/webview_gpay.avd`).
+2. Open Play Store, sign in to a Google account that has a
+   [Google Pay test merchant card](https://developers.google.com/pay/api/android/guides/test-and-deploy/test-card-suite)
+   tokenized.
+3. Install **Google Wallet** from Play.
+4. Re-run the P0 — the GPay button tap will now trigger the native sheet.
+
+### How to extend the test once the AVD is provisioned
+
+Append after the existing GPay tap step in
+`test_webview_checkout_renders.yaml`:
+
+```yaml
+- tapOn: "Google Pay"
+- extendedWaitUntil:
+    visible: "Continue"   # The GPay sheet's confirm button (system UI)
+    timeout: 10000
+- takeScreenshot: gpay_sheet_visible
+- back               # Dismiss sheet without committing — we only assert appearance
 ```
 
-The same pattern works on iOS: use a simulator with PassKit test card
-seeded via `xcrun simctl spawn booted defaults`. The Maestro flow itself
-is one extra `extendedWaitUntil` step.
+`back` (Android system back) closes the GPay sheet and returns to
+checkout-ui's "Select payment method" view, so the test stays
+idempotent without going through the full payment flow.
 
-We left this out of the default regression because the AVD + wallet setup
-isn't reproducible on CI without baking a custom image, and the failure
-mode it catches (Payment Request bridge broken in WebView) is already
-caught at the tap level — if the bridge were broken, the click handler
-would throw and our `assertVisible: "Select payment method"`
-post-condition would fail.
+### Why we left this out of the merged regression
+
+The `google_apis_playstore` AVD requires interactive Google login + Wallet
+install + test card setup, none of which are reproducible on shared CI
+without baking a custom image with pre-seeded credentials. The failure
+mode that "sheet doesn't appear" would catch (Payment Request bridge
+broken in WebView) is already caught at the tap level — if the bridge
+were broken, the click handler would throw and our
+`assertVisible: "Select payment method"` post-condition would fail.
+
+When PA stands up dedicated mobile CI hardware with pre-seeded wallets,
+this is the very first follow-up.
 
 ## Iframe limitation (the reason the suite is intentionally small)
 
