@@ -51,3 +51,6 @@ example/gen
 example/bin
 
 CLAUDE.md
+
+# Maestro `takeScreenshot` writes here at the working dir of the maestro run
+webview_checkout_renders.png
