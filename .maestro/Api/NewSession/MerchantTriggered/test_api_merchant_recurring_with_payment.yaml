@@ -54,13 +54,20 @@ platform:
       CANCEL_3DS: false
 - assertVisible: "Payment successful"
 - tapOn: "OK"
-# Verify 1 saved card
+# Verify 1 saved card - per-card PAY works (3DS triggered)
 - scrollUntilVisible:
     element: "Get saved cards"
     direction: DOWN
 - tapOn: "Get saved cards"
 - assertVisible: "Visa •••• 1003"
-- back
+# Per-card PAY in merchant-triggered: triggers 3DS then succeeds
+- tapOn: "PAY"
+- runFlow:
+    file: ../../../Common/flow_handle_3ds.yaml
+    env:
+      CANCEL_3DS: false
+- assertVisible: "Payment successful"
+- tapOn: "OK"
 # Pay with same card again - merchant-triggered allows this (also triggers 3DS)
 - scrollUntilVisible:
     element: "Pay with card"
@@ -92,14 +99,21 @@ platform:
       CANCEL_3DS: false
 - assertVisible: "Payment successful"
 - tapOn: "OK"
-# Verify 3 saved cards
+# Verify 3 saved cards - per-card PAY works (3DS triggered)
 - scrollUntilVisible:
     element: "Get saved cards"
     direction: DOWN
 - tapOn: "Get saved cards"
 - assertVisible: "Visa •••• 1003"
 - assertVisible: "Visa •••• 0088"
-- back
+# Per-card PAY in merchant-triggered: triggers 3DS then succeeds
+- tapOn: "PAY"
+- runFlow:
+    file: ../../../Common/flow_handle_3ds.yaml
+    env:
+      CANCEL_3DS: false
+- assertVisible: "Payment successful"
+- tapOn: "OK"
 # Pay with redirect payment - should create consent and process payment
 - scrollUntilVisible:
     element: "Redirect Payment"

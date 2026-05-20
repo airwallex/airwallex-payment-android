@@ -55,7 +55,7 @@ platform:
       CANCEL_3DS: false
 - assertVisible: "Payment successful"
 - tapOn: "OK"
-# Verify 1 saved card - PAY button is disabled in recurring mode
+# Verify 1 saved card - PAY button is disabled in legacy recurring
 - scrollUntilVisible:
     element: "Get saved cards"
     direction: DOWN
@@ -96,7 +96,7 @@ platform:
       CANCEL_3DS: false
 - assertVisible: "Payment successful"
 - tapOn: "OK"
-# Verify 3 saved cards
+# Verify 3 saved cards - PAY buttons are disabled in legacy recurring
 - scrollUntilVisible:
     element: "Get saved cards"
     direction: DOWN

@@ -54,17 +54,15 @@ platform:
 - tapOn: "Get saved cards"
 - assertVisible: "Visa •••• 0008"
 - back
-# Pay with same card again - duplicate should be rejected for recurring (no payment)
+# Pay with same card again - new session allows duplicate (succeeds, same PAN -> same consent)
 - scrollUntilVisible:
     element: "Pay with card"
     direction: UP
 - tapOn: "Pay with card"
 - tapOn: "PAY"
-- assertVisible: "Payment failed"
-- assertVisible:
-    text: ".*already exists.*"
+- assertVisible: "Payment successful"
 - tapOn: "OK"
-# Verify still only 1 consent (duplicate was rejected)
+# Verify still only 1 consent (same PAN dedupes server-side)
 - scrollUntilVisible:
     element: "Get saved cards"
 - tapOn: "Get saved cards"
