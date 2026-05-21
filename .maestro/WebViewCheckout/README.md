@@ -17,9 +17,10 @@ Mirror: `airwallex-payment-ios/.maestro/WebViewCheckout/`.
 | Google Pay button **tap** + checkout-ui handler fires without crashing WebView | ✅ Covered | Same (tap-level smoke) |
 | Google Pay / Apple Pay **native sheet** appears | ⚠️ Possible, requires setup | Needs `system-images;android-34;google_apis_playstore` AVD + Google Wallet + tokenized test card; see "Digital wallet sheet coverage" below |
 | Google Pay / Apple Pay sheet → confirm → success callback | ⚠️ Possible, fragile | Sheet internals change across Android / iOS versions; covered today by FE Playwright |
-| Actual card-number / expiry / CVC submission | ❌ Not covered | See "iframe limitation" below |
-| 3DS challenge OTP entry | ❌ Not covered | Same |
-| Card save & consent reuse | ❌ Not covered | Same |
+| Actual card-number / expiry / CVC submission | ✅ Covered | `test_webview_card_3ds_success.sh` (adb-driven; see "Iframe limitation" below for why this is a shell script and not a Maestro yaml) |
+| 3DS challenge OTP entry | ✅ Covered | Same script (OTP = `1234` for test card `4012000300000088`) |
+| Native success view assertion (`Thanks for your order!`) | ✅ Covered | Same script |
+| Card save & consent reuse | ❌ Not covered | Out of scope for ACE-597 P0 |
 
 The bits we don't cover here are fully covered by the FE Playwright suite running in
 a normal browser (`paymentacceptance-fe-automation-test`). The webview-specific risk
@@ -29,16 +30,21 @@ config?` — that's exactly what this P0 catches.
 ## Files
 
 ```
-flow_open_h5_webview.yaml          # reusable flow: cold-launch sample app → H5 demo → /shopping-cart
-test_webview_checkout_renders.yaml # P0: assert checkout-ui mounts + Pay button shows
-README.md                          # this file
+flow_open_h5_webview.yaml             # reusable flow: cold-launch sample app → H5 demo → /shopping-cart
+test_webview_checkout_renders.yaml    # P0: assert checkout-ui mounts + Pay button shows
+test_webview_card_3ds_success.sh      # P1: full card flow incl. 3DS challenge (adb-driven, see below)
+README.md                             # this file
 ```
 
-The earlier draft also included `flow_webview_pay_with_card.yaml`,
+The earlier YAML drafts (`flow_webview_pay_with_card.yaml`,
 `flow_webview_handle_3ds.yaml`, `flow_webview_assert_result.yaml`,
-`test_webview_card_3ds_*.yaml` and `test_webview_card_save_and_reuse.yaml`. These were
-removed once we discovered Maestro cannot traverse into the card iframe(s) on either
-platform — see "Iframe limitation" below.
+`test_webview_card_save_and_reuse.yaml`, etc.) were removed once we discovered Maestro's
+`inputText` does not trigger React `onChange` events for inputs nested in PCI cross-origin
+iframes — see "Iframe limitation" below. The single surviving card flow,
+`test_webview_card_3ds_success.sh`, drops down to raw `adb shell input` to work around
+this; the iOS equivalent is the pure-Maestro
+`airwallex-payment-ios/.maestro/WebViewCheckout/test_webview_card_3ds_success.yaml`
+(WKWebView's `inputText` behaviour differs and works without the workaround).
 
 ## Run
 
@@ -57,15 +63,19 @@ export PATH="$JAVA_HOME/bin:$ANDROID_HOME/platform-tools:$HOME/.maestro/bin:$PAT
 emulator -avd webview_test -no-snapshot -no-boot-anim &
 adb wait-for-device
 
-# Run the whole suite (single test for now)
-maestro test .maestro/WebViewCheckout/
-
-# Or just the P0
+# P0: WebView mount + Pay button (Maestro)
 maestro test .maestro/WebViewCheckout/test_webview_checkout_renders.yaml
+
+# P1: Full card flow incl. 3DS challenge (shell + adb)
+.maestro/WebViewCheckout/test_webview_card_3ds_success.sh
 ```
 
-Typical pass time on an M-series Mac with arm64 emulator: **~25 seconds** per run.
-Stability: **3/3 green** in initial bring-up.
+Typical pass time on an M-series Mac with arm64 emulator:
+
+| Test | Time | Stability |
+|---|---|---|
+| `test_webview_checkout_renders.yaml` (Maestro) | ~25s | 3/3 green |
+| `test_webview_card_3ds_success.sh` (shell + adb) | ~210s | 2/2 green (test card `4012000300000088` Y-Y-SUCCESS, OTP `1234`) |
 
 ## Digital wallet sheet coverage
 
@@ -125,39 +135,51 @@ were broken, the click handler would throw and our
 When PA stands up dedicated mobile CI hardware with pre-seeded wallets,
 this is the very first follow-up.
 
-## Iframe limitation (the reason the suite is intentionally small)
+## Iframe limitation & the `adb shell input` workaround
 
 Airwallex's `cardElement` mounts each PCI-sensitive input (card number, expiry, CVC)
 in its **own nested cross-origin iframe** served from `checkout.airwallex.com`. The
-Android `WebView` exposes only the FIRST iframe level to the OS accessibility tree,
-so Maestro's `id:`, `text:` and even `point:` selectors cannot reliably target inputs
-inside those nested frames.
+Android `WebView` *does* expose those inner `EditText` nodes to the OS accessibility
+tree (`uiautomator dump` shows them), but Maestro's `inputText` action emits a
+text-replacement event that gets to the DOM yet **never fires React's `onChange`
+event** for those iframe-hosted inputs. The visible value updates but checkout-ui's
+controlled-input state stays empty, so validation fails and Pay stays disabled.
 
-What that means in practice:
+What works vs what doesn't on Android WebView:
 
-- `assertVisible: "Card information"` ✅ works (section header, OUTER iframe)
-- `assertVisible: "Pay 100.00 CNY"` ✅ works (Pay button, OUTER iframe)
-- `assertVisible: "Google Pay"` ✅ works (button label, OUTER iframe)
-- `tapOn: { id: "cardnumber" }` ❌ fails (HTML `name`/`id` is not exposed)
-- `tapOn: { text: "1234 1234 1234 1234" }` ❌ fails (placeholder is inside an inner
-  iframe and not surfaced)
-- Coordinate taps `point: 50%,55%` ⚠️ work for a single device but break on rotation,
-  density change, or any vertical layout change in the demo store
+| Action | Outcome | Why |
+|---|---|---|
+| `assertVisible: "Card information"` (Maestro) | ✅ | Outer iframe text, fine via a11y |
+| `tapOn point` on PAN/Expiry/CVC field (Maestro or adb) | ✅ | Tap focuses the input |
+| `inputText: "401200..."` (Maestro) | ❌ | Updates DOM but skips React `onChange` |
+| `adb shell input text "401200..."` (raw kernel events) | ✅ | Goes through InputConnection → IME → React |
+| `tapOn { id: "cardnumber" }` (Maestro) | ❌ | HTML `name`/`id` not surfaced as accessibility id |
 
-To actually drive card submission via Maestro you'd need either:
+`test_webview_card_3ds_success.sh` codifies this: it uses Maestro for the
+prologue (launch app → navigate to `H5DemoActivity` → tap Check out), then drops
+to `adb shell input tap` + `adb shell input text` for every iframe-internal
+interaction (PAN, Expiry, CVC, 3DS OTP, Submit), re-dumping the hierarchy
+between steps so coordinates stay correct as the form reflows around the IME.
 
-1. An exported app entry point that bypasses the iframe (e.g. an SDK-internal test
-   harness) and posts a card token directly, OR
-2. A custom WKWebView/`WebView` subclass in the sample app that injects a JS bridge
-   exposing iframe internals to a11y, OR
-3. Switch from Maestro to a tool that can drive cross-origin iframes natively
-   (Playwright Mobile, Detox, or a Chrome DevTools Protocol pipeline). The FE
-   automation suite already covers this path on `mobile-webkit` and
-   `mobile-chrome` configurations.
+The iOS WKWebView equivalent
+(`airwallex-payment-ios/.maestro/WebViewCheckout/test_webview_card_3ds_success.yaml`)
+does NOT need the adb workaround — WKWebView's accessibility bridge feeds Maestro's
+`inputText` events through the JS engine in a way that does trigger React `onChange`.
 
-We picked option (3) implicitly: the FE Playwright suite is the source of truth
-for card / 3DS / digital-wallet **behaviour**, and this Maestro suite is the source
-of truth for **WebView integration** (does checkout-ui mount + initialize at all?).
+### Why we didn't pick the alternatives
+
+1. **SDK-internal harness that posts a card token directly** — would test SDK
+   bridging logic but not the actual `checkout-ui` field-input → tokenization
+   path that real merchants hit.
+2. **Custom `WebView` subclass with a JS bridge that exposes iframe internals
+   to a11y** — invasive, ships test-only code in production binaries, and the
+   FE team would have to keep the bridge contract in sync.
+3. **Switch to Playwright Mobile / Detox / CDP** — already done outside this
+   suite: the FE Playwright suite (`paymentacceptance-fe-automation-test`)
+   covers card / 3DS / digital-wallet behaviour on `mobile-chrome` and
+   `mobile-webkit` configurations. This Maestro+adb suite is the source of
+   truth for "does checkout-ui mount + drive a real PI through the Android
+   *native* `WebView`?".
 
 ## Known issues found during bring-up
 
