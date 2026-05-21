@@ -37,8 +37,7 @@ env:
 - tapOn:
     id: "card-cvc-text-field"
 - inputText: "333"
-- waitForAnimationToEnd:
-    timeout: 2000
+- hideKeyboard
 - scrollUntilVisible:
     element: "^(Pay|Confirm)$"
 # Assert AlipayHK is NOT visible (Express Checkout hides other payment methods)
