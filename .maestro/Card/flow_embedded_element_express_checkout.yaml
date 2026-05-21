@@ -37,6 +37,11 @@ env:
 - tapOn:
     id: "card-cvc-text-field"
 - inputText: "333"
+# Anchor scroll to dismiss the IME and settle the layout before tapping Pay.
+# Express checkout has no billing assertions to make here; this scroll exists
+# purely to align the keyboard/focus state with the tab/accordion flows.
+- scrollUntilVisible:
+    element: "Billing info"
 - scrollUntilVisible:
     element: "^(Pay|Confirm)$"
 # Assert AlipayHK is NOT visible (Express Checkout hides other payment methods)
