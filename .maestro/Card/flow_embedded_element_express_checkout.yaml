@@ -37,11 +37,18 @@ env:
 - tapOn:
     id: "card-cvc-text-field"
 - inputText: "333"
-# Anchor scroll to dismiss the IME and settle the layout before tapping Pay.
-# Express checkout has no billing assertions to make here; this scroll exists
-# purely to align the keyboard/focus state with the tab/accordion flows.
-- scrollUntilVisible:
-    element: "Billing info"
+# Guest + express has an unfilled billing address block below the card fields.
+# Its Compose TextFields swallow vertical drag at touch-down, which blocks
+# scrollUntilVisible's swipes from making progress. Originate swipes from the
+# header region (above all TextFields) so the gesture reaches the scroll container.
+- swipe:
+    start: "50%, 22%"
+    end: "50%, 8%"
+    duration: 400
+- swipe:
+    start: "50%, 22%"
+    end: "50%, 8%"
+    duration: 400
 - scrollUntilVisible:
     element: "^(Pay|Confirm)$"
 # Assert AlipayHK is NOT visible (Express Checkout hides other payment methods)
