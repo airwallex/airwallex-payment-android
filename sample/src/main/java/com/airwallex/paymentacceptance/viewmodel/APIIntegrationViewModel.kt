@@ -117,22 +117,9 @@ class APIIntegrationViewModel : BaseViewModel() {
         val session = createSession()
         startLoading()
         paymentConsent.paymentMethod?.let { paymentMethod ->
-            val paymentMethodWithBilling = PaymentMethod.Builder()
-                .apply { paymentMethod.id?.let { setId(it) } }
-                .setRequestId(paymentMethod.requestId)
-                .setCustomerId(paymentMethod.customerId)
-                .setType(paymentMethod.type ?: PaymentMethodType.CARD.value)
-                .setCard(paymentMethod.card)
-                .setGooglePay(paymentMethod.googlePay)
-                .setBilling(dummyBilling())
-                .setStatus(paymentMethod.status)
-                .setMetadata(paymentMethod.metadata)
-                .setCreatedAt(paymentMethod.createdAt)
-                .setUpdatedAt(paymentMethod.updatedAt)
-                .build()
             airwallex?.checkout(
                 session = session,
-                paymentMethod = paymentMethodWithBilling,
+                paymentMethod = paymentMethod,
                 paymentConsent = paymentConsent,
                 listener = object : Airwallex.PaymentResultListener {
                     override fun onCompleted(status: AirwallexPaymentStatus) {

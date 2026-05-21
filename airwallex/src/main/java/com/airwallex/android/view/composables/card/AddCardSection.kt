@@ -399,7 +399,7 @@ internal fun AddCardSection(
                             AnalyticsLogger.logAction("toggle_billing_address")
                             viewModel.updateSameAddressChecked(it)
                             if (it) {
-                                viewModel.updateSelectedCountryCode(viewModel.countryCode)
+                                viewModel.updateSelectedCountryCode(viewModel.shipping?.address?.countryCode ?: viewModel.countryCode)
                                 viewModel.updateStreet(viewModel.shipping?.address?.street.orEmpty())
                                 viewModel.updateState(viewModel.shipping?.address?.state.orEmpty())
                                 viewModel.updateCity(viewModel.shipping?.address?.city.orEmpty())
