@@ -37,7 +37,7 @@ class AirwallexPaymentSessionTest {
             .build()
 
         val airwallexPaymentSession = AirwallexPaymentSession.Builder(
-            PaymentIntentFixtures.PAYMENT_INTENT, "CN"
+            PaymentIntentFixtures.PAYMENT_INTENT, "US"
         )
             .setRequireBillingInformation(false)
             .setRequireEmail(true)
@@ -168,7 +168,7 @@ class AirwallexPaymentSessionTest {
     @Test
     fun `isExpressCheckout returns false when session has no PaymentIntentProvider`() {
         val session = AirwallexPaymentSession.Builder(
-            PaymentIntentFixtures.PAYMENT_INTENT, "CN"
+            PaymentIntentFixtures.PAYMENT_INTENT, "US"
         ).build()
 
         assertEquals(false, session.isExpressCheckout)
@@ -208,7 +208,7 @@ class AirwallexPaymentSessionTest {
     @Test
     fun `isExpressCheckout returns true when paymentIntentProviderId is set`() {
         val session = AirwallexPaymentSession.Builder(
-            PaymentIntentFixtures.PAYMENT_INTENT, "CN"
+            PaymentIntentFixtures.PAYMENT_INTENT, "US"
         ).build()
 
         // Simulate binding to activity which sets paymentIntentProviderId
@@ -262,7 +262,7 @@ class AirwallexPaymentSessionTest {
         // Use reflection to test the defensive require check in build()
         val builder = AirwallexPaymentSession.Builder(
             PaymentIntentFixtures.PAYMENT_INTENT,
-            "CN"
+            "US"
         )
 
         // Use reflection to set both paymentIntent and paymentIntentProvider to null

@@ -11,11 +11,11 @@ class AddressTest {
 
     private val address by lazy {
         Address.Builder()
-            .setCountryCode("CN")
-            .setState("Shanghai")
-            .setCity("Shanghai")
-            .setStreet("Pudong District")
-            .setPostcode("100000")
+            .setCountryCode("US")
+            .setState("CA")
+            .setCity("San Francisco")
+            .setStreet("1460 Mission St.#02W101")
+            .setPostcode("94103")
             .build()
     }
 
@@ -31,19 +31,19 @@ class AddressTest {
 
     @Test
     fun testParams() {
-        assertEquals("CN", address.countryCode)
-        assertEquals("Shanghai", address.state)
-        assertEquals("Shanghai", address.city)
-        assertEquals("Pudong District", address.street)
-        assertEquals("100000", address.postcode)
+        assertEquals("US", address.countryCode)
+        assertEquals("CA", address.state)
+        assertEquals("San Francisco", address.city)
+        assertEquals("1460 Mission St.#02W101", address.street)
+        assertEquals("94103", address.postcode)
     }
 
     @Test
     fun testToParamMap() {
         val addressParams = Address.Builder()
-            .setCountryCode("CN")
+            .setCountryCode("US")
             .build()
             .toParamMap()
-        assertEquals(mapOf("country_code" to "CN"), addressParams)
+        assertEquals(mapOf("country_code" to "US"), addressParams)
     }
 }

@@ -105,8 +105,8 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
         mBinding.titleView.setOnButtonClickListener {
             mViewModel.clearSetting()
             mBinding.etPrice.setText("1")
-            mBinding.etCurrency.setText("HKD")
-            mBinding.etCountryCode.setText("HK")
+            mBinding.etCurrency.setText("SGD")
+            mBinding.etCountryCode.setText("SG")
             mBinding.etCustomerId.setText("")
             mBinding.etAPIKey.setText("")
             mBinding.etClientId.setText("")

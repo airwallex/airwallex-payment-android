@@ -14,11 +14,11 @@ internal object ShippingFixtures {
             "email": "john.doe@airwallex.com",
             "shipping_method": "shipping",
             "address": {
-                "country_code": "CN",
-                "state": "Shanghai",
-                "city": "Shanghai",
-                "street": "Pudong District",
-                "postcode": "100000"
+                "country_code": "US",
+                "state": "CA",
+                "city": "San Francisco",
+                "street": "1460 Mission St.#02W101",
+                "postcode": "94103"
             }
         }
             """.trimIndent()

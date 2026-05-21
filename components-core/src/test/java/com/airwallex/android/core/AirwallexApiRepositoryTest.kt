@@ -319,12 +319,12 @@ class AirwallexApiRepositoryTest {
                 1,
                 20,
                 true,
-                "CNY",
+                "SGD",
                 TransactionMode.ONE_OFF,
-                "CN"
+                "SG"
             )
         assertEquals(
-            "https://api.airwallex.com/api/v1/pa/config/payment_method_types?__resources=true&os_type=android&lang=en&page_num=1&page_size=20&active=true&transaction_currency=CNY&transaction_mode=oneoff&country_code=CN",
+            "https://api.airwallex.com/api/v1/pa/config/payment_method_types?__resources=true&os_type=android&lang=en&page_num=1&page_size=20&active=true&transaction_currency=SGD&transaction_mode=oneoff&country_code=SG",
             url
         )
     }

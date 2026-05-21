@@ -81,7 +81,7 @@ class PaymentsUtilTest {
                 checkoutOption = "COMPLETE_IMMEDIATE_PURCHASE",
                 emailRequired = true,
                 shippingAddressParameters = ShippingAddressParameters(
-                    listOf("US", "CN"),
+                    listOf("US", "SG"),
                     true
                 )
             ),
@@ -94,7 +94,7 @@ class PaymentsUtilTest {
                     "\"allowedAuthMethods\":[\"PAN_ONLY\",\"CRYPTOGRAM_3DS\"],\"allowedCardNetworks\":" +
                     "[\"MASTERCARD\",\"VISA\"]},\"tokenizationSpecification\":{\"type\":\"PAYMENT_GATEWAY\"," +
                     "\"parameters\":{\"gatewayMerchantId\":\"\",\"gateway\":\"airwallex\"}}}]," +
-                    "\"shippingAddressParameters\":{\"allowedCountryCodes\":[\"US\",\"CN\"]," +
+                    "\"shippingAddressParameters\":{\"allowedCountryCodes\":[\"US\",\"SG\"]," +
                     "\"phoneNumberRequired\":true},\"emailRequired\":true,\"transactionInfo\":" +
                     "{\"totalPrice\":\"100.01\",\"countryCode\":\"AU\",\"totalPriceLabel\":\"order.total\"," +
                     "\"checkoutOption\":\"COMPLETE_IMMEDIATE_PURCHASE\",\"totalPriceStatus\":\"FINAL\"," +
@@ -157,12 +157,12 @@ class PaymentsUtilTest {
         val json = JSONObject(
             """
                 {
-                "countryCode":"HK",
+                "countryCode":"SG",
                 "locality":"",
                 "name":"John"
                 }
             """.trimIndent()
         )
-        assertEquals(PaymentsUtil.getBilling(json)?.address?.city, "HK")
+        assertEquals(PaymentsUtil.getBilling(json)?.address?.city, "SG")
     }
 }

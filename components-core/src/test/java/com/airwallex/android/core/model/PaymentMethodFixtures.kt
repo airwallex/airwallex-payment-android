@@ -23,11 +23,11 @@ internal object PaymentMethodFixtures {
                 "last_name": "He",
                 "phone_number": "1367875786",
                 "address": {
-                    "country_code": "CN",
-                    "state": "Shanghai",
-                    "city": "Shanghai",
-                    "street": "Pudong District",
-                    "postcode": "201304"
+                    "country_code": "US",
+                    "state": "CA",
+                    "city": "San Francisco",
+                    "street": "1460 Mission St.#02W101",
+                    "postcode": "94103"
                 }
             }
         }
