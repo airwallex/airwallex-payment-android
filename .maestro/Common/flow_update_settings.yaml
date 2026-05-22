@@ -1,6 +1,6 @@
 appId: com.airwallex.paymentacceptance
 env:
-  ENVIRONMENT: ${ENVIRONMENT || "PREVIEW"}
+  ENVIRONMENT: ${ENVIRONMENT || "DEMO"}
   NEXT_TRIGGERED_BY: ${NEXT_TRIGGERED_BY || "Customer"}
   LAYOUT: ${LAYOUT || "Tab"}
   FORCE_3DS: ${FORCE_3DS || "false"}

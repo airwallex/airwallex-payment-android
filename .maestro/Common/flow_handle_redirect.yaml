@@ -22,13 +22,20 @@ appId: com.airwallex.paymentacceptance
       - tapOn: "^Pay$"
       - tapOn: "Confirm"
       - extendedWaitUntil:
-          visible: "Return to Merchant|SUCCEED"
+          visible: "Return to Merchant|SUCCEED|Continue to Airwallex Sample"
           timeout: 30000
       - runFlow:
           when:
             visible: "^Return to Merchant$"
           commands:
             - tapOn: "^Return to Merchant$"
+      # Chrome may show a deep-link disambiguation banner before letting
+      # the redirect launch the app. Tap Continue if it's there.
+      - runFlow:
+          when:
+            visible: "Continue to Airwallex Sample"
+          commands:
+            - tapOn: "Continue"
       - extendedWaitUntil:
           visible: "SUCCEED"
           timeout: 30000
@@ -45,6 +52,13 @@ appId: com.airwallex.paymentacceptance
           id: "checkbox"
       # Click "Authorize Now"
       - tapOn: "Authorize Now"
+      # Chrome may show a deep-link disambiguation banner before letting
+      # the redirect launch the app. Tap Continue if it's there.
+      - runFlow:
+          when:
+            visible: "Continue to Airwallex Sample"
+          commands:
+            - tapOn: "Continue"
       # Wait for automatic redirect back (no "Return to Merchant" for recurring)
       # Webview will close automatically and show loading overlay
       - waitForAnimationToEnd:
@@ -59,9 +73,10 @@ appId: com.airwallex.paymentacceptance
       #   (a) Tappable "Return to Merchant" button (need to tap to close webview)
       #   (b) Non-tappable "Return to Merchant (N)" countdown that auto-closes
       #   (c) Webview auto-closes immediately, SUCCEED dialog appears
+      # Chrome may also show a deep-link disambiguation banner before launching the app.
       # Wait for whichever signal appears first.
       - extendedWaitUntil:
-          visible: "Return to Merchant|SUCCEED"
+          visible: "Return to Merchant|SUCCEED|Continue to Airwallex Sample"
           timeout: 30000
       # Only tap when it's the exact button text — anchored regex avoids
       # accidentally tapping the "Return to Merchant (N)" countdown.
@@ -70,6 +85,13 @@ appId: com.airwallex.paymentacceptance
             visible: "^Return to Merchant$"
           commands:
             - tapOn: "^Return to Merchant$"
+      # Chrome may show a deep-link disambiguation banner before letting
+      # the redirect launch the app. Tap Continue if it's there.
+      - runFlow:
+          when:
+            visible: "Continue to Airwallex Sample"
+          commands:
+            - tapOn: "Continue"
       # All three paths converge on the SUCCEED dialog.
       - extendedWaitUntil:
           visible: "SUCCEED"

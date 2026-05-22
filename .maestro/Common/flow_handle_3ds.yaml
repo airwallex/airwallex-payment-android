@@ -1,6 +1,8 @@
 appId: com.airwallex.paymentacceptance
 ---
-- assertVisible: "Purchase Authentication"
+- extendedWaitUntil:
+    visible: "Purchase Authentication"
+    timeout: 30000
 - tapOn:
     id: "challengeDataEntry"
 - inputText: "1234"

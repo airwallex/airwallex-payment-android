@@ -1,6 +1,5 @@
 appId: com.airwallex.paymentacceptance
 ---
-- launchApp
 - runScript: ../Card/cards.js
 - runScript: ../Common/settings.js
 - tapOn: "Integrate with Airwallex UI"
