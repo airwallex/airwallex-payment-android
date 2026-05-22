@@ -34,7 +34,7 @@ class ShippingAddressWidgetTest {
                 .setCountryCode("US")
                 .setState("CA")
                 .setCity("San Francisco")
-                .setStreet("1460 Mission St.#02W101")
+                .setStreet("9999 Mission St.")
                 .setPostcode("94103")
                 .build()
         )

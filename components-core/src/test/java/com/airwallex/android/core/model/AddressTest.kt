@@ -14,7 +14,7 @@ class AddressTest {
             .setCountryCode("US")
             .setState("CA")
             .setCity("San Francisco")
-            .setStreet("1460 Mission St.#02W101")
+            .setStreet("9999 Mission St.")
             .setPostcode("94103")
             .build()
     }
@@ -34,7 +34,7 @@ class AddressTest {
         assertEquals("US", address.countryCode)
         assertEquals("CA", address.state)
         assertEquals("San Francisco", address.city)
-        assertEquals("1460 Mission St.#02W101", address.street)
+        assertEquals("9999 Mission St.", address.street)
         assertEquals("94103", address.postcode)
     }
 

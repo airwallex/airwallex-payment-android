@@ -16,7 +16,7 @@ internal object BillingFixtures {
                 "country_code": "US",
                 "state": "CA",
                 "city": "San Francisco",
-                "street": "1460 Mission St.#02W101",
+                "street": "9999 Mission St.",
                 "postcode": "94103"
             }
         }

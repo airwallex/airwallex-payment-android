@@ -20,7 +20,7 @@ class BillingTest {
                     .setCountryCode("US")
                     .setState("CA")
                     .setCity("San Francisco")
-                    .setStreet("1460 Mission St.#02W101")
+                    .setStreet("9999 Mission St.")
                     .setPostcode("94103")
                     .build()
             )
@@ -47,7 +47,7 @@ class BillingTest {
                 countryCode = "US",
                 state = "CA",
                 city = "San Francisco",
-                street = "1460 Mission St.#02W101",
+                street = "9999 Mission St.",
                 postcode = "94103"
             ),
             billing.address
@@ -68,7 +68,7 @@ class BillingTest {
                     "country_code" to "US",
                     "state" to "CA",
                     "city" to "San Francisco",
-                    "street" to "1460 Mission St.#02W101",
+                    "street" to "9999 Mission St.",
                     "postcode" to "94103"
                 )
             ),

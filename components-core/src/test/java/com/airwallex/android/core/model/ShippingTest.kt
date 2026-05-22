@@ -21,7 +21,7 @@ class ShippingTest {
                     .setCountryCode("US")
                     .setState("CA")
                     .setCity("San Francisco")
-                    .setStreet("1460 Mission St.#02W101")
+                    .setStreet("9999 Mission St.")
                     .setPostcode("94103")
                     .build()
             )
@@ -50,7 +50,7 @@ class ShippingTest {
                 countryCode = "US",
                 state = "CA",
                 city = "San Francisco",
-                street = "1460 Mission St.#02W101",
+                street = "9999 Mission St.",
                 postcode = "94103"
             ),
             shipping.address

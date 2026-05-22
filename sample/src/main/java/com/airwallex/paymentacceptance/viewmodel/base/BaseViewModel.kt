@@ -353,8 +353,6 @@ abstract class BaseViewModel : ViewModel() {
         countryCode = Settings.countryCode,
         googlePayOptions = googlePayOptions
     )
-        .setRequireBillingInformation(true)
-        .setRequireEmail(Settings.requiresEmail.toBoolean())
         .setRequiredBillingContactFields(Settings.requiredBillingContactFields)
         .setReturnUrl(returnUrl.fullUrl)
         .setAutoCapture(autoCapture)
@@ -383,7 +381,6 @@ abstract class BaseViewModel : ViewModel() {
         nextTriggerBy = nextTriggerBy,
         countryCode = Settings.countryCode
     )
-        .setRequireEmail(Settings.requiresEmail.toBoolean())
         .setRequiredBillingContactFields(Settings.requiredBillingContactFields)
         .setShipping(shipping)
         .setMerchantTriggerReason(PaymentConsent.MerchantTriggerReason.SCHEDULED)
@@ -407,7 +404,6 @@ abstract class BaseViewModel : ViewModel() {
         nextTriggerBy = nextTriggerBy,
         countryCode = Settings.countryCode
     )
-        .setRequireEmail(Settings.requiresEmail.toBoolean())
         .setRequiredBillingContactFields(Settings.requiredBillingContactFields)
         .setMerchantTriggerReason(PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
         .setReturnUrl(returnUrl.fullUrl)
@@ -438,8 +434,6 @@ abstract class BaseViewModel : ViewModel() {
         customerId = customerId,
         googlePayOptions = googlePayOptions
     )
-        .setRequireBillingInformation(true)
-        .setRequireEmail(Settings.requiresEmail.toBoolean())
         .setRequiredBillingContactFields(Settings.requiredBillingContactFields)
         .setReturnUrl(returnUrl.fullUrl)
         .setAutoCapture(autoCapture)
@@ -469,7 +463,6 @@ abstract class BaseViewModel : ViewModel() {
         nextTriggerBy = nextTriggerBy,
         countryCode = Settings.countryCode
     )
-        .setRequireEmail(Settings.requiresEmail.toBoolean())
         .setRequiredBillingContactFields(Settings.requiredBillingContactFields)
         .setMerchantTriggerReason(PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
         .setReturnUrl(returnUrl.fullUrl)
@@ -519,8 +512,6 @@ abstract class BaseViewModel : ViewModel() {
             customerId = Settings.cachedCustomerId,
             googlePayOptions = googlePayOptions
         )
-            .setRequireBillingInformation(true)
-            .setRequireEmail(Settings.requiresEmail.toBoolean())
             .setRequiredBillingContactFields(Settings.requiredBillingContactFields)
             .setReturnUrl(returnUrl.fullUrl)
             .setAutoCapture(autoCapture)
@@ -573,8 +564,6 @@ abstract class BaseViewModel : ViewModel() {
             countryCode = Settings.countryCode,
             googlePayOptions = googlePayOptions
         )
-            .setRequireBillingInformation(true)
-            .setRequireEmail(Settings.requiresEmail.toBoolean())
             .setRequiredBillingContactFields(Settings.requiredBillingContactFields)
             .setReturnUrl(returnUrl.fullUrl)
             .setAutoCapture(autoCapture)

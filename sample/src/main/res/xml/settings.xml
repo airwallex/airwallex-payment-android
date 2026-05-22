@@ -26,13 +26,6 @@
             android:key="@string/requires_cvc"
             android:title="@string/requires_cvc" />
 
-        <ListPreference
-            android:dialogTitle="@string/requires_email"
-            android:entries="@array/array_requires_email"
-            android:entryValues="@array/array_requires_email"
-            android:key="@string/requires_email"
-            android:title="@string/requires_email" />
-
         <MultiSelectListPreference
             android:dialogTitle="@string/required_billing_contact_fields"
             android:entries="@array/array_required_billing_contact_fields"
