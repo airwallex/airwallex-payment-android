@@ -7,14 +7,21 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   deploy-docs:
     runs-on: ubuntu-latest
 
+    env:
+      DOCS_VERSION: ${{ github.event.release.tag_name || github.ref_name }}
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.release.tag_name || github.ref }}
+        fetch-depth: 0
 
     - name: Setup Java
       uses: actions/setup-java@v4
@@ -30,12 +37,35 @@ jobs:
     - name: Make gradlew executable
       run: chmod +x gradlew
 
-    - name: Generate documentation
+    - name: Generate HTML documentation
       run: ./gradlew dokkaGeneratePublicationHtml
 
-    - name: Deploy to GitHub Pages
+    - name: Generate Markdown documentation
+      run: ./gradlew dokkaGeneratePublicationMarkdown
+
+    - name: Deploy HTML to GitHub Pages
       uses: JamesIves/github-pages-deploy-action@v4
       with:
         folder: build/dokka/html
         branch: gh-pages
         clean: true
+
+    - name: Stage markdown documentation
+      run: |
+        rm -rf docs/api-reference/markdown
+        mkdir -p docs/api-reference/markdown
+        cp -r build/dokka/markdown/. docs/api-reference/markdown/
+
+    - name: Create pull request
+      uses: peter-evans/create-pull-request@v7
+      with:
+        commit-message: docs: update API reference for ${{ env.DOCS_VERSION }}
+        branch: docs/api-reference-${{ github.event.release.tag_name || github.run_id }}
+        delete-branch: true
+        title: docs: update API reference for ${{ env.DOCS_VERSION }}
+        body: |
+          Automated markdown API reference update for `${{ env.DOCS_VERSION }}`.
+
+          - Generated from `${{ github.sha }}`
+          - HTML deployed to GitHub Pages (`gh-pages`)
+        base: ${{ github.event.repository.default_branch }}
