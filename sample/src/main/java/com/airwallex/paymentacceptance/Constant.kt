@@ -16,7 +16,6 @@ val products = listOf(
         .setSku("piece")
         .setType("White")
         .setUnitPrice(500.00)
-        .setUrl("www.aircross.com")
         .setQuantity(1)
         .build(),
     PhysicalProduct.Builder()
@@ -26,7 +25,6 @@ val products = listOf(
         .setSku("piece")
         .setType("White")
         .setUnitPrice(500.00)
-        .setUrl("www.aircross.com")
         .setQuantity(1)
         .build()
 )
