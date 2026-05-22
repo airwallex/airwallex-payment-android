@@ -9,6 +9,7 @@ import com.airwallex.android.core.AirwallexRecurringSession
 import com.airwallex.android.core.AirwallexRecurringWithIntentSession
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.CardBrand
+import com.airwallex.android.core.RequiredBillingContactField
 import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentMethod
@@ -324,6 +325,41 @@ class AddPaymentMethodViewModelTest {
             viewModel.getBillingValidationMessage(
                 "123 Main St", AddPaymentMethodViewModel.BillingFieldType.STREET
             )
+        )
+    }
+
+    @Test
+    fun `test getBillingValidationMessage PHONE empty returns empty_phone`() {
+        val viewModel = createViewModel(createBasicMockSession())
+        assertEquals(
+            R.string.airwallex_empty_phone,
+            viewModel.getBillingValidationMessage(
+                "",
+                AddPaymentMethodViewModel.BillingFieldType.PHONE,
+            ),
+        )
+    }
+
+    @Test
+    fun `test getBillingValidationMessage PHONE non-E164 returns invalid_phone`() {
+        val viewModel = createViewModel(createBasicMockSession())
+        assertEquals(
+            R.string.airwallex_invalid_phone,
+            viewModel.getBillingValidationMessage(
+                "abc",
+                AddPaymentMethodViewModel.BillingFieldType.PHONE,
+            ),
+        )
+    }
+
+    @Test
+    fun `test getBillingValidationMessage PHONE valid E164 returns null`() {
+        val viewModel = createViewModel(createBasicMockSession())
+        assertNull(
+            viewModel.getBillingValidationMessage(
+                "+14155551234",
+                AddPaymentMethodViewModel.BillingFieldType.PHONE,
+            ),
         )
     }
 
@@ -821,6 +857,221 @@ class AddPaymentMethodViewModelTest {
         }
 
         assertFalse(viewModel.isCvcRequired(mockConsent))
+    }
+
+    // --- Tests for resolvedBillingFields / show* derived flags ---
+
+    @Test
+    fun `resolvedBillingFields uses explicit set when provided`() {
+        val session = sessionWithBillingFields(
+            setOf(RequiredBillingContactField.EMAIL, RequiredBillingContactField.PHONE)
+        )
+        val viewModel = createViewModel(session)
+        assertEquals(
+            setOf(RequiredBillingContactField.EMAIL, RequiredBillingContactField.PHONE),
+            viewModel.resolvedBillingFields
+        )
+    }
+
+    @Test
+    fun `resolvedBillingFields is empty when explicit empty set provided`() {
+        val session = sessionWithBillingFields(emptySet())
+        val viewModel = createViewModel(session)
+        assertTrue(viewModel.resolvedBillingFields.isEmpty())
+    }
+
+    @Test
+    fun `resolvedBillingFields derives NAME only from legacy flags both false`() {
+        val session = sessionWithBillingFields(fields = null)
+        val viewModel = createViewModel(session, isBillingRequired = false, isEmailRequired = false)
+        assertEquals(setOf(RequiredBillingContactField.NAME), viewModel.resolvedBillingFields)
+    }
+
+    @Test
+    fun `resolvedBillingFields derives NAME + ADDRESS + PHONE when billing required`() {
+        val session = sessionWithBillingFields(fields = null)
+        val viewModel = createViewModel(session, isBillingRequired = true, isEmailRequired = false)
+        assertEquals(
+            setOf(
+                RequiredBillingContactField.NAME,
+                RequiredBillingContactField.ADDRESS,
+                RequiredBillingContactField.PHONE,
+            ),
+            viewModel.resolvedBillingFields,
+        )
+    }
+
+    @Test
+    fun `resolvedBillingFields derives NAME + EMAIL when email required only`() {
+        val session = sessionWithBillingFields(fields = null)
+        val viewModel = createViewModel(session, isBillingRequired = false, isEmailRequired = true)
+        assertEquals(
+            setOf(RequiredBillingContactField.NAME, RequiredBillingContactField.EMAIL),
+            viewModel.resolvedBillingFields,
+        )
+    }
+
+    @Test
+    fun `showName showEmail showPhone showAddress reflect resolved set`() {
+        val session = sessionWithBillingFields(
+            setOf(
+                RequiredBillingContactField.NAME,
+                RequiredBillingContactField.EMAIL,
+                RequiredBillingContactField.PHONE,
+                RequiredBillingContactField.ADDRESS,
+            )
+        )
+        val viewModel = createViewModel(session)
+        assertTrue(viewModel.showName)
+        assertTrue(viewModel.showEmail)
+        assertTrue(viewModel.showPhone)
+        assertTrue(viewModel.showAddress)
+    }
+
+    @Test
+    fun `show flags are all false when resolved set is empty`() {
+        val session = sessionWithBillingFields(emptySet())
+        val viewModel = createViewModel(session)
+        assertFalse(viewModel.showName)
+        assertFalse(viewModel.showEmail)
+        assertFalse(viewModel.showPhone)
+        assertFalse(viewModel.showAddress)
+        assertFalse(viewModel.showCountryCodeOnly)
+    }
+
+    @Test
+    fun `showCountryCodeOnly true when COUNTRY_CODE without ADDRESS`() {
+        val session = sessionWithBillingFields(setOf(RequiredBillingContactField.COUNTRY_CODE))
+        val viewModel = createViewModel(session)
+        assertTrue(viewModel.showCountryCodeOnly)
+        assertFalse(viewModel.showAddress)
+    }
+
+    @Test
+    fun `showCountryCodeOnly false when both COUNTRY_CODE and ADDRESS present`() {
+        val session = sessionWithBillingFields(
+            setOf(
+                RequiredBillingContactField.ADDRESS,
+                RequiredBillingContactField.COUNTRY_CODE,
+            )
+        )
+        val viewModel = createViewModel(session)
+        assertFalse(viewModel.showCountryCodeOnly)
+        assertTrue(viewModel.showAddress)
+    }
+
+    @Test
+    fun `showCountryCodeOnly false when neither ADDRESS nor COUNTRY_CODE present`() {
+        val session = sessionWithBillingFields(setOf(RequiredBillingContactField.NAME))
+        val viewModel = createViewModel(session)
+        assertFalse(viewModel.showCountryCodeOnly)
+    }
+
+    @Test
+    fun `showBillingSection true when ADDRESS is required`() {
+        val session = sessionWithBillingFields(setOf(RequiredBillingContactField.ADDRESS))
+        val viewModel = createViewModel(session)
+        assertTrue(viewModel.showBillingSection)
+    }
+
+    @Test
+    fun `showBillingSection true when only COUNTRY_CODE is required`() {
+        val session = sessionWithBillingFields(setOf(RequiredBillingContactField.COUNTRY_CODE))
+        val viewModel = createViewModel(session)
+        assertTrue(viewModel.showBillingSection)
+    }
+
+    @Test
+    fun `showBillingSection false when only NAME EMAIL PHONE`() {
+        val session = sessionWithBillingFields(
+            setOf(
+                RequiredBillingContactField.NAME,
+                RequiredBillingContactField.EMAIL,
+                RequiredBillingContactField.PHONE,
+            )
+        )
+        val viewModel = createViewModel(session)
+        assertFalse(viewModel.showBillingSection)
+    }
+
+    @Test
+    fun `showBillingSection false when resolved set is empty`() {
+        val session = sessionWithBillingFields(emptySet())
+        val viewModel = createViewModel(session)
+        assertFalse(viewModel.showBillingSection)
+    }
+
+    @Test
+    fun `showSameAsShippingToggle true when ADDRESS required and shipping present`() {
+        val session = sessionWithBillingFields(
+            fields = setOf(RequiredBillingContactField.ADDRESS),
+            shipping = mockk(relaxed = true),
+        )
+        val viewModel = createViewModel(session)
+        assertTrue(viewModel.showSameAsShippingToggle)
+    }
+
+    @Test
+    fun `showSameAsShippingToggle false when ADDRESS required but no shipping`() {
+        val session = sessionWithBillingFields(
+            fields = setOf(RequiredBillingContactField.ADDRESS),
+            shipping = null,
+        )
+        val viewModel = createViewModel(session)
+        assertFalse(viewModel.showSameAsShippingToggle)
+    }
+
+    @Test
+    fun `showSameAsShippingToggle false when shipping present but ADDRESS not required`() {
+        val session = sessionWithBillingFields(
+            fields = setOf(
+                RequiredBillingContactField.NAME,
+                RequiredBillingContactField.EMAIL,
+            ),
+            shipping = mockk(relaxed = true),
+        )
+        val viewModel = createViewModel(session)
+        assertFalse(viewModel.showSameAsShippingToggle)
+    }
+
+    @Test
+    fun `showSameAsShippingToggle false when COUNTRY_CODE only with shipping`() {
+        // COUNTRY_CODE alone does not satisfy showAddress, so the toggle stays hidden.
+        val session = sessionWithBillingFields(
+            fields = setOf(RequiredBillingContactField.COUNTRY_CODE),
+            shipping = mockk(relaxed = true),
+        )
+        val viewModel = createViewModel(session)
+        assertFalse(viewModel.showSameAsShippingToggle)
+    }
+
+    @Test
+    fun `isSameAddressChecked initial value matches showSameAsShippingToggle when true`() {
+        val session = sessionWithBillingFields(
+            fields = setOf(RequiredBillingContactField.ADDRESS),
+            shipping = mockk(relaxed = true),
+        )
+        val viewModel = createViewModel(session)
+        assertTrue(viewModel.isSameAddressChecked.value)
+    }
+
+    @Test
+    fun `isSameAddressChecked initial value is false when toggle hidden`() {
+        val session = sessionWithBillingFields(
+            fields = setOf(RequiredBillingContactField.ADDRESS),
+            shipping = null,
+        )
+        val viewModel = createViewModel(session)
+        assertFalse(viewModel.isSameAddressChecked.value)
+    }
+
+    private fun sessionWithBillingFields(
+        fields: Set<RequiredBillingContactField>?,
+        shipping: Shipping? = null,
+    ): AirwallexSession = mockk(relaxed = true) {
+        every { countryCode } returns "US"
+        every { requiredBillingContactFields } returns fields
+        every { this@mockk.shipping } returns shipping
     }
 
     private fun createViewModel(
