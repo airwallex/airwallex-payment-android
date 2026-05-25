@@ -19,6 +19,7 @@ fun Session.toParcelableSession(): ParcelableSession {
         googlePayOptions = googlePayOptions,
         paymentMethods = paymentMethods,
         autoCapture = autoCapture,
-        hidePaymentConsents = hidePaymentConsents
+        hidePaymentConsents = hidePaymentConsents,
+        requiredBillingContactFields = requiredBillingContactFields
     )
 }

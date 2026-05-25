@@ -5,13 +5,17 @@ import android.content.Context
 import androidx.activity.ComponentActivity
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.exception.AirwallexException
+import com.airwallex.android.core.exception.InvalidParamsException
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
+import com.airwallex.android.core.model.Address
 import com.airwallex.android.core.model.AvailablePaymentMethodType
+import com.airwallex.android.core.model.Billing
 import com.airwallex.android.core.model.Page
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.PaymentIntentFixtures
+import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.PaymentMethodFixtures
 import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.core.model.RetrieveAvailablePaymentConsentsParams
@@ -39,6 +43,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -1828,5 +1833,132 @@ class AirwallexTest {
             component1.initialize(mockApplication)
             component2.initialize(mockApplication)
         }
+    }
+
+    // Tests for billing validation gate on checkout(session, paymentMethod, listener)
+
+    private fun cardPaymentMethod(billing: Billing? = null): PaymentMethod =
+        PaymentMethod.Builder()
+            .setType(PaymentMethodType.CARD.value)
+            .setCard(PaymentMethod.Card.Builder().setNumber("4111111111111111").build())
+            .setBilling(billing)
+            .build()
+
+    private fun sessionRequiring(
+        fields: Set<RequiredBillingContactField>
+    ): Session = Session.Builder(
+        paymentIntent = PaymentIntentFixtures.PAYMENT_INTENT,
+        countryCode = "US",
+    )
+        .setRequiredBillingContactFields(fields)
+        .build()
+
+    @Test
+    fun `checkout fails fast with InvalidParamsException when required name missing`() {
+        val listener = mockk<Airwallex.PaymentResultListener>(relaxed = true)
+        airwallex.checkout(
+            session = sessionRequiring(setOf(RequiredBillingContactField.NAME)),
+            paymentMethod = cardPaymentMethod(billing = null),
+            listener = listener,
+        )
+        verify {
+            listener.onCompleted(
+                match {
+                    it is AirwallexPaymentStatus.Failure &&
+                        it.exception is InvalidParamsException &&
+                        it.exception.message?.contains("name") == true
+                }
+            )
+        }
+    }
+
+    @Test
+    fun `checkout fails fast when required email missing or malformed`() {
+        val listener = mockk<Airwallex.PaymentResultListener>(relaxed = true)
+        val billing = Billing.Builder()
+            .setFirstName("Alice")
+            .setEmail("not-an-email")
+            .build()
+        airwallex.checkout(
+            session = sessionRequiring(
+                setOf(RequiredBillingContactField.NAME, RequiredBillingContactField.EMAIL)
+            ),
+            paymentMethod = cardPaymentMethod(billing),
+            listener = listener,
+        )
+        verify {
+            listener.onCompleted(
+                match {
+                    it is AirwallexPaymentStatus.Failure &&
+                        it.exception is InvalidParamsException &&
+                        it.exception.message?.contains("email") == true
+                }
+            )
+        }
+    }
+
+    @Test
+    fun `checkout fails fast when address required but country code is non-ISO`() {
+        val listener = mockk<Airwallex.PaymentResultListener>(relaxed = true)
+        val billing = Billing.Builder()
+            .setFirstName("Alice")
+            .setAddress(
+                Address.Builder()
+                    .setCountryCode("ZZ")
+                    .setStreet("1 Main")
+                    .setCity("City")
+                    .setState("CA")
+                    .setPostcode("94000")
+                    .build()
+            )
+            .build()
+        airwallex.checkout(
+            session = sessionRequiring(
+                setOf(RequiredBillingContactField.NAME, RequiredBillingContactField.ADDRESS)
+            ),
+            paymentMethod = cardPaymentMethod(billing),
+            listener = listener,
+        )
+        verify {
+            listener.onCompleted(
+                match {
+                    it is AirwallexPaymentStatus.Failure &&
+                        it.exception is InvalidParamsException &&
+                        it.exception.message?.contains("country") == true
+                }
+            )
+        }
+    }
+
+    @Test
+    fun `checkout proceeds past validation when all required fields satisfied`() {
+        // We can't easily assert "checkout completed successfully" without wiring up the
+        // whole payment flow, but we CAN assert the listener was NOT called with
+        // InvalidParamsException — i.e. the validation gate let us through.
+        val listener = mockk<Airwallex.PaymentResultListener>(relaxed = true)
+        val billing = Billing.Builder()
+            .setFirstName("Alice")
+            .setEmail("a@b.com")
+            .build()
+        runCatching {
+            airwallex.checkout(
+                session = sessionRequiring(
+                    setOf(
+                        RequiredBillingContactField.NAME,
+                        RequiredBillingContactField.EMAIL,
+                    )
+                ),
+                paymentMethod = cardPaymentMethod(billing),
+                listener = listener,
+            )
+        }
+        verify(exactly = 0) {
+            listener.onCompleted(
+                match {
+                    it is AirwallexPaymentStatus.Failure && it.exception is InvalidParamsException
+                }
+            )
+        }
+        assertTrue(true)
     }
 }

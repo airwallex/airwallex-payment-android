@@ -12,7 +12,7 @@ class RetrieveAvailablePaymentMethodParamsTest {
         )
             .setPageSize(20)
             .setActive(true)
-            .setTransactionCurrency("HKD")
+            .setTransactionCurrency("SGD")
             .setTransactionMode(null)
             .build()
     }
@@ -26,7 +26,7 @@ class RetrieveAvailablePaymentMethodParamsTest {
         assertEquals(0, params.pageNum)
         assertEquals(20, params.pageSize)
         assertEquals(true, params.active)
-        assertEquals("HKD", params.transactionCurrency)
+        assertEquals("SGD", params.transactionCurrency)
         assertEquals(null, params.transactionMode)
     }
 }

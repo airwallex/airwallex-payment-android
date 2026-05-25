@@ -2,7 +2,9 @@ package com.airwallex.paymentacceptance.ui
 
 import android.content.Intent
 import android.os.Process
+import androidx.appcompat.app.AlertDialog
 import com.airwallex.android.core.AirwallexCheckoutMode
+import com.airwallex.android.core.RequiredBillingContactField
 import com.airwallex.paymentacceptance.R
 import com.airwallex.paymentacceptance.SampleApplication
 import com.airwallex.paymentacceptance.Settings
@@ -11,6 +13,10 @@ import com.airwallex.paymentacceptance.ui.base.BasePaymentActivity
 import com.airwallex.paymentacceptance.viewmodel.SettingViewModel
 
 class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewModel>() {
+
+    // Empty set means "hide billing section entirely."
+    // Non-empty set means "collect exactly these fields."
+    private var selectedBillingFields: Set<RequiredBillingContactField> = defaultBillingFields
 
     override fun initView() {
 
@@ -46,7 +52,11 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
         mBinding.swAutoCapture.setChecked(Settings.autoCapture == "Enabled")
         mBinding.swExpressCheckout.setChecked(Settings.expressCheckout == "Enabled")
         mBinding.swUseSession.setChecked(Settings.useSession == "Enabled")
-        mBinding.swEmail.setChecked(Settings.requiresEmail == "True")
+
+        mBinding.lvBillingFields.setTitleText("Required Billing Fields")
+        selectedBillingFields = Settings.requiredBillingContactFields
+        renderBillingFieldsSummary()
+        mBinding.lvBillingFields.setOnClickListener { showBillingFieldsDialog() }
 
         mBinding.etReturnUrl.setText(Settings.returnUrl)
     }
@@ -92,8 +102,8 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
         mBinding.titleView.setOnButtonClickListener {
             mViewModel.clearSetting()
             mBinding.etPrice.setText("1")
-            mBinding.etCurrency.setText("HKD")
-            mBinding.etCountryCode.setText("HK")
+            mBinding.etCurrency.setText("SGD")
+            mBinding.etCountryCode.setText("SG")
             mBinding.etCustomerId.setText("")
             mBinding.etAPIKey.setText("")
             mBinding.etClientId.setText("")
@@ -102,7 +112,8 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
             mBinding.swAutoCapture.setChecked(false)
             mBinding.swExpressCheckout.setChecked(false)
             mBinding.swUseSession.setChecked(true)
-            mBinding.swEmail.setChecked(false)
+            selectedBillingFields = defaultBillingFields
+            renderBillingFieldsSummary()
             mBinding.selectViewEnvironment.setSelectOption("DEMO")
             mBinding.selectViewTrigger.setSelectOption("Merchant")
             mBinding.selectPaymentLayout.setSelectOption("Tab")
@@ -163,8 +174,39 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
         Settings.autoCapture = if (mBinding.swAutoCapture.isChecked()) "Enabled" else "Disabled"
         Settings.expressCheckout = if (mBinding.swExpressCheckout.isChecked()) "Enabled" else "Disabled"
         Settings.useSession = if (mBinding.swUseSession.isChecked()) "Enabled" else "Disabled"
-        Settings.requiresEmail = if (mBinding.swEmail.isChecked()) "True" else "False"
+        Settings.requiredBillingContactFields = selectedBillingFields
         Settings.flush()
+    }
+
+    private fun renderBillingFieldsSummary() {
+        val current = selectedBillingFields
+        val summary = if (current.isEmpty()) {
+            "None (billing section hidden)"
+        } else {
+            current.joinToString(", ") { it.name }
+        }
+        mBinding.lvBillingFields.setSelectedText(summary)
+    }
+
+    private fun showBillingFieldsDialog() {
+        val options = RequiredBillingContactField.values()
+        val labels = options.map { it.name }.toTypedArray()
+        val checked = BooleanArray(options.size) {
+            options[it] in selectedBillingFields
+        }
+        AlertDialog.Builder(this)
+            .setTitle("Required Billing Fields")
+            .setMultiChoiceItems(labels, checked) { _, which, isChecked ->
+                checked[which] = isChecked
+            }
+            .setPositiveButton("OK") { _, _ ->
+                selectedBillingFields = options
+                    .filterIndexed { i, _ -> checked[i] }
+                    .toSet()
+                renderBillingFieldsSummary()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     override fun getViewBinding(): ActivitySettingBinding {
@@ -178,5 +220,13 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
     override fun onDestroy() {
         SampleApplication.instance.configAirwallex()
         super.onDestroy()
+    }
+
+    companion object {
+        private val defaultBillingFields: Set<RequiredBillingContactField> = setOf(
+            RequiredBillingContactField.NAME,
+            RequiredBillingContactField.PHONE,
+            RequiredBillingContactField.ADDRESS,
+        )
     }
 }

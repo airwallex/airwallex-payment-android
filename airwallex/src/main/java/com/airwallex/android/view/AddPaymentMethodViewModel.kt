@@ -10,6 +10,7 @@ import com.airwallex.android.core.AirwallexPaymentSession
 import com.airwallex.android.core.AirwallexRecurringSession
 import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.CardBrand
+import com.airwallex.android.core.RequiredBillingContactField
 import com.airwallex.android.core.Session
 import com.airwallex.android.core.model.Address
 import com.airwallex.android.core.model.Billing
@@ -17,7 +18,9 @@ import com.airwallex.android.core.model.CardScheme
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.Shipping
+import com.airwallex.android.core.resolvedRequiredBillingContactFields
 import com.airwallex.android.core.util.CardUtils
+import com.airwallex.android.core.util.isValidE164Phone
 import com.airwallex.android.ui.checkout.AirwallexCheckoutViewModel
 import com.airwallex.android.view.util.ExpiryDateUtils
 import com.airwallex.android.view.util.createExpiryMonthAndYear
@@ -59,9 +62,40 @@ class AddPaymentMethodViewModel(
 
     val canSaveCard: Boolean by lazy { (session is AirwallexPaymentSession || (session is Session && session.isOneOffPayment)) && !session.customerId.isNullOrEmpty() }
 
-    val isBillingRequired: Boolean by lazy { session.isBillingInformationRequired }
+    /**
+     * Resolved (non-null) set of billing-contact fields to render on this screen.
+     * Distinct from [AirwallexSession.requiredBillingContactFields] which is the
+     * raw nullable merchant configuration; here we've already collapsed the
+     * "null → derive from legacy booleans" rule via [resolvedRequiredBillingContactFields].
+     */
+    val resolvedBillingFields: Set<RequiredBillingContactField> by lazy {
+        session.resolvedRequiredBillingContactFields
+    }
 
-    val isEmailRequired: Boolean by lazy { session.isEmailRequired }
+    val showName: Boolean by lazy {
+        RequiredBillingContactField.NAME in resolvedBillingFields
+    }
+    val showEmail: Boolean by lazy {
+        RequiredBillingContactField.EMAIL in resolvedBillingFields
+    }
+    val showPhone: Boolean by lazy {
+        RequiredBillingContactField.PHONE in resolvedBillingFields
+    }
+    val showAddress: Boolean by lazy {
+        RequiredBillingContactField.ADDRESS in resolvedBillingFields
+    }
+    /** Country picker without the rest of the address. ADDRESS suppresses this. */
+    val showCountryCodeOnly: Boolean by lazy {
+        !showAddress && RequiredBillingContactField.COUNTRY_CODE in resolvedBillingFields
+    }
+    /** Whether the "Billing information" header / section block should appear. */
+    val showBillingSection: Boolean by lazy {
+        showAddress || showCountryCodeOnly
+    }
+    /** Whether the "Same as shipping" prefill toggle should appear. */
+    val showSameAsShippingToggle: Boolean by lazy {
+        showAddress && shipping != null
+    }
 
     val cardHolderName: String by lazy {
         if (shipping == null) {
@@ -99,7 +133,7 @@ class AddPaymentMethodViewModel(
     val isSaveCardChecked: StateFlow<Boolean> = _isSaveCardChecked.asStateFlow()
 
     // Billing state
-    private val _isSameAddressChecked = MutableStateFlow(shipping != null)
+    private val _isSameAddressChecked = MutableStateFlow(showSameAsShippingToggle)
     val isSameAddressChecked: StateFlow<Boolean> = _isSameAddressChecked.asStateFlow()
 
     private val _selectedCountryCode = MutableStateFlow(countryCode)
@@ -220,14 +254,18 @@ class AddPaymentMethodViewModel(
     }
 
     fun getBillingValidationMessage(input: String, type: BillingFieldType): Int? {
-        return when {
-            input.isBlank() -> when (type) {
-                BillingFieldType.STREET -> type.errorMessage
-                BillingFieldType.CITY -> type.errorMessage
-                BillingFieldType.STATE -> type.errorMessage
-            }
+        return when (type) {
+            BillingFieldType.STREET,
+            BillingFieldType.CITY,
+            BillingFieldType.STATE,
+            BillingFieldType.POSTCODE,
+            BillingFieldType.COUNTRY_CODE -> if (input.isBlank()) type.errorMessage else null
 
-            else -> null
+            BillingFieldType.PHONE -> when {
+                input.isBlank() -> R.string.airwallex_empty_phone
+                !input.isValidE164Phone() -> R.string.airwallex_invalid_phone
+                else -> null
+            }
         }
     }
 
@@ -237,28 +275,63 @@ class AddPaymentMethodViewModel(
         expiryDate: String,
         cvv: String,
     ): PaymentMethod.Card? {
-        if (cardNumber.isBlank() || name.isBlank() || expiryDate.isBlank() || cvv.isBlank()) {
+        if (cardNumber.isBlank() || expiryDate.isBlank() || cvv.isBlank()) {
             return null
         }
+        if (showName && name.isBlank()) return null
         val (month, year) = expiryDate.createExpiryMonthAndYear() ?: return null
-        return PaymentMethod.Card.Builder().setNumber(CardUtils.removeSpacesAndHyphens(cardNumber))
-            .setName(name.trim()).setExpiryMonth(if (month < 10) "0$month" else month.toString())
-            .setExpiryYear(year.toString()).setCvc(cvv.trim()).build()
+        val builder = PaymentMethod.Card.Builder()
+            .setNumber(CardUtils.removeSpacesAndHyphens(cardNumber))
+            .setExpiryMonth(if (month < 10) "0$month" else month.toString())
+            .setExpiryYear(year.toString())
+            .setCvc(cvv.trim())
+        if (showName) builder.setName(name.trim())
+        return builder.build()
     }
 
+    /**
+     * Build a [Billing] containing only the fields the merchant asked for via
+     * [resolvedBillingFields]. Returns `null` when the set is empty so no
+     * billing payload is sent.
+     */
     fun createBilling(
+        name: String,
+        email: String,
+        phoneNumber: String,
         countryCode: String,
         state: String,
         city: String,
         street: String,
         postcode: String,
-        phoneNumber: String,
-        email: String
-    ): Billing {
-        return Billing.Builder().setAddress(
-            Address.Builder().setCountryCode(countryCode).setState(state).setCity(city)
-                .setStreet(street).setPostcode(postcode).build()
-        ).setPhone(phoneNumber).setEmail(email).build()
+    ): Billing? {
+        if (resolvedBillingFields.isEmpty()) return null
+
+        val builder = Billing.Builder()
+
+        if (showName) {
+            val parts = name.trim().split(' ', limit = 2)
+            builder.setFirstName(parts[0])
+            builder.setLastName(parts.getOrNull(1).orEmpty())
+        }
+        if (showEmail) builder.setEmail(email)
+        if (showPhone) builder.setPhone(phoneNumber)
+
+        when {
+            showAddress -> builder.setAddress(
+                Address.Builder()
+                    .setCountryCode(countryCode)
+                    .setState(state)
+                    .setCity(city)
+                    .setStreet(street)
+                    .setPostcode(postcode)
+                    .build()
+            )
+            showCountryCodeOnly -> builder.setAddress(
+                Address.Builder().setCountryCode(countryCode).build()
+            )
+        }
+
+        return builder.build()
     }
 
     fun deleteCardSuccess(consent: PaymentConsent) {
@@ -291,6 +364,9 @@ class AddPaymentMethodViewModel(
     enum class BillingFieldType(@StringRes val errorMessage: Int) {
         STREET(R.string.airwallex_empty_street),
         CITY(R.string.airwallex_empty_city),
-        STATE(R.string.airwallex_empty_state)
+        STATE(R.string.airwallex_empty_state),
+        POSTCODE(R.string.airwallex_empty_postcode),
+        PHONE(R.string.airwallex_empty_phone),
+        COUNTRY_CODE(R.string.airwallex_empty_country_code),
     }
 }

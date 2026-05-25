@@ -52,7 +52,7 @@ class AirwallexRecurringWithIntentSessionTest {
             nextTriggerBy = PaymentConsent.NextTriggeredBy.CUSTOMER,
             customerId = "cus_ps8e0ZgQzd2QnCxVpzJrHD6KOVu",
             paymentIntent = PaymentIntentFixtures.PAYMENT_INTENT,
-            countryCode = "CN"
+            countryCode = "US"
         )
             .setMerchantTriggerReason(PaymentConsent.MerchantTriggerReason.SCHEDULED)
             .setRequireBillingInformation(false)

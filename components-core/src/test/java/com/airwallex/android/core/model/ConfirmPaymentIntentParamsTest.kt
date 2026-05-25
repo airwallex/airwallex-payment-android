@@ -13,7 +13,7 @@ class ConfirmPaymentIntentParamsTest {
         .setCustomerId("111")
         .setCVC("123")
         .setPaymentConsentId("222")
-        .setCurrency("CNY")
+        .setCurrency("SGD")
         .setReturnUrl("http://www.airwallex.com")
         .setPaymentMethod(null)
         .build()
@@ -30,7 +30,7 @@ class ConfirmPaymentIntentParamsTest {
         assertEquals(null, request.paymentMethod)
         assertEquals("123", request.cvc)
         assertEquals("222", request.paymentConsentId)
-        assertEquals("CNY", request.currency)
+        assertEquals("SGD", request.currency)
         assertEquals("http://www.airwallex.com", request.returnUrl)
     }
 }

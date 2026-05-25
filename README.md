@@ -108,13 +108,13 @@ Add the following dependencies to your app-level `build.gradle`:
 ```groovy
 dependencies {
     // Core module (required)
-    implementation 'io.github.airwallex:payment:6.7.1'
+    implementation 'io.github.airwallex:payment:6.7.2'
     
     // Add payment methods you want to support
-    implementation 'io.github.airwallex:payment-card:6.7.1'        // Card payments
-    implementation 'io.github.airwallex:payment-redirect:6.7.1'    // Redirect-based payments
-    implementation 'io.github.airwallex:payment-wechat:6.7.1'      // WeChat Pay
-    implementation 'io.github.airwallex:payment-googlepay:6.7.1'   // Google Pay
+    implementation 'io.github.airwallex:payment-card:6.7.2'        // Card payments
+    implementation 'io.github.airwallex:payment-redirect:6.7.2'    // Redirect-based payments
+    implementation 'io.github.airwallex:payment-wechat:6.7.2'      // WeChat Pay
+    implementation 'io.github.airwallex:payment-googlepay:6.7.2'   // Google Pay
 }
 ```
 
@@ -213,6 +213,7 @@ Create an appropriate session object based on your payment scenario. You can cho
 **Option 1: Initialize with a pre-created payment intent**
 
 ```kotlin
+import com.airwallex.android.core.RequiredBillingContactField
 import com.airwallex.android.core.Session
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentConsentOptions
@@ -237,11 +238,22 @@ val session = Session.Builder(
     .setPaymentConsentOptions(paymentConsentOptions) // info for recurring transactions
     .setPaymentMethods(listOf("card", "alipayhk")) // optional: limit and order the payment methods displayed
     .setAutoCapture(autoCapture) // only applicable for card payment
-    .setRequireBillingInformation(true)
+    // Pick exactly which billing-contact fields the card UI collects and the
+    // headless checkout validates. Pass `null` (default) to derive from the legacy
+    // setRequireBillingInformation/setRequireEmail flags; pass `emptySet()` to hide
+    // the entire billing section. Card flow only — Google Pay billing is configured
+    // through GooglePayOptions.
+    .setRequiredBillingContactFields(setOf(
+        RequiredBillingContactField.NAME,
+        RequiredBillingContactField.ADDRESS,
+        RequiredBillingContactField.PHONE,
+    ))
     .setHidePaymentConsents(false) // optional: set to true to hide saved payment consents
     .setReturnUrl(returnUrl)
     .build()
 ```
+
+> **📝 Note:** `setRequireBillingInformation(...)` and `setRequireEmail(...)` are deprecated in favor of `setRequiredBillingContactFields(...)`. The new API maps 1:1 to iOS's `AWXRequiredBillingContactFields` and lets you pick `NAME`, `EMAIL`, `PHONE`, `ADDRESS`, and `COUNTRY_CODE` independently. Existing integrations that don't call the new setter keep their current behavior (`NAME` is always required, `ADDRESS + PHONE` when `setRequireBillingInformation(true)`, and `EMAIL` when `setRequireEmail(true)`).
 
 **Option 2: Initialize with a payment intent provider (Express Checkout)**
 
@@ -459,13 +471,13 @@ Add the same dependencies as Hosted Payment Page Integration:
 ```groovy
 dependencies {
     // Core module (required)
-    implementation 'io.github.airwallex:payment:6.7.1'
+    implementation 'io.github.airwallex:payment:6.7.2'
 
     // Add payment methods you want to support
-    implementation 'io.github.airwallex:payment-card:6.7.1'
-    implementation 'io.github.airwallex:payment-redirect:6.7.1'
-    implementation 'io.github.airwallex:payment-wechat:6.7.1'
-    implementation 'io.github.airwallex:payment-googlepay:6.7.1'
+    implementation 'io.github.airwallex:payment-card:6.7.2'
+    implementation 'io.github.airwallex:payment-redirect:6.7.2'
+    implementation 'io.github.airwallex:payment-wechat:6.7.2'
+    implementation 'io.github.airwallex:payment-googlepay:6.7.2'
 }
 ```
 
@@ -821,12 +833,12 @@ To install the SDK, in your app-level `build.gradle`, add the following:
 ```groovy
     dependencies {
         // It's required
-        implementation 'io.github.airwallex:payment-components-core:6.7.1'
+        implementation 'io.github.airwallex:payment-components-core:6.7.2'
 
        // Select the payment method you want to support, ignore the components you don't need.
-       implementation 'io.github.airwallex:payment-card:6.7.1'//only support card
-       implementation 'io.github.airwallex:payment-googlepay:6.7.1'//only support google pay
-       implementation 'io.github.airwallex:payment-redirect:6.7.1'//only support redirect
+       implementation 'io.github.airwallex:payment-card:6.7.2'//only support card
+       implementation 'io.github.airwallex:payment-googlepay:6.7.2'//only support google pay
+       implementation 'io.github.airwallex:payment-redirect:6.7.2'//only support redirect
     }
 ```
 
@@ -911,6 +923,8 @@ airwallex.startRedirectPay(
 ```kotlin
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
+import com.airwallex.android.core.model.Address
+import com.airwallex.android.core.model.Billing
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.PaymentMethodType
 
@@ -926,7 +940,26 @@ val paymentMethod = PaymentMethod.Builder()
             .setCvc("737")
             .build()
     )
-    .setBilling(null)
+    // Billing payload must satisfy whatever the session declares via
+    // setRequiredBillingContactFields(...). The SDK validates the payload before
+    // the network call and fails fast with InvalidParamsException if any field is
+    // missing or malformed (E.164 for phone, ISO-3166 alpha-2 for country code, etc.).
+    .setBilling(
+        Billing.Builder()
+            .setFirstName("John")
+            .setLastName("Citizen")
+            .setPhone("+15551234567")
+            .setAddress(
+                Address.Builder()
+                    .setCountryCode("US")
+                    .setState("CA")
+                    .setCity("San Francisco")
+                    .setStreet("1 Main St")
+                    .setPostcode("94105")
+                    .build()
+            )
+            .build()
+    )
     .build()
 
 airwallex.checkout(
@@ -941,6 +974,8 @@ airwallex.checkout(
     }
 )
 ```
+
+> **📝 Note:** Pass `null` to `setBilling(...)` only when the session's resolved `requiredBillingContactFields` is empty (i.e. the merchant has explicitly opted out of collecting billing). Otherwise the call will be rejected before it reaches the network.
 ### Checkout with PaymentConsent
 ```kotlin
 import com.airwallex.android.core.Airwallex

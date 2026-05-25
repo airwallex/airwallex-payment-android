@@ -20,7 +20,7 @@ class PaymentConsentVerifyRequestTest {
                 type = "card",
                 cardOptions = PaymentConsentVerifyRequest.CardVerificationOptions(
                     amount = BigDecimal.valueOf(1),
-                    currency = "HKD",
+                    currency = "SGD",
                     cvc = "123"
                 )
             )
@@ -68,7 +68,7 @@ class PaymentConsentVerifyRequestTest {
                 mapOf(
                     "card" to mapOf(
                         "amount" to 1,
-                        "currency" to "HKD",
+                        "currency" to "SGD",
                         "cvc" to "123"
                     )
                 )
@@ -94,7 +94,7 @@ class PaymentConsentVerifyRequestTest {
                     "verification_options" to mapOf(
                         "card" to mapOf(
                             "amount" to 1,
-                            "currency" to "HKD",
+                            "currency" to "SGD",
                             "cvc" to "123"
                         )
                     ),
