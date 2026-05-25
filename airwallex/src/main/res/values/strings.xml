@@ -8,11 +8,17 @@
     <string name="airwallex_shipping_city_name_hint">City</string>
     <string name="airwallex_shipping_email_hint">Email (optional)</string>
     <string name="airwallex_contact_phone_number_hint">Phone number (optional)</string>
+    <string name="airwallex_zip_code_hint">Zip code</string>
+    <string name="airwallex_phone_number_hint">Phone number</string>
     <string name="airwallex_shipping_country_name_hint">Country / Region</string>
     <string name="airwallex_empty_country">Please enter your country</string>
     <string name="airwallex_empty_state">Please enter your state</string>
     <string name="airwallex_empty_city">Please enter your city</string>
     <string name="airwallex_empty_street">Please enter your street</string>
+    <string name="airwallex_empty_postcode">Please enter your postcode</string>
+    <string name="airwallex_empty_phone">Please enter your phone number</string>
+    <string name="airwallex_invalid_phone">Please enter a valid phone number</string>
+    <string name="airwallex_empty_country_code">Please select a country</string>
     <string name="airwallex_empty_last_name">Please enter your last name</string>
     <string name="airwallex_empty_first_name">Please enter your first name</string>
     <string name="airwallex_delete_payment_method_prompt_title">Would you like to delete this payment consent?</string>
@@ -20,6 +26,7 @@
     <string name="airwallex_delete_payment_method_negative">Cancel</string>
     <string name="airwallex_new_card">Card</string>
     <string name="airwallex_billing_info">Billing info</string>
+    <string name="airwallex_billing_country_or_region">Billing country or region</string>
     <string name="airwallex_shipping">Shipping</string>
     <string name="airwallex_total">Total %s</string>
     <string name="airwallex_pay_now">Pay</string>

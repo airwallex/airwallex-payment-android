@@ -7,10 +7,16 @@
     <string name="airwallex_shipping_city_name_hint">도시</string>
     <string name="airwallex_shipping_email_hint">이메일(선택 사항)</string>
     <string name="airwallex_contact_phone_number_hint">전화번호(선택 사항)</string>
+    <string name="airwallex_zip_code_hint">우편번호</string>
+    <string name="airwallex_phone_number_hint">전화번호</string>
     <string name="airwallex_shipping_country_name_hint">국가 / 지역</string>
     <string name="airwallex_empty_country">국가를 입력하세요</string>
     <string name="airwallex_empty_city">도시를 입력하세요</string>
     <string name="airwallex_empty_street">주소를 입력하세요</string>
+    <string name="airwallex_empty_postcode">우편번호를 입력하세요</string>
+    <string name="airwallex_empty_phone">전화번호를 입력하세요</string>
+    <string name="airwallex_invalid_phone">유효한 전화번호를 입력하세요</string>
+    <string name="airwallex_empty_country_code">국가를 선택하세요</string>
     <string name="airwallex_empty_last_name">성을 입력하세요</string>
     <string name="airwallex_empty_first_name">이름을 입력하세요</string>
     <string name="airwallex_delete_payment_method_negative">취소</string>
@@ -41,6 +47,7 @@
     <string name="airwallex_delete_payment_method_positive">삭제</string>
     <string name="airwallex_new_card">카드</string>
     <string name="airwallex_billing_info">청구 정보</string>
+    <string name="airwallex_billing_country_or_region">청구 국가 / 지역</string>
     <string name="airwallex_payment_methods">결제 수단</string>
     <string name="airwallex_empty_card_number">카드 번호를 입력하세요</string>
     <string name="airwallex_save_card">이 카드를 저장하여 다음 결제에 사용</string>

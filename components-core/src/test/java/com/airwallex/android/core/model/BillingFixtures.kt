@@ -13,11 +13,11 @@ internal object BillingFixtures {
             "email": "john.doe@airwallex.com",
             "phone_number": "13800000000",
             "address": {
-                "country_code": "CN",
-                "state": "Shanghai",
-                "city": "Shanghai",
-                "street": "Pudong District",
-                "postcode": "100000"
+                "country_code": "US",
+                "state": "CA",
+                "city": "San Francisco",
+                "street": "9999 Mission St.",
+                "postcode": "94103"
             }
         }
             """.trimIndent()

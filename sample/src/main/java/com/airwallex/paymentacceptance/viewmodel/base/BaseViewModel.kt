@@ -123,7 +123,10 @@ abstract class BaseViewModel : ViewModel() {
                             // Defer polling - wait for user to return from redirect
                             pendingPollingIntentId = intentId
                             pendingPollingClientSecret = clientSecret
-                            Log.d(TAG, "Polling deferred for intentId: $intentId, will start when activity resumes")
+                            Log.d(
+                                TAG,
+                                "Polling deferred for intentId: $intentId, will start when activity resumes"
+                            )
                         } else {
                             // Start polling immediately
                             Log.d(TAG, "Starting polling immediately for intentId: $intentId")
@@ -234,7 +237,7 @@ abstract class BaseViewModel : ViewModel() {
     }
 
     fun launch(block: suspend () -> Unit) {
-         viewModelScope.launch(Dispatchers.Main + coroutineExceptionHandler) {
+        viewModelScope.launch(Dispatchers.Main + coroutineExceptionHandler) {
             _isLoading.value = true
             block.invoke()
             _isLoading.value = false
@@ -263,13 +266,28 @@ abstract class BaseViewModel : ViewModel() {
                 if (Settings.expressCheckout == "Enabled") {
                     // Use PaymentIntentProvider for on-demand payment intent creation
                     // Use cached customerId if available
-                    buildAirwallexPaymentSessionWithProvider(googlePayOptions, paymentMethods, returnUrl, Settings.cachedCustomerId, force3DS)
+                    buildAirwallexPaymentSessionWithProvider(
+                        googlePayOptions,
+                        paymentMethods,
+                        returnUrl,
+                        Settings.cachedCustomerId,
+                        force3DS
+                    )
                 } else {
                     //get the paymentIntent object from your server
                     //please do not directly copy this method!
-                    val paymentIntent = getPaymentIntentFromServer(force3DS = force3DS, customerId = null, returnUrl = returnUrl)
+                    val paymentIntent = getPaymentIntentFromServer(
+                        force3DS = force3DS,
+                        customerId = null,
+                        returnUrl = returnUrl
+                    )
                     // build an AirwallexPaymentSession based on the paymentIntent
-                    buildAirwallexPaymentSession(googlePayOptions, paymentIntent, paymentMethods, returnUrl)
+                    buildAirwallexPaymentSession(
+                        googlePayOptions,
+                        paymentIntent,
+                        paymentMethods,
+                        returnUrl
+                    )
                 }
             }
 
@@ -304,7 +322,11 @@ abstract class BaseViewModel : ViewModel() {
                     //please do not directly copy these method!
                     val customerId = getCustomerIdFromServer()
                     val paymentIntent =
-                        getPaymentIntentFromServer(force3DS = force3DS, customerId = customerId, returnUrl = returnUrl)
+                        getPaymentIntentFromServer(
+                            force3DS = force3DS,
+                            customerId = customerId,
+                            returnUrl = returnUrl
+                        )
                     //build an AirwallexRecurringWithIntentSession based on the paymentIntent
                     buildAirwallexRecurringWithIntentSession(
                         googlePayOptions,
@@ -331,8 +353,7 @@ abstract class BaseViewModel : ViewModel() {
         countryCode = Settings.countryCode,
         googlePayOptions = googlePayOptions
     )
-        .setRequireBillingInformation(true)
-        .setRequireEmail(Settings.requiresEmail.toBoolean())
+        .setRequiredBillingContactFields(Settings.requiredBillingContactFields)
         .setReturnUrl(returnUrl.fullUrl)
         .setAutoCapture(autoCapture)
         .setHidePaymentConsents(false)
@@ -360,7 +381,7 @@ abstract class BaseViewModel : ViewModel() {
         nextTriggerBy = nextTriggerBy,
         countryCode = Settings.countryCode
     )
-        .setRequireEmail(Settings.requiresEmail.toBoolean())
+        .setRequiredBillingContactFields(Settings.requiredBillingContactFields)
         .setShipping(shipping)
         .setMerchantTriggerReason(PaymentConsent.MerchantTriggerReason.SCHEDULED)
         .setGooglePayOptions(googlePayOptions)
@@ -383,7 +404,7 @@ abstract class BaseViewModel : ViewModel() {
         nextTriggerBy = nextTriggerBy,
         countryCode = Settings.countryCode
     )
-        .setRequireEmail(Settings.requiresEmail.toBoolean())
+        .setRequiredBillingContactFields(Settings.requiredBillingContactFields)
         .setMerchantTriggerReason(PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
         .setReturnUrl(returnUrl.fullUrl)
         .setAutoCapture(autoCapture)
@@ -413,8 +434,7 @@ abstract class BaseViewModel : ViewModel() {
         customerId = customerId,
         googlePayOptions = googlePayOptions
     )
-        .setRequireBillingInformation(true)
-        .setRequireEmail(Settings.requiresEmail.toBoolean())
+        .setRequiredBillingContactFields(Settings.requiredBillingContactFields)
         .setReturnUrl(returnUrl.fullUrl)
         .setAutoCapture(autoCapture)
         .setHidePaymentConsents(false)
@@ -443,7 +463,7 @@ abstract class BaseViewModel : ViewModel() {
         nextTriggerBy = nextTriggerBy,
         countryCode = Settings.countryCode
     )
-        .setRequireEmail(Settings.requiresEmail.toBoolean())
+        .setRequiredBillingContactFields(Settings.requiredBillingContactFields)
         .setMerchantTriggerReason(PaymentConsent.MerchantTriggerReason.UNSCHEDULED)
         .setReturnUrl(returnUrl.fullUrl)
         .setAutoCapture(autoCapture)
@@ -468,10 +488,12 @@ abstract class BaseViewModel : ViewModel() {
                 // One-off: use default amount, no consent options
                 Settings.price.toBigDecimal() to null
             }
+
             AirwallexCheckoutMode.RECURRING -> {
                 // Recurring: amount = 0, fill paymentConsentOptions
                 BigDecimal.ZERO to PaymentConsentOptions(nextTriggeredBy = nextTriggerBy)
             }
+
             AirwallexCheckoutMode.RECURRING_WITH_INTENT -> {
                 // Recurring with intent: use default amount, fill paymentConsentOptions
                 Settings.price.toBigDecimal() to PaymentConsentOptions(nextTriggeredBy = nextTriggerBy)
@@ -490,8 +512,7 @@ abstract class BaseViewModel : ViewModel() {
             customerId = Settings.cachedCustomerId,
             googlePayOptions = googlePayOptions
         )
-            .setRequireBillingInformation(true)
-            .setRequireEmail(Settings.requiresEmail.toBoolean())
+            .setRequiredBillingContactFields(Settings.requiredBillingContactFields)
             .setReturnUrl(returnUrl.fullUrl)
             .setAutoCapture(autoCapture)
             .setHidePaymentConsents(false)
@@ -517,10 +538,12 @@ abstract class BaseViewModel : ViewModel() {
                 // One-off: use default amount, no consent options
                 null to null
             }
+
             AirwallexCheckoutMode.RECURRING -> {
                 // Recurring: amount = 0, fill paymentConsentOptions
                 BigDecimal.ZERO to PaymentConsentOptions(nextTriggeredBy = nextTriggerBy)
             }
+
             AirwallexCheckoutMode.RECURRING_WITH_INTENT -> {
                 // Recurring with intent: use default amount, fill paymentConsentOptions
                 null to PaymentConsentOptions(nextTriggeredBy = nextTriggerBy)
@@ -541,8 +564,7 @@ abstract class BaseViewModel : ViewModel() {
             countryCode = Settings.countryCode,
             googlePayOptions = googlePayOptions
         )
-            .setRequireBillingInformation(true)
-            .setRequireEmail(Settings.requiresEmail.toBoolean())
+            .setRequiredBillingContactFields(Settings.requiredBillingContactFields)
             .setReturnUrl(returnUrl.fullUrl)
             .setAutoCapture(autoCapture)
             .setHidePaymentConsents(false)

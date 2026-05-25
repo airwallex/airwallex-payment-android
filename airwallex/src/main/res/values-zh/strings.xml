@@ -7,10 +7,16 @@
     <string name="airwallex_shipping_city_name_hint">城市</string>
     <string name="airwallex_shipping_email_hint">电子邮件（可选）</string>
     <string name="airwallex_contact_phone_number_hint">电话号码（可选）</string>
+    <string name="airwallex_zip_code_hint">邮政编码</string>
+    <string name="airwallex_phone_number_hint">电话号码</string>
     <string name="airwallex_shipping_country_name_hint">国家/地区</string>
     <string name="airwallex_empty_country">请输入您的国家</string>
     <string name="airwallex_empty_city">请输入您的城市</string>
     <string name="airwallex_empty_street">请输入您的街道</string>
+    <string name="airwallex_empty_postcode">请输入您的邮政编码</string>
+    <string name="airwallex_empty_phone">请输入您的电话号码</string>
+    <string name="airwallex_invalid_phone">请输入有效的电话号码</string>
+    <string name="airwallex_empty_country_code">请选择一个国家</string>
     <string name="airwallex_empty_last_name">请输入您的姓氏</string>
     <string name="airwallex_empty_first_name">请输入您的名字</string>
     <string name="airwallex_delete_payment_method_negative">取消</string>
@@ -52,6 +58,7 @@
     <string name="airwallex_delete_payment_method_positive">删除</string>
     <string name="airwallex_new_card">卡片</string>
     <string name="airwallex_billing_info">账单信息</string>
+    <string name="airwallex_billing_country_or_region">账单国家/地区</string>
     <string name="airwallex_empty_card_number">请输入您的卡号</string>
     <string name="airwallex_save_card">保存此卡以便下次支付</string>
 </resources>

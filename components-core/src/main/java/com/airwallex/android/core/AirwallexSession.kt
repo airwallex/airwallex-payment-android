@@ -18,11 +18,21 @@ abstract class AirwallexSession {
     /**
      * Whether or not billing information is required for card payments.
      */
+    @Deprecated(
+        message = "Use requiredBillingContactFields to explicitly declare which billing " +
+            "contact fields (ADDRESS, PHONE, etc.) the SDK should collect.",
+        replaceWith = ReplaceWith("requiredBillingContactFields"),
+    )
     abstract val isBillingInformationRequired: Boolean
 
     /**
      * Whether or not email is required for card payments
      */
+    @Deprecated(
+        message = "Use requiredBillingContactFields and include " +
+            "RequiredBillingContactField.EMAIL to require email.",
+        replaceWith = ReplaceWith("requiredBillingContactFields"),
+    )
     abstract val isEmailRequired: Boolean
 
     /**
@@ -67,7 +77,42 @@ abstract class AirwallexSession {
      */
     open val hidePaymentConsents: Boolean
         get() = false
+
+    /**
+     * Billing contact fields the SDK should collect (and validate) on the new-card
+     * payment screen. `null` means "derive from the legacy [isBillingInformationRequired]
+     * / [isEmailRequired] flags" so unmodified integrations keep current behavior.
+     * An empty set hides the entire billing section.
+     *
+     * See [resolvedRequiredBillingContactFields] for the effective set.
+     */
+    open val requiredBillingContactFields: Set<RequiredBillingContactField>?
+        get() = null
 }
+
+/**
+ * Effective set of billing contact fields, resolving `null` to the legacy
+ * boolean-derived defaults that match Android's pre-existing UI:
+ * - `NAME` is always included (the cardholder-name row was always shown).
+ * - [AirwallexSession.isBillingInformationRequired] = true → adds `ADDRESS` + `PHONE`.
+ * - [AirwallexSession.isEmailRequired] = true → adds `EMAIL`.
+ *
+ * Merchants who explicitly call `setRequiredBillingContactFields(...)` bypass this
+ * derivation entirely; an empty set hides the entire billing section including the
+ * cardholder-name row.
+ */
+@Suppress("DEPRECATION")
+val AirwallexSession.resolvedRequiredBillingContactFields: Set<RequiredBillingContactField>
+    get() = requiredBillingContactFields ?: buildSet {
+        add(RequiredBillingContactField.NAME)
+        if (isBillingInformationRequired) {
+            add(RequiredBillingContactField.ADDRESS)
+            add(RequiredBillingContactField.PHONE)
+        }
+        if (isEmailRequired) {
+            add(RequiredBillingContactField.EMAIL)
+        }
+    }
 
 /**
  * Indicates whether this session is configured for Express Checkout.

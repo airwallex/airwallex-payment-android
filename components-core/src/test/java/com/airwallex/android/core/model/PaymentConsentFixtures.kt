@@ -34,11 +34,11 @@ internal object PaymentConsentFixtures {
                         "phone_number":"1367875788",
                         "date_of_birth":"2011-10-12",
                         "address": {
-                            "country_code":"CN",
-                            "state":"Beijing",
-                            "city":"Shanghai",
-                            "street":"Pudong District",
-                            "postcode":"33333"
+                            "country_code":"US",
+                            "state":"CA",
+                            "city":"San Francisco",
+                            "street":"9999 Mission St.",
+                            "postcode":"94103"
                         }
                     },
                     "status":"VERIFIED",

@@ -39,7 +39,7 @@ class SessionTest {
             .build()
 
         val session = Session.Builder(
-            PaymentIntentFixtures.PAYMENT_INTENT, "CN"
+            PaymentIntentFixtures.PAYMENT_INTENT, "US"
         )
             .setRequireBillingInformation(false)
             .setRequireEmail(true)
@@ -110,14 +110,14 @@ class SessionTest {
     fun `build with minimal required fields`() {
         val session = Session.Builder(
             PaymentIntentFixtures.PAYMENT_INTENT,
-            "CN"
+            "US"
         ).build()
 
         assertNotNull(session)
         assertNotNull(session.paymentIntent)
         assertEquals("AUD", session.currency)
         assertEquals(BigDecimal.valueOf(100.01), session.amount)
-        assertEquals("CN", session.countryCode)
+        assertEquals("US", session.countryCode)
 
         // Verify defaults
         assertTrue(session.isBillingInformationRequired)

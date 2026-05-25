@@ -78,11 +78,13 @@
                 app:layout_constraintTop_toBottomOf="@+id/selectViewTrigger"
                 app:titleContent="Payment layout" />
 
-            <com.airwallex.paymentacceptance.ui.widget.SwitchView
-                android:id="@+id/swEmail"
+            <com.airwallex.paymentacceptance.ui.widget.DropdownLabelView
+                android:id="@+id/lvBillingFields"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:labelText="Requires email" />
+                android:layout_marginTop="20dp"
+                android:clickable="true"
+                android:focusable="true" />
 
             <com.airwallex.paymentacceptance.ui.widget.SwitchView
                 android:id="@+id/sw3DS"

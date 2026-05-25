@@ -18,11 +18,11 @@ class ShippingTest {
             .setShippingMethod("shipping")
             .setAddress(
                 Address.Builder()
-                    .setCountryCode("CN")
-                    .setState("Shanghai")
-                    .setCity("Shanghai")
-                    .setStreet("Pudong District")
-                    .setPostcode("100000")
+                    .setCountryCode("US")
+                    .setState("CA")
+                    .setCity("San Francisco")
+                    .setStreet("9999 Mission St.")
+                    .setPostcode("94103")
                     .build()
             )
             .build()
@@ -47,11 +47,11 @@ class ShippingTest {
         assertEquals("shipping", shipping.shippingMethod)
         assertEquals(
             Address(
-                countryCode = "CN",
-                state = "Shanghai",
-                city = "Shanghai",
-                street = "Pudong District",
-                postcode = "100000"
+                countryCode = "US",
+                state = "CA",
+                city = "San Francisco",
+                street = "9999 Mission St.",
+                postcode = "94103"
             ),
             shipping.address
         )

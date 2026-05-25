@@ -15,7 +15,7 @@ class VerifyPaymentConsentParamsTest {
         paymentMethodType = "card"
     )
         .setAmount(BigDecimal.valueOf(1))
-        .setCurrency("HKD")
+        .setCurrency("SGD")
         .setCvc("123")
         .setReturnUrl("airwallexcheckou://com.airwallex.paymentacceptance")
         .build()
@@ -29,7 +29,7 @@ class VerifyPaymentConsentParamsTest {
         assertEquals("cst_hkdmr7v9rg1j5g4azy6", params.paymentConsentId)
         assertEquals("card", params.paymentMethodType)
         assertEquals(BigDecimal.valueOf(1), params.amount)
-        assertEquals("HKD", params.currency)
+        assertEquals("SGD", params.currency)
         assertEquals("airwallexcheckou://com.airwallex.paymentacceptance", params.returnUrl)
         assertEquals("123", params.cvc)
     }

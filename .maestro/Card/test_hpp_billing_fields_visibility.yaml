@@ -1,0 +1,148 @@
+appId: com.airwallex.paymentacceptance
+tags:
+  - card
+  - hpp
+  - billing-config
+  - ui-only
+platform:
+  android:
+    disableAnimations: true
+---
+# Verifies that `setRequiredBillingContactFields(...)` (PR #329) drives the
+# AddCardSection composable's conditional rendering. UI-only, no payment.
+#
+# Eight cycles exercise the distinct render paths:
+#   1. UNSET            → legacy: NAME + ADDRESS + PHONE (isBillingInformationRequired=true)
+#   2. SET / empty      → entire billing section + name/email/phone hidden
+#   3. SET / NAME       → only "Name on card" row
+#   4. SET / EMAIL      → only "Email" row
+#   5. SET / PHONE      → only "Phone number" row
+#   6. SET / ADDRESS    → billing section with country + street/state/city/postcode
+#   7. SET / COUNTRY_CODE → billing section with country picker only (no street)
+#   8. SET / ADDRESS+COUNTRY_CODE → ADDRESS wins; same render as #6
+#
+# Between cycles the test returns to the HPP options screen and re-enters Settings.
+- runFlow:
+    when:
+      true: ${IS_RECORDING}
+    commands:
+      - startRecording: test_hpp_billing_fields_visibility
+- launchApp
+- runScript: cards.js
+- runScript: ../Common/settings.js
+
+# HPP, one-off, guest — simplest path that reaches AddCardSection without needing
+# a customer ID or a saved consent list.
+- tapOn: "Integrate with Airwallex UI"
+- runFlow:
+    file: ../Common/flow_update_checkout_mode.yaml
+    env:
+      CHECKOUT_MODE: ${output.settings.checkoutMode.oneOff}
+- tapOn: setting
+- runFlow:
+    file: ../Common/flow_update_settings.yaml
+    env:
+      LAYOUT: ${output.settings.layout.tab}
+      IS_GUEST: "true"
+      USE_NEW_SESSION: "false"
+
+# ─── Cycle 1: UNSET → legacy fallback (NAME + ADDRESS + PHONE visible) ───
+- runFlow:
+    file: flow_billing_fields_cycle.yaml
+    env:
+      ACTION: UNSET
+      EXPECT_NAME_FIELD: "true"
+      EXPECT_EMAIL_FIELD: "false"
+      EXPECT_PHONE_FIELD: "true"
+      EXPECT_BILLING_SECTION: "true"
+      EXPECT_FULL_ADDRESS: "true"
+
+# ─── Cycle 2: SET / empty → entire billing area hidden ───
+- runFlow:
+    file: flow_billing_fields_cycle.yaml
+    env:
+      ACTION: SET
+      EXPECT_NAME_FIELD: "false"
+      EXPECT_EMAIL_FIELD: "false"
+      EXPECT_PHONE_FIELD: "false"
+      EXPECT_BILLING_SECTION: "false"
+      EXPECT_FULL_ADDRESS: "false"
+
+# ─── Cycle 3: SET / NAME only ───
+- runFlow:
+    file: flow_billing_fields_cycle.yaml
+    env:
+      ACTION: SET
+      HAS_NAME: "true"
+      EXPECT_NAME_FIELD: "true"
+      EXPECT_EMAIL_FIELD: "false"
+      EXPECT_PHONE_FIELD: "false"
+      EXPECT_BILLING_SECTION: "false"
+      EXPECT_FULL_ADDRESS: "false"
+
+# ─── Cycle 4: SET / EMAIL only ───
+- runFlow:
+    file: flow_billing_fields_cycle.yaml
+    env:
+      ACTION: SET
+      HAS_EMAIL: "true"
+      EXPECT_NAME_FIELD: "false"
+      EXPECT_EMAIL_FIELD: "true"
+      EXPECT_PHONE_FIELD: "false"
+      EXPECT_BILLING_SECTION: "false"
+      EXPECT_FULL_ADDRESS: "false"
+
+# ─── Cycle 5: SET / PHONE only ───
+- runFlow:
+    file: flow_billing_fields_cycle.yaml
+    env:
+      ACTION: SET
+      HAS_PHONE: "true"
+      EXPECT_NAME_FIELD: "false"
+      EXPECT_EMAIL_FIELD: "false"
+      EXPECT_PHONE_FIELD: "true"
+      EXPECT_BILLING_SECTION: "false"
+      EXPECT_FULL_ADDRESS: "false"
+
+# ─── Cycle 6: SET / ADDRESS only → full address block ───
+- runFlow:
+    file: flow_billing_fields_cycle.yaml
+    env:
+      ACTION: SET
+      HAS_ADDRESS: "true"
+      EXPECT_NAME_FIELD: "false"
+      EXPECT_EMAIL_FIELD: "false"
+      EXPECT_PHONE_FIELD: "false"
+      EXPECT_BILLING_SECTION: "true"
+      EXPECT_FULL_ADDRESS: "true"
+
+# ─── Cycle 7: SET / COUNTRY_CODE only → country picker without street ───
+- runFlow:
+    file: flow_billing_fields_cycle.yaml
+    env:
+      ACTION: SET
+      HAS_COUNTRY_CODE: "true"
+      EXPECT_NAME_FIELD: "false"
+      EXPECT_EMAIL_FIELD: "false"
+      EXPECT_PHONE_FIELD: "false"
+      EXPECT_BILLING_SECTION: "true"
+      EXPECT_FULL_ADDRESS: "false"
+
+# ─── Cycle 8: SET / ADDRESS + COUNTRY_CODE → ADDRESS wins (mutex) ───
+- runFlow:
+    file: flow_billing_fields_cycle.yaml
+    env:
+      ACTION: SET
+      HAS_ADDRESS: "true"
+      HAS_COUNTRY_CODE: "true"
+      EXPECT_NAME_FIELD: "false"
+      EXPECT_EMAIL_FIELD: "false"
+      EXPECT_PHONE_FIELD: "false"
+      EXPECT_BILLING_SECTION: "true"
+      EXPECT_FULL_ADDRESS: "true"
+
+- runFlow:
+    when:
+      true: ${IS_RECORDING}
+    commands:
+      - stopRecording

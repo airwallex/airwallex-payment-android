@@ -7,10 +7,16 @@
     <string name="airwallex_shipping_city_name_hint">เมือง</string>
     <string name="airwallex_shipping_email_hint">อีเมล (ไม่จำเป็น)</string>
     <string name="airwallex_contact_phone_number_hint">เบอร์โทรศัพท์ (ไม่จำเป็น)</string>
+    <string name="airwallex_zip_code_hint">รหัสไปรษณีย์</string>
+    <string name="airwallex_phone_number_hint">เบอร์โทรศัพท์</string>
     <string name="airwallex_shipping_country_name_hint">ประเทศ / ภูมิภาค</string>
     <string name="airwallex_empty_country">กรุณากรอกประเทศของคุณ</string>
     <string name="airwallex_empty_city">กรุณากรอกชื่อเมืองของคุณ</string>
     <string name="airwallex_empty_street">กรุณากรอกชื่อถนน</string>
+    <string name="airwallex_empty_postcode">กรุณากรอกรหัสไปรษณีย์ของคุณ</string>
+    <string name="airwallex_empty_phone">กรุณากรอกเบอร์โทรศัพท์ของคุณ</string>
+    <string name="airwallex_invalid_phone">กรุณากรอกเบอร์โทรศัพท์ที่ถูกต้อง</string>
+    <string name="airwallex_empty_country_code">กรุณาเลือกประเทศ</string>
     <string name="airwallex_empty_last_name">กรุณากรอกนามสกุลของคุณ</string>
     <string name="airwallex_empty_first_name">กรุณากรอกชื่อจริงของคุณ</string>
     <string name="airwallex_delete_payment_method_negative">ยกเลิก</string>
@@ -41,6 +47,7 @@
     <string name="airwallex_delete_payment_method_positive">ลบ</string>
     <string name="airwallex_new_card">บัตร</string>
     <string name="airwallex_billing_info">ข้อมูลการเรียกเก็บเงิน</string>
+    <string name="airwallex_billing_country_or_region">ประเทศหรือภูมิภาคสำหรับการเรียกเก็บเงิน</string>
     <string name="airwallex_payment_methods">วิธีการชำระเงิน</string>
     <string name="airwallex_empty_card_number">กรุณากรอกหมายเลขบัตรของคุณ</string>
     <string name="airwallex_save_card">บันทึกบัตรนี้สำหรับการชำระเงินในอนาคต</string>

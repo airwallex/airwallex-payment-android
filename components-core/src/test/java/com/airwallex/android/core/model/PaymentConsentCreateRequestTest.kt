@@ -16,7 +16,7 @@ class PaymentConsentCreateRequestTest {
                 .setThirdPartyPaymentMethodRequest(
                     mapOf(
                         "bank_name" to "maybank",
-                        "country_code" to "CN",
+                        "country_code" to "US",
                         "shopper_name" to "aaa",
                         "shopper_email" to "aaa@dd.cc",
                         "shopper_phone" to "123",
@@ -41,7 +41,7 @@ class PaymentConsentCreateRequestTest {
             ).setThirdPartyPaymentMethodRequest(
                 mapOf(
                     "bank_name" to "maybank",
-                    "country_code" to "CN",
+                    "country_code" to "US",
                     "shopper_name" to "aaa",
                     "shopper_email" to "aaa@dd.cc",
                     "shopper_phone" to "123",
@@ -75,7 +75,7 @@ class PaymentConsentCreateRequestTest {
                     "type" to "alipaycn",
                     "alipaycn" to mapOf(
                         "bank_name" to "maybank",
-                        "country_code" to "CN",
+                        "country_code" to "US",
                         "shopper_name" to "aaa",
                         "shopper_email" to "aaa@dd.cc",
                         "shopper_phone" to "123",

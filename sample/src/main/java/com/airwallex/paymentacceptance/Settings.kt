@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import androidx.preference.PreferenceManager
 import com.airwallex.android.core.AirwallexCheckoutMode
 import com.airwallex.android.core.Environment
+import com.airwallex.android.core.RequiredBillingContactField
 import kotlin.properties.Delegates
 import androidx.core.content.edit
 
@@ -157,21 +158,32 @@ object Settings {
                 ?: defaultPaymentLayout
         }
 
-    var requiresEmail: String
+    /**
+     * Required billing contact fields for the new-card UI / headless validation.
+     * - empty Set → hide the entire billing section.
+     * - non-empty Set → exact list of required fields.
+     */
+    var requiredBillingContactFields: Set<RequiredBillingContactField>
         set(value) {
+            val key = context.getString(R.string.required_billing_contact_fields)
             sharedPreferences.edit {
-                putString(context.getString(R.string.requires_email), value)
+                putStringSet(key, value.mapTo(mutableSetOf()) { it.name })
             }
         }
         get() {
-            val defaultRequiresEmail =
-                SampleApplication.instance.resources.getStringArray(R.array.array_requires_email)[0]
-            return sharedPreferences.getString(
-                context.getString(R.string.requires_email),
-                defaultRequiresEmail
-            )
-                ?: defaultRequiresEmail
+            val key = context.getString(R.string.required_billing_contact_fields)
+            if (!sharedPreferences.contains(key)) return defaultRequiredBillingContactFields
+            val raw = sharedPreferences.getStringSet(key, emptySet()) ?: emptySet()
+            return raw.mapNotNullTo(mutableSetOf()) { name ->
+                runCatching { RequiredBillingContactField.valueOf(name) }.getOrNull()
+            }
         }
+
+    private val defaultRequiredBillingContactFields: Set<RequiredBillingContactField> = setOf(
+        RequiredBillingContactField.NAME,
+        RequiredBillingContactField.PHONE,
+        RequiredBillingContactField.ADDRESS,
+    )
 
     var force3DS: String
         set(value) {

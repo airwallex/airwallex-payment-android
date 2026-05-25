@@ -27,11 +27,6 @@
         <item>True</item>
     </string-array>
 
-    <string-array name="array_requires_email">
-        <item>False</item>
-        <item>True</item>
-    </string-array>
-
     <string-array name="array_force_3ds">
         <item>False</item>
         <item>True</item>
@@ -45,6 +40,14 @@
     <string-array name="array_google_pay_checkout">
         <item>False</item>
         <item>True</item>
+    </string-array>
+
+    <string-array name="array_required_billing_contact_fields">
+        <item>NAME</item>
+        <item>EMAIL</item>
+        <item>PHONE</item>
+        <item>ADDRESS</item>
+        <item>COUNTRY_CODE</item>
     </string-array>
 
     <string-array name="array_card_checkout">

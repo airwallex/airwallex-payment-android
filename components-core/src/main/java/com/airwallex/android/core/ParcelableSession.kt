@@ -26,9 +26,11 @@ class ParcelableSession(
     val googlePayOptions: GooglePayOptions?,
     val paymentMethods: List<String>?,
     val autoCapture: Boolean,
-    val hidePaymentConsents: Boolean
+    val hidePaymentConsents: Boolean,
+    val requiredBillingContactFields: Set<RequiredBillingContactField>?
 ) : Parcelable {
 
+    @Suppress("DEPRECATION")
     fun toSession(): Session {
         val providerId = paymentIntentProviderId
         val provider = providerId?.let { PaymentIntentProviderRepository.get(it) }
@@ -48,7 +50,8 @@ class ParcelableSession(
             googlePayOptions = googlePayOptions,
             paymentMethods = paymentMethods,
             autoCapture = autoCapture,
-            hidePaymentConsents = hidePaymentConsents
+            hidePaymentConsents = hidePaymentConsents,
+            requiredBillingContactFields = requiredBillingContactFields
         ).also {
             it.paymentIntentProvider = provider
         }
