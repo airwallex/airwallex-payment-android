@@ -41,6 +41,8 @@ tmp/
 # vim temp files
 *.swp
 
+.claude/settings.local.json
+
 
 # Output
 airwallex/target
@@ -49,5 +51,3 @@ airwallex/bin
 example/target
 example/gen
 example/bin
-
-CLAUDE.md
