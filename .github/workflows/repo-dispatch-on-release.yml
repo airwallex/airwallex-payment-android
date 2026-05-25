@@ -32,7 +32,7 @@ jobs:
         run: 'echo "Dispatching for version: ${{ inputs.tag }}"'
       - name: Wait for Maven Central propagation
         if: inputs.wait_minutes > 0
-        run: sleep ${{ fromJSON(inputs.wait_minutes) * 60 }}
+        run: sleep $(( ${{ inputs.wait_minutes }} * 60 ))
       - name: Send repository dispatch to Flutter SDK
         env:
           GH_TOKEN: ${{ secrets.SERVICE_ACCOUNT_PAT }}
