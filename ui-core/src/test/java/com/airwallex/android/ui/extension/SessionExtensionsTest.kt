@@ -65,8 +65,8 @@ class SessionExtensionsTest {
             every { paymentIntent } returns null
             every { paymentIntentProviderId } returns null
             every { paymentConsentOptions } returns null
-            every { currency } returns "HKD"
-            every { countryCode } returns "HK"
+            every { currency } returns "SGD"
+            every { countryCode } returns "SG"
             every { amount } returns BigDecimal.ZERO
             every { shipping } returns null
             every { isBillingInformationRequired } returns false
@@ -84,8 +84,8 @@ class SessionExtensionsTest {
         assertNull(result.paymentIntent)
         assertNull(result.paymentIntentProviderId)
         assertNull(result.paymentConsentOptions)
-        assertEquals("HKD", result.currency)
-        assertEquals("HK", result.countryCode)
+        assertEquals("SGD", result.currency)
+        assertEquals("SG", result.countryCode)
         assertEquals(BigDecimal.ZERO, result.amount)
         assertNull(result.shipping)
         assertEquals(false, result.isBillingInformationRequired)

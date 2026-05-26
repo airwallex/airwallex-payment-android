@@ -205,6 +205,7 @@ Airwallex Android SDK 支持两种支付流程：
 **方式 1：使用预先创建的 PaymentIntent 初始化**
 
 ```kotlin
+import com.airwallex.android.core.RequiredBillingContactField
 import com.airwallex.android.core.Session
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentConsentOptions
@@ -229,11 +230,21 @@ val session = Session.Builder(
     .setPaymentConsentOptions(paymentConsentOptions) // 循环交易信息
     .setPaymentMethods(listOf("card", "alipayhk")) // 可选：限制并排序展示的支付方式
     .setAutoCapture(autoCapture) // 仅适用于卡支付
-    .setRequireBillingInformation(true)
+    // 精确指定银行卡输入界面收集、以及无界面 checkout 校验的账单联系字段。
+    // 传 `null`（默认值）会回退到旧的 setRequireBillingInformation / setRequireEmail
+    // 标志；传 `emptySet()` 会完全隐藏账单信息区块。
+    // 仅作用于卡支付——Google Pay 的账单信息通过 GooglePayOptions 配置。
+    .setRequiredBillingContactFields(setOf(
+        RequiredBillingContactField.NAME,
+        RequiredBillingContactField.ADDRESS,
+        RequiredBillingContactField.PHONE,
+    ))
     .setHidePaymentConsents(false) // 可选：设为 true 可隐藏已保存的支付授权
     .setReturnUrl(returnUrl)
     .build()
 ```
+
+> **📝 说明：** `setRequireBillingInformation(...)` 与 `setRequireEmail(...)` 已废弃，请改用 `setRequiredBillingContactFields(...)`。新的 API 与 iOS 的 `AWXRequiredBillingContactFields` 一一对应，可独立选择 `NAME`、`EMAIL`、`PHONE`、`ADDRESS` 和 `COUNTRY_CODE`。未调用新 setter 的旧集成会自动维持当前行为（`NAME` 始终必填；调用 `setRequireBillingInformation(true)` 时追加 `ADDRESS + PHONE`；调用 `setRequireEmail(true)` 时追加 `EMAIL`）。
 
 **方式 2：使用 PaymentIntentProvider 初始化（Express Checkout）**
 
@@ -881,6 +892,8 @@ airwallex.startRedirectPay(
 ```kotlin
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
+import com.airwallex.android.core.model.Address
+import com.airwallex.android.core.model.Billing
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.PaymentMethodType
 
@@ -896,7 +909,25 @@ val paymentMethod = PaymentMethod.Builder()
             .setCvc("737")
             .build()
     )
-    .setBilling(null)
+    // 账单信息必须满足 session 在 setRequiredBillingContactFields(...) 中声明的字段。
+    // SDK 会在发起网络请求前校验该 payload,如有字段缺失或格式错误(电话需符合 E.164,
+    // 国家码需为 ISO-3166 alpha-2 等),会立即抛出 InvalidParamsException。
+    .setBilling(
+        Billing.Builder()
+            .setFirstName("John")
+            .setLastName("Citizen")
+            .setPhone("+15551234567")
+            .setAddress(
+                Address.Builder()
+                    .setCountryCode("US")
+                    .setState("CA")
+                    .setCity("San Francisco")
+                    .setStreet("1 Main St")
+                    .setPostcode("94105")
+                    .build()
+            )
+            .build()
+    )
     .build()
 
 airwallex.checkout(
@@ -911,6 +942,8 @@ airwallex.checkout(
     }
 )
 ```
+
+> **📝 说明：** 只有当 session 解析后的 `requiredBillingContactFields` 为空集合(即商户明确选择不收集账单信息)时,才能给 `setBilling(...)` 传 `null`。否则该调用会在到达网络之前被拒绝。
 
 ### 用 Consent ID 进行 Checkout
 

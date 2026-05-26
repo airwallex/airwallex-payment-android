@@ -14,9 +14,9 @@ env:
     file: ../Common/flow_update_settings.yaml
     env:
       LAYOUT: ${LAYOUT}
-      ENVIRONMENT: ${output.settings.environment.preview}
+      ENVIRONMENT: ${output.settings.environment.demo}
       NEXT_TRIGGERED_BY: ${output.settings.nextTriggeredBy.customer}
-      IS_GUEST: true
+      IS_GUEST: false
       USE_NEW_SESSION: ${USE_NEW_SESSION}
 - tapOn: "Embedded element"
 # Wait for the embedded element activity to load

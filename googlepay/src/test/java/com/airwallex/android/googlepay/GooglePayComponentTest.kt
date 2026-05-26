@@ -100,7 +100,7 @@ class GooglePayComponentTest {
             clientSecret = "tqj9uJlZZ8NIFEM_dpZb2DXbGkQ==",
             device = null,
             paymentIntentId = "int_hkdmr7v9rg1j58ky8re",
-            currency = "CNY",
+            currency = "SGD",
             amount = BigDecimal.TEN,
             activityProvider = { activity }
         )

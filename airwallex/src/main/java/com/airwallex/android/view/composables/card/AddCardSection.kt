@@ -98,6 +98,9 @@ internal fun AddCardSection(
     var streetErrorMessage by remember { mutableStateOf<Int?>(null) }
     var stateErrorMessage by remember { mutableStateOf<Int?>(null) }
     var cityErrorMessage by remember { mutableStateOf<Int?>(null) }
+    var postcodeErrorMessage by remember { mutableStateOf<Int?>(null) }
+    var phoneErrorMessage by remember { mutableStateOf<Int?>(null) }
+    var countryCodeErrorMessage by remember { mutableStateOf<Int?>(null) }
 
     ScreenView {
         viewModel.trackScreenViewed(
@@ -220,50 +223,58 @@ internal fun AddCardSection(
             )
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        if (viewModel.showName) {
+            Spacer(modifier = Modifier.height(12.dp))
 
-        StandardText(
-            text = stringResource(R.string.airwallex_card_name_hint),
-            textAlign = TextAlign.Left,
-            typography = AirwallexTypography.Body200,
-            color = AirwallexColor.textPrimary,
-            modifier = Modifier.padding(
-                vertical = 12.dp,
-            ),
-        )
-
-        PaymentTextField(
-            text = cardHolderName,
-            onTextChanged = { value ->
-                viewModel.updateCardHolderName(value)
-                cardHolderNameErrorMessage = null
-            },
-            onComplete = { input ->
-                cardHolderNameErrorMessage = viewModel.getCardHolderNameValidationMessage(input)
-                if (!isSameAddressChecked || viewModel.isEmailRequired) {
-                    focusManager.moveFocus(FocusDirection.Down)
-                } else {
-                    focusManager.clearFocus()
-                }
-            },
-            onFocusLost = { input ->
-                cardHolderNameErrorMessage = viewModel.getCardHolderNameValidationMessage(input)
-            },
-            errorText = cardHolderNameErrorMessage?.let { stringResource(id = it) },
-            modifier = Modifier
-                .focusRequester(nameFocusRequest)
-                .fillMaxWidth()
-                .clickable(
-                    onClick = {
-                        AirwallexRisk.log(
-                            event = "input_card_holder_name",
-                            screen = "page_create_card"
-                        )
-                    },
+            StandardText(
+                text = stringResource(R.string.airwallex_card_name_hint),
+                textAlign = TextAlign.Left,
+                typography = AirwallexTypography.Body200,
+                color = AirwallexColor.textPrimary,
+                modifier = Modifier.padding(
+                    vertical = 12.dp,
                 ),
-        )
+            )
 
-        if (viewModel.isEmailRequired) {
+            PaymentTextField(
+                text = cardHolderName,
+                onTextChanged = { value ->
+                    viewModel.updateCardHolderName(value)
+                    cardHolderNameErrorMessage = null
+                },
+                onComplete = { _ ->
+                    cardHolderNameErrorMessage =
+                        viewModel.getCardHolderNameValidationMessage(cardHolderName)
+                    // Move to the next visible section: email → phone → billing.
+                    if (viewModel.showEmail ||
+                        viewModel.showPhone ||
+                        viewModel.showBillingSection
+                    ) {
+                        focusManager.moveFocus(FocusDirection.Down)
+                    } else {
+                        focusManager.clearFocus()
+                    }
+                },
+                onFocusLost = { input ->
+                    cardHolderNameErrorMessage =
+                        viewModel.getCardHolderNameValidationMessage(input)
+                },
+                errorText = cardHolderNameErrorMessage?.let { stringResource(id = it) },
+                modifier = Modifier
+                    .focusRequester(nameFocusRequest)
+                    .fillMaxWidth()
+                    .clickable(
+                        onClick = {
+                            AirwallexRisk.log(
+                                event = "input_card_holder_name",
+                                screen = "page_create_card"
+                            )
+                        },
+                    ),
+            )
+        }
+
+        if (viewModel.showEmail) {
             Spacer(modifier = Modifier.height(12.dp))
 
             StandardText(
@@ -284,7 +295,11 @@ internal fun AddCardSection(
                 },
                 onComplete = { input ->
                     cardHolderEmailErrorMessage = viewModel.getEmailValidationMessage(input)
-                    focusManager.clearFocus()
+                    if (viewModel.showPhone || viewModel.showBillingSection) {
+                        focusManager.moveFocus(FocusDirection.Down)
+                    } else {
+                        focusManager.clearFocus()
+                    }
                 },
                 onFocusLost = { input ->
                     cardHolderEmailErrorMessage = viewModel.getEmailValidationMessage(input)
@@ -296,14 +311,79 @@ internal fun AddCardSection(
             )
         }
 
-        if (viewModel.isBillingRequired) {
+        if (viewModel.showPhone) {
+            Spacer(modifier = Modifier.height(12.dp))
+
+            StandardText(
+                text = stringResource(R.string.airwallex_phone_number_hint),
+                textAlign = TextAlign.Left,
+                typography = AirwallexTypography.Body200,
+                color = AirwallexColor.textPrimary,
+                modifier = Modifier.padding(
+                    vertical = 12.dp,
+                ),
+            )
+
+            BillingTextField(
+                hint = stringResource(id = R.string.airwallex_phone_number_hint),
+                text = phoneNumber,
+                onTextChanged = {
+                    viewModel.updatePhoneNumber(it)
+                    phoneErrorMessage = null
+                },
+                onComplete = { input ->
+                    phoneErrorMessage = viewModel.getBillingValidationMessage(
+                        input,
+                        AddPaymentMethodViewModel.BillingFieldType.PHONE
+                    )
+                    if (viewModel.showBillingSection) {
+                        focusManager.moveFocus(FocusDirection.Down)
+                    } else {
+                        focusManager.clearFocus()
+                    }
+                },
+                onFocusLost = { input ->
+                    phoneErrorMessage = viewModel.getBillingValidationMessage(
+                        input,
+                        AddPaymentMethodViewModel.BillingFieldType.PHONE
+                    )
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .contentType(ContentType.PhoneNumber),
+                isError = phoneErrorMessage != null,
+                options = StandardTextFieldOptions(
+                    inputType = StandardTextFieldOptions.InputType.PHONE,
+                    returnType = StandardTextFieldOptions.ReturnType.DONE,
+                ),
+            )
+
+            phoneErrorMessage?.let { errorRes ->
+                Spacer(modifier = Modifier.height(4.dp))
+                StandardText(
+                    text = stringResource(id = errorRes),
+                    textAlign = TextAlign.Left,
+                    typography = AirwallexTypography.Caption100,
+                    color = AirwallexColor.textError,
+                    modifier = Modifier.padding(start = 16.dp),
+                )
+            }
+        }
+
+        if (viewModel.showBillingSection) {
             Spacer(modifier = Modifier.height(12.dp))
 
             Column {
                 Spacer(modifier = Modifier.height(12.dp))
 
                 StandardText(
-                    text = stringResource(R.string.airwallex_billing_info),
+                    text = stringResource(
+                        if (viewModel.showCountryCodeOnly) {
+                            R.string.airwallex_billing_country_or_region
+                        } else {
+                            R.string.airwallex_billing_info
+                        }
+                    ),
                     textAlign = TextAlign.Left,
                     typography = AirwallexTypography.Body200,
                     color = AirwallexColor.textPrimary,
@@ -311,186 +391,171 @@ internal fun AddCardSection(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                StandardCheckBox(
-                    checked = isSameAddressChecked,
-                    text = stringResource(id = R.string.airwallex_same_as_shipping),
-                    onCheckedChange = {
-                        AnalyticsLogger.logAction("toggle_billing_address")
-                        viewModel.updateSameAddressChecked(it)
-                        if (it) {
-                            viewModel.updateSelectedCountryCode(viewModel.countryCode)
-                            viewModel.updateStreet(viewModel.shipping?.address?.street.orEmpty())
-                            viewModel.updateState(viewModel.shipping?.address?.state.orEmpty())
-                            viewModel.updateCity(viewModel.shipping?.address?.city.orEmpty())
-                            viewModel.updateZipCode(viewModel.shipping?.address?.postcode.orEmpty())
-                            viewModel.updatePhoneNumber(viewModel.shipping?.phoneNumber.orEmpty())
-                        }
-                    },
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                CountrySelectRow(
-                    options = CountryUtils.countryList.map { it.name to it.code },
-                    default = selectedCountryCode,
-                    onOptionSelected = {
-                        viewModel.updateSelectedCountryCode(it.second)
-                    },
-                    enabled = !isSameAddressChecked,
-                    shape = RoundedCornerShape(
-                        topStart = 8.dp,
-                        topEnd = 8.dp,
-                        bottomEnd = 0.dp,
-                        bottomStart = 0.dp,
-                    ),
-                )
-
-                BillingTextField(
-                    hint = stringResource(id = R.string.airwallex_shipping_street_hint),
-                    text = street,
-                    onTextChanged = {
-                        viewModel.updateStreet(it)
-                        streetErrorMessage = null
-                    },
-                    onComplete = { input ->
-                        streetErrorMessage = viewModel.getBillingValidationMessage(
-                            input,
-                            AddPaymentMethodViewModel.BillingFieldType.STREET
-                        )
-                        focusManager.moveFocus(FocusDirection.Down)
-                    },
-                    onFocusLost = { input ->
-                        streetErrorMessage = viewModel.getBillingValidationMessage(
-                            input,
-                            AddPaymentMethodViewModel.BillingFieldType.STREET
-                        )
-                    },
-                    modifier = Modifier
-                        .zIndex(1f)
-                        .contentType(ContentType.AddressStreet),
-                    enabled = !isSameAddressChecked,
-                    isError = streetErrorMessage != null,
-                    shape = RoundedCornerShape(
-                        topStart = 0.dp,
-                        topEnd = 0.dp,
-                        bottomEnd = 0.dp,
-                        bottomStart = 0.dp,
-                    ),
-                )
-
-                Row {
-                    BillingTextField(
-                        hint = stringResource(id = R.string.airwallex_shipping_state_name_hint),
-                        text = state,
-                        onTextChanged = {
-                            viewModel.updateState(it)
-                            stateErrorMessage = null
+                if (viewModel.showSameAsShippingToggle) {
+                    StandardCheckBox(
+                        checked = isSameAddressChecked,
+                        text = stringResource(id = R.string.airwallex_same_as_shipping),
+                        onCheckedChange = {
+                            AnalyticsLogger.logAction("toggle_billing_address")
+                            viewModel.updateSameAddressChecked(it)
+                            if (it) {
+                                viewModel.updateSelectedCountryCode(viewModel.shipping?.address?.countryCode ?: viewModel.countryCode)
+                                viewModel.updateStreet(viewModel.shipping?.address?.street.orEmpty())
+                                viewModel.updateState(viewModel.shipping?.address?.state.orEmpty())
+                                viewModel.updateCity(viewModel.shipping?.address?.city.orEmpty())
+                                viewModel.updateZipCode(viewModel.shipping?.address?.postcode.orEmpty())
+                                viewModel.updatePhoneNumber(viewModel.shipping?.phoneNumber.orEmpty())
+                            }
                         },
-                        onComplete = { input ->
-                            stateErrorMessage = viewModel.getBillingValidationMessage(
-                                input,
-                                AddPaymentMethodViewModel.BillingFieldType.STATE
-                            )
-                            focusManager.moveFocus(FocusDirection.Right)
-                        },
-                        onFocusLost = { input ->
-                            stateErrorMessage = viewModel.getBillingValidationMessage(
-                                input,
-                                AddPaymentMethodViewModel.BillingFieldType.STATE
-                            )
-                        },
-                        modifier = Modifier
-                            .weight(1f)
-                            .contentType(ContentType.AddressRegion),
-                        enabled = !isSameAddressChecked,
-                        isError = stateErrorMessage != null,
-                        shape = RoundedCornerShape(
-                            topStart = 0.dp,
-                            topEnd = 0.dp,
-                            bottomEnd = 0.dp,
-                            bottomStart = 0.dp,
-                        ),
                     )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
+
+                // ADDRESS wins over COUNTRY_CODE (mutually exclusive in UI).
+                val addressBottomShape = RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp)
+
+                if (viewModel.showAddress) {
+                    CountrySelectRow(
+                        options = CountryUtils.countryList.map { it.name to it.code },
+                        default = selectedCountryCode,
+                        onOptionSelected = {
+                            viewModel.updateSelectedCountryCode(it.second)
+                            countryCodeErrorMessage = null
+                        },
+                        enabled = !isSameAddressChecked,
+                        shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp),
+                    )
+
                     BillingTextField(
-                        hint = stringResource(id = R.string.airwallex_shipping_city_name_hint),
-                        text = city,
+                        hint = stringResource(id = R.string.airwallex_shipping_street_hint),
+                        text = street,
                         onTextChanged = {
-                            viewModel.updateCity(it)
-                            cityErrorMessage = null
+                            viewModel.updateStreet(it)
+                            streetErrorMessage = null
                         },
                         onComplete = { input ->
-                            cityErrorMessage = viewModel.getBillingValidationMessage(
+                            streetErrorMessage = viewModel.getBillingValidationMessage(
                                 input,
-                                AddPaymentMethodViewModel.BillingFieldType.CITY
+                                AddPaymentMethodViewModel.BillingFieldType.STREET
                             )
                             focusManager.moveFocus(FocusDirection.Down)
                         },
                         onFocusLost = { input ->
-                            cityErrorMessage = viewModel.getBillingValidationMessage(
+                            streetErrorMessage = viewModel.getBillingValidationMessage(
                                 input,
-                                AddPaymentMethodViewModel.BillingFieldType.CITY
+                                AddPaymentMethodViewModel.BillingFieldType.STREET
                             )
                         },
                         modifier = Modifier
-                            .weight(1f)
-                            .contentType(ContentType.AddressLocality),
+                            .zIndex(1f)
+                            .contentType(ContentType.AddressStreet),
                         enabled = !isSameAddressChecked,
-                        isError = cityErrorMessage != null,
-                        shape = RoundedCornerShape(
-                            topStart = 0.dp,
-                            topEnd = 0.dp,
-                            bottomEnd = 0.dp,
-                            bottomStart = 0.dp,
-                        ),
+                        isError = streetErrorMessage != null,
+                        shape = RoundedCornerShape(0.dp),
+                    )
+
+                    Row {
+                        BillingTextField(
+                            hint = stringResource(id = R.string.airwallex_shipping_state_name_hint),
+                            text = state,
+                            onTextChanged = {
+                                viewModel.updateState(it)
+                                stateErrorMessage = null
+                            },
+                            onComplete = { input ->
+                                stateErrorMessage = viewModel.getBillingValidationMessage(
+                                    input,
+                                    AddPaymentMethodViewModel.BillingFieldType.STATE
+                                )
+                                focusManager.moveFocus(FocusDirection.Right)
+                            },
+                            onFocusLost = { input ->
+                                stateErrorMessage = viewModel.getBillingValidationMessage(
+                                    input,
+                                    AddPaymentMethodViewModel.BillingFieldType.STATE
+                                )
+                            },
+                            modifier = Modifier
+                                .weight(1f)
+                                .contentType(ContentType.AddressRegion),
+                            enabled = !isSameAddressChecked,
+                            isError = stateErrorMessage != null,
+                            shape = RoundedCornerShape(0.dp),
+                        )
+                        BillingTextField(
+                            hint = stringResource(id = R.string.airwallex_shipping_city_name_hint),
+                            text = city,
+                            onTextChanged = {
+                                viewModel.updateCity(it)
+                                cityErrorMessage = null
+                            },
+                            onComplete = { input ->
+                                cityErrorMessage = viewModel.getBillingValidationMessage(
+                                    input,
+                                    AddPaymentMethodViewModel.BillingFieldType.CITY
+                                )
+                                focusManager.moveFocus(FocusDirection.Down)
+                            },
+                            onFocusLost = { input ->
+                                cityErrorMessage = viewModel.getBillingValidationMessage(
+                                    input,
+                                    AddPaymentMethodViewModel.BillingFieldType.CITY
+                                )
+                            },
+                            modifier = Modifier
+                                .weight(1f)
+                                .contentType(ContentType.AddressLocality),
+                            enabled = !isSameAddressChecked,
+                            isError = cityErrorMessage != null,
+                            shape = RoundedCornerShape(0.dp),
+                        )
+                    }
+
+                    BillingTextField(
+                        hint = stringResource(id = R.string.airwallex_zip_code_hint),
+                        text = zipCode,
+                        onTextChanged = {
+                            viewModel.updateZipCode(it)
+                            postcodeErrorMessage = null
+                        },
+                        onComplete = { input ->
+                            postcodeErrorMessage = viewModel.getBillingValidationMessage(
+                                input,
+                                AddPaymentMethodViewModel.BillingFieldType.POSTCODE
+                            )
+                            focusManager.moveFocus(FocusDirection.Down)
+                        },
+                        onFocusLost = { input ->
+                            postcodeErrorMessage = viewModel.getBillingValidationMessage(
+                                input,
+                                AddPaymentMethodViewModel.BillingFieldType.POSTCODE
+                            )
+                        },
+                        modifier = Modifier
+                            .contentType(ContentType.PostalCode),
+                        enabled = !isSameAddressChecked,
+                        isError = postcodeErrorMessage != null,
+                        shape = addressBottomShape,
+                    )
+                } else if (viewModel.showCountryCodeOnly) {
+                    CountrySelectRow(
+                        options = CountryUtils.countryList.map { it.name to it.code },
+                        default = selectedCountryCode,
+                        onOptionSelected = {
+                            viewModel.updateSelectedCountryCode(it.second)
+                            countryCodeErrorMessage = null
+                        },
+                        enabled = true,
+                        shape = RoundedCornerShape(8.dp),
                     )
                 }
 
-                BillingTextField(
-                    hint = stringResource(id = R.string.airwallex_shipping_zip_code_hint),
-                    text = zipCode,
-                    onTextChanged = {
-                        viewModel.updateZipCode(it)
-                    },
-                    onComplete = { input ->
-                        focusManager.moveFocus(FocusDirection.Down)
-                    },
-                    modifier = Modifier
-                        .contentType(ContentType.PostalCode),
-                    enabled = !isSameAddressChecked,
-                    shape = RoundedCornerShape(
-                        topStart = 0.dp,
-                        topEnd = 0.dp,
-                        bottomEnd = 0.dp,
-                        bottomStart = 0.dp,
-                    ),
-                )
-
-                BillingTextField(
-                    hint = stringResource(id = R.string.airwallex_contact_phone_number_hint),
-                    text = phoneNumber,
-                    onTextChanged = {
-                        viewModel.updatePhoneNumber(it)
-                    },
-                    onComplete = { input ->
-                        focusManager.clearFocus()
-                    },
-                    modifier = Modifier
-                        .contentType(ContentType.PhoneNumber),
-                    enabled = !isSameAddressChecked,
-                    options = StandardTextFieldOptions(
-                        inputType = StandardTextFieldOptions.InputType.PHONE,
-                        returnType = StandardTextFieldOptions.ReturnType.DONE,
-                    ),
-                    shape = RoundedCornerShape(
-                        topStart = 0.dp,
-                        topEnd = 0.dp,
-                        bottomEnd = 8.dp,
-                        bottomStart = 8.dp,
-                    ),
-                )
-
-                val billingErrorMessage =
-                    streetErrorMessage ?: stateErrorMessage ?: cityErrorMessage
+                val billingErrorMessage = streetErrorMessage
+                    ?: stateErrorMessage
+                    ?: cityErrorMessage
+                    ?: postcodeErrorMessage
+                    ?: countryCodeErrorMessage
                 if (billingErrorMessage != null) {
                     Spacer(modifier = Modifier.height(4.dp))
 
@@ -540,12 +605,14 @@ internal fun AddCardSection(
                 cardNumberErrorMessage = viewModel.getCardNumberValidationMessage(cardNumber)
                 expiryDateErrorMessage = viewModel.getExpiryValidationMessage(expiryDate)
                 cvvErrorMessage = viewModel.getCvvValidationMessage(cvv, brand)
-                cardHolderNameErrorMessage =
-                    viewModel.getCardHolderNameValidationMessage(cardHolderName)
-                if (viewModel.isEmailRequired) {
+                if (viewModel.showName) {
+                    cardHolderNameErrorMessage =
+                        viewModel.getCardHolderNameValidationMessage(cardHolderName)
+                }
+                if (viewModel.showEmail) {
                     cardHolderEmailErrorMessage = viewModel.getEmailValidationMessage(email)
                 }
-                if (viewModel.isBillingRequired) {
+                if (viewModel.showAddress) {
                     streetErrorMessage = viewModel.getBillingValidationMessage(
                         street,
                         AddPaymentMethodViewModel.BillingFieldType.STREET
@@ -558,6 +625,22 @@ internal fun AddCardSection(
                         city,
                         AddPaymentMethodViewModel.BillingFieldType.CITY
                     )
+                    postcodeErrorMessage = viewModel.getBillingValidationMessage(
+                        zipCode,
+                        AddPaymentMethodViewModel.BillingFieldType.POSTCODE
+                    )
+                }
+                if (viewModel.showPhone) {
+                    phoneErrorMessage = viewModel.getBillingValidationMessage(
+                        phoneNumber,
+                        AddPaymentMethodViewModel.BillingFieldType.PHONE
+                    )
+                }
+                if (viewModel.showAddress || viewModel.showCountryCodeOnly) {
+                    countryCodeErrorMessage = viewModel.getBillingValidationMessage(
+                        selectedCountryCode,
+                        AddPaymentMethodViewModel.BillingFieldType.COUNTRY_CODE
+                    )
                 }
 
                 val allValidated = listOfNotNull(
@@ -568,20 +651,24 @@ internal fun AddCardSection(
                     cardHolderEmailErrorMessage,
                     streetErrorMessage,
                     stateErrorMessage,
-                    cityErrorMessage
+                    cityErrorMessage,
+                    postcodeErrorMessage,
+                    phoneErrorMessage,
+                    countryCodeErrorMessage,
                 ).isEmpty()
                 if (allValidated) {
                     // All fields are valid, so proceed to confirm payment.
                     val card = viewModel.createCard(cardNumber, cardHolderName, expiryDate, cvv)
                         ?: return@StandardSolidButton
                     val billing = viewModel.createBilling(
+                        name = cardHolderName,
+                        email = email,
+                        phoneNumber = phoneNumber,
                         countryCode = selectedCountryCode,
                         state = state,
                         city = city,
                         street = street,
                         postcode = zipCode,
-                        phoneNumber = phoneNumber,
-                        email = email,
                     )
                     paymentFlowListener.onLoadingStateChanged(true, activity)
                     AnalyticsLogger.logAction(

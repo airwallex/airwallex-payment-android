@@ -200,7 +200,8 @@ fun AirwallexPaymentSession.convertToSession(): Session {
         hidePaymentConsents = hidePaymentConsents,
         googlePayOptions = googlePayOptions,
         paymentMethods = paymentMethods,
-        shipping = shipping
+        shipping = shipping,
+        requiredBillingContactFields = requiredBillingContactFields
     ).also {
         // Preserve the transient provider field (not parceled, must be set manually)
         it.paymentIntentProvider = (this as? PaymentIntentResolvableSession)?.paymentIntentProvider
@@ -232,7 +233,8 @@ fun AirwallexRecurringWithIntentSession.convertToSession(): Session {
         hidePaymentConsents = hidePaymentConsents,
         googlePayOptions = googlePayOptions,
         paymentMethods = paymentMethods,
-        shipping = shipping
+        shipping = shipping,
+        requiredBillingContactFields = requiredBillingContactFields
     ).also {
         it.paymentIntentProvider = (this as? PaymentIntentResolvableSession)?.paymentIntentProvider
     }

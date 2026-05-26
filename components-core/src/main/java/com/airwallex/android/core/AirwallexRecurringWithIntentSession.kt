@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION", "DEPRECATION_OVERRIDE")
+
 package com.airwallex.android.core
 
 import android.os.Parcelable
@@ -116,7 +118,14 @@ class AirwallexRecurringWithIntentSession internal constructor(
     /**
      * Control whether saved cards are displayed on the list screen
      */
-    override val hidePaymentConsents: Boolean = false
+    override val hidePaymentConsents: Boolean = false,
+
+    /**
+     * Billing contact fields the SDK should collect on the new-card screen. `null`
+     * preserves legacy behavior (derived from [isBillingInformationRequired] /
+     * [isEmailRequired]).
+     */
+    override val requiredBillingContactFields: Set<RequiredBillingContactField>? = null
 
 ) : AirwallexSession(), PaymentIntentResolvableSession, Parcelable {
 
@@ -207,11 +216,22 @@ class AirwallexRecurringWithIntentSession internal constructor(
         private var paymentMethods: List<String>? = null
         private var googlePayOptions: GooglePayOptions? = null
         private var shipping: Shipping? = null
+        private var requiredBillingContactFields: Set<RequiredBillingContactField>? = null
 
+        @Deprecated(
+            message = "Use setRequiredBillingContactFields(...) and include " +
+                "RequiredBillingContactField.ADDRESS & PHONE to require billing info.",
+            replaceWith = ReplaceWith("setRequiredBillingContactFields(fields)"),
+        )
         fun setRequireBillingInformation(requiresBillingInformation: Boolean): Builder = apply {
             this.isBillingInformationRequired = requiresBillingInformation
         }
 
+        @Deprecated(
+            message = "Use setRequiredBillingContactFields(...) and include " +
+                "RequiredBillingContactField.EMAIL to require email.",
+            replaceWith = ReplaceWith("setRequiredBillingContactFields(fields)"),
+        )
         fun setRequireEmail(requiresEmail: Boolean): Builder = apply {
             this.isEmailRequired = requiresEmail
         }
@@ -249,6 +269,22 @@ class AirwallexRecurringWithIntentSession internal constructor(
             this.shipping = shipping
         }
 
+        /**
+         * Configure which billing fields the new-card UI should collect and the headless
+         * checkout should validate. Pass `null` (the default) to derive from the legacy
+         * [setRequireBillingInformation] / [setRequireEmail] flags. An empty set hides
+         * the entire billing section.
+         *
+         * **Card payments only.** Google Pay billing is configured separately via
+         * [GooglePayOptions] (`billingAddressRequired`, `emailRequired`); changes here
+         * do not propagate to the Google Pay sheet.
+         */
+        fun setRequiredBillingContactFields(
+            fields: Set<RequiredBillingContactField>?
+        ): Builder = apply {
+            this.requiredBillingContactFields = fields
+        }
+
         override fun build(): AirwallexRecurringWithIntentSession {
             require(paymentIntent != null || paymentIntentProvider != null) {
                 "Either paymentIntent or paymentIntentProvider must be provided"
@@ -270,7 +306,8 @@ class AirwallexRecurringWithIntentSession internal constructor(
                 hidePaymentConsents = hidePaymentConsents,
                 paymentMethods = paymentMethods,
                 googlePayOptions = googlePayOptions,
-                merchantTriggerReason = merchantTriggerReason
+                merchantTriggerReason = merchantTriggerReason,
+                requiredBillingContactFields = requiredBillingContactFields
             ).apply {
                 // Set the provider directly on the session (transient field, won't be parceled)
                 paymentIntentProvider = this@Builder.paymentIntentProvider

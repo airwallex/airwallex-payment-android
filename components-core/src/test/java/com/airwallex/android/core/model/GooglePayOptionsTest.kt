@@ -12,7 +12,7 @@ class GooglePayOptionsTest {
         GooglePayOptions(
             allowedCardAuthMethods = listOf("3DS"),
             billingAddressParameters = BillingAddressParameters(BillingAddressParameters.Format.FULL),
-            shippingAddressParameters = ShippingAddressParameters(listOf("AU", "CN"), true)
+            shippingAddressParameters = ShippingAddressParameters(listOf("AU", "US"), true)
         )
     }
 
@@ -30,7 +30,7 @@ class GooglePayOptionsTest {
         assertEquals(googlePayOptions.billingAddressParameters?.phoneNumberRequired, false)
         assertEquals(
             googlePayOptions.shippingAddressParameters?.allowedCountryCodes,
-            listOf("AU", "CN")
+            listOf("AU", "US")
         )
         assertEquals(googlePayOptions.shippingAddressParameters?.phoneNumberRequired, true)
     }

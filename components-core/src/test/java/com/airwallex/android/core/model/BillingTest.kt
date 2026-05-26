@@ -17,11 +17,11 @@ class BillingTest {
             .setEmail("john.doe@airwallex.com")
             .setAddress(
                 Address.Builder()
-                    .setCountryCode("CN")
-                    .setState("Shanghai")
-                    .setCity("Shanghai")
-                    .setStreet("Pudong District")
-                    .setPostcode("100000")
+                    .setCountryCode("US")
+                    .setState("CA")
+                    .setCity("San Francisco")
+                    .setStreet("9999 Mission St.")
+                    .setPostcode("94103")
                     .build()
             )
             .build()
@@ -44,11 +44,11 @@ class BillingTest {
         assertEquals("13800000000", billing.phone)
         assertEquals(
             Address(
-                countryCode = "CN",
-                state = "Shanghai",
-                city = "Shanghai",
-                street = "Pudong District",
-                postcode = "100000"
+                countryCode = "US",
+                state = "CA",
+                city = "San Francisco",
+                street = "9999 Mission St.",
+                postcode = "94103"
             ),
             billing.address
         )
@@ -65,11 +65,11 @@ class BillingTest {
 
                 "email" to "john.doe@airwallex.com",
                 "address" to mapOf(
-                    "country_code" to "CN",
-                    "state" to "Shanghai",
-                    "city" to "Shanghai",
-                    "street" to "Pudong District",
-                    "postcode" to "100000"
+                    "country_code" to "US",
+                    "state" to "CA",
+                    "city" to "San Francisco",
+                    "street" to "9999 Mission St.",
+                    "postcode" to "94103"
                 )
             ),
             paramMap

@@ -22,9 +22,9 @@
     <string name="payment_cancelled_message">Your payment has been cancelled</string>
 
     <string name="price_value">1</string>
-    <string name="currency_value">HKD</string>
+    <string name="currency_value">SGD</string>
     <string name="currency">Currency</string>
-    <string name="country_code_value">HK</string>
+    <string name="country_code_value">SG</string>
     <string name="country_code">Country Code</string>
     <string name="price">Price</string>
     <string name="price_currency"><![CDATA[Price & Currency]]></string>
@@ -65,7 +65,8 @@
     <string name="generate_customer_failed">Generate customer failed</string>
     <string name="generate_customer_failed_message">There was an error while generate customer. Please try again.</string>
     <string name="requires_cvc">Requires CVC</string>
-    <string name="requires_email">Requires Email</string>
+    <string name="required_billing_contact_fields">Required Billing Contact Fields</string>
+    <string name="required_billing_contact_fields_summary">Empty = hide billing section.</string>
     <string name="force_3ds">Force 3DS</string>
     <string name="auto_capture">Auto Capture</string>
     <string name="card_checkout">Direct Card Checkout</string>

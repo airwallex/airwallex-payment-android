@@ -1,0 +1,83 @@
+# Reusable flow: from APIIntegrationActivity, open the Customer Dialog via
+# "Get saved cards" and tap the per-card "PAY" button on the first saved consent.
+#
+# Inputs (env):
+#   EXPECT_DISABLED  'true'  -> the per-card PAY button is expected to be a no-op
+#                              (legacy AirwallexRecurringSession). Verifies the
+#                              Customer Dialog stays open, then dismisses it.
+#                    'false' -> the PAY button is enabled. Completes the payment:
+#                              optionally fills the PaymentCheckoutActivity CVC
+#                              prompt if it appears (it may or may not, even for
+#                              the same PAN), then waits for the terminal popup
+#                              ("Payment successful" or "Payment failed") and
+#                              dismisses it.
+#
+# Preconditions:
+# - User is on APIIntegrationActivity.
+# - At least one saved consent already exists for the current customer.
+appId: com.airwallex.paymentacceptance
+---
+# Self-recover if a preceding step (e.g. flow_handle_redirect short-circuiting on
+# "Payment method not enabled" + the test's unconditional `- back`) overshot us
+# back onto MainActivity. Idempotent: if we're already on APIIntegrationActivity,
+# the runFlow body is skipped.
+- runFlow:
+    when:
+      visible: "Launch HTML5 Demo"
+    commands:
+      - tapOn: "Integrate with low-level API"
+- scrollUntilVisible:
+    element: "Get saved cards"
+- tapOn: "Get saved cards"
+- assertVisible: "Customer Dialog"
+- tapOn: "PAY"
+
+# Disabled branch: button is a no-op, dialog must still be visible.
+- runFlow:
+    when:
+      true: ${EXPECT_DISABLED == 'true'}
+    commands:
+      - assertVisible: "Customer Dialog"
+      - back
+
+# Enabled branch: dialog dismisses, payment proceeds (CVC may or may not be asked).
+- runFlow:
+    when:
+      true: ${EXPECT_DISABLED == 'false'}
+    commands:
+      # PaymentCheckoutActivity may be pushed for CVC input. The CVC field is the
+      # View-based atlCardCvc (not the Compose card-cvc-text-field used elsewhere).
+      # The activity launches synchronously off the PAY tap, so an immediate
+      # visibility check is enough.
+      - runFlow:
+          when:
+            visible:
+              id: "atlCardCvc"
+          commands:
+            - tapOn:
+                id: "atlCardCvc"
+            - inputText: "737"
+            - hideKeyboard
+            - tapOn:
+                id: "rlPayNow"
+      # After PAY (+ optional CVC), one of three terminal/intermediate states
+      # appears, but with network latency: 3DS challenge, success popup, or
+      # failure popup. Wait for whichever lands first.
+      - extendedWaitUntil:
+          visible: "Purchase Authentication|Payment successful|Payment failed"
+          timeout: 30000
+      # If 3DS challenge appeared, complete it, then wait for the terminal popup.
+      - runFlow:
+          when:
+            visible: "Purchase Authentication"
+          commands:
+            - runFlow:
+                file: ../Common/flow_handle_3ds.yaml
+                env:
+                  CANCEL_3DS: false
+            - extendedWaitUntil:
+                visible: "Payment successful|Payment failed"
+                timeout: 30000
+      # Dismiss the terminal popup. Accept both success and failure as
+      # terminations (some sessions may legitimately fail on a re-charge attempt).
+      - tapOn: "OK"

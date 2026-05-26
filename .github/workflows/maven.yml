@@ -9,9 +9,21 @@ jobs:
   maven:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    outputs:
+      tag: ${{ steps.version.outputs.tag }}
     steps:
       - name: Checkout project
         uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # 3.6.0
+
+      - name: Determine version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" == "release" ]; then
+            echo "tag=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
+          else
+            VERSION=$(sed -nE "s/version = '([0-9.]+)'/\1/p" build.gradle)
+            echo "tag=$VERSION" >> $GITHUB_OUTPUT
+          fi
 
       - name: Set up our JDK environment
         uses: actions/setup-java@17f84c3641ba7b8f6deff6309fc4c864478f5d62 #3.14.1
@@ -41,5 +53,6 @@ jobs:
     needs: maven
     uses: ./.github/workflows/repo-dispatch-on-release.yml
     with:
-      tag: ${{ github.event.release.tag_name }}
+      tag: ${{ needs.maven.outputs.tag }}
+      wait_minutes: 20
     secrets: inherit

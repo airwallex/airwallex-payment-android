@@ -4,6 +4,7 @@ import androidx.activity.ComponentActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.airwallex.android.core.RequiredBillingContactField
 import com.airwallex.paymentacceptance.Settings
 import com.airwallex.paymentacceptance.viewmodel.base.BaseViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -46,14 +47,18 @@ class SettingViewModel : BaseViewModel() {
 
     fun clearSetting() {
         Settings.price = "1"
-        Settings.currency = "HKD"
-        Settings.countryCode = "HK"
+        Settings.currency = "SGD"
+        Settings.countryCode = "SG"
         Settings.cachedCustomerId = ""
         Settings.apiKey = ""
         Settings.clientId = ""
         Settings.weChatAppId = ""
         Settings.autoCapture = "Disabled"
-        Settings.requiresEmail = "False"
+        Settings.requiredBillingContactFields = setOf(
+            RequiredBillingContactField.NAME,
+            RequiredBillingContactField.PHONE,
+            RequiredBillingContactField.ADDRESS,
+        )
         Settings.sdkEnv = "DEMO"
         Settings.nextTriggerBy = "Merchant"
         Settings.returnUrl = ""

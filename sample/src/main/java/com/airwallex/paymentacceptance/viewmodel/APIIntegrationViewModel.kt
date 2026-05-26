@@ -8,7 +8,9 @@ import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.BillingAddressParameters
 import com.airwallex.android.core.GooglePayOptions
 import com.airwallex.android.core.AirwallexPaymentStatus
+import com.airwallex.android.core.model.Address
 import com.airwallex.android.core.model.AvailablePaymentMethodType
+import com.airwallex.android.core.model.Billing
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.PaymentMethodType
@@ -217,7 +219,7 @@ class APIIntegrationViewModel : BaseViewModel() {
                 paymentMethod = PaymentMethod.Builder()
                     .setType(PaymentMethodType.CARD.value)
                     .setCard(card)
-                    .setBilling(null)
+                    .setBilling(dummyBilling())
                     .build(),
                 cvc = card.cvc,
                 saveCard = saveCard,
@@ -245,5 +247,21 @@ class APIIntegrationViewModel : BaseViewModel() {
             force3DS = force3DS
         )
     }
+
+    private fun dummyBilling(): Billing = Billing.Builder()
+        .setFirstName("John")
+        .setLastName("Doe")
+        .setPhone("+1234567890")
+        .setEmail("john.doe@example.com")
+        .setAddress(
+            Address.Builder()
+                .setCountryCode("US")
+                .setState("CA")
+                .setCity("San Francisco")
+                .setStreet("9999 Mission St.")
+                .setPostcode("94103")
+                .build()
+        )
+        .build()
 
 }
