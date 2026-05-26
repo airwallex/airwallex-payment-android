@@ -1,0 +1,61 @@
+appId: com.airwallex.paymentacceptance
+# NOTE on env vars: H5DemoActivity prefills PAYMENT_URL with the **demo** environment
+# default (`https://demo-pacheckoutdemo.airwallex.com/shopping-cart`). We *want* to override
+# it via Maestro `inputText` to target the staging environment, but Maestro's IME-driven
+# inputText interacts badly with Gboard's URL autocorrect on Android emulators (typed text
+# silently mutates → WebView ends up on the wrong route). Until that is unblocked (see
+# README "Known limitations"), we keep the prefilled demo URLs and treat this regression
+# suite as covering the demo environment. To run against staging, install a no-autocorrect
+# IME on the emulator (e.g. `adb shell ime set com.android.adbkeyboard/.AdbIME`) and
+# re-enable the inputText steps below.
+---
+# Cold-launch the sample app so we always start from MainActivity (otherwise rerunning
+# the suite while the app is mid-flow lands us on stale activities like H5WebViewActivity).
+# The splash screen takes ~5-10s after a force-stop so we use a generous extendedWaitUntil.
+- launchApp:
+    clearState: false
+    stopApp: true
+
+# Entry point: from the sample app main menu, open H5 Demo (which prefills both URLs with
+# the demo environment default) and hit Next. This launches H5WebViewActivity
+# (android.webkit.WebView) loading the checkout-ui demo's /shopping-cart route.
+- extendedWaitUntil:
+    visible: "Launch HTML5 Demo"
+    timeout: 30000
+- tapOn: "Launch HTML5 Demo"
+
+# H5DemoActivity title is "Launch HTML 5 Demo" (with space — different from the
+# MainActivity button text "Launch HTML5 Demo" without space).
+- assertVisible: "Launch HTML 5 Demo"
+
+# --- IME-typing path (disabled, see env comment above) ---
+# - tapOn:
+#     id: "com.airwallex.paymentacceptance:id/airwallex_url"
+# - eraseText: 200
+# - inputText: "https://staging-pacheckoutdemo.airwallex.com/shopping-cart"
+# - hideKeyboard
+# - tapOn:
+#     id: "com.airwallex.paymentacceptance:id/referer_url"
+# - eraseText: 200
+# - inputText: "https://checkout-staging.airwallex.com"
+# - hideKeyboard
+
+- tapOn:
+    id: "com.airwallex.paymentacceptance:id/btnNext"
+
+# H5WebViewActivity is now loading the demo page in WebView. Wait for the
+# shopping-cart entry (paymentacceptance-checkout-demo) to render in the webview.
+# i18n key shopping_cart.title -> "Order Information"; shopping_cart.submit -> "Check out".
+# Note: the form is taller than the viewport — "Check out" is below the fold.
+# Timeout is generous (90s) because the emulator network occasionally throttles to
+# 3G / HSPA with high packet loss (Cloudflare CDN re-routes through slow edges),
+# and the first WebView load fetches all checkout-demo bundles + i18n + Airwallex
+# Checkout HPP iframe + GPay/ApplePay availability checks.
+- extendedWaitUntil:
+    visible: "Order Information"
+    timeout: 90000
+- scrollUntilVisible:
+    element: "Check out"
+    direction: DOWN
+    timeout: 15000
+    speed: 50
