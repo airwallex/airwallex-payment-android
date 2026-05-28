@@ -12,25 +12,15 @@ concurrency:
 permissions:
   contents: write
 
-env:
-  DOCS_VERSION: ${{ github.event.release.tag_name || github.ref_name }}
-
 jobs:
   generate-docs:
     runs-on: ubuntu-latest
-    outputs:
-      source-sha: ${{ steps.source.outputs.sha }}
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       with:
-        ref: ${{ github.event.release.tag_name || github.ref }}
-        fetch-depth: 0
-
-    - id: source
-      name: Record source commit
-      run: echo "sha=${{ github.sha }}" >> "$GITHUB_OUTPUT"
+        ref: ${{ github.ref }}
 
     - name: Setup Java
       uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4.8.0
@@ -71,44 +61,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
+    - name: Checkout md-doc branch
       uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      with:
+        ref: md-doc
+
+    - name: Clean previous docs
+      run: git rm -rf . 2>/dev/null || true
 
     - name: Download markdown documentation
       uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
       with:
         name: markdown-docs
-        path: /tmp/markdown-docs
+        path: docs/api-reference/markdown
 
-    - name: Publish markdown to md-doc branch
+    - name: Commit and push
       run: |
         git config user.name "github-actions[bot]"
         git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-        git fetch origin md-doc --depth=1 2>/dev/null || true
-
-        if git rev-parse --verify origin/md-doc >/dev/null 2>&1; then # true when remote md-doc already exists
-          git checkout md-doc
-        else
-          # First publish: orphan branch containing generated docs only.
-          git checkout --orphan md-doc
-          git reset --hard # drop all tracked files from the default-branch checkout
-        fi
-
-        mkdir -p docs/api-reference/markdown
-        cp -r /tmp/markdown-docs/. docs/api-reference/markdown/
         git add docs/api-reference/markdown
-
         if git diff --staged --quiet; then # exits when there is nothing staged to commit
           echo "No markdown changes to commit"
           exit 0
         fi
 
-        git commit -m "docs: update API reference for ${{ env.DOCS_VERSION }}" \
-          -m "Generated from ${{ needs.generate-docs.outputs.source-sha }}"
-
-        if git rev-parse --verify origin/md-doc >/dev/null 2>&1; then # true when remote md-doc already exists
-          git push origin md-doc
-        else
-          git push -u origin md-doc # first push: set upstream tracking for the new branch
-        fi
+        git commit -m "Deploy to md-doc from @ ${{ github.repository }}@${{ github.sha }}."
+        git push origin md-doc
