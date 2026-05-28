@@ -25,6 +25,7 @@ plugins {
     id "org.sonarqube" version "4.4.1.3373"
     id "io.github.gradle-nexus.publish-plugin" version "1.1.0"
     id "org.jetbrains.dokka" version "2.0.0"
+    id "dokka-markdown"
 }
 
 tasks.withType(Detekt).configureEach {
@@ -94,6 +95,7 @@ subprojects {
     // Only apply Dokka to SDK modules
     if (project.name in ['airwallex', 'card', 'wechat', 'redirect', 'googlepay', 'components-core', 'security-3ds', 'ui-core']) {
         apply plugin: 'org.jetbrains.dokka'
+        apply plugin: 'dokka-markdown'
 
         tasks.withType(DokkaTask.class).configureEach {
             moduleName.set(project.name)
