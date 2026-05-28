@@ -44,7 +44,7 @@ fun CardExpiryTextField(
 ) {
     var showClearButton by remember { mutableStateOf(false) }
     var textFieldValue by remember(initialValue) {
-        mutableStateOf(TextFieldValue(text = initialValue, selection = TextRange(initialValue.length)))
+        mutableStateOf(TextFieldValue(text = initialValue, selection = TextRange(initialValue.length), composition = null))
     }
     var localFocusState by remember { mutableStateOf<FocusState>(FocusState.Initial) }
 
@@ -58,6 +58,7 @@ fun CardExpiryTextField(
                 textFieldValue = TextFieldValue(
                     text = formattedText.take(VALID_INPUT_LENGTH),
                     selection = TextRange(formattedText.length),
+                    composition = null, // Explicitly end IME composition to fix Android 9 IME issues
                 )
                 showClearButton = textFieldValue.text.isNotEmpty()
                 onTextChanged(textFieldValue)
@@ -68,6 +69,7 @@ fun CardExpiryTextField(
             textFieldValue = TextFieldValue(
                 text = formattedDate.take(VALID_INPUT_LENGTH),
                 selection = TextRange(formattedDate.length),
+                composition = null, // Explicitly end IME composition to fix Android 9 IME issues
             )
             showClearButton = textFieldValue.text.isNotEmpty()
             onTextChanged(textFieldValue)
@@ -114,8 +116,8 @@ fun CardExpiryTextField(
                 IconButton(
                     onClick = {
                         showClearButton = false
-                        textFieldValue = TextFieldValue()
-                        onTextChanged(TextFieldValue())
+                        textFieldValue = TextFieldValue(composition = null)
+                        onTextChanged(TextFieldValue(composition = null))
                     },
                 ) {
                     Icon(
