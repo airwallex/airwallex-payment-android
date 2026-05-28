@@ -44,7 +44,7 @@ fun CardExpiryTextField(
 ) {
     var showClearButton by remember { mutableStateOf(false) }
     var textFieldValue by remember(initialValue) {
-        mutableStateOf(TextFieldValue(text = initialValue, selection = TextRange(initialValue.length), composition = null))
+        mutableStateOf(TextFieldValue(text = initialValue, selection = TextRange(initialValue.length)))
     }
     var localFocusState by remember { mutableStateOf<FocusState>(FocusState.Initial) }
 
@@ -52,13 +52,19 @@ fun CardExpiryTextField(
         hint = stringResource(R.string.airwallex_expires_hint),
         text = textFieldValue,
         onTextChanged = { newText ->
+            // Don't format while IME is composing to prevent conflicts on Android 9 devices
+            if (newText.composition != null) {
+                textFieldValue = newText
+                onTextChanged(textFieldValue)
+                return@StandardTextField
+            }
+
             val isDeleteAction = newText.text.length < (textFieldValue.text.length)
             if (isDeleteAction) {
                 val formattedText = formatExpiryDateWhenDeleting(newText.text)
                 textFieldValue = TextFieldValue(
                     text = formattedText.take(VALID_INPUT_LENGTH),
                     selection = TextRange(formattedText.length),
-                    composition = null, // Explicitly end IME composition to fix Android 9 IME issues
                 )
                 showClearButton = textFieldValue.text.isNotEmpty()
                 onTextChanged(textFieldValue)
@@ -69,7 +75,6 @@ fun CardExpiryTextField(
             textFieldValue = TextFieldValue(
                 text = formattedDate.take(VALID_INPUT_LENGTH),
                 selection = TextRange(formattedDate.length),
-                composition = null, // Explicitly end IME composition to fix Android 9 IME issues
             )
             showClearButton = textFieldValue.text.isNotEmpty()
             onTextChanged(textFieldValue)
@@ -116,8 +121,8 @@ fun CardExpiryTextField(
                 IconButton(
                     onClick = {
                         showClearButton = false
-                        textFieldValue = TextFieldValue(composition = null)
-                        onTextChanged(TextFieldValue(composition = null))
+                        textFieldValue = TextFieldValue()
+                        onTextChanged(TextFieldValue())
                     },
                 ) {
                     Icon(
