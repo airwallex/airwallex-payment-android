@@ -1,0 +1,6 @@
+//[components-core](../../../../index.md)/[com.airwallex.android.core.model](../../index.md)/[PaymentIntent](../index.md)/[PaymentAttempt](index.md)/[PaymentAttempt](-payment-attempt.md)
+
+# PaymentAttempt
+
+[androidJvm]\
+constructor(id: [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html)?, amount: [BigDecimal](https://developer.android.com/reference/kotlin/java/math/BigDecimal.html)?, currency: [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html)? = null, paymentMethod: [PaymentMethod](../../-payment-method/index.md), capturedAmount: [BigDecimal](https://developer.android.com/reference/kotlin/java/math/BigDecimal.html)?, refundedAmount: [BigDecimal](https://developer.android.com/reference/kotlin/java/math/BigDecimal.html)?, createdAt: [Date](https://developer.android.com/reference/kotlin/java/util/Date.html)?, updatedAt: [Date](https://developer.android.com/reference/kotlin/java/util/Date.html)?, authenticationData: [PaymentIntent.PaymentAttemptAuthData](../-payment-attempt-auth-data/index.md)?, status: [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html)? = null, failureDetails: [PaymentIntent.FailureDetails](../-failure-details/index.md)? = null)

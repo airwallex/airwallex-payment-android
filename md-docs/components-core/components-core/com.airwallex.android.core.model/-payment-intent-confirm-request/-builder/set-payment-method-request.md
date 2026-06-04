@@ -1,0 +1,6 @@
+//[components-core](../../../../index.md)/[com.airwallex.android.core.model](../../index.md)/[PaymentIntentConfirmRequest](../index.md)/[Builder](index.md)/[setPaymentMethodRequest](set-payment-method-request.md)
+
+# setPaymentMethodRequest
+
+[androidJvm]\
+fun [setPaymentMethodRequest](set-payment-method-request.md)(paymentMethodRequest: [PaymentMethodRequest](../../-payment-method-request/index.md)?): [PaymentIntentConfirmRequest.Builder](index.md)

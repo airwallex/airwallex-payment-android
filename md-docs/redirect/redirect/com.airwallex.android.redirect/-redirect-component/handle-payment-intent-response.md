@@ -1,0 +1,6 @@
+//[redirect](../../../index.md)/[com.airwallex.android.redirect](../index.md)/[RedirectComponent](index.md)/[handlePaymentIntentResponse](handle-payment-intent-response.md)
+
+# handlePaymentIntentResponse
+
+[androidJvm]\
+open override fun [handlePaymentIntentResponse](handle-payment-intent-response.md)(paymentIntentId: [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html)?, nextAction: [NextAction](../../../../components-core/components-core/com.airwallex.android.core.model/-next-action/index.md)?, fragment: [Fragment](https://developer.android.com/reference/kotlin/androidx/fragment/app/Fragment.html)?, activity: [Activity](https://developer.android.com/reference/kotlin/android/app/Activity.html), applicationContext: [Context](https://developer.android.com/reference/kotlin/android/content/Context.html), cardNextActionModel: [CardNextActionModel](../../../../components-core/components-core/com.airwallex.android.core/-card-next-action-model/index.md)?, listener: [Airwallex.PaymentResultListener](../../../../components-core/components-core/com.airwallex.android.core/-airwallex/-payment-result-listener/index.md), consentId: [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html)?)

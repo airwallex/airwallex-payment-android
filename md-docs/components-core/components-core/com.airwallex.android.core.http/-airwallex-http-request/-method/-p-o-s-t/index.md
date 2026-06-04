@@ -1,0 +1,14 @@
+//[components-core](../../../../../index.md)/[com.airwallex.android.core.http](../../../index.md)/[AirwallexHttpRequest](../../index.md)/[Method](../index.md)/[POST](index.md)
+
+# POST
+
+[androidJvm]\
+[POST](index.md)
+
+## Properties
+
+| Name | Summary |
+|---|---|
+| [code](../code.md) | [androidJvm]<br>val [code](../code.md): [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html) |
+| [name](../../../../com.airwallex.android.core.model/-transaction-mode/-r-e-c-u-r-r-i-n-g/index.md#-372974862%2FProperties%2F1424399983) | [androidJvm]<br>val [name](../../../../com.airwallex.android.core.model/-transaction-mode/-r-e-c-u-r-r-i-n-g/index.md#-372974862%2FProperties%2F1424399983): [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html) |
+| [ordinal](../../../../com.airwallex.android.core.model/-transaction-mode/-r-e-c-u-r-r-i-n-g/index.md#-739389684%2FProperties%2F1424399983) | [androidJvm]<br>val [ordinal](../../../../com.airwallex.android.core.model/-transaction-mode/-r-e-c-u-r-r-i-n-g/index.md#-739389684%2FProperties%2F1424399983): [Int](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html) |

@@ -1,0 +1,6 @@
+//[components-core](../../../index.md)/[com.airwallex.android.core](../index.md)/[PaymentManager](index.md)/[startOperation](start-operation.md)
+
+# startOperation
+
+[androidJvm]\
+abstract fun &lt;[T](start-operation.md)&gt; [startOperation](start-operation.md)(options: [Options](../../com.airwallex.android.core.model/-options/index.md), listener: [Airwallex.PaymentListener](../-airwallex/-payment-listener/index.md)&lt;[T](start-operation.md)&gt;)

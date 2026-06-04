@@ -1,0 +1,6 @@
+//[ui-core](../../../index.md)/[com.airwallex.android.ui.checkout](../index.md)/[AirwallexCheckoutBaseActivity](index.md)/[startCheckout](start-checkout.md)
+
+# startCheckout
+
+[androidJvm]\
+fun [startCheckout](start-checkout.md)(paymentMethod: [PaymentMethod](../../../../components-core/components-core/com.airwallex.android.core.model/-payment-method/index.md), paymentConsent: [PaymentConsent](../../../../components-core/components-core/com.airwallex.android.core.model/-payment-consent/index.md)? = null, cvc: [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html)? = null, additionalInfo: [Map](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-map/index.html)&lt;[String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html), [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html)&gt;? = null, flow: [AirwallexPaymentRequestFlow](../../../../components-core/components-core/com.airwallex.android.core.model/-airwallex-payment-request-flow/index.md)? = null, observer: [Observer](https://developer.android.com/reference/kotlin/androidx/lifecycle/Observer.html)&lt;[AirwallexPaymentStatus](../../../../components-core/components-core/com.airwallex.android.core/-airwallex-payment-status/index.md)&gt;)

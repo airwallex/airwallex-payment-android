@@ -1,0 +1,6 @@
+//[components-core](../../../../../index.md)/[com.airwallex.android.core.model](../../../index.md)/[PaymentMethod](../../index.md)/[GooglePay](../index.md)/[Builder](index.md)/[setFlow](set-flow.md)
+
+# setFlow
+
+[androidJvm]\
+fun [setFlow](set-flow.md)(flow: [AirwallexPaymentRequestFlow](../../../-airwallex-payment-request-flow/index.md)?): [PaymentMethod.GooglePay.Builder](index.md)
