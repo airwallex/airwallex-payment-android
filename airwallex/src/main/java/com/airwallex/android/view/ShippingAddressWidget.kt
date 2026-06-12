@@ -10,6 +10,7 @@ import com.airwallex.android.R
 import com.airwallex.android.core.model.Address
 import com.airwallex.android.core.model.Shipping
 import com.airwallex.android.databinding.WidgetShippingBinding
+import com.airwallex.android.view.util.BillingAddressLabels
 
 /**
  * A widget used to collect the shipping [Address] of shipping info.
@@ -95,12 +96,29 @@ class ShippingAddressWidget(context: Context, attrs: AttributeSet?) :
     init {
         countryAutocomplete.countryChangeCallback = { country ->
             this.country = country
+            updateAddressLabels(country.code)
             shippingChangeCallback.invoke()
             stateTextInputLayout.requestInputFocus()
         }
 
+        updateAddressLabels(countryCode = "")
         listenTextChanged()
         listenFocusChanged()
+    }
+
+    private fun updateAddressLabels(countryCode: String) {
+        stateTextInputLayout.setHint(
+            resources.getString(BillingAddressLabels.stateLabel(countryCode))
+        )
+        cityTextInputLayout.setHint(
+            resources.getString(BillingAddressLabels.cityLabel(countryCode))
+        )
+        zipcodeTextInputLayout.setHint(
+            resources.getString(
+                R.string.airwallex_field_optional,
+                resources.getString(BillingAddressLabels.postcodeLabel(countryCode))
+            )
+        )
     }
 
     fun initializeView(shipping: Shipping) {

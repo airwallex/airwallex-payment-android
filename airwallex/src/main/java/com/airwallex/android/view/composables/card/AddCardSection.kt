@@ -55,6 +55,7 @@ import com.airwallex.android.view.util.AnalyticsConstants.CLICK_PAY_BUTTON
 import com.airwallex.android.view.util.AnalyticsConstants.PAGE_CREATE_CARD
 import com.airwallex.android.view.util.AnalyticsConstants.PAYMENT_METHOD
 import com.airwallex.android.view.util.AnalyticsConstants.TAP_PAY_BUTTON
+import com.airwallex.android.view.util.BillingAddressLabels
 import com.airwallex.android.view.util.CountryUtils
 import com.airwallex.risk.AirwallexRisk
 
@@ -457,7 +458,7 @@ internal fun AddCardSection(
 
                     Row {
                         BillingTextField(
-                            hint = stringResource(id = R.string.airwallex_shipping_state_name_hint),
+                            hint = stringResource(id = BillingAddressLabels.stateLabel(selectedCountryCode)),
                             text = state,
                             onTextChanged = {
                                 viewModel.updateState(it)
@@ -484,7 +485,7 @@ internal fun AddCardSection(
                             shape = RoundedCornerShape(0.dp),
                         )
                         BillingTextField(
-                            hint = stringResource(id = R.string.airwallex_shipping_city_name_hint),
+                            hint = stringResource(id = BillingAddressLabels.cityLabel(selectedCountryCode)),
                             text = city,
                             onTextChanged = {
                                 viewModel.updateCity(it)
@@ -513,7 +514,7 @@ internal fun AddCardSection(
                     }
 
                     BillingTextField(
-                        hint = stringResource(id = R.string.airwallex_zip_code_hint),
+                        hint = stringResource(id = BillingAddressLabels.postcodeLabel(selectedCountryCode)),
                         text = zipCode,
                         onTextChanged = {
                             viewModel.updateZipCode(it)

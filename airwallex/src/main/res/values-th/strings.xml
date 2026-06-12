@@ -8,6 +8,32 @@
     <string name="airwallex_shipping_email_hint">อีเมล (ไม่จำเป็น)</string>
     <string name="airwallex_contact_phone_number_hint">เบอร์โทรศัพท์ (ไม่จำเป็น)</string>
     <string name="airwallex_zip_code_hint">รหัสไปรษณีย์</string>
+
+    <!-- Country-specific billing address labels (APAM-771) -->
+    <!-- State field variants -->
+    <string name="airwallex_billing_label_state">รัฐ</string>
+    <string name="airwallex_billing_label_province">จังหวัด</string>
+    <string name="airwallex_billing_label_prefecture">จังหวัด</string>
+    <string name="airwallex_billing_label_do_si">โด-ซี</string>
+    <string name="airwallex_billing_label_county">เทศมณฑล</string>
+    <string name="airwallex_billing_label_parish">ตำบล</string>
+    <string name="airwallex_billing_label_department">เขตปกครอง</string>
+    <string name="airwallex_billing_label_district">เขต</string>
+    <string name="airwallex_billing_label_emirate">เอมิเรต</string>
+    <string name="airwallex_billing_label_oblast">แคว้น</string>
+    <string name="airwallex_billing_label_area">พื้นที่</string>
+    <string name="airwallex_billing_label_island">เกาะ</string>
+    <!-- City field variants -->
+    <string name="airwallex_billing_label_city">เมือง</string>
+    <string name="airwallex_billing_label_town">เมือง</string>
+    <string name="airwallex_billing_label_suburb">ชานเมือง</string>
+    <!-- Postcode field variants -->
+    <string name="airwallex_billing_label_postal_code">รหัสไปรษณีย์</string>
+    <string name="airwallex_billing_label_zip_code">รหัสไปรษณีย์</string>
+    <string name="airwallex_billing_label_pin">PIN</string>
+    <string name="airwallex_billing_label_eircode">Eircode</string>
+    <!-- Wraps a label with the (optional) suffix, e.g. "Postal code (optional)" -->
+    <string name="airwallex_field_optional">%1$s (ไม่จำเป็น)</string>
     <string name="airwallex_phone_number_hint">เบอร์โทรศัพท์</string>
     <string name="airwallex_shipping_country_name_hint">ประเทศ / ภูมิภาค</string>
     <string name="airwallex_empty_country">กรุณากรอกประเทศของคุณ</string>

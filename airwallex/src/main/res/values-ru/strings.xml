@@ -8,6 +8,32 @@
     <string name="airwallex_shipping_email_hint">Электронная почта (необязательно)</string>
     <string name="airwallex_contact_phone_number_hint">Номер телефона (необязательно)</string>
     <string name="airwallex_zip_code_hint">Почтовый индекс</string>
+
+    <!-- Country-specific billing address labels (APAM-771) -->
+    <!-- State field variants -->
+    <string name="airwallex_billing_label_state">Штат</string>
+    <string name="airwallex_billing_label_province">Провинция</string>
+    <string name="airwallex_billing_label_prefecture">Префектура</string>
+    <string name="airwallex_billing_label_do_si">До Си</string>
+    <string name="airwallex_billing_label_county">Округ</string>
+    <string name="airwallex_billing_label_parish">Приход</string>
+    <string name="airwallex_billing_label_department">Департамент</string>
+    <string name="airwallex_billing_label_district">Район</string>
+    <string name="airwallex_billing_label_emirate">Эмират</string>
+    <string name="airwallex_billing_label_oblast">Область</string>
+    <string name="airwallex_billing_label_area">Регион</string>
+    <string name="airwallex_billing_label_island">Остров</string>
+    <!-- City field variants -->
+    <string name="airwallex_billing_label_city">Город</string>
+    <string name="airwallex_billing_label_town">Городок</string>
+    <string name="airwallex_billing_label_suburb">Пригород</string>
+    <!-- Postcode field variants -->
+    <string name="airwallex_billing_label_postal_code">Почтовый индекс</string>
+    <string name="airwallex_billing_label_zip_code">Почтовый индекс</string>
+    <string name="airwallex_billing_label_pin">PIN</string>
+    <string name="airwallex_billing_label_eircode">Eircode</string>
+    <!-- Wraps a label with the (optional) suffix, e.g. "Postal code (optional)" -->
+    <string name="airwallex_field_optional">%1$s (необязательно)</string>
     <string name="airwallex_phone_number_hint">Номер телефона</string>
     <string name="airwallex_shipping_country_name_hint">Страна / Регион</string>
     <string name="airwallex_empty_country">Пожалуйста, введите вашу страну</string>

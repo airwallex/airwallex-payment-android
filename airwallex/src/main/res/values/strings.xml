@@ -9,6 +9,32 @@
     <string name="airwallex_shipping_email_hint">Email (optional)</string>
     <string name="airwallex_contact_phone_number_hint">Phone number (optional)</string>
     <string name="airwallex_zip_code_hint">Zip code</string>
+
+    <!-- Country-specific billing address labels (APAM-771) -->
+    <!-- State field variants -->
+    <string name="airwallex_billing_label_state">State</string>
+    <string name="airwallex_billing_label_province">Province</string>
+    <string name="airwallex_billing_label_prefecture">Prefecture</string>
+    <string name="airwallex_billing_label_do_si">Do Si</string>
+    <string name="airwallex_billing_label_county">County</string>
+    <string name="airwallex_billing_label_parish">Parish</string>
+    <string name="airwallex_billing_label_department">Department</string>
+    <string name="airwallex_billing_label_district">District</string>
+    <string name="airwallex_billing_label_emirate">Emirate</string>
+    <string name="airwallex_billing_label_oblast">Oblast</string>
+    <string name="airwallex_billing_label_area">Area</string>
+    <string name="airwallex_billing_label_island">Island</string>
+    <!-- City field variants -->
+    <string name="airwallex_billing_label_city">City</string>
+    <string name="airwallex_billing_label_town">Town</string>
+    <string name="airwallex_billing_label_suburb">Suburb</string>
+    <!-- Postcode field variants -->
+    <string name="airwallex_billing_label_postal_code">Postal code</string>
+    <string name="airwallex_billing_label_zip_code">ZIP code</string>
+    <string name="airwallex_billing_label_pin">Pin</string>
+    <string name="airwallex_billing_label_eircode">Eircode</string>
+    <!-- Wraps a label with the (optional) suffix, e.g. "Postal code (optional)" -->
+    <string name="airwallex_field_optional">%1$s (optional)</string>
     <string name="airwallex_phone_number_hint">Phone number</string>
     <string name="airwallex_shipping_country_name_hint">Country / Region</string>
     <string name="airwallex_empty_country">Please enter your country</string>

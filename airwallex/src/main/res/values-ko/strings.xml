@@ -8,6 +8,32 @@
     <string name="airwallex_shipping_email_hint">이메일(선택 사항)</string>
     <string name="airwallex_contact_phone_number_hint">전화번호(선택 사항)</string>
     <string name="airwallex_zip_code_hint">우편번호</string>
+
+    <!-- Country-specific billing address labels (APAM-771) -->
+    <!-- State field variants -->
+    <string name="airwallex_billing_label_state">주</string>
+    <string name="airwallex_billing_label_province">도</string>
+    <string name="airwallex_billing_label_prefecture">현</string>
+    <string name="airwallex_billing_label_do_si">도/시</string>
+    <string name="airwallex_billing_label_county">군</string>
+    <string name="airwallex_billing_label_parish">교구</string>
+    <string name="airwallex_billing_label_department">도</string>
+    <string name="airwallex_billing_label_district">구</string>
+    <string name="airwallex_billing_label_emirate">토후국</string>
+    <string name="airwallex_billing_label_oblast">주</string>
+    <string name="airwallex_billing_label_area">지역</string>
+    <string name="airwallex_billing_label_island">섬</string>
+    <!-- City field variants -->
+    <string name="airwallex_billing_label_city">시</string>
+    <string name="airwallex_billing_label_town">읍</string>
+    <string name="airwallex_billing_label_suburb">교외</string>
+    <!-- Postcode field variants -->
+    <string name="airwallex_billing_label_postal_code">우편번호</string>
+    <string name="airwallex_billing_label_zip_code">우편번호</string>
+    <string name="airwallex_billing_label_pin">PIN</string>
+    <string name="airwallex_billing_label_eircode">Eircode</string>
+    <!-- Wraps a label with the (optional) suffix, e.g. "Postal code (optional)" -->
+    <string name="airwallex_field_optional">%1$s(선택 사항)</string>
     <string name="airwallex_phone_number_hint">전화번호</string>
     <string name="airwallex_shipping_country_name_hint">국가 / 지역</string>
     <string name="airwallex_empty_country">국가를 입력하세요</string>
