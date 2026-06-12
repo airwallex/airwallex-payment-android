@@ -107,6 +107,7 @@ class WeChatComponentTest {
 
     @Test
     fun `test handleIntent when WeChat response is ok`() {
+        every { component["initiateWeChatPay"](any<WeChat>()) } returns true
         val eventHandler = slot<IWXAPIEventHandler>()
         val response = PayResp()
         response.errCode = BaseResp.ErrCode.ERR_OK
@@ -122,6 +123,7 @@ class WeChatComponentTest {
 
     @Test
     fun `test handleIntent when WeChat response is user cancel`() {
+        every { component["initiateWeChatPay"](any<WeChat>()) } returns true
         val eventHandler = slot<IWXAPIEventHandler>()
         val response = PayResp()
         response.errCode = BaseResp.ErrCode.ERR_USER_CANCEL
@@ -137,6 +139,7 @@ class WeChatComponentTest {
 
     @Test
     fun `test handleIntent when WeChat response is other error`() {
+        every { component["initiateWeChatPay"](any<WeChat>()) } returns true
         val eventHandler = slot<IWXAPIEventHandler>()
         val response = PayResp()
         response.errCode = BaseResp.ErrCode.ERR_COMM
