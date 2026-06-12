@@ -1,19 +1,373 @@
-package com.airwallex.android.view.util
+package com.airwallex.android.core.util
+
+import androidx.annotation.RestrictTo
 
 /**
+ * Per-country address spec — what the merchant's address form should look like for each
+ * ISO country code.
  *
- * Rule:
- *  - State field is shown only for countries whose `fmt` in address.json contains `%S`.
- *  - If sub_keys exist for that country, render as a dropdown of those values.
- *  - Otherwise render as a free-text input (only SC at the time of porting).
- *  - For any other country, hide the state field entirely.
+ * Each country has an `fmt` string that names the fields it collects in render order:
+ * `%A` = street, `%C` = city, `%S` = state, `%Z` = postcode. The presence of a token
+ * decides whether that field is rendered:
+ *  - State (`%S`): [hasState] / [stateList]
+ *  - City (`%C`): [hasCity]
+ *  - Postcode (`%Z`): [hasPostcode] / [postcodePattern] / [postcodeExamples]
+ *
+ * Countries with no `fmt` defined fall back to the default of street + city.
+ *
+ * **Required-field policy.** Any field that is visible is required. The upstream data
+ * also declares a per-country `require` set (e.g. street + state for AE), but in
+ * practice the validator collects every visible field with a blank check, so the
+ * `require` declaration is intentionally not exposed here.
  */
-@Suppress("LargeClass") // Hand-port of address.json — size is data, not complexity.
-internal object AddressSpec {
+@Suppress("LargeClass") // Size is data, not complexity.
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+object AddressSpec {
 
-    /** Countries whose `fmt` contains `%S` but have no sub_keys list — render state as free text. */
+    /** Countries that collect a state but have no fixed list of values — render as free text. */
     private val STATE_FREETEXT_COUNTRIES: Set<String> = setOf(
         "SC",
+    )
+
+    /**
+     * Countries whose `fmt` is defined but does not contain `%C` — hide the city field.
+     */
+    private val COUNTRIES_WITHOUT_CITY: Set<String> = setOf(
+        "AE", "GI", "JP", "KY", "MO", "NR", "SG",
+    )
+
+    /** Countries whose `fmt` is defined but does not contain `%Z` — hide the postcode field. */
+    private val COUNTRIES_WITHOUT_POSTCODE: Set<String> = setOf(
+        "AE", "BF", "BS", "CI", "HK", "JM", "KI", "KN",
+        "MO", "MW", "NR", "PA", "SC", "SR", "TV",
+    )
+
+    /** Per-country postcode regex (anchored, case-insensitive). */
+    private val POSTCODE_PATTERNS: Map<String, Regex> = mapOf(
+        "AC" to Regex("^ASCN 1ZZ$", RegexOption.IGNORE_CASE),
+        "AD" to Regex("^AD[1-7]0\\d$", RegexOption.IGNORE_CASE),
+        "AI" to Regex("^(?:AI-)?2640$", RegexOption.IGNORE_CASE),
+        "AL" to Regex("^\\d{4}$", RegexOption.IGNORE_CASE),
+        "AM" to Regex("^(?:37)?\\d{4}$", RegexOption.IGNORE_CASE),
+        "AR" to Regex("^((?:[A-HJ-NP-Z])?\\d{4})([A-Z]{3})?$", RegexOption.IGNORE_CASE),
+        "AT" to Regex("^\\d{4}$", RegexOption.IGNORE_CASE),
+        "AU" to Regex("^\\d{4}$", RegexOption.IGNORE_CASE),
+        "AX" to Regex("^22\\d{3}$", RegexOption.IGNORE_CASE),
+        "AZ" to Regex("^\\d{4}$", RegexOption.IGNORE_CASE),
+        "BA" to Regex("^\\d{5}$", RegexOption.IGNORE_CASE),
+        "BB" to Regex("^BB\\d{5}$", RegexOption.IGNORE_CASE),
+        "BD" to Regex("^\\d{4}$", RegexOption.IGNORE_CASE),
+        "BE" to Regex("^\\d{4}$", RegexOption.IGNORE_CASE),
+        "BG" to Regex("^\\d{4}$", RegexOption.IGNORE_CASE),
+        "BH" to Regex("^(?:\\d|1[0-2])\\d{2}$", RegexOption.IGNORE_CASE),
+        "BL" to Regex("^9[78][01]\\d{2}$", RegexOption.IGNORE_CASE),
+        "BM" to Regex("^[A-Z]{2} ?[A-Z0-9]{2}$", RegexOption.IGNORE_CASE),
+        "BN" to Regex("^[A-Z]{2} ?\\d{4}$", RegexOption.IGNORE_CASE),
+        "BR" to Regex("^\\d{5}-?\\d{3}$", RegexOption.IGNORE_CASE),
+        "BT" to Regex("^\\d{5}$", RegexOption.IGNORE_CASE),
+        "CA" to Regex("^[ABCEGHJKLMNPRSTVXY]\\d[ABCEGHJ-NPRSTV-Z] ?\\d[ABCEGHJ-NPRSTV-Z]\\d$", RegexOption.IGNORE_CASE),
+        "CH" to Regex("^\\d{4}$", RegexOption.IGNORE_CASE),
+        "CL" to Regex("^\\d{7}$", RegexOption.IGNORE_CASE),
+        "CN" to Regex("^\\d{6}$", RegexOption.IGNORE_CASE),
+        "CO" to Regex("^\\d{6}$", RegexOption.IGNORE_CASE),
+        "CR" to Regex("^\\d{4,5}|\\d{3}-\\d{4}$", RegexOption.IGNORE_CASE),
+        "CV" to Regex("^\\d{4}$", RegexOption.IGNORE_CASE),
+        "CY" to Regex("^\\d{4}$", RegexOption.IGNORE_CASE),
+        "CZ" to Regex("^\\d{3} ?\\d{2}$", RegexOption.IGNORE_CASE),
+        "DE" to Regex("^\\d{5}$", RegexOption.IGNORE_CASE),
+        "DK" to Regex("^\\d{4}$", RegexOption.IGNORE_CASE),
+        "DO" to Regex("^\\d{5}$", RegexOption.IGNORE_CASE),
+        "DZ" to Regex("^\\d{5}$", RegexOption.IGNORE_CASE),
+        "EC" to Regex("^\\d{6}$", RegexOption.IGNORE_CASE),
+        "EE" to Regex("^\\d{5}$", RegexOption.IGNORE_CASE),
+        "EG" to Regex("^\\d{5}$", RegexOption.IGNORE_CASE),
+        "EH" to Regex("^\\d{5}$", RegexOption.IGNORE_CASE),
+        "ES" to Regex("^\\d{5}$", RegexOption.IGNORE_CASE),
+        "ET" to Regex("^\\d{4}$", RegexOption.IGNORE_CASE),
+        "FI" to Regex("^\\d{5}$", RegexOption.IGNORE_CASE),
+        "FK" to Regex("^FIQQ 1ZZ$", RegexOption.IGNORE_CASE),
+        "FO" to Regex("^\\d{3}$", RegexOption.IGNORE_CASE),
+        "FR" to Regex("^\\d{2} ?\\d{3}$", RegexOption.IGNORE_CASE),
+        "GB" to Regex("^GIR ?0AA|(?:(?:AB|AL|B|BA|BB|BD|BF|BH|BL|BN|BR|BS|BT|BX|CA|CB|CF|CH|CM|CO|CR|CT|CV|CW|DA|DD|DE|DG|DH|DL|DN|DT|DY|E|EC|EH|EN|EX|FK|FY|G|GL|GY|GU|HA|HD|HG|HP|HR|HS|HU|HX|IG|IM|IP|IV|JE|KA|KT|KW|KY|L|LA|LD|LE|LL|LN|LS|LU|M|ME|MK|ML|N|NE|NG|NN|NP|NR|NW|OL|OX|PA|PE|PH|PL|PO|PR|RG|RH|RM|S|SA|SE|SG|SK|SL|SM|SN|SO|SP|SR|SS|ST|SW|SY|TA|TD|TF|TN|TQ|TR|TS|TW|UB|W|WA|WC|WD|WF|WN|WR|WS|WV|YO|ZE)(?:\\d[\\dA-Z]? ?\\d[ABD-HJLN-UW-Z]{2}))|BFPO ?\\d{1,4}$", RegexOption.IGNORE_CASE),
+        "GE" to Regex("^\\d{4}$", RegexOption.IGNORE_CASE),
+        "GF" to Regex("^9[78]3\\d{2}$", RegexOption.IGNORE_CASE),
+        "GG" to Regex("^GY\\d[\\dA-Z]? ?\\d[ABD-HJLN-UW-Z]{2}$", RegexOption.IGNORE_CASE),
+        "GI" to Regex("^GX11 1AA$", RegexOption.IGNORE_CASE),
+        "GL" to Regex("^39\\d{2}$", RegexOption.IGNORE_CASE),
+        "GN" to Regex("^\\d{3}$", RegexOption.IGNORE_CASE),
+        "GP" to Regex("^9[78][01]\\d{2}$", RegexOption.IGNORE_CASE),
+        "GR" to Regex("^\\d{3} ?\\d{2}$", RegexOption.IGNORE_CASE),
+        "GS" to Regex("^SIQQ 1ZZ$", RegexOption.IGNORE_CASE),
+        "GT" to Regex("^\\d{5}$", RegexOption.IGNORE_CASE),
+        "GU" to Regex("^(969(?:[12]\\d|3[12]))(?:[ \\-](\\d{4}))?$", RegexOption.IGNORE_CASE),
+        "HN" to Regex("^\\d{5}$", RegexOption.IGNORE_CASE),
+        "HR" to Regex("^\\d{5}$", RegexOption.IGNORE_CASE),
+        "HT" to Regex("^\\d{4}$", RegexOption.IGNORE_CASE),
+        "HU" to Regex("^\\d{4}$", RegexOption.IGNORE_CASE),
+        "ID" to Regex("^\\d{5}$", RegexOption.IGNORE_CASE),
+        "IE" to Regex("^[\\dA-Z]{3} ?[\\dA-Z]{4}$", RegexOption.IGNORE_CASE),
+        "IL" to Regex("^\\d{5}(?:\\d{2})?$", RegexOption.IGNORE_CASE),
+        "IM" to Regex("^IM\\d[\\dA-Z]? ?\\d[ABD-HJLN-UW-Z]{2}$", RegexOption.IGNORE_CASE),
+        "IN" to Regex("^\\d{6}$", RegexOption.IGNORE_CASE),
+        "IO" to Regex("^BBND 1ZZ$", RegexOption.IGNORE_CASE),
+        "IS" to Regex("^\\d{3}$", RegexOption.IGNORE_CASE),
+        "IT" to Regex("^\\d{5}$", RegexOption.IGNORE_CASE),
+        "JE" to Regex("^JE\\d[\\dA-Z]? ?\\d[ABD-HJLN-UW-Z]{2}$", RegexOption.IGNORE_CASE),
+        "JO" to Regex("^\\d{5}$", RegexOption.IGNORE_CASE),
+        "JP" to Regex("^\\d{3}-?\\d{4}$", RegexOption.IGNORE_CASE),
+        "KE" to Regex("^\\d{5}$", RegexOption.IGNORE_CASE),
+        "KG" to Regex("^\\d{6}$", RegexOption.IGNORE_CASE),
+        "KH" to Regex("^\\d{5,6}$", RegexOption.IGNORE_CASE),
+        "KR" to Regex("^\\d{5}$", RegexOption.IGNORE_CASE),
+        "KW" to Regex("^\\d{5}$", RegexOption.IGNORE_CASE),
+        "KY" to Regex("^KY\\d-\\d{4}$", RegexOption.IGNORE_CASE),
+        "KZ" to Regex("^\\d{6}$", RegexOption.IGNORE_CASE),
+        "LA" to Regex("^\\d{5}$", RegexOption.IGNORE_CASE),
+        "LB" to Regex("^(?:\\d{4})(?: ?(?:\\d{4}))?$", RegexOption.IGNORE_CASE),
+        "LI" to Regex("^948[5-9]|949[0-8]$", RegexOption.IGNORE_CASE),
+        "LK" to Regex("^\\d{5}$", RegexOption.IGNORE_CASE),
+        "LS" to Regex("^\\d{3}$", RegexOption.IGNORE_CASE),
+        "LT" to Regex("^\\d{5}$", RegexOption.IGNORE_CASE),
+        "LU" to Regex("^\\d{4}$", RegexOption.IGNORE_CASE),
+        "LV" to Regex("^LV-\\d{4}$", RegexOption.IGNORE_CASE),
+        "MA" to Regex("^\\d{5}$", RegexOption.IGNORE_CASE),
+        "MC" to Regex("^980\\d{2}$", RegexOption.IGNORE_CASE),
+        "MD" to Regex("^\\d{4}$", RegexOption.IGNORE_CASE),
+        "ME" to Regex("^8\\d{4}$", RegexOption.IGNORE_CASE),
+        "MF" to Regex("^9[78][01]\\d{2}$", RegexOption.IGNORE_CASE),
+        "MG" to Regex("^\\d{3}$", RegexOption.IGNORE_CASE),
+        "MK" to Regex("^\\d{4}$", RegexOption.IGNORE_CASE),
+        "MN" to Regex("^\\d{5}$", RegexOption.IGNORE_CASE),
+        "MQ" to Regex("^9[78]2\\d{2}$", RegexOption.IGNORE_CASE),
+        "MT" to Regex("^[A-Z]{3} ?\\d{2,4}$", RegexOption.IGNORE_CASE),
+        "MU" to Regex("^\\d{3}(?:\\d{2}|[A-Z]{2}\\d{3})$", RegexOption.IGNORE_CASE),
+        "MV" to Regex("^\\d{5}$", RegexOption.IGNORE_CASE),
+        "MX" to Regex("^\\d{5}$", RegexOption.IGNORE_CASE),
+        "MY" to Regex("^\\d{5}$", RegexOption.IGNORE_CASE),
+        "MZ" to Regex("^\\d{4}$", RegexOption.IGNORE_CASE),
+        "NA" to Regex("^\\d{5}$", RegexOption.IGNORE_CASE),
+        "NC" to Regex("^988\\d{2}$", RegexOption.IGNORE_CASE),
+        "NE" to Regex("^\\d{4}$", RegexOption.IGNORE_CASE),
+        "NG" to Regex("^\\d{6}$", RegexOption.IGNORE_CASE),
+        "NI" to Regex("^\\d{5}$", RegexOption.IGNORE_CASE),
+        "NL" to Regex("^\\d{4} ?[A-Z]{2}$", RegexOption.IGNORE_CASE),
+        "NO" to Regex("^\\d{4}$", RegexOption.IGNORE_CASE),
+        "NP" to Regex("^\\d{5}$", RegexOption.IGNORE_CASE),
+        "NZ" to Regex("^\\d{4}$", RegexOption.IGNORE_CASE),
+        "OM" to Regex("^(?:PC )?\\d{3}$", RegexOption.IGNORE_CASE),
+        "PE" to Regex("^(?:LIMA \\d{1,2}|CALLAO 0?\\d)|[0-2]\\d{4}$", RegexOption.IGNORE_CASE),
+        "PF" to Regex("^987\\d{2}$", RegexOption.IGNORE_CASE),
+        "PG" to Regex("^\\d{3}$", RegexOption.IGNORE_CASE),
+        "PH" to Regex("^\\d{4}$", RegexOption.IGNORE_CASE),
+        "PK" to Regex("^\\d{5}$", RegexOption.IGNORE_CASE),
+        "PL" to Regex("^\\d{2}-\\d{3}$", RegexOption.IGNORE_CASE),
+        "PM" to Regex("^9[78]5\\d{2}$", RegexOption.IGNORE_CASE),
+        "PN" to Regex("^PCRN 1ZZ$", RegexOption.IGNORE_CASE),
+        "PR" to Regex("^(00[679]\\d{2})(?:[ \\-](\\d{4}))?$", RegexOption.IGNORE_CASE),
+        "PT" to Regex("^\\d{4}-\\d{3}$", RegexOption.IGNORE_CASE),
+        "PY" to Regex("^\\d{4}$", RegexOption.IGNORE_CASE),
+        "RE" to Regex("^9[78]4\\d{2}$", RegexOption.IGNORE_CASE),
+        "RO" to Regex("^\\d{6}$", RegexOption.IGNORE_CASE),
+        "RS" to Regex("^\\d{5,6}$", RegexOption.IGNORE_CASE),
+        "RU" to Regex("^\\d{6}$", RegexOption.IGNORE_CASE),
+        "SA" to Regex("^\\d{5}$", RegexOption.IGNORE_CASE),
+        "SE" to Regex("^\\d{3} ?\\d{2}$", RegexOption.IGNORE_CASE),
+        "SG" to Regex("^\\d{6}$", RegexOption.IGNORE_CASE),
+        "SH" to Regex("^(?:ASCN|STHL) 1ZZ$", RegexOption.IGNORE_CASE),
+        "SI" to Regex("^\\d{4}$", RegexOption.IGNORE_CASE),
+        "SJ" to Regex("^\\d{4}$", RegexOption.IGNORE_CASE),
+        "SK" to Regex("^\\d{3} ?\\d{2}$", RegexOption.IGNORE_CASE),
+        "SM" to Regex("^4789\\d$", RegexOption.IGNORE_CASE),
+        "SN" to Regex("^\\d{5}$", RegexOption.IGNORE_CASE),
+        "SV" to Regex("^CP [1-3][1-7][0-2]\\d$", RegexOption.IGNORE_CASE),
+        "SZ" to Regex("^[HLMS]\\d{3}$", RegexOption.IGNORE_CASE),
+        "TA" to Regex("^TDCU 1ZZ$", RegexOption.IGNORE_CASE),
+        "TC" to Regex("^TKCA 1ZZ$", RegexOption.IGNORE_CASE),
+        "TH" to Regex("^\\d{5}$", RegexOption.IGNORE_CASE),
+        "TJ" to Regex("^\\d{6}$", RegexOption.IGNORE_CASE),
+        "TM" to Regex("^\\d{6}$", RegexOption.IGNORE_CASE),
+        "TN" to Regex("^\\d{4}$", RegexOption.IGNORE_CASE),
+        "TR" to Regex("^\\d{5}$", RegexOption.IGNORE_CASE),
+        "TW" to Regex("^\\d{3}(?:\\d{2,3})?$", RegexOption.IGNORE_CASE),
+        "TZ" to Regex("^\\d{4,5}$", RegexOption.IGNORE_CASE),
+        "UA" to Regex("^\\d{5}$", RegexOption.IGNORE_CASE),
+        "US" to Regex("^(\\d{5})(?:[ \\-](\\d{4}))?$", RegexOption.IGNORE_CASE),
+        "UY" to Regex("^\\d{5}$", RegexOption.IGNORE_CASE),
+        "UZ" to Regex("^\\d{6}$", RegexOption.IGNORE_CASE),
+        "VA" to Regex("^00120$", RegexOption.IGNORE_CASE),
+        "VC" to Regex("^VC\\d{4}$", RegexOption.IGNORE_CASE),
+        "VE" to Regex("^\\d{4}$", RegexOption.IGNORE_CASE),
+        "VG" to Regex("^VG\\d{4}$", RegexOption.IGNORE_CASE),
+        "VN" to Regex("^\\d{5}\\d?$", RegexOption.IGNORE_CASE),
+        "WF" to Regex("^986\\d{2}$", RegexOption.IGNORE_CASE),
+        "XK" to Regex("^[1-7]\\d{4}$", RegexOption.IGNORE_CASE),
+        "YT" to Regex("^976\\d{2}$", RegexOption.IGNORE_CASE),
+        "ZA" to Regex("^\\d{4}$", RegexOption.IGNORE_CASE),
+        "ZM" to Regex("^\\d{5}$", RegexOption.IGNORE_CASE),
+    )
+
+    /** Sample postcodes for hint placeholders. */
+    private val POSTCODE_EXAMPLES: Map<String, List<String>> = mapOf(
+        "AC" to listOf("ASCN 1ZZ"),
+        "AD" to listOf("AD100", "AD501", "AD700"),
+        "AI" to listOf("2640"),
+        "AL" to listOf("1001", "1017", "3501"),
+        "AM" to listOf("375010", "0002", "0010"),
+        "AR" to listOf("C1070AAM", "C1000WAM", "B1000TBU", "X5187XAB"),
+        "AT" to listOf("1010", "3741"),
+        "AU" to listOf("2060", "3171", "6430", "4000", "4006", "3001"),
+        "AX" to listOf("22150", "22550", "22240", "22710", "22270", "22730", "22430"),
+        "AZ" to listOf("1000"),
+        "BA" to listOf("71000"),
+        "BB" to listOf("BB23026", "BB22025"),
+        "BD" to listOf("1340", "1000"),
+        "BE" to listOf("4000", "1000"),
+        "BG" to listOf("1000", "1700"),
+        "BH" to listOf("317"),
+        "BL" to listOf("97100"),
+        "BM" to listOf("FL 07", "HM GX", "HM 12"),
+        "BN" to listOf("BT2328", "KA1131", "BA1511"),
+        "BR" to listOf("40301-110", "70002-900"),
+        "BT" to listOf("11001", "31101", "35003"),
+        "CA" to listOf("H3Z 2Y7", "V8X 3X4", "T0L 1K0", "T0H 1A0", "K1A 0B1"),
+        "CH" to listOf("2544", "1211", "1556", "3030"),
+        "CL" to listOf("8340457", "8720019", "1230000", "8329100"),
+        "CN" to listOf("266033", "317204", "100096", "100808"),
+        "CO" to listOf("111221", "130001", "760011"),
+        "CR" to listOf("1000", "2010", "1001"),
+        "CV" to listOf("7600"),
+        "CY" to listOf("2008", "3304", "1900"),
+        "CZ" to listOf("100 00", "251 66", "530 87", "110 00", "225 99"),
+        "DE" to listOf("26133", "53225"),
+        "DK" to listOf("8660", "1566"),
+        "DO" to listOf("11903", "10101"),
+        "DZ" to listOf("40304", "16027"),
+        "EC" to listOf("090105", "092301"),
+        "EE" to listOf("69501", "11212"),
+        "EG" to listOf("12411", "11599"),
+        "EH" to listOf("70000", "72000"),
+        "ES" to listOf("28039", "28300", "28070"),
+        "ET" to listOf("1000"),
+        "FI" to listOf("00550", "00011"),
+        "FK" to listOf("FIQQ 1ZZ"),
+        "FO" to listOf("100"),
+        "FR" to listOf("33380", "34092", "33506"),
+        "GB" to listOf("EC1Y 8SY", "GIR 0AA", "M2 5BQ", "M34 4AB", "CR0 2YR", "DN16 9AA", "W1A 4ZZ", "EC1A 1HQ", "OX14 4PG", "BS18 8HF", "NR25 7HG", "RH6 0NP", "BH23 6AA", "B6 5BA", "SO23 9AP", "PO1 3AX", "BFPO 61"),
+        "GE" to listOf("0101"),
+        "GF" to listOf("97300"),
+        "GG" to listOf("GY1 1AA", "GY2 2BT"),
+        "GI" to listOf("GX11 1AA"),
+        "GL" to listOf("3900", "3950", "3911"),
+        "GN" to listOf("001", "200", "100"),
+        "GP" to listOf("97100"),
+        "GR" to listOf("151 24", "151 10", "101 88"),
+        "GS" to listOf("SIQQ 1ZZ"),
+        "GT" to listOf("09001", "01501"),
+        "GU" to listOf("96910", "96931"),
+        "HN" to listOf("31301"),
+        "HR" to listOf("10000", "21001", "10002"),
+        "HT" to listOf("6120", "5310", "6110", "8510"),
+        "HU" to listOf("1037", "2380", "1540"),
+        "ID" to listOf("40115"),
+        "IE" to listOf("A65 F4E2"),
+        "IL" to listOf("9614303"),
+        "IM" to listOf("IM2 1AA", "IM99 1PS"),
+        "IN" to listOf("110034", "110001"),
+        "IO" to listOf("BBND 1ZZ"),
+        "IS" to listOf("320", "121", "220", "110"),
+        "IT" to listOf("00144", "47037", "39049"),
+        "JE" to listOf("JE1 1AA", "JE2 2BT"),
+        "JO" to listOf("11937", "11190"),
+        "JP" to listOf("154-0023", "350-1106", "951-8073", "112-0001", "208-0032", "231-0012"),
+        "KE" to listOf("20100", "00100"),
+        "KG" to listOf("720001"),
+        "KH" to listOf("120101", "120108"),
+        "KR" to listOf("03051"),
+        "KW" to listOf("54541", "54551", "54404", "13009"),
+        "KY" to listOf("KY1-1100", "KY1-1702", "KY2-2101"),
+        "KZ" to listOf("040900", "050012"),
+        "LA" to listOf("01160", "01000"),
+        "LB" to listOf("2038 3054", "1107 2810", "1000"),
+        "LI" to listOf("9496", "9491", "9490", "9485"),
+        "LK" to listOf("20000", "00100"),
+        "LS" to listOf("100"),
+        "LT" to listOf("04340", "03500"),
+        "LU" to listOf("4750", "2998"),
+        "LV" to listOf("LV-1073", "LV-1000"),
+        "MA" to listOf("53000", "10000", "20050", "16052"),
+        "MC" to listOf("98000", "98020", "98011", "98001"),
+        "MD" to listOf("2012", "2019"),
+        "ME" to listOf("81257", "81258", "81217", "84314", "85366"),
+        "MF" to listOf("97100"),
+        "MG" to listOf("501", "101"),
+        "MK" to listOf("1314", "1321", "1443", "1062"),
+        "MN" to listOf("65030", "65270"),
+        "MQ" to listOf("97220"),
+        "MT" to listOf("NXR 01", "ZTN 05", "GPO 01", "BZN 1130", "SPB 6031", "VCT 1753"),
+        "MU" to listOf("42602"),
+        "MV" to listOf("20026"),
+        "MX" to listOf("02860", "77520", "06082"),
+        "MY" to listOf("43000", "50754", "88990", "50670"),
+        "MZ" to listOf("1102", "1119", "3212"),
+        "NA" to listOf("10001", "10017"),
+        "NC" to listOf("98814", "98800", "98810"),
+        "NE" to listOf("8001"),
+        "NG" to listOf("930283", "300001", "931104"),
+        "NI" to listOf("52000"),
+        "NL" to listOf("1234 AB", "2490 AA"),
+        "NO" to listOf("0025", "0107", "6631"),
+        "NP" to listOf("44601"),
+        "NZ" to listOf("6001", "6015", "6332", "8252", "1030"),
+        "OM" to listOf("133", "112", "111"),
+        "PE" to listOf("LIMA 23", "LIMA 42", "CALLAO 2", "02001"),
+        "PF" to listOf("98709"),
+        "PG" to listOf("111"),
+        "PH" to listOf("1008", "1050", "1135", "1207", "2000", "1000"),
+        "PK" to listOf("44000"),
+        "PL" to listOf("00-950", "05-470", "48-300", "32-015", "00-940"),
+        "PM" to listOf("97500"),
+        "PN" to listOf("PCRN 1ZZ"),
+        "PR" to listOf("00930"),
+        "PT" to listOf("2725-079", "1250-096", "1201-950", "2860-571", "1208-148"),
+        "PY" to listOf("1536", "1538", "1209"),
+        "RE" to listOf("97400"),
+        "RO" to listOf("060274", "061357", "200716"),
+        "RS" to listOf("106314"),
+        "RU" to listOf("247112", "103375", "188300"),
+        "SA" to listOf("11564", "11187", "11142"),
+        "SE" to listOf("11455", "12345", "10500"),
+        "SG" to listOf("546080", "308125", "408600"),
+        "SH" to listOf("STHL 1ZZ"),
+        "SI" to listOf("4000", "1001", "2500"),
+        "SJ" to listOf("9170"),
+        "SK" to listOf("010 01", "023 14", "972 48", "921 01", "975 99"),
+        "SM" to listOf("47890", "47891", "47895", "47899"),
+        "SN" to listOf("12500", "46024", "16556", "10000"),
+        "SV" to listOf("CP 1101"),
+        "SZ" to listOf("H100"),
+        "TA" to listOf("TDCU 1ZZ"),
+        "TC" to listOf("TKCA 1ZZ"),
+        "TH" to listOf("10150", "10210"),
+        "TJ" to listOf("735450", "734025"),
+        "TM" to listOf("744000"),
+        "TN" to listOf("1002", "8129", "3100", "1030"),
+        "TR" to listOf("01960", "06101"),
+        "TW" to listOf("104", "106", "10603", "40867"),
+        "TZ" to listOf("6090", "34413"),
+        "UA" to listOf("15432", "01055", "01001"),
+        "US" to listOf("95014", "22162-1010"),
+        "UY" to listOf("11600"),
+        "UZ" to listOf("702100", "700000"),
+        "VA" to listOf("00120"),
+        "VC" to listOf("VC0100", "VC0110", "VC0400"),
+        "VE" to listOf("1010", "3001", "8011", "1020"),
+        "VG" to listOf("VG1110", "VG1150", "VG1160"),
+        "VN" to listOf("70010", "55999"),
+        "WF" to listOf("98600"),
+        "XK" to listOf("10000"),
+        "YT" to listOf("97600"),
+        "ZA" to listOf("0083", "1451", "0001"),
+        "ZM" to listOf("50100", "50101"),
     )
 
     /** Map of country code → list of (value, label) for the state dropdown. */
@@ -1550,11 +1904,21 @@ internal object AddressSpec {
         ),
     )
 
+    // ---------- Public API ----------
+
     /** Whether the given country shows a state field at all. */
     fun hasState(countryCode: String): Boolean {
         val code = countryCode.uppercase()
         return STATE_LISTS.containsKey(code) || STATE_FREETEXT_COUNTRIES.contains(code)
     }
+
+    /** Whether the city field should be rendered for the given country. */
+    fun hasCity(countryCode: String): Boolean =
+        !COUNTRIES_WITHOUT_CITY.contains(countryCode.uppercase())
+
+    /** Whether the postcode field should be rendered for the given country. */
+    fun hasPostcode(countryCode: String): Boolean =
+        !COUNTRIES_WITHOUT_POSTCODE.contains(countryCode.uppercase())
 
     /** State dropdown options for the given country, or null when there is no fixed list. */
     fun stateList(countryCode: String): List<Pair<String, String>>? =
@@ -1563,9 +1927,9 @@ internal object AddressSpec {
     /**
      * Normalize a free-text state to its canonical dropdown value.
      *
-     * Matches case-insensitively against either the option value or label.
-     * Returns the input unchanged when no list exists
-     * or no match is found, so callers can pass through arbitrary user input.
+     * Matches case-insensitively against either the option value or label. Returns the
+     * input unchanged when no list exists or no match is found, so callers can pass
+     * arbitrary user input through.
      */
     fun mapState(countryCode: String, stateInput: String): String {
         if (stateInput.isBlank()) return stateInput
@@ -1576,4 +1940,12 @@ internal object AddressSpec {
         }
         return match?.first ?: stateInput
     }
+
+    /** Anchored, case-insensitive regex for the country's postcode, or null if none. */
+    fun postcodePattern(countryCode: String): Regex? =
+        POSTCODE_PATTERNS[countryCode.uppercase()]
+
+    /** Sample postcodes for the country (use the first as a hint/placeholder), or null. */
+    fun postcodeExamples(countryCode: String): List<String>? =
+        POSTCODE_EXAMPLES[countryCode.uppercase()]
 }

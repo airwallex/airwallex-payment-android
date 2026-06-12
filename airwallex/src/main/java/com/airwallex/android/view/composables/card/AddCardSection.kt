@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -52,7 +53,7 @@ import com.airwallex.android.view.composables.common.CountrySelectRow
 import com.airwallex.android.view.composables.common.PaymentTextField
 import com.airwallex.android.view.composables.common.StateSelectRow
 import com.airwallex.android.view.composables.common.WarningBanner
-import com.airwallex.android.view.util.AddressSpec
+import com.airwallex.android.core.util.AddressSpec
 import com.airwallex.android.view.util.AnalyticsConstants.CLICK_PAY_BUTTON
 import com.airwallex.android.view.util.AnalyticsConstants.PAGE_CREATE_CARD
 import com.airwallex.android.view.util.AnalyticsConstants.PAYMENT_METHOD
@@ -426,18 +427,47 @@ internal fun AddCardSection(
 
                 // ADDRESS wins over COUNTRY_CODE (mutually exclusive in UI).
                 val addressBottomShape = RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp)
+                val squareShape = RoundedCornerShape(0.dp)
 
                 if (viewModel.showAddress) {
+                    // Hide a field when the country's spec doesn't collect it, so the payload
+                    // and UI match what's actually expected.
+                    val showState = AddressSpec.hasState(selectedCountryCode)
+                    val showCity = AddressSpec.hasCity(selectedCountryCode)
+                    val showPostcode = AddressSpec.hasPostcode(selectedCountryCode)
+                    val stateOptions = AddressSpec.stateList(selectedCountryCode)
+
+                    val stateHint = stringResource(id = BillingAddressLabels.stateLabel(selectedCountryCode))
+                    // Sample postcode appended to the field hint to show the expected shape
+                    // (e.g. "ZIP code (e.g. 95014)").
+                    val postcodeExample = AddressSpec.postcodeExamples(selectedCountryCode)?.firstOrNull()
+
+                    // Whichever field is visually last gets the bottom-rounded shape so the
+                    // address block reads as one rounded rectangle. State and city share a row
+                    // only when state is free-text (SC), so the split-corner case is handled
+                    // separately below.
+                    val streetIsLast = !showState && !showCity && !showPostcode
+                    val stateIsLast = showState && !showCity && !showPostcode
+                    val cityIsLast = showCity && !showPostcode
+                    val isFreetextStateRow = showState && stateOptions == null && showCity
+
                     CountrySelectRow(
                         options = CountryUtils.countryList.map { it.name to it.code },
                         default = selectedCountryCode,
                         onOptionSelected = {
                             viewModel.updateSelectedCountryCode(it.second)
                             countryCodeErrorMessage = null
-                            // Clear any state value held over from the previous country —
-                            // the dropdown options and even the field's presence depend on the country.
+                            // Clear state on country change — the dropdown options (and the
+                            // field's presence) depend on the country, so a stale code from
+                            // the previous country would either fail to match or submit wrong.
                             viewModel.updateState("")
                             stateErrorMessage = null
+                            // City/zip values aren't country-specific in shape, but the
+                            // payload should not carry them when the new country doesn't
+                            // collect them — wipe to keep the visible UI and the eventual
+                            // billing payload in sync.
+                            cityErrorMessage = null
+                            postcodeErrorMessage = null
                         },
                         enabled = !isSameAddressChecked,
                         shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp),
@@ -453,14 +483,14 @@ internal fun AddCardSection(
                         onComplete = { input ->
                             streetErrorMessage = viewModel.getBillingValidationMessage(
                                 input,
-                                AddPaymentMethodViewModel.BillingFieldType.STREET
+                                AddPaymentMethodViewModel.BillingFieldType.STREET,
                             )
                             focusManager.moveFocus(FocusDirection.Down)
                         },
                         onFocusLost = { input ->
                             streetErrorMessage = viewModel.getBillingValidationMessage(
                                 input,
-                                AddPaymentMethodViewModel.BillingFieldType.STREET
+                                AddPaymentMethodViewModel.BillingFieldType.STREET,
                             )
                         },
                         modifier = Modifier
@@ -468,48 +498,43 @@ internal fun AddCardSection(
                             .contentType(ContentType.AddressStreet),
                         enabled = !isSameAddressChecked,
                         isError = streetErrorMessage != null,
-                        shape = RoundedCornerShape(0.dp),
+                        shape = if (streetIsLast) addressBottomShape else squareShape,
                     )
 
-                    // State visibility + presentation is driven by [AddressSpec]:
-                    //  - Hidden entirely when the country has no `%S` in fmt → city takes full width.
-                    //  - Dropdown row when a state list exists → state on its own row, city on the next.
-                    //  - Free-text input alongside city (50/50) otherwise.
-                    val stateOptions = AddressSpec.stateList(selectedCountryCode)
-                    val showState = AddressSpec.hasState(selectedCountryCode)
-                    val cityField: @Composable (modifier: Modifier) -> Unit = { cityModifier ->
-                        BillingTextField(
-                            hint = stringResource(id = BillingAddressLabels.cityLabel(selectedCountryCode)),
-                            text = city,
-                            onTextChanged = {
-                                viewModel.updateCity(it)
-                                cityErrorMessage = null
-                            },
-                            onComplete = { input ->
-                                cityErrorMessage = viewModel.getBillingValidationMessage(
-                                    input,
-                                    AddPaymentMethodViewModel.BillingFieldType.CITY
-                                )
-                                focusManager.moveFocus(FocusDirection.Down)
-                            },
-                            onFocusLost = { input ->
-                                cityErrorMessage = viewModel.getBillingValidationMessage(
-                                    input,
-                                    AddPaymentMethodViewModel.BillingFieldType.CITY
-                                )
-                            },
-                            modifier = cityModifier
-                                .contentType(ContentType.AddressLocality),
-                            enabled = !isSameAddressChecked,
-                            isError = cityErrorMessage != null,
-                            shape = RoundedCornerShape(0.dp),
-                        )
-                    }
+                    val cityField: @Composable (modifier: Modifier, shape: Shape) -> Unit =
+                        { cityModifier, cityShape ->
+                            BillingTextField(
+                                hint = stringResource(id = BillingAddressLabels.cityLabel(selectedCountryCode)),
+                                text = city,
+                                onTextChanged = {
+                                    viewModel.updateCity(it)
+                                    cityErrorMessage = null
+                                },
+                                onComplete = { input ->
+                                    cityErrorMessage = viewModel.getBillingValidationMessage(
+                                        input,
+                                        AddPaymentMethodViewModel.BillingFieldType.CITY,
+                                    )
+                                    focusManager.moveFocus(FocusDirection.Down)
+                                },
+                                onFocusLost = { input ->
+                                    cityErrorMessage = viewModel.getBillingValidationMessage(
+                                        input,
+                                        AddPaymentMethodViewModel.BillingFieldType.CITY,
+                                    )
+                                },
+                                modifier = cityModifier
+                                    .contentType(ContentType.AddressLocality),
+                                enabled = !isSameAddressChecked,
+                                isError = cityErrorMessage != null,
+                                shape = cityShape,
+                            )
+                        }
 
                     when {
                         showState && stateOptions != null -> {
                             StateSelectRow(
-                                hint = stringResource(id = BillingAddressLabels.stateLabel(selectedCountryCode)),
+                                hint = stateHint,
                                 options = stateOptions,
                                 default = state.ifEmpty { null },
                                 onOptionSelected = {
@@ -518,15 +543,18 @@ internal fun AddCardSection(
                                 },
                                 enabled = !isSameAddressChecked,
                                 isError = stateErrorMessage != null,
-                                shape = RoundedCornerShape(0.dp),
+                                shape = if (stateIsLast) addressBottomShape else squareShape,
                                 modifier = Modifier.fillMaxWidth(),
                             )
-                            cityField(Modifier.fillMaxWidth())
                         }
-                        showState -> {
+                        isFreetextStateRow -> {
+                            // SC: free-text state + city share a 50/50 row. When the row is
+                            // the last block (SC has no %Z), split the bottom-rounded corners
+                            // across the two halves.
+                            val rowIsLast = !showPostcode
                             Row {
                                 BillingTextField(
-                                    hint = stringResource(id = BillingAddressLabels.stateLabel(selectedCountryCode)),
+                                    hint = stateHint,
                                     text = state,
                                     onTextChanged = {
                                         viewModel.updateState(it)
@@ -550,42 +578,90 @@ internal fun AddCardSection(
                                         .contentType(ContentType.AddressRegion),
                                     enabled = !isSameAddressChecked,
                                     isError = stateErrorMessage != null,
-                                    shape = RoundedCornerShape(0.dp),
+                                    shape = if (rowIsLast) RoundedCornerShape(bottomStart = 8.dp) else squareShape,
                                 )
-                                cityField(Modifier.weight(1f))
+                                cityField(
+                                    Modifier.weight(1f),
+                                    if (rowIsLast) RoundedCornerShape(bottomEnd = 8.dp) else squareShape,
+                                )
                             }
                         }
-                        else -> {
-                            cityField(Modifier.fillMaxWidth())
+                        showState -> {
+                            // Free-text state alone (no city for this country).
+                            BillingTextField(
+                                hint = stateHint,
+                                text = state,
+                                onTextChanged = {
+                                    viewModel.updateState(it)
+                                    stateErrorMessage = null
+                                },
+                                onComplete = { input ->
+                                    stateErrorMessage = viewModel.getStateValidationMessage(
+                                        input,
+                                        selectedCountryCode,
+                                    )
+                                    focusManager.moveFocus(FocusDirection.Down)
+                                },
+                                onFocusLost = { input ->
+                                    stateErrorMessage = viewModel.getStateValidationMessage(
+                                        input,
+                                        selectedCountryCode,
+                                    )
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .contentType(ContentType.AddressRegion),
+                                enabled = !isSameAddressChecked,
+                                isError = stateErrorMessage != null,
+                                shape = if (stateIsLast) addressBottomShape else squareShape,
+                            )
                         }
                     }
 
-                    BillingTextField(
-                        hint = stringResource(id = BillingAddressLabels.postcodeLabel(selectedCountryCode)),
-                        text = zipCode,
-                        onTextChanged = {
-                            viewModel.updateZipCode(it)
-                            postcodeErrorMessage = null
-                        },
-                        onComplete = { input ->
-                            postcodeErrorMessage = viewModel.getBillingValidationMessage(
-                                input,
-                                AddPaymentMethodViewModel.BillingFieldType.POSTCODE
-                            )
-                            focusManager.moveFocus(FocusDirection.Down)
-                        },
-                        onFocusLost = { input ->
-                            postcodeErrorMessage = viewModel.getBillingValidationMessage(
-                                input,
-                                AddPaymentMethodViewModel.BillingFieldType.POSTCODE
-                            )
-                        },
-                        modifier = Modifier
-                            .contentType(ContentType.PostalCode),
-                        enabled = !isSameAddressChecked,
-                        isError = postcodeErrorMessage != null,
-                        shape = addressBottomShape,
-                    )
+                    // City is rendered inside the free-text state row above; otherwise standalone.
+                    if (showCity && !isFreetextStateRow) {
+                        cityField(
+                            Modifier.fillMaxWidth(),
+                            if (cityIsLast) addressBottomShape else squareShape,
+                        )
+                    }
+
+                    if (showPostcode) {
+                        val postcodeLabelText = stringResource(
+                            id = BillingAddressLabels.postcodeLabel(selectedCountryCode),
+                        )
+                        val postcodeHint = if (postcodeExample != null) {
+                            "$postcodeLabelText (e.g. $postcodeExample)"
+                        } else {
+                            postcodeLabelText
+                        }
+                        BillingTextField(
+                            hint = postcodeHint,
+                            text = zipCode,
+                            onTextChanged = {
+                                viewModel.updateZipCode(it)
+                                postcodeErrorMessage = null
+                            },
+                            onComplete = { input ->
+                                postcodeErrorMessage = viewModel.getPostcodeValidationMessage(
+                                    input,
+                                    selectedCountryCode,
+                                )
+                                focusManager.moveFocus(FocusDirection.Down)
+                            },
+                            onFocusLost = { input ->
+                                postcodeErrorMessage = viewModel.getPostcodeValidationMessage(
+                                    input,
+                                    selectedCountryCode,
+                                )
+                            },
+                            modifier = Modifier
+                                .contentType(ContentType.PostalCode),
+                            enabled = !isSameAddressChecked,
+                            isError = postcodeErrorMessage != null,
+                            shape = addressBottomShape,
+                        )
+                    }
                 } else if (viewModel.showCountryCodeOnly) {
                     CountrySelectRow(
                         options = CountryUtils.countryList.map { it.name to it.code },
@@ -604,7 +680,20 @@ internal fun AddCardSection(
                         stringResource(R.string.airwallex_empty_billing_field, stringResource(id = it))
                     }
                     ?: cityErrorMessage?.let { stringResource(id = it) }
-                    ?: postcodeErrorMessage?.let { stringResource(id = it) }
+                    ?: postcodeErrorMessage?.let { res ->
+                        // getPostcodeValidationMessage returns airwallex_invalid_field for
+                        // pattern mismatches; that resource is a "%s" format string, so we
+                        // substitute the country-specific postcode label (ZIP code / PIN /
+                        // Eircode / ...) to read "Invalid ZIP code".
+                        if (res == R.string.airwallex_invalid_field) {
+                            stringResource(
+                                R.string.airwallex_invalid_field,
+                                stringResource(id = BillingAddressLabels.postcodeLabel(selectedCountryCode)),
+                            )
+                        } else {
+                            stringResource(id = res)
+                        }
+                    }
                     ?: countryCodeErrorMessage?.let { stringResource(id = it) }
                 if (billingErrorMessage != null) {
                     Spacer(modifier = Modifier.height(4.dp))
@@ -663,23 +752,30 @@ internal fun AddCardSection(
                     cardHolderEmailErrorMessage = viewModel.getEmailValidationMessage(email)
                 }
                 if (viewModel.showAddress) {
+                    // Anything visible is required — every visible address field gets a
+                    // blank check, regardless of any per-country "declared required" hint.
                     streetErrorMessage = viewModel.getBillingValidationMessage(
                         street,
-                        AddPaymentMethodViewModel.BillingFieldType.STREET
+                        AddPaymentMethodViewModel.BillingFieldType.STREET,
                     )
                     stateErrorMessage = if (AddressSpec.hasState(selectedCountryCode)) {
                         viewModel.getStateValidationMessage(state, selectedCountryCode)
                     } else {
                         null
                     }
-                    cityErrorMessage = viewModel.getBillingValidationMessage(
-                        city,
-                        AddPaymentMethodViewModel.BillingFieldType.CITY
-                    )
-                    postcodeErrorMessage = viewModel.getBillingValidationMessage(
-                        zipCode,
-                        AddPaymentMethodViewModel.BillingFieldType.POSTCODE
-                    )
+                    cityErrorMessage = if (AddressSpec.hasCity(selectedCountryCode)) {
+                        viewModel.getBillingValidationMessage(
+                            city,
+                            AddPaymentMethodViewModel.BillingFieldType.CITY,
+                        )
+                    } else {
+                        null
+                    }
+                    postcodeErrorMessage = if (AddressSpec.hasPostcode(selectedCountryCode)) {
+                        viewModel.getPostcodeValidationMessage(zipCode, selectedCountryCode)
+                    } else {
+                        null
+                    }
                 }
                 if (viewModel.showPhone) {
                     phoneErrorMessage = viewModel.getBillingValidationMessage(

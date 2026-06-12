@@ -22,6 +22,7 @@ import com.airwallex.android.core.resolvedRequiredBillingContactFields
 import com.airwallex.android.core.util.CardUtils
 import com.airwallex.android.core.util.isValidE164Phone
 import com.airwallex.android.ui.checkout.AirwallexCheckoutViewModel
+import com.airwallex.android.core.util.AddressSpec
 import com.airwallex.android.view.util.BillingAddressLabels
 import com.airwallex.android.view.util.ExpiryDateUtils
 import com.airwallex.android.view.util.createExpiryMonthAndYear
@@ -281,6 +282,28 @@ class AddPaymentMethodViewModel(
         return BillingAddressLabels.stateLabel(countryCode)
     }
 
+    /**
+     * Postcode validation: presence + country-specific regex.
+     *
+     * Any field that is visible is required, so callers are expected to gate on
+     * [AddressSpec.hasPostcode] before invoking — by the time we get here, the field is
+     * being collected and must be non-blank.
+     *
+     * Returns:
+     *  - [R.string.airwallex_empty_postcode] when blank
+     *  - [R.string.airwallex_invalid_field] when non-blank but the country's pattern doesn't match
+     *  - null when valid (or non-blank for a country with no declared pattern)
+     *
+     * Callers wrap the invalid-error res with [BillingAddressLabels.postcodeLabel] so the user
+     * sees the country-specific noun (e.g. "Invalid ZIP code" / "Invalid Eircode").
+     */
+    @StringRes
+    fun getPostcodeValidationMessage(input: String, countryCode: String): Int? {
+        if (input.isBlank()) return R.string.airwallex_empty_postcode
+        val pattern = AddressSpec.postcodePattern(countryCode) ?: return null
+        return if (pattern.matches(input.trim())) null else R.string.airwallex_invalid_field
+    }
+
     fun createCard(
         cardNumber: String,
         name: String,
@@ -329,15 +352,18 @@ class AddPaymentMethodViewModel(
         if (showPhone) builder.setPhone(phoneNumber)
 
         when {
-            showAddress -> builder.setAddress(
-                Address.Builder()
+            showAddress -> {
+                // Mirror the visibility rules from [AddressSpec] in the payload so we never
+                // send a value the country's address spec doesn't collect (and which the user
+                // never saw a field for — e.g. a stale city when switching from US to JP).
+                val addressBuilder = Address.Builder()
                     .setCountryCode(countryCode)
-                    .setState(state)
-                    .setCity(city)
                     .setStreet(street)
-                    .setPostcode(postcode)
-                    .build()
-            )
+                if (AddressSpec.hasState(countryCode)) addressBuilder.setState(state)
+                if (AddressSpec.hasCity(countryCode)) addressBuilder.setCity(city)
+                if (AddressSpec.hasPostcode(countryCode)) addressBuilder.setPostcode(postcode)
+                builder.setAddress(addressBuilder.build())
+            }
             showCountryCodeOnly -> builder.setAddress(
                 Address.Builder().setCountryCode(countryCode).build()
             )

@@ -381,6 +381,64 @@ class AddPaymentMethodViewModelTest {
     }
 
     @Test
+    fun `test getPostcodeValidationMessage empty input returns empty_postcode`() {
+        val viewModel = createViewModel(createBasicMockSession())
+        // Visible ⇒ required. Even countries whose spec doesn't declare postcode as
+        // mandatory (e.g. Albania) must still error on blank when the field is rendered.
+        assertEquals(
+            R.string.airwallex_empty_postcode,
+            viewModel.getPostcodeValidationMessage("", "US"),
+        )
+        assertEquals(
+            R.string.airwallex_empty_postcode,
+            viewModel.getPostcodeValidationMessage("", "AL"),
+        )
+        assertEquals(
+            R.string.airwallex_empty_postcode,
+            viewModel.getPostcodeValidationMessage("", "IE"),
+        )
+    }
+
+    @Test
+    fun `test getPostcodeValidationMessage valid input returns null`() {
+        val viewModel = createViewModel(createBasicMockSession())
+        assertNull(viewModel.getPostcodeValidationMessage("95014", "US"))
+        assertNull(viewModel.getPostcodeValidationMessage("22162-1010", "US"))
+        assertNull(viewModel.getPostcodeValidationMessage("26133", "DE"))
+        // CA pattern is case-insensitive.
+        assertNull(viewModel.getPostcodeValidationMessage("h3z 2y7", "CA"))
+    }
+
+    @Test
+    fun `test getPostcodeValidationMessage invalid input returns invalid_field`() {
+        val viewModel = createViewModel(createBasicMockSession())
+        assertEquals(
+            R.string.airwallex_invalid_field,
+            viewModel.getPostcodeValidationMessage("abc", "US"),
+        )
+        assertEquals(
+            R.string.airwallex_invalid_field,
+            viewModel.getPostcodeValidationMessage("123", "DE"),
+        )
+    }
+
+    @Test
+    fun `test getPostcodeValidationMessage trims whitespace before matching`() {
+        val viewModel = createViewModel(createBasicMockSession())
+        assertNull(viewModel.getPostcodeValidationMessage("  95014  ", "US"))
+    }
+
+    @Test
+    fun `test getPostcodeValidationMessage skips regex when country has no pattern`() {
+        val viewModel = createViewModel(createBasicMockSession())
+        // AE/HK have no fmt %Z (and no zip pattern). Non-blank input should pass through
+        // since we have no rule to validate against — even though they're never expected
+        // to reach this path (the field would be hidden upstream).
+        assertNull(viewModel.getPostcodeValidationMessage("anything", "AE"))
+        assertNull(viewModel.getPostcodeValidationMessage("anything", "HK"))
+    }
+
+    @Test
     fun `test getBillingValidationMessage with valid input`() {
         val viewModel = createViewModel(createBasicMockSession())
         assertNull(

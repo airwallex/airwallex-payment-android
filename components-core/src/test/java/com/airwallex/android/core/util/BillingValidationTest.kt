@@ -90,6 +90,47 @@ class BillingValidationTest {
         assertNull(billing(address = fullAddress(countryCode = "us")).validateForRequiredFields(req))
     }
 
+    @Test fun `ADDRESS skips state check for countries without a state field`() {
+        // GB has no state list in AddressSpec → state isn't rendered → must not be required.
+        val req = setOf(RequiredBillingContactField.ADDRESS)
+        assertNull(
+            billing(
+                address = fullAddress(countryCode = "GB", state = "", postcode = "EC1Y 8SY")
+            ).validateForRequiredFields(req)
+        )
+    }
+
+    @Test fun `ADDRESS skips city check for countries without a city field`() {
+        // AE drops the city field in AddressSpec → blank city must pass.
+        val req = setOf(RequiredBillingContactField.ADDRESS)
+        assertNull(
+            billing(
+                address = fullAddress(countryCode = "AE", city = "", state = "إمارة دبيّ", postcode = "")
+            ).validateForRequiredFields(req)
+        )
+    }
+
+    @Test fun `ADDRESS skips postcode check for countries without a postcode field`() {
+        // HK drops the postcode field in AddressSpec → blank postcode must pass.
+        val req = setOf(RequiredBillingContactField.ADDRESS)
+        assertNull(
+            billing(
+                address = fullAddress(countryCode = "HK", state = "Kowloon", postcode = "")
+            ).validateForRequiredFields(req)
+        )
+    }
+
+    @Test fun `ADDRESS still enforces visible fields for countries that hide others`() {
+        // AE hides city + postcode but keeps state — blank state should still fail.
+        val req = setOf(RequiredBillingContactField.ADDRESS)
+        assertMessage(
+            "Billing state is required",
+            billing(
+                address = fullAddress(countryCode = "AE", city = "", state = "", postcode = "")
+            ).validateForRequiredFields(req)
+        )
+    }
+
     @Test fun `COUNTRY_CODE alone validates the picker only`() {
         val req = setOf(RequiredBillingContactField.COUNTRY_CODE)
         val onlyCountry = Address.Builder().setCountryCode("US").build()
