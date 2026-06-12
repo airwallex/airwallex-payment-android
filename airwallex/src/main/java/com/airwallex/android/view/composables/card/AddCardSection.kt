@@ -99,7 +99,10 @@ internal fun AddCardSection(
     val zipCode by viewModel.zipCode.collectAsState()
     val phoneNumber by viewModel.phoneNumber.collectAsState()
     var streetErrorMessage by remember { mutableStateOf<Int?>(null) }
-    var stateErrorMessage by remember { mutableStateOf<String?>(null) }
+    // Holds the country-specific state-label resource (e.g. Province/Prefecture). Wrapped
+    // with airwallex_empty_billing_field at display so the error reads as
+    // "Please enter your <label>".
+    var stateErrorMessage by remember { mutableStateOf<Int?>(null) }
     var cityErrorMessage by remember { mutableStateOf<Int?>(null) }
     var postcodeErrorMessage by remember { mutableStateOf<Int?>(null) }
     var phoneErrorMessage by remember { mutableStateOf<Int?>(null) }
@@ -597,7 +600,9 @@ internal fun AddCardSection(
                 }
 
                 val billingErrorMessage: String? = streetErrorMessage?.let { stringResource(id = it) }
-                    ?: stateErrorMessage
+                    ?: stateErrorMessage?.let {
+                        stringResource(R.string.airwallex_empty_billing_field, stringResource(id = it))
+                    }
                     ?: cityErrorMessage?.let { stringResource(id = it) }
                     ?: postcodeErrorMessage?.let { stringResource(id = it) }
                     ?: countryCodeErrorMessage?.let { stringResource(id = it) }

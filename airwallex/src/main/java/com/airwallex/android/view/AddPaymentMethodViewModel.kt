@@ -269,11 +269,16 @@ class AddPaymentMethodViewModel(
         }
     }
 
-    fun getStateValidationMessage(input: String, countryCode: String): String? {
+    /**
+     * Returns the country-specific state-field label resource (e.g. Province/Prefecture/Emirate)
+     * when [input] is blank, or null when valid. Callers wrap it with
+     * [R.string.airwallex_empty_billing_field] at display time — keeping resource lookup
+     * out of the ViewModel and mirroring the [Int?] contract of [getBillingValidationMessage].
+     */
+    @StringRes
+    fun getStateValidationMessage(input: String, countryCode: String): Int? {
         if (input.isNotBlank()) return null
-        val app = getApplication<Application>()
-        val label = app.getString(BillingAddressLabels.stateLabel(countryCode))
-        return app.getString(R.string.airwallex_empty_billing_field, label)
+        return BillingAddressLabels.stateLabel(countryCode)
     }
 
     fun createCard(

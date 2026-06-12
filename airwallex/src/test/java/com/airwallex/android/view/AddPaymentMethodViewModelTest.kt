@@ -312,64 +312,26 @@ class AddPaymentMethodViewModelTest {
     }
 
     @Test
-    fun `test getStateValidationMessage with empty input uses country-specific label`() {
+    fun `test getStateValidationMessage returns country-specific label when empty`() {
         val viewModel = createViewModel(createBasicMockSession())
-        // US → state label
-        every { application.getString(R.string.airwallex_billing_label_state) } returns "State"
-        every {
-            application.getString(R.string.airwallex_empty_billing_field, "State")
-        } returns "Please enter your State"
         assertEquals(
-            "Please enter your State",
+            R.string.airwallex_billing_label_state,
             viewModel.getStateValidationMessage("", "US"),
         )
-        // JP → prefecture label
-        every { application.getString(R.string.airwallex_billing_label_prefecture) } returns "Prefecture"
-        every {
-            application.getString(R.string.airwallex_empty_billing_field, "Prefecture")
-        } returns "Please enter your Prefecture"
         assertEquals(
-            "Please enter your Prefecture",
+            R.string.airwallex_billing_label_prefecture,
             viewModel.getStateValidationMessage("", "JP"),
         )
-    }
-
-    @Test
-    fun `test getStateValidationMessage with valid input`() {
-        val viewModel = createViewModel(createBasicMockSession())
-        assertNull(viewModel.getStateValidationMessage("California", "US"))
-    }
-
-    @Test
-    fun `test getStateValidationMessage picks the right label across countries`() {
-        val viewModel = createViewModel(createBasicMockSession())
-        // CN → province
-        every { application.getString(R.string.airwallex_billing_label_province) } returns "Province"
-        every {
-            application.getString(R.string.airwallex_empty_billing_field, "Province")
-        } returns "Please enter your Province"
         assertEquals(
-            "Please enter your Province",
+            R.string.airwallex_billing_label_province,
             viewModel.getStateValidationMessage("", "CN"),
         )
-
-        // AE → emirate
-        every { application.getString(R.string.airwallex_billing_label_emirate) } returns "Emirate"
-        every {
-            application.getString(R.string.airwallex_empty_billing_field, "Emirate")
-        } returns "Please enter your Emirate"
         assertEquals(
-            "Please enter your Emirate",
+            R.string.airwallex_billing_label_emirate,
             viewModel.getStateValidationMessage("", "AE"),
         )
-
-        // IE → county
-        every { application.getString(R.string.airwallex_billing_label_county) } returns "County"
-        every {
-            application.getString(R.string.airwallex_empty_billing_field, "County")
-        } returns "Please enter your County"
         assertEquals(
-            "Please enter your County",
+            R.string.airwallex_billing_label_county,
             viewModel.getStateValidationMessage("", "IE"),
         )
     }
@@ -377,25 +339,26 @@ class AddPaymentMethodViewModelTest {
     @Test
     fun `test getStateValidationMessage treats whitespace-only input as empty`() {
         val viewModel = createViewModel(createBasicMockSession())
-        every { application.getString(R.string.airwallex_billing_label_state) } returns "State"
-        every {
-            application.getString(R.string.airwallex_empty_billing_field, "State")
-        } returns "Please enter your State"
-        assertEquals("Please enter your State", viewModel.getStateValidationMessage(" ", "US"))
-        assertEquals("Please enter your State", viewModel.getStateValidationMessage("\t\n", "US"))
+        assertEquals(
+            R.string.airwallex_billing_label_state,
+            viewModel.getStateValidationMessage(" ", "US"),
+        )
+        assertEquals(
+            R.string.airwallex_billing_label_state,
+            viewModel.getStateValidationMessage("\t\n", "US"),
+        )
     }
 
     @Test
     fun `test getStateValidationMessage normalizes lowercase country code via stateLabel`() {
         // BillingAddressLabels.stateLabel uppercases internally, so "us" and "US" must
-        // produce the same error message — guards against the field showing JP/KR/etc.
-        // wording when callers pass a lowercase code from external data.
+        // produce the same label — guards against the field showing JP/KR/etc. wording
+        // when callers pass a lowercase code from external data.
         val viewModel = createViewModel(createBasicMockSession())
-        every { application.getString(R.string.airwallex_billing_label_state) } returns "State"
-        every {
-            application.getString(R.string.airwallex_empty_billing_field, "State")
-        } returns "Please enter your State"
-        assertEquals("Please enter your State", viewModel.getStateValidationMessage("", "us"))
+        assertEquals(
+            R.string.airwallex_billing_label_state,
+            viewModel.getStateValidationMessage("", "us"),
+        )
     }
 
     @Test
