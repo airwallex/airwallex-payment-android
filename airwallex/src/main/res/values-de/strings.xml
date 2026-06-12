@@ -37,7 +37,7 @@
     <string name="airwallex_phone_number_hint">Telefonnummer</string>
     <string name="airwallex_shipping_country_name_hint">Land / Region</string>
     <string name="airwallex_empty_country">Bitte geben Sie Ihr Land ein</string>
-    <string name="airwallex_empty_state">Bitte geben Sie Ihr Bundesland ein</string>
+    <string name="airwallex_empty_billing_field">Bitte geben Sie Ihr %1$s ein</string>
     <string name="airwallex_empty_city">Bitte geben Sie Ihre Stadt ein</string>
     <string name="airwallex_empty_street">Bitte geben Sie Ihre Straße ein</string>
     <string name="airwallex_empty_postcode">Bitte geben Sie Ihre Postleitzahl ein</string>

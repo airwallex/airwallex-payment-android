@@ -68,7 +68,6 @@
     <string name="airwallex_schema_payment_redirect_message">Será redirecionado para concluir o pagamento após a confirmação.</string>
     <string name="airwallex_google_payment_redirect_message">Clique no botão Google Pay abaixo para concluir a sua compra em segurança.</string>
     <string name="airwallex_invalid_scheme_message">Esquema inválido</string>
-    <string name="airwallex_empty_state">Por favor, introduza o seu distrito/estado</string>
     <string name="airwallex_delete_payment_method_prompt_title">Pretende eliminar este consentimento de pagamento?</string>
     <string name="airwallex_delete_payment_method_positive">Eliminar</string>
     <string name="airwallex_new_card">Cartão</string>

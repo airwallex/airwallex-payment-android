@@ -22,6 +22,7 @@ import com.airwallex.android.core.resolvedRequiredBillingContactFields
 import com.airwallex.android.core.util.CardUtils
 import com.airwallex.android.core.util.isValidE164Phone
 import com.airwallex.android.ui.checkout.AirwallexCheckoutViewModel
+import com.airwallex.android.view.util.BillingAddressLabels
 import com.airwallex.android.view.util.ExpiryDateUtils
 import com.airwallex.android.view.util.createExpiryMonthAndYear
 import com.airwallex.android.view.util.isValidCvc
@@ -257,7 +258,6 @@ class AddPaymentMethodViewModel(
         return when (type) {
             BillingFieldType.STREET,
             BillingFieldType.CITY,
-            BillingFieldType.STATE,
             BillingFieldType.POSTCODE,
             BillingFieldType.COUNTRY_CODE -> if (input.isBlank()) type.errorMessage else null
 
@@ -267,6 +267,13 @@ class AddPaymentMethodViewModel(
                 else -> null
             }
         }
+    }
+
+    fun getStateValidationMessage(input: String, countryCode: String): String? {
+        if (input.isNotBlank()) return null
+        val app = getApplication<Application>()
+        val label = app.getString(BillingAddressLabels.stateLabel(countryCode))
+        return app.getString(R.string.airwallex_empty_billing_field, label)
     }
 
     fun createCard(
@@ -364,7 +371,6 @@ class AddPaymentMethodViewModel(
     enum class BillingFieldType(@StringRes val errorMessage: Int) {
         STREET(R.string.airwallex_empty_street),
         CITY(R.string.airwallex_empty_city),
-        STATE(R.string.airwallex_empty_state),
         POSTCODE(R.string.airwallex_empty_postcode),
         PHONE(R.string.airwallex_empty_phone),
         COUNTRY_CODE(R.string.airwallex_empty_country_code),

@@ -69,7 +69,6 @@
     <string name="airwallex_schema_payment_redirect_message">確認後您將被重新導向以完成付款。</string>
     <string name="airwallex_google_payment_redirect_message">點擊下方的 Google Pay 按鈕安全完成您的購買。</string>
     <string name="airwallex_invalid_scheme_message">無效的格式</string>
-    <string name="airwallex_empty_state">請輸入您的州／省</string>
     <string name="airwallex_delete_payment_method_prompt_title">您要刪除此支付授權嗎？</string>
     <string name="airwallex_delete_payment_method_positive">刪除</string>
     <string name="airwallex_new_card">卡片</string>

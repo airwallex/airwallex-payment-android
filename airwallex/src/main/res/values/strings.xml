@@ -38,7 +38,7 @@
     <string name="airwallex_phone_number_hint">Phone number</string>
     <string name="airwallex_shipping_country_name_hint">Country / Region</string>
     <string name="airwallex_empty_country">Please enter your country</string>
-    <string name="airwallex_empty_state">Please enter your state</string>
+    <string name="airwallex_empty_billing_field">Please enter your %1$s</string>
     <string name="airwallex_empty_city">Please enter your city</string>
     <string name="airwallex_empty_street">Please enter your street</string>
     <string name="airwallex_empty_postcode">Please enter your postcode</string>

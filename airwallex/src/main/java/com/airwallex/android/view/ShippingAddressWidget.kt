@@ -165,7 +165,11 @@ class ShippingAddressWidget(context: Context, attrs: AttributeSet?) :
         }
         stateTextInputLayout.afterFocusChanged { hasFocus ->
             if (!hasFocus && stateTextInputLayout.value.isEmpty()) {
-                stateTextInputLayout.error = resources.getString(R.string.airwallex_empty_state)
+                val stateLabel = resources.getString(
+                    BillingAddressLabels.stateLabel(country?.code.orEmpty())
+                )
+                stateTextInputLayout.error =
+                    resources.getString(R.string.airwallex_empty_billing_field, stateLabel)
             } else {
                 stateTextInputLayout.error = null
             }
