@@ -60,10 +60,10 @@ fun Billing?.validateForRequiredFields(
     }
 
     if (RequiredBillingContactField.ADDRESS in requiredFields) {
-        if (!isValidCountryCode(address?.countryCode)) {
+        val countryCode = address?.countryCode
+        if (countryCode == null || countryCode !in ISO_COUNTRY_CODES) {
             return InvalidParamsException(message = "Billing country code is required")
         }
-        val countryCode = address!!.countryCode!!
         when {
             address.street.isNullOrBlank() ->
                 return InvalidParamsException(message = "Billing street is required")
