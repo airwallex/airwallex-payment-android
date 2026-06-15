@@ -442,14 +442,11 @@ internal fun AddCardSection(
                     // (e.g. "ZIP code (e.g. 95014)").
                     val postcodeExample = AddressSpec.postcodeExamples(selectedCountryCode)?.firstOrNull()
 
-                    // Whichever field is visually last gets the bottom-rounded shape so the
-                    // address block reads as one rounded rectangle. State and city share a row
-                    // only when state is free-text (SC), so the split-corner case is handled
-                    // separately below.
+                    // Whichever field is visually last gets the bottom-rounded corners.
                     val streetIsLast = !showState && !showCity && !showPostcode
                     val stateIsLast = showState && !showCity && !showPostcode
-                    val cityIsLast = showCity && !showPostcode
-                    val isFreetextStateRow = showState && stateOptions == null && showCity
+                    val cityIsLast = showCity && !showState && !showPostcode
+                    val isStateCityRow = showState && showCity
 
                     CountrySelectRow(
                         options = CountryUtils.countryList.map { it.name to it.code },
@@ -531,28 +528,23 @@ internal fun AddCardSection(
                             )
                         }
 
-                    when {
-                        showState && stateOptions != null -> {
-                            StateSelectRow(
-                                hint = stateHint,
-                                options = stateOptions,
-                                default = state.ifEmpty { null },
-                                onOptionSelected = {
-                                    viewModel.updateState(it.first)
-                                    stateErrorMessage = null
-                                },
-                                enabled = !isSameAddressChecked,
-                                isError = stateErrorMessage != null,
-                                shape = if (stateIsLast) addressBottomShape else squareShape,
-                                modifier = Modifier.fillMaxWidth(),
-                            )
-                        }
-                        isFreetextStateRow -> {
-                            // SC: free-text state + city share a 50/50 row. When the row is
-                            // the last block (SC has no %Z), split the bottom-rounded corners
-                            // across the two halves.
-                            val rowIsLast = !showPostcode
-                            Row {
+                    val stateField: @Composable (modifier: Modifier, shape: Shape) -> Unit =
+                        { stateModifier, stateShape ->
+                            if (stateOptions != null) {
+                                StateSelectRow(
+                                    hint = stateHint,
+                                    options = stateOptions,
+                                    default = state.ifEmpty { null },
+                                    onOptionSelected = {
+                                        viewModel.updateState(it.first)
+                                        stateErrorMessage = null
+                                    },
+                                    enabled = !isSameAddressChecked,
+                                    isError = stateErrorMessage != null,
+                                    shape = stateShape,
+                                    modifier = stateModifier,
+                                )
+                            } else {
                                 BillingTextField(
                                     hint = stateHint,
                                     text = state,
@@ -565,7 +557,9 @@ internal fun AddCardSection(
                                             input,
                                             selectedCountryCode,
                                         )
-                                        focusManager.moveFocus(FocusDirection.Right)
+                                        focusManager.moveFocus(
+                                            if (isStateCityRow) FocusDirection.Right else FocusDirection.Down,
+                                        )
                                     },
                                     onFocusLost = { input ->
                                         stateErrorMessage = viewModel.getStateValidationMessage(
@@ -573,12 +567,23 @@ internal fun AddCardSection(
                                             selectedCountryCode,
                                         )
                                     },
-                                    modifier = Modifier
-                                        .weight(1f)
+                                    modifier = stateModifier
                                         .contentType(ContentType.AddressRegion),
                                     enabled = !isSameAddressChecked,
                                     isError = stateErrorMessage != null,
-                                    shape = if (rowIsLast) RoundedCornerShape(bottomStart = 8.dp) else squareShape,
+                                    shape = stateShape,
+                                )
+                            }
+                        }
+
+                    when {
+                        isStateCityRow -> {
+                            // When the row is last, split the bottom-rounded corners across the two halves.
+                            val rowIsLast = !showPostcode
+                            Row {
+                                stateField(
+                                    Modifier.weight(1f),
+                                    if (rowIsLast) RoundedCornerShape(bottomStart = 8.dp) else squareShape,
                                 )
                                 cityField(
                                     Modifier.weight(1f),
@@ -587,43 +592,17 @@ internal fun AddCardSection(
                             }
                         }
                         showState -> {
-                            // Free-text state alone (no city for this country).
-                            BillingTextField(
-                                hint = stateHint,
-                                text = state,
-                                onTextChanged = {
-                                    viewModel.updateState(it)
-                                    stateErrorMessage = null
-                                },
-                                onComplete = { input ->
-                                    stateErrorMessage = viewModel.getStateValidationMessage(
-                                        input,
-                                        selectedCountryCode,
-                                    )
-                                    focusManager.moveFocus(FocusDirection.Down)
-                                },
-                                onFocusLost = { input ->
-                                    stateErrorMessage = viewModel.getStateValidationMessage(
-                                        input,
-                                        selectedCountryCode,
-                                    )
-                                },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .contentType(ContentType.AddressRegion),
-                                enabled = !isSameAddressChecked,
-                                isError = stateErrorMessage != null,
-                                shape = if (stateIsLast) addressBottomShape else squareShape,
+                            stateField(
+                                Modifier.fillMaxWidth(),
+                                if (stateIsLast) addressBottomShape else squareShape,
                             )
                         }
-                    }
-
-                    // City is rendered inside the free-text state row above; otherwise standalone.
-                    if (showCity && !isFreetextStateRow) {
-                        cityField(
-                            Modifier.fillMaxWidth(),
-                            if (cityIsLast) addressBottomShape else squareShape,
-                        )
+                        showCity -> {
+                            cityField(
+                                Modifier.fillMaxWidth(),
+                                if (cityIsLast) addressBottomShape else squareShape,
+                            )
+                        }
                     }
 
                     if (showPostcode) {

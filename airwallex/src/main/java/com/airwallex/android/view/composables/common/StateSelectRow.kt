@@ -1,5 +1,6 @@
 package com.airwallex.android.view.composables.common
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -45,53 +46,55 @@ internal fun StateSelectRow(
         selectedLabel = options.firstOrNull { it.first == selectedValue }?.second
     }
 
-    StandardBottomSheet<Unit>(
-        sheetContent = { sheetDetails ->
-            Column {
-                Spacer(modifier = Modifier.height(24.dp))
+    Box(modifier = modifier) {
+        StandardBottomSheet<Unit>(
+            sheetContent = { sheetDetails ->
+                Column {
+                    Spacer(modifier = Modifier.height(24.dp))
 
-                StandardText(
-                    text = hint,
-                    color = AirwallexColor.textPrimary,
-                    typography = AirwallexTypography.Title200,
-                    modifier = Modifier.padding(24.dp),
-                )
+                    StandardText(
+                        text = hint,
+                        color = AirwallexColor.textPrimary,
+                        typography = AirwallexTypography.Title200,
+                        modifier = Modifier.padding(24.dp),
+                    )
 
-                StandardPicker(
-                    hint = "",
-                    options = options,
-                    searchFilter = { content, search ->
-                        search.isBlank() || content.second.contains(search, ignoreCase = true)
-                    },
-                    content = { content, _ ->
-                        StateItem(
-                            label = content.second,
-                            isSelected = selectedValue == content.first,
-                            modifier = Modifier.fillMaxWidth(),
-                            onClick = {
-                                sheetDetails.onDismissRequested {}
-                                selectedLabel = content.second
-                                selectedValue = content.first
-                                onOptionSelected(content)
-                            },
-                        )
-                    },
-                )
-            }
-        },
-        onDismiss = {
-            focusManager.clearFocus()
-        },
-    ) { onPresentRequested ->
-        TextFieldWithPickerButton(
-            hint = hint,
-            title = selectedLabel,
-            modifier = modifier,
-            enabled = enabled,
-            onPresentRequested = { onPresentRequested(Unit) },
-            shape = shape,
-            isError = isError,
-        )
+                    StandardPicker(
+                        hint = "",
+                        options = options,
+                        searchFilter = { content, search ->
+                            search.isBlank() || content.second.contains(search, ignoreCase = true)
+                        },
+                        content = { content, _ ->
+                            StateItem(
+                                label = content.second,
+                                isSelected = selectedValue == content.first,
+                                modifier = Modifier.fillMaxWidth(),
+                                onClick = {
+                                    sheetDetails.onDismissRequested {}
+                                    selectedLabel = content.second
+                                    selectedValue = content.first
+                                    onOptionSelected(content)
+                                },
+                            )
+                        },
+                    )
+                }
+            },
+            onDismiss = {
+                focusManager.clearFocus()
+            },
+        ) { onPresentRequested ->
+            TextFieldWithPickerButton(
+                hint = hint,
+                title = selectedLabel,
+                modifier = Modifier.fillMaxWidth(),
+                enabled = enabled,
+                onPresentRequested = { onPresentRequested(Unit) },
+                shape = shape,
+                isError = isError,
+            )
+        }
     }
 }
 
