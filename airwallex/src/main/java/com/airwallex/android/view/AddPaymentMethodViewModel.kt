@@ -22,6 +22,7 @@ import com.airwallex.android.core.resolvedRequiredBillingContactFields
 import com.airwallex.android.core.util.CardUtils
 import com.airwallex.android.core.util.isValidE164Phone
 import com.airwallex.android.ui.checkout.AirwallexCheckoutViewModel
+import com.airwallex.android.core.util.AddressSpec
 import com.airwallex.android.view.util.ExpiryDateUtils
 import com.airwallex.android.view.util.createExpiryMonthAndYear
 import com.airwallex.android.view.util.isValidCvc
@@ -256,8 +257,8 @@ class AddPaymentMethodViewModel(
     fun getBillingValidationMessage(input: String, type: BillingFieldType): Int? {
         return when (type) {
             BillingFieldType.STREET,
-            BillingFieldType.CITY,
             BillingFieldType.STATE,
+            BillingFieldType.CITY,
             BillingFieldType.POSTCODE,
             BillingFieldType.COUNTRY_CODE -> if (input.isBlank()) type.errorMessage else null
 
@@ -267,6 +268,25 @@ class AddPaymentMethodViewModel(
                 else -> null
             }
         }
+    }
+
+    /**
+     * Postcode validation: presence + country-specific regex.
+     *
+     * Any field that is visible is required, so callers are expected to gate on
+     * [AddressSpec.hasPostcode] before invoking — by the time we get here, the field is
+     * being collected and must be non-blank.
+     *
+     * Returns:
+     *  - [R.string.airwallex_required] when blank
+     *  - [R.string.airwallex_please_enter_valid_value] when non-blank but the country's pattern doesn't match
+     *  - null when valid (or non-blank for a country with no declared pattern)
+     */
+    @StringRes
+    fun getPostcodeValidationMessage(input: String, countryCode: String): Int? {
+        if (input.isBlank()) return R.string.airwallex_required
+        val pattern = AddressSpec.postcodePattern(countryCode) ?: return null
+        return if (pattern.matches(input.trim())) null else R.string.airwallex_please_enter_valid_value
     }
 
     fun createCard(
@@ -317,15 +337,18 @@ class AddPaymentMethodViewModel(
         if (showPhone) builder.setPhone(phoneNumber)
 
         when {
-            showAddress -> builder.setAddress(
-                Address.Builder()
+            showAddress -> {
+                // Mirror the visibility rules from [AddressSpec] in the payload so we never
+                // send a value the country's address spec doesn't collect (and which the user
+                // never saw a field for — e.g. a stale city when switching from US to JP).
+                val addressBuilder = Address.Builder()
                     .setCountryCode(countryCode)
-                    .setState(state)
-                    .setCity(city)
                     .setStreet(street)
-                    .setPostcode(postcode)
-                    .build()
-            )
+                if (AddressSpec.hasState(countryCode)) addressBuilder.setState(state)
+                if (AddressSpec.hasCity(countryCode)) addressBuilder.setCity(city)
+                if (AddressSpec.hasPostcode(countryCode)) addressBuilder.setPostcode(postcode)
+                builder.setAddress(addressBuilder.build())
+            }
             showCountryCodeOnly -> builder.setAddress(
                 Address.Builder().setCountryCode(countryCode).build()
             )
@@ -362,10 +385,10 @@ class AddPaymentMethodViewModel(
     }
 
     enum class BillingFieldType(@StringRes val errorMessage: Int) {
-        STREET(R.string.airwallex_empty_street),
-        CITY(R.string.airwallex_empty_city),
-        STATE(R.string.airwallex_empty_state),
-        POSTCODE(R.string.airwallex_empty_postcode),
+        STREET(R.string.airwallex_required),
+        STATE(R.string.airwallex_required),
+        CITY(R.string.airwallex_required),
+        POSTCODE(R.string.airwallex_required),
         PHONE(R.string.airwallex_empty_phone),
         COUNTRY_CODE(R.string.airwallex_empty_country_code),
     }

@@ -22,9 +22,9 @@
     <string name="payment_cancelled_message">Your payment has been cancelled</string>
 
     <string name="price_value">1</string>
-    <string name="currency_value">SGD</string>
+    <string name="currency_value">USD</string>
     <string name="currency">Currency</string>
-    <string name="country_code_value">SG</string>
+    <string name="country_code_value">US</string>
     <string name="country_code">Country Code</string>
     <string name="price">Price</string>
     <string name="price_currency"><![CDATA[Price & Currency]]></string>

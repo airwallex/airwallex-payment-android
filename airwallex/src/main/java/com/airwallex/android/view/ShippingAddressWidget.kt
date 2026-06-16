@@ -10,6 +10,7 @@ import com.airwallex.android.R
 import com.airwallex.android.core.model.Address
 import com.airwallex.android.core.model.Shipping
 import com.airwallex.android.databinding.WidgetShippingBinding
+import com.airwallex.android.view.util.BillingAddressLabels
 
 /**
  * A widget used to collect the shipping [Address] of shipping info.
@@ -95,12 +96,29 @@ class ShippingAddressWidget(context: Context, attrs: AttributeSet?) :
     init {
         countryAutocomplete.countryChangeCallback = { country ->
             this.country = country
+            updateAddressLabels(country.code)
             shippingChangeCallback.invoke()
             stateTextInputLayout.requestInputFocus()
         }
 
+        updateAddressLabels(countryCode = "")
         listenTextChanged()
         listenFocusChanged()
+    }
+
+    private fun updateAddressLabels(countryCode: String) {
+        stateTextInputLayout.setHint(
+            resources.getString(BillingAddressLabels.stateLabel(countryCode))
+        )
+        cityTextInputLayout.setHint(
+            resources.getString(BillingAddressLabels.cityLabel(countryCode))
+        )
+        zipcodeTextInputLayout.setHint(
+            resources.getString(
+                R.string.airwallex_field_optional,
+                resources.getString(BillingAddressLabels.postcodeLabel(countryCode))
+            )
+        )
     }
 
     fun initializeView(shipping: Shipping) {
@@ -147,7 +165,7 @@ class ShippingAddressWidget(context: Context, attrs: AttributeSet?) :
         }
         stateTextInputLayout.afterFocusChanged { hasFocus ->
             if (!hasFocus && stateTextInputLayout.value.isEmpty()) {
-                stateTextInputLayout.error = resources.getString(R.string.airwallex_empty_state)
+                stateTextInputLayout.error = resources.getString(R.string.airwallex_required)
             } else {
                 stateTextInputLayout.error = null
             }
@@ -155,7 +173,7 @@ class ShippingAddressWidget(context: Context, attrs: AttributeSet?) :
 
         cityTextInputLayout.afterFocusChanged { hasFocus ->
             if (!hasFocus && cityTextInputLayout.value.isEmpty()) {
-                cityTextInputLayout.error = resources.getString(R.string.airwallex_empty_city)
+                cityTextInputLayout.error = resources.getString(R.string.airwallex_required)
             } else {
                 cityTextInputLayout.error = null
             }
@@ -163,8 +181,7 @@ class ShippingAddressWidget(context: Context, attrs: AttributeSet?) :
 
         addressTextInputLayout.afterFocusChanged { hasFocus ->
             if (!hasFocus && addressTextInputLayout.value.isEmpty()) {
-                addressTextInputLayout.error =
-                    resources.getString(R.string.airwallex_empty_street)
+                addressTextInputLayout.error = resources.getString(R.string.airwallex_required)
             } else {
                 addressTextInputLayout.error = null
             }

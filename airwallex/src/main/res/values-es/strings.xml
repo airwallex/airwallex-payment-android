@@ -8,12 +8,37 @@
     <string name="airwallex_shipping_email_hint">Correo electrónico (opcional)</string>
     <string name="airwallex_contact_phone_number_hint">Número de teléfono (opcional)</string>
     <string name="airwallex_zip_code_hint">Código postal</string>
+
+    <!-- Country-specific billing address labels (APAM-771) -->
+    <!-- State field variants -->
+    <string name="airwallex_billing_label_state">Estado</string>
+    <string name="airwallex_billing_label_province">Provincia</string>
+    <string name="airwallex_billing_label_prefecture">Prefectura</string>
+    <string name="airwallex_billing_label_do_si">Do Si</string>
+    <string name="airwallex_billing_label_county">Condado</string>
+    <string name="airwallex_billing_label_parish">Parroquia</string>
+    <string name="airwallex_billing_label_department">Departamento</string>
+    <string name="airwallex_billing_label_district">Distrito</string>
+    <string name="airwallex_billing_label_emirate">Emirato</string>
+    <string name="airwallex_billing_label_oblast">Óblast</string>
+    <string name="airwallex_billing_label_area">Área</string>
+    <string name="airwallex_billing_label_island">Isla</string>
+    <!-- City field variants -->
+    <string name="airwallex_billing_label_city">Ciudad</string>
+    <string name="airwallex_billing_label_town">Pueblo</string>
+    <string name="airwallex_billing_label_suburb">Suburbio</string>
+    <!-- Postcode field variants -->
+    <string name="airwallex_billing_label_postal_code">Código postal</string>
+    <string name="airwallex_billing_label_zip_code">Código postal</string>
+    <string name="airwallex_billing_label_pin">PIN</string>
+    <string name="airwallex_billing_label_eircode">Eircode</string>
+    <!-- Wraps a label with the (optional) suffix, e.g. "Postal code (optional)" -->
+    <string name="airwallex_field_optional">%1$s (opcional)</string>
     <string name="airwallex_phone_number_hint">Número de teléfono</string>
     <string name="airwallex_shipping_country_name_hint">País / Región</string>
     <string name="airwallex_empty_country">Por favor, introduce tu país</string>
-    <string name="airwallex_empty_city">Por favor, introduce tu ciudad</string>
-    <string name="airwallex_empty_street">Por favor, introduce tu calle</string>
-    <string name="airwallex_empty_postcode">Por favor, introduce tu código postal</string>
+    <string name="airwallex_required">Obligatorio</string>
+    <string name="airwallex_please_enter_valid_value">Por favor, introduce un valor válido</string>
     <string name="airwallex_empty_phone">Por favor, introduce tu número de teléfono</string>
     <string name="airwallex_invalid_phone">Por favor, introduce un número de teléfono válido</string>
     <string name="airwallex_empty_country_code">Por favor, selecciona un país</string>
@@ -42,7 +67,6 @@
     <string name="airwallex_schema_payment_redirect_message">Serás redirigido para completar tu pago tras la confirmación.</string>
     <string name="airwallex_google_payment_redirect_message">Haga clic en el botón de Google Pay a continuación para completar su compra de forma segura.</string>
     <string name="airwallex_invalid_scheme_message">Formato no válido</string>
-    <string name="airwallex_empty_state">Por favor, introduce tu estado</string>
     <string name="airwallex_delete_payment_method_prompt_title">¿Deseas eliminar este consentimiento de pago?</string>
     <string name="airwallex_delete_payment_method_positive">Eliminar</string>
     <string name="airwallex_new_card">Tarjeta</string>

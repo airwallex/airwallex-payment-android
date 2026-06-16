@@ -8,12 +8,37 @@
     <string name="airwallex_shipping_email_hint">Электронная почта (необязательно)</string>
     <string name="airwallex_contact_phone_number_hint">Номер телефона (необязательно)</string>
     <string name="airwallex_zip_code_hint">Почтовый индекс</string>
+
+    <!-- Country-specific billing address labels (APAM-771) -->
+    <!-- State field variants -->
+    <string name="airwallex_billing_label_state">Штат</string>
+    <string name="airwallex_billing_label_province">Провинция</string>
+    <string name="airwallex_billing_label_prefecture">Префектура</string>
+    <string name="airwallex_billing_label_do_si">До Си</string>
+    <string name="airwallex_billing_label_county">Округ</string>
+    <string name="airwallex_billing_label_parish">Приход</string>
+    <string name="airwallex_billing_label_department">Департамент</string>
+    <string name="airwallex_billing_label_district">Район</string>
+    <string name="airwallex_billing_label_emirate">Эмират</string>
+    <string name="airwallex_billing_label_oblast">Область</string>
+    <string name="airwallex_billing_label_area">Регион</string>
+    <string name="airwallex_billing_label_island">Остров</string>
+    <!-- City field variants -->
+    <string name="airwallex_billing_label_city">Город</string>
+    <string name="airwallex_billing_label_town">Городок</string>
+    <string name="airwallex_billing_label_suburb">Пригород</string>
+    <!-- Postcode field variants -->
+    <string name="airwallex_billing_label_postal_code">Почтовый индекс</string>
+    <string name="airwallex_billing_label_zip_code">Почтовый индекс</string>
+    <string name="airwallex_billing_label_pin">PIN</string>
+    <string name="airwallex_billing_label_eircode">Eircode</string>
+    <!-- Wraps a label with the (optional) suffix, e.g. "Postal code (optional)" -->
+    <string name="airwallex_field_optional">%1$s (необязательно)</string>
     <string name="airwallex_phone_number_hint">Номер телефона</string>
     <string name="airwallex_shipping_country_name_hint">Страна / Регион</string>
     <string name="airwallex_empty_country">Пожалуйста, введите вашу страну</string>
-    <string name="airwallex_empty_city">Пожалуйста, введите ваш город</string>
-    <string name="airwallex_empty_street">Пожалуйста, введите вашу улицу</string>
-    <string name="airwallex_empty_postcode">Пожалуйста, введите ваш почтовый индекс</string>
+    <string name="airwallex_required">Обязательно</string>
+    <string name="airwallex_please_enter_valid_value">Пожалуйста, введите действительное значение</string>
     <string name="airwallex_empty_phone">Пожалуйста, введите ваш номер телефона</string>
     <string name="airwallex_invalid_phone">Пожалуйста, введите действительный номер телефона</string>
     <string name="airwallex_empty_country_code">Пожалуйста, выберите страну</string>
@@ -42,7 +67,6 @@
     <string name="airwallex_schema_payment_redirect_message">После подтверждения вы будете перенаправлены для завершения оплаты.</string>
     <string name="airwallex_google_payment_redirect_message">Нажмите кнопку Google Pay ниже, чтобы безопасно завершить покупку.</string>
     <string name="airwallex_invalid_scheme_message">Недопустимая схема</string>
-    <string name="airwallex_empty_state">Пожалуйста, введите ваш штат / область</string>
     <string name="airwallex_delete_payment_method_prompt_title">Вы хотите удалить это платёжное согласие?</string>
     <string name="airwallex_delete_payment_method_positive">Удалить</string>
     <string name="airwallex_new_card">Карта</string>
