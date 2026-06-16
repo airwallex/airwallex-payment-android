@@ -47,8 +47,8 @@ class SettingViewModel : BaseViewModel() {
 
     fun clearSetting() {
         Settings.price = "1"
-        Settings.currency = "SGD"
-        Settings.countryCode = "SG"
+        Settings.currency = "USD"
+        Settings.countryCode = "US"
         Settings.cachedCustomerId = ""
         Settings.apiKey = ""
         Settings.clientId = ""

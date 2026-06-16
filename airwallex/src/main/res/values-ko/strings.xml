@@ -8,12 +8,37 @@
     <string name="airwallex_shipping_email_hint">이메일(선택 사항)</string>
     <string name="airwallex_contact_phone_number_hint">전화번호(선택 사항)</string>
     <string name="airwallex_zip_code_hint">우편번호</string>
+
+    <!-- Country-specific billing address labels (APAM-771) -->
+    <!-- State field variants -->
+    <string name="airwallex_billing_label_state">주</string>
+    <string name="airwallex_billing_label_province">도</string>
+    <string name="airwallex_billing_label_prefecture">현</string>
+    <string name="airwallex_billing_label_do_si">도/시</string>
+    <string name="airwallex_billing_label_county">군</string>
+    <string name="airwallex_billing_label_parish">교구</string>
+    <string name="airwallex_billing_label_department">도</string>
+    <string name="airwallex_billing_label_district">구</string>
+    <string name="airwallex_billing_label_emirate">토후국</string>
+    <string name="airwallex_billing_label_oblast">주</string>
+    <string name="airwallex_billing_label_area">지역</string>
+    <string name="airwallex_billing_label_island">섬</string>
+    <!-- City field variants -->
+    <string name="airwallex_billing_label_city">시</string>
+    <string name="airwallex_billing_label_town">읍</string>
+    <string name="airwallex_billing_label_suburb">교외</string>
+    <!-- Postcode field variants -->
+    <string name="airwallex_billing_label_postal_code">우편번호</string>
+    <string name="airwallex_billing_label_zip_code">우편번호</string>
+    <string name="airwallex_billing_label_pin">PIN</string>
+    <string name="airwallex_billing_label_eircode">Eircode</string>
+    <!-- Wraps a label with the (optional) suffix, e.g. "Postal code (optional)" -->
+    <string name="airwallex_field_optional">%1$s(선택 사항)</string>
     <string name="airwallex_phone_number_hint">전화번호</string>
     <string name="airwallex_shipping_country_name_hint">국가 / 지역</string>
     <string name="airwallex_empty_country">국가를 입력하세요</string>
-    <string name="airwallex_empty_city">도시를 입력하세요</string>
-    <string name="airwallex_empty_street">주소를 입력하세요</string>
-    <string name="airwallex_empty_postcode">우편번호를 입력하세요</string>
+    <string name="airwallex_required">필수</string>
+    <string name="airwallex_please_enter_valid_value">유효한 값을 입력하세요</string>
     <string name="airwallex_empty_phone">전화번호를 입력하세요</string>
     <string name="airwallex_invalid_phone">유효한 전화번호를 입력하세요</string>
     <string name="airwallex_empty_country_code">국가를 선택하세요</string>
@@ -42,7 +67,6 @@
     <string name="airwallex_schema_payment_redirect_message">확인 후 결제를 완료하러 이동합니다.</string>
     <string name="airwallex_google_payment_redirect_message">아래 Google Pay 버튼을 클릭하여 안전하게 구매를 완료하세요.</string>
     <string name="airwallex_invalid_scheme_message">유효하지 않은 형식</string>
-    <string name="airwallex_empty_state">주를 입력하세요</string>
     <string name="airwallex_delete_payment_method_prompt_title">이 결제 동의를 삭제하시겠습니까?</string>
     <string name="airwallex_delete_payment_method_positive">삭제</string>
     <string name="airwallex_new_card">카드</string>
