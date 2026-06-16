@@ -16,6 +16,6 @@ This is the card-flow validator only. Google Pay billing is configured via [com.
 - 
    `PHONE`: must match the E.164 shape (`+?[1-9]\d{1,14}`); the leading `+` is optional
 - 
-   `ADDRESS`: street, city, state, postcode all non-blank, plus a 2-letter uppercase ISO country code.
+   `ADDRESS`: street non-blank, plus a 2-letter uppercase ISO country code. The state, city, and postcode checks are conditional — they only apply when the country's [AddressSpec](-address-spec/index.md) declares that field, since the UI hides any field the country doesn't collect (e.g. AE has no city/postcode, JP has no city).
 - 
    `COUNTRY_CODE`: 2-letter uppercase ISO country code (suppressed when ADDRESS is also required — ADDRESS already covers it).

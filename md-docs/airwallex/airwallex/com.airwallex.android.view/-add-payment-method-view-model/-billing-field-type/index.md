@@ -10,8 +10,8 @@ enum [BillingFieldType](index.md) : [Enum](https://kotlinlang.org/api/core/kotli
 | | |
 |---|---|
 | [STREET](-s-t-r-e-e-t/index.md) | [androidJvm]<br>[STREET](-s-t-r-e-e-t/index.md) |
-| [CITY](-c-i-t-y/index.md) | [androidJvm]<br>[CITY](-c-i-t-y/index.md) |
 | [STATE](-s-t-a-t-e/index.md) | [androidJvm]<br>[STATE](-s-t-a-t-e/index.md) |
+| [CITY](-c-i-t-y/index.md) | [androidJvm]<br>[CITY](-c-i-t-y/index.md) |
 | [POSTCODE](-p-o-s-t-c-o-d-e/index.md) | [androidJvm]<br>[POSTCODE](-p-o-s-t-c-o-d-e/index.md) |
 | [PHONE](-p-h-o-n-e/index.md) | [androidJvm]<br>[PHONE](-p-h-o-n-e/index.md) |
 | [COUNTRY_CODE](-c-o-u-n-t-r-y_-c-o-d-e/index.md) | [androidJvm]<br>[COUNTRY_CODE](-c-o-u-n-t-r-y_-c-o-d-e/index.md) |

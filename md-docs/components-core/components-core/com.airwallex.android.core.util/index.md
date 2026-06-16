@@ -6,6 +6,7 @@
 
 | Name | Summary |
 |---|---|
+| [AddressSpec](-address-spec/index.md) | [androidJvm]<br>@[RestrictTo](https://developer.android.com/reference/kotlin/androidx/annotation/RestrictTo.html)(value = [[RestrictTo.Scope.LIBRARY_GROUP](https://developer.android.com/reference/kotlin/androidx/annotation/RestrictTo.Scope.LIBRARY_GROUP.html)])<br>object [AddressSpec](-address-spec/index.md)<br>Per-country address spec — what the merchant's address form should look like for each ISO country code. |
 | [AirwallexJsonUtils](-airwallex-json-utils/index.md) | [androidJvm]<br>object [AirwallexJsonUtils](-airwallex-json-utils/index.md) |
 | [BuildConfigHelper](-build-config-helper/index.md) | [androidJvm]<br>object [BuildConfigHelper](-build-config-helper/index.md) |
 | [BuildHelper](-build-helper/index.md) | [androidJvm]<br>object [BuildHelper](-build-helper/index.md) |
