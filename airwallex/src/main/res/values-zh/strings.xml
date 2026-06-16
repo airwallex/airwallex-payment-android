@@ -37,9 +37,8 @@
     <string name="airwallex_phone_number_hint">电话号码</string>
     <string name="airwallex_shipping_country_name_hint">国家/地区</string>
     <string name="airwallex_empty_country">请输入您的国家</string>
-    <string name="airwallex_empty_city">请输入您的城市</string>
-    <string name="airwallex_empty_street">请输入您的街道</string>
-    <string name="airwallex_empty_postcode">请输入您的邮政编码</string>
+    <string name="airwallex_required">必填</string>
+    <string name="airwallex_please_enter_valid_value">请输入有效值</string>
     <string name="airwallex_empty_phone">请输入您的电话号码</string>
     <string name="airwallex_invalid_phone">请输入有效的电话号码</string>
     <string name="airwallex_empty_country_code">请选择一个国家</string>

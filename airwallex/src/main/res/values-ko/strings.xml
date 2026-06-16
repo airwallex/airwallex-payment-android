@@ -37,9 +37,8 @@
     <string name="airwallex_phone_number_hint">전화번호</string>
     <string name="airwallex_shipping_country_name_hint">국가 / 지역</string>
     <string name="airwallex_empty_country">국가를 입력하세요</string>
-    <string name="airwallex_empty_city">도시를 입력하세요</string>
-    <string name="airwallex_empty_street">주소를 입력하세요</string>
-    <string name="airwallex_empty_postcode">우편번호를 입력하세요</string>
+    <string name="airwallex_required">필수</string>
+    <string name="airwallex_please_enter_valid_value">유효한 값을 입력하세요</string>
     <string name="airwallex_empty_phone">전화번호를 입력하세요</string>
     <string name="airwallex_invalid_phone">유효한 전화번호를 입력하세요</string>
     <string name="airwallex_empty_country_code">국가를 선택하세요</string>

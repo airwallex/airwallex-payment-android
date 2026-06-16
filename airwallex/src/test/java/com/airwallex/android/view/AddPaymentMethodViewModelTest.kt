@@ -296,14 +296,14 @@ class AddPaymentMethodViewModelTest {
     fun `test getBillingValidationMessage with empty input`() {
         val viewModel = createViewModel(createBasicMockSession())
         assertEquals(
-            R.string.airwallex_empty_street,
+            R.string.airwallex_required,
             viewModel.getBillingValidationMessage(
                 "",
                 AddPaymentMethodViewModel.BillingFieldType.STREET,
             ),
         )
         assertEquals(
-            R.string.airwallex_empty_city,
+            R.string.airwallex_required,
             viewModel.getBillingValidationMessage(
                 "",
                 AddPaymentMethodViewModel.BillingFieldType.CITY,
@@ -312,89 +312,50 @@ class AddPaymentMethodViewModelTest {
     }
 
     @Test
-    fun `test getStateValidationMessage returns country-specific label when empty`() {
+    fun `test getBillingValidationMessage STATE returns required when blank`() {
         val viewModel = createViewModel(createBasicMockSession())
         assertEquals(
-            R.string.airwallex_billing_label_state,
-            viewModel.getStateValidationMessage("", "US"),
+            R.string.airwallex_required,
+            viewModel.getBillingValidationMessage(
+                "",
+                AddPaymentMethodViewModel.BillingFieldType.STATE,
+            ),
         )
         assertEquals(
-            R.string.airwallex_billing_label_prefecture,
-            viewModel.getStateValidationMessage("", "JP"),
-        )
-        assertEquals(
-            R.string.airwallex_billing_label_province,
-            viewModel.getStateValidationMessage("", "CN"),
-        )
-        assertEquals(
-            R.string.airwallex_billing_label_emirate,
-            viewModel.getStateValidationMessage("", "AE"),
-        )
-        assertEquals(
-            R.string.airwallex_billing_label_county,
-            viewModel.getStateValidationMessage("", "IE"),
+            R.string.airwallex_required,
+            viewModel.getBillingValidationMessage(
+                " \t\n",
+                AddPaymentMethodViewModel.BillingFieldType.STATE,
+            ),
         )
     }
 
     @Test
-    fun `test getStateValidationMessage treats whitespace-only input as empty`() {
+    fun `test getBillingValidationMessage STATE returns null when non-blank`() {
         val viewModel = createViewModel(createBasicMockSession())
-        assertEquals(
-            R.string.airwallex_billing_label_state,
-            viewModel.getStateValidationMessage(" ", "US"),
-        )
-        assertEquals(
-            R.string.airwallex_billing_label_state,
-            viewModel.getStateValidationMessage("\t\n", "US"),
+        assertNull(
+            viewModel.getBillingValidationMessage(
+                "Tokyo",
+                AddPaymentMethodViewModel.BillingFieldType.STATE,
+            ),
         )
     }
 
     @Test
-    fun `test getStateValidationMessage normalizes lowercase country code via stateLabel`() {
-        // BillingAddressLabels.stateLabel uppercases internally, so "us" and "US" must
-        // produce the same label — guards against the field showing JP/KR/etc. wording
-        // when callers pass a lowercase code from external data.
-        val viewModel = createViewModel(createBasicMockSession())
-        assertEquals(
-            R.string.airwallex_billing_label_state,
-            viewModel.getStateValidationMessage("", "us"),
-        )
-    }
-
-    @Test
-    fun `test getStateValidationMessage with non-empty input returns null regardless of country`() {
-        val viewModel = createViewModel(createBasicMockSession())
-        assertNull(viewModel.getStateValidationMessage("Tokyo", "JP"))
-        assertNull(viewModel.getStateValidationMessage("Dubai", "AE"))
-        // Even unknown country codes pass-through when input is non-blank — the
-        // method is a presence check, not a list-membership check.
-        assertNull(viewModel.getStateValidationMessage("anything", "XX"))
-    }
-
-    @Test
-    fun `test BillingFieldType no longer carries STATE`() {
-        // STATE moved to getStateValidationMessage so the field-type enum stays
-        // small and the country-specific labelling lives in one place. If you
-        // re-add it, update getBillingValidationMessage too.
-        val names = AddPaymentMethodViewModel.BillingFieldType.values().map { it.name }
-        assertFalse("STATE" in names)
-    }
-
-    @Test
-    fun `test getPostcodeValidationMessage empty input returns empty_postcode`() {
+    fun `test getPostcodeValidationMessage empty input returns required`() {
         val viewModel = createViewModel(createBasicMockSession())
         // Visible ⇒ required. Even countries whose spec doesn't declare postcode as
         // mandatory (e.g. Albania) must still error on blank when the field is rendered.
         assertEquals(
-            R.string.airwallex_empty_postcode,
+            R.string.airwallex_required,
             viewModel.getPostcodeValidationMessage("", "US"),
         )
         assertEquals(
-            R.string.airwallex_empty_postcode,
+            R.string.airwallex_required,
             viewModel.getPostcodeValidationMessage("", "AL"),
         )
         assertEquals(
-            R.string.airwallex_empty_postcode,
+            R.string.airwallex_required,
             viewModel.getPostcodeValidationMessage("", "IE"),
         )
     }
@@ -410,14 +371,14 @@ class AddPaymentMethodViewModelTest {
     }
 
     @Test
-    fun `test getPostcodeValidationMessage invalid input returns invalid_field`() {
+    fun `test getPostcodeValidationMessage invalid input returns please_enter_valid_value`() {
         val viewModel = createViewModel(createBasicMockSession())
         assertEquals(
-            R.string.airwallex_invalid_field,
+            R.string.airwallex_please_enter_valid_value,
             viewModel.getPostcodeValidationMessage("abc", "US"),
         )
         assertEquals(
-            R.string.airwallex_invalid_field,
+            R.string.airwallex_please_enter_valid_value,
             viewModel.getPostcodeValidationMessage("123", "DE"),
         )
     }

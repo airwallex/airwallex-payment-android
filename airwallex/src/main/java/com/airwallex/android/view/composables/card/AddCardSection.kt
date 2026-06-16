@@ -100,9 +100,6 @@ internal fun AddCardSection(
     val zipCode by viewModel.zipCode.collectAsState()
     val phoneNumber by viewModel.phoneNumber.collectAsState()
     var streetErrorMessage by remember { mutableStateOf<Int?>(null) }
-    // Holds the country-specific state-label resource (e.g. Province/Prefecture). Wrapped
-    // with airwallex_empty_billing_field at display so the error reads as
-    // "Please enter your <label>".
     var stateErrorMessage by remember { mutableStateOf<Int?>(null) }
     var cityErrorMessage by remember { mutableStateOf<Int?>(null) }
     var postcodeErrorMessage by remember { mutableStateOf<Int?>(null) }
@@ -557,9 +554,9 @@ internal fun AddCardSection(
                                         stateErrorMessage = null
                                     },
                                     onComplete = { input ->
-                                        stateErrorMessage = viewModel.getStateValidationMessage(
+                                        stateErrorMessage = viewModel.getBillingValidationMessage(
                                             input,
-                                            selectedCountryCode,
+                                            AddPaymentMethodViewModel.BillingFieldType.STATE,
                                         )
                                         focusManager.moveFocus(
                                             if (isStateCityRow || isStatePostcodeRow) {
@@ -570,9 +567,9 @@ internal fun AddCardSection(
                                         )
                                     },
                                     onFocusLost = { input ->
-                                        stateErrorMessage = viewModel.getStateValidationMessage(
+                                        stateErrorMessage = viewModel.getBillingValidationMessage(
                                             input,
-                                            selectedCountryCode,
+                                            AddPaymentMethodViewModel.BillingFieldType.STATE,
                                         )
                                     },
                                     modifier = stateModifier
@@ -687,26 +684,13 @@ internal fun AddCardSection(
                     )
                 }
 
-                val billingErrorMessage: String? = streetErrorMessage?.let { stringResource(id = it) }
-                    ?: stateErrorMessage?.let {
-                        stringResource(R.string.airwallex_empty_billing_field, stringResource(id = it))
-                    }
-                    ?: cityErrorMessage?.let { stringResource(id = it) }
-                    ?: postcodeErrorMessage?.let { res ->
-                        // getPostcodeValidationMessage returns airwallex_invalid_field for
-                        // pattern mismatches; that resource is a "%s" format string, so we
-                        // substitute the country-specific postcode label (ZIP code / PIN /
-                        // Eircode / ...) to read "Invalid ZIP code".
-                        if (res == R.string.airwallex_invalid_field) {
-                            stringResource(
-                                R.string.airwallex_invalid_field,
-                                stringResource(id = BillingAddressLabels.postcodeLabel(selectedCountryCode)),
-                            )
-                        } else {
-                            stringResource(id = res)
-                        }
-                    }
-                    ?: countryCodeErrorMessage?.let { stringResource(id = it) }
+                val billingErrorMessage: String? = (
+                    streetErrorMessage
+                        ?: stateErrorMessage
+                        ?: cityErrorMessage
+                        ?: postcodeErrorMessage
+                        ?: countryCodeErrorMessage
+                    )?.let { stringResource(id = it) }
                 if (billingErrorMessage != null) {
                     Spacer(modifier = Modifier.height(4.dp))
 
@@ -771,7 +755,10 @@ internal fun AddCardSection(
                         AddPaymentMethodViewModel.BillingFieldType.STREET,
                     )
                     stateErrorMessage = if (AddressSpec.hasState(selectedCountryCode)) {
-                        viewModel.getStateValidationMessage(state, selectedCountryCode)
+                        viewModel.getBillingValidationMessage(
+                            state,
+                            AddPaymentMethodViewModel.BillingFieldType.STATE,
+                        )
                     } else {
                         null
                     }

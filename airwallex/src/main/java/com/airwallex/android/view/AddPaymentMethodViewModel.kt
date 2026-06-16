@@ -23,7 +23,6 @@ import com.airwallex.android.core.util.CardUtils
 import com.airwallex.android.core.util.isValidE164Phone
 import com.airwallex.android.ui.checkout.AirwallexCheckoutViewModel
 import com.airwallex.android.core.util.AddressSpec
-import com.airwallex.android.view.util.BillingAddressLabels
 import com.airwallex.android.view.util.ExpiryDateUtils
 import com.airwallex.android.view.util.createExpiryMonthAndYear
 import com.airwallex.android.view.util.isValidCvc
@@ -258,6 +257,7 @@ class AddPaymentMethodViewModel(
     fun getBillingValidationMessage(input: String, type: BillingFieldType): Int? {
         return when (type) {
             BillingFieldType.STREET,
+            BillingFieldType.STATE,
             BillingFieldType.CITY,
             BillingFieldType.POSTCODE,
             BillingFieldType.COUNTRY_CODE -> if (input.isBlank()) type.errorMessage else null
@@ -271,18 +271,6 @@ class AddPaymentMethodViewModel(
     }
 
     /**
-     * Returns the country-specific state-field label resource (e.g. Province/Prefecture/Emirate)
-     * when [input] is blank, or null when valid. Callers wrap it with
-     * [R.string.airwallex_empty_billing_field] at display time — keeping resource lookup
-     * out of the ViewModel and mirroring the [Int?] contract of [getBillingValidationMessage].
-     */
-    @StringRes
-    fun getStateValidationMessage(input: String, countryCode: String): Int? {
-        if (input.isNotBlank()) return null
-        return BillingAddressLabels.stateLabel(countryCode)
-    }
-
-    /**
      * Postcode validation: presence + country-specific regex.
      *
      * Any field that is visible is required, so callers are expected to gate on
@@ -290,18 +278,15 @@ class AddPaymentMethodViewModel(
      * being collected and must be non-blank.
      *
      * Returns:
-     *  - [R.string.airwallex_empty_postcode] when blank
-     *  - [R.string.airwallex_invalid_field] when non-blank but the country's pattern doesn't match
+     *  - [R.string.airwallex_required] when blank
+     *  - [R.string.airwallex_please_enter_valid_value] when non-blank but the country's pattern doesn't match
      *  - null when valid (or non-blank for a country with no declared pattern)
-     *
-     * Callers wrap the invalid-error res with [BillingAddressLabels.postcodeLabel] so the user
-     * sees the country-specific noun (e.g. "Invalid ZIP code" / "Invalid Eircode").
      */
     @StringRes
     fun getPostcodeValidationMessage(input: String, countryCode: String): Int? {
-        if (input.isBlank()) return R.string.airwallex_empty_postcode
+        if (input.isBlank()) return R.string.airwallex_required
         val pattern = AddressSpec.postcodePattern(countryCode) ?: return null
-        return if (pattern.matches(input.trim())) null else R.string.airwallex_invalid_field
+        return if (pattern.matches(input.trim())) null else R.string.airwallex_please_enter_valid_value
     }
 
     fun createCard(
@@ -400,9 +385,10 @@ class AddPaymentMethodViewModel(
     }
 
     enum class BillingFieldType(@StringRes val errorMessage: Int) {
-        STREET(R.string.airwallex_empty_street),
-        CITY(R.string.airwallex_empty_city),
-        POSTCODE(R.string.airwallex_empty_postcode),
+        STREET(R.string.airwallex_required),
+        STATE(R.string.airwallex_required),
+        CITY(R.string.airwallex_required),
+        POSTCODE(R.string.airwallex_required),
         PHONE(R.string.airwallex_empty_phone),
         COUNTRY_CODE(R.string.airwallex_empty_country_code),
     }

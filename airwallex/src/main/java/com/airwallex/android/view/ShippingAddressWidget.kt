@@ -165,11 +165,7 @@ class ShippingAddressWidget(context: Context, attrs: AttributeSet?) :
         }
         stateTextInputLayout.afterFocusChanged { hasFocus ->
             if (!hasFocus && stateTextInputLayout.value.isEmpty()) {
-                val stateLabel = resources.getString(
-                    BillingAddressLabels.stateLabel(country?.code.orEmpty())
-                )
-                stateTextInputLayout.error =
-                    resources.getString(R.string.airwallex_empty_billing_field, stateLabel)
+                stateTextInputLayout.error = resources.getString(R.string.airwallex_required)
             } else {
                 stateTextInputLayout.error = null
             }
@@ -177,7 +173,7 @@ class ShippingAddressWidget(context: Context, attrs: AttributeSet?) :
 
         cityTextInputLayout.afterFocusChanged { hasFocus ->
             if (!hasFocus && cityTextInputLayout.value.isEmpty()) {
-                cityTextInputLayout.error = resources.getString(R.string.airwallex_empty_city)
+                cityTextInputLayout.error = resources.getString(R.string.airwallex_required)
             } else {
                 cityTextInputLayout.error = null
             }
@@ -185,8 +181,7 @@ class ShippingAddressWidget(context: Context, attrs: AttributeSet?) :
 
         addressTextInputLayout.afterFocusChanged { hasFocus ->
             if (!hasFocus && addressTextInputLayout.value.isEmpty()) {
-                addressTextInputLayout.error =
-                    resources.getString(R.string.airwallex_empty_street)
+                addressTextInputLayout.error = resources.getString(R.string.airwallex_required)
             } else {
                 addressTextInputLayout.error = null
             }
