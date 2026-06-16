@@ -36,10 +36,20 @@ object AddressSpec {
         "AE", "GI", "JP", "KY", "MO", "NR", "SG",
     )
 
-    /** Countries whose `fmt` is defined but does not contain `%Z` — hide the postcode field. */
+    /**
+     * Countries whose address spec does not collect a postcode — hide the postcode field.
+     * Derived from the Google i18n address data: countries with no `fmt` (default spec
+     * collects only street + city) or with an `fmt` that omits `%Z`.
+     */
     private val COUNTRIES_WITHOUT_POSTCODE: Set<String> = setOf(
-        "AE", "BF", "BS", "CI", "HK", "JM", "KI", "KN",
-        "MO", "MW", "NR", "PA", "SC", "SR", "TV",
+        "AE", "AG", "AO", "AQ", "AW", "BF", "BJ", "BO",
+        "BQ", "BS", "BV", "BW", "BZ", "CG", "CI", "CK",
+        "CM", "CW", "DM", "FJ", "GA", "GD", "GH", "GM",
+        "GQ", "GY", "HK", "JM", "KI", "KM", "KN", "LC",
+        "ML", "MO", "MR", "MS", "MW", "NR", "NU", "PA",
+        "PS", "QA", "SB", "SC", "SR", "ST", "SX", "TD",
+        "TF", "TG", "TK", "TL", "TO", "TT", "TV", "UG",
+        "VU", "WS",
     )
 
     /** Per-country postcode regex (anchored, case-insensitive). */

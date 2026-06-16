@@ -91,9 +91,19 @@ class AddressSpecTest {
 
     @Test
     fun `hasPostcode is false for the explicit no-postcode set`() {
+        // Mirrors COUNTRIES_WITHOUT_POSTCODE — drift here is what we want this test to catch.
+        // Two categories of country end up here: (1) countries whose Google i18n fmt is defined
+        // but omits %Z (AE/BF/HK/JM/etc.) and (2) countries with no fmt at all, which fall
+        // back to the default street+city spec and so collect no postcode (AO/AG/BW/etc.).
         listOf(
-            "AE", "BF", "BS", "CI", "HK", "JM", "KI", "KN",
-            "MO", "MW", "NR", "PA", "SC", "SR", "TV",
+            "AE", "AG", "AO", "AQ", "AW", "BF", "BJ", "BO",
+            "BQ", "BS", "BV", "BW", "BZ", "CG", "CI", "CK",
+            "CM", "CW", "DM", "FJ", "GA", "GD", "GH", "GM",
+            "GQ", "GY", "HK", "JM", "KI", "KM", "KN", "LC",
+            "ML", "MO", "MR", "MS", "MW", "NR", "NU", "PA",
+            "PS", "QA", "SB", "SC", "SR", "ST", "SX", "TD",
+            "TF", "TG", "TK", "TL", "TO", "TT", "TV", "UG",
+            "VU", "WS",
         ).forEach { code ->
             assertFalse("expected hasPostcode=false for $code", AddressSpec.hasPostcode(code))
         }

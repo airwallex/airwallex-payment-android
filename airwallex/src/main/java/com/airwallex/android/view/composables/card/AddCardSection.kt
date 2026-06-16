@@ -438,15 +438,16 @@ internal fun AddCardSection(
                     val stateOptions = AddressSpec.stateList(selectedCountryCode)
 
                     val stateHint = stringResource(id = BillingAddressLabels.stateLabel(selectedCountryCode))
-                    // Sample postcode appended to the field hint to show the expected shape
-                    // (e.g. "ZIP code (e.g. 95014)").
-                    val postcodeExample = AddressSpec.postcodeExamples(selectedCountryCode)?.firstOrNull()
 
                     // Whichever field is visually last gets the bottom-rounded corners.
                     val streetIsLast = !showState && !showCity && !showPostcode
                     val stateIsLast = showState && !showCity && !showPostcode
                     val cityIsLast = showCity && !showState && !showPostcode
                     val isStateCityRow = showState && showCity
+                    // When exactly one of state/city is hidden, share its row with postcode
+                    // so the form stays compact instead of leaving postcode on its own line.
+                    val isStatePostcodeRow = showState && !showCity && showPostcode
+                    val isCityPostcodeRow = !showState && showCity && showPostcode
 
                     CountrySelectRow(
                         options = CountryUtils.countryList.map { it.name to it.code },
@@ -454,16 +455,17 @@ internal fun AddCardSection(
                         onOptionSelected = {
                             viewModel.updateSelectedCountryCode(it.second)
                             countryCodeErrorMessage = null
-                            // Clear state on country change — the dropdown options (and the
-                            // field's presence) depend on the country, so a stale code from
-                            // the previous country would either fail to match or submit wrong.
+                            // Clear every address field on country change — fields that
+                            // disappear must not silently keep their previous value in the
+                            // payload, and fields that remain may carry a stale value
+                            // (state codes, postcode shape) that doesn't fit the new country.
+                            viewModel.updateStreet("")
+                            streetErrorMessage = null
                             viewModel.updateState("")
                             stateErrorMessage = null
-                            // City/zip values aren't country-specific in shape, but the
-                            // payload should not carry them when the new country doesn't
-                            // collect them — wipe to keep the visible UI and the eventual
-                            // billing payload in sync.
+                            viewModel.updateCity("")
                             cityErrorMessage = null
+                            viewModel.updateZipCode("")
                             postcodeErrorMessage = null
                         },
                         enabled = !isSameAddressChecked,
@@ -512,7 +514,9 @@ internal fun AddCardSection(
                                         input,
                                         AddPaymentMethodViewModel.BillingFieldType.CITY,
                                     )
-                                    focusManager.moveFocus(FocusDirection.Down)
+                                    focusManager.moveFocus(
+                                        if (isCityPostcodeRow) FocusDirection.Right else FocusDirection.Down,
+                                    )
                                 },
                                 onFocusLost = { input ->
                                     cityErrorMessage = viewModel.getBillingValidationMessage(
@@ -558,7 +562,11 @@ internal fun AddCardSection(
                                             selectedCountryCode,
                                         )
                                         focusManager.moveFocus(
-                                            if (isStateCityRow) FocusDirection.Right else FocusDirection.Down,
+                                            if (isStateCityRow || isStatePostcodeRow) {
+                                                FocusDirection.Right
+                                            } else {
+                                                FocusDirection.Down
+                                            },
                                         )
                                     },
                                     onFocusLost = { input ->
@@ -576,6 +584,38 @@ internal fun AddCardSection(
                             }
                         }
 
+                    val postcodeField: @Composable (modifier: Modifier, shape: Shape) -> Unit =
+                        { postcodeModifier, postcodeShape ->
+                            BillingTextField(
+                                hint = stringResource(
+                                    id = BillingAddressLabels.postcodeLabel(selectedCountryCode),
+                                ),
+                                text = zipCode,
+                                onTextChanged = {
+                                    viewModel.updateZipCode(it)
+                                    postcodeErrorMessage = null
+                                },
+                                onComplete = { input ->
+                                    postcodeErrorMessage = viewModel.getPostcodeValidationMessage(
+                                        input,
+                                        selectedCountryCode,
+                                    )
+                                    focusManager.moveFocus(FocusDirection.Down)
+                                },
+                                onFocusLost = { input ->
+                                    postcodeErrorMessage = viewModel.getPostcodeValidationMessage(
+                                        input,
+                                        selectedCountryCode,
+                                    )
+                                },
+                                modifier = postcodeModifier
+                                    .contentType(ContentType.PostalCode),
+                                enabled = !isSameAddressChecked,
+                                isError = postcodeErrorMessage != null,
+                                shape = postcodeShape,
+                            )
+                        }
+
                     when {
                         isStateCityRow -> {
                             // When the row is last, split the bottom-rounded corners across the two halves.
@@ -588,6 +628,30 @@ internal fun AddCardSection(
                                 cityField(
                                     Modifier.weight(1f),
                                     if (rowIsLast) RoundedCornerShape(bottomEnd = 8.dp) else squareShape,
+                                )
+                            }
+                        }
+                        isStatePostcodeRow -> {
+                            Row {
+                                stateField(
+                                    Modifier.weight(1f),
+                                    RoundedCornerShape(bottomStart = 8.dp),
+                                )
+                                postcodeField(
+                                    Modifier.weight(1f),
+                                    RoundedCornerShape(bottomEnd = 8.dp),
+                                )
+                            }
+                        }
+                        isCityPostcodeRow -> {
+                            Row {
+                                cityField(
+                                    Modifier.weight(1f),
+                                    RoundedCornerShape(bottomStart = 8.dp),
+                                )
+                                postcodeField(
+                                    Modifier.weight(1f),
+                                    RoundedCornerShape(bottomEnd = 8.dp),
                                 )
                             }
                         }
@@ -605,41 +669,10 @@ internal fun AddCardSection(
                         }
                     }
 
-                    if (showPostcode) {
-                        val postcodeLabelText = stringResource(
-                            id = BillingAddressLabels.postcodeLabel(selectedCountryCode),
-                        )
-                        val postcodeHint = if (postcodeExample != null) {
-                            "$postcodeLabelText (e.g. $postcodeExample)"
-                        } else {
-                            postcodeLabelText
-                        }
-                        BillingTextField(
-                            hint = postcodeHint,
-                            text = zipCode,
-                            onTextChanged = {
-                                viewModel.updateZipCode(it)
-                                postcodeErrorMessage = null
-                            },
-                            onComplete = { input ->
-                                postcodeErrorMessage = viewModel.getPostcodeValidationMessage(
-                                    input,
-                                    selectedCountryCode,
-                                )
-                                focusManager.moveFocus(FocusDirection.Down)
-                            },
-                            onFocusLost = { input ->
-                                postcodeErrorMessage = viewModel.getPostcodeValidationMessage(
-                                    input,
-                                    selectedCountryCode,
-                                )
-                            },
-                            modifier = Modifier
-                                .contentType(ContentType.PostalCode),
-                            enabled = !isSameAddressChecked,
-                            isError = postcodeErrorMessage != null,
-                            shape = addressBottomShape,
-                        )
+                    // Render postcode standalone only when it doesn't share a row above —
+                    // i.e. either both state and city are visible, or both are hidden.
+                    if (showPostcode && !isStatePostcodeRow && !isCityPostcodeRow) {
+                        postcodeField(Modifier.fillMaxWidth(), addressBottomShape)
                     }
                 } else if (viewModel.showCountryCodeOnly) {
                     CountrySelectRow(
