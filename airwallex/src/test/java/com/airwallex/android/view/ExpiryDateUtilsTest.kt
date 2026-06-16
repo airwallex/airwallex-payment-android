@@ -1,6 +1,7 @@
 package com.airwallex.android.view
 
 import com.airwallex.android.view.util.ExpiryDateUtils
+import com.airwallex.android.view.util.ExpiryDateVisualTransformation
 import com.airwallex.android.view.util.createExpiryMonthAndYear
 import java.util.Calendar
 import java.util.TimeZone
@@ -70,8 +71,9 @@ class ExpiryDateUtilsTest {
 
     @Test
     fun `isValidExpiryDate should validate full expiry date string`() {
-        // Valid dates
-        assertTrue(ExpiryDateUtils.isValidExpiryDate("12/30")) // Future date
+        // Valid dates - both raw and formatted
+        assertTrue(ExpiryDateUtils.isValidExpiryDate("12/30")) // Future date with slash
+        assertTrue(ExpiryDateUtils.isValidExpiryDate("1230")) // Future date without slash
 
         // Invalid formats
         assertFalse(ExpiryDateUtils.isValidExpiryDate(""))
@@ -81,42 +83,80 @@ class ExpiryDateUtilsTest {
         assertFalse(ExpiryDateUtils.isValidExpiryDate("12/250")) // Invalid year format
         assertFalse(ExpiryDateUtils.isValidExpiryDate("13/25")) // Invalid month
         assertFalse(ExpiryDateUtils.isValidExpiryDate("00/25")) // Invalid month
+        assertFalse(ExpiryDateUtils.isValidExpiryDate("1325")) // Invalid month without slash
+        assertFalse(ExpiryDateUtils.isValidExpiryDate("0025")) // Invalid month without slash
     }
 
     @Test
-    fun `formatExpiryDate should format input correctly`() {
+    fun `formatRawExpiryInput should format digits correctly`() {
         // Empty input
-        assertEquals("", ExpiryDateUtils.formatExpiryDate(""))
+        assertEquals("", ExpiryDateUtils.formatRawExpiryInput(""))
 
-        // Single digit month (0 or 1)
-        assertEquals("0", ExpiryDateUtils.formatExpiryDate("0"))
-        assertEquals("1", ExpiryDateUtils.formatExpiryDate("1"))
+        // Single digit 0 or 1 - keep as-is
+        assertEquals("0", ExpiryDateUtils.formatRawExpiryInput("0"))
+        assertEquals("1", ExpiryDateUtils.formatRawExpiryInput("1"))
 
-        // Single digit month (2-9) - should add leading zero and slash
-        assertEquals("02/", ExpiryDateUtils.formatExpiryDate("2"))
-        assertEquals("09/", ExpiryDateUtils.formatExpiryDate("9"))
+        // Single digit 2-9 - auto-prefix with 0
+        assertEquals("02", ExpiryDateUtils.formatRawExpiryInput("2"))
+        assertEquals("09", ExpiryDateUtils.formatRawExpiryInput("9"))
 
-        // Two digit month
-        assertEquals("12/", ExpiryDateUtils.formatExpiryDate("12"))
+        // Two digits - keep as-is
+        assertEquals("12", ExpiryDateUtils.formatRawExpiryInput("12"))
+        assertEquals("03", ExpiryDateUtils.formatRawExpiryInput("03"))
 
-        // Month and year (without slash)
-        assertEquals("12/25", ExpiryDateUtils.formatExpiryDate("1225"))
+        // Full input
+        assertEquals("1225", ExpiryDateUtils.formatRawExpiryInput("1225"))
 
-        // Already formatted with slash
-        assertEquals("12/25", ExpiryDateUtils.formatExpiryDate("12/25"))
-
-        // Partial input with slash - the implementation adds an extra slash
-        assertEquals("1//25", ExpiryDateUtils.formatExpiryDate("1/25"))
+        // Filters non-digit characters
+        assertEquals("1225", ExpiryDateUtils.formatRawExpiryInput("12/25"))
+        assertEquals("1225", ExpiryDateUtils.formatRawExpiryInput("12a25"))
     }
 
     @Test
-    fun `formatExpiryDateWhenDeleting should handle backspace correctly`() {
-        // Backspace after slash
-        assertEquals("12", ExpiryDateUtils.formatExpiryDateWhenDeleting("12/"))
+    fun `ExpiryDateVisualTransformation should insert slash after position 2`() {
+        val transformation = ExpiryDateVisualTransformation()
 
-        // No change for other cases
-        assertEquals("12/25", ExpiryDateUtils.formatExpiryDateWhenDeleting("12/25"))
-        assertEquals("1", ExpiryDateUtils.formatExpiryDateWhenDeleting("1"))
+        // Empty input
+        val result0 = transformation.filter(androidx.compose.ui.text.AnnotatedString(""))
+        assertEquals("", result0.text.text)
+
+        // Single digit
+        val result1 = transformation.filter(androidx.compose.ui.text.AnnotatedString("1"))
+        assertEquals("1", result1.text.text)
+
+        // Two digits - no slash yet
+        val result2 = transformation.filter(androidx.compose.ui.text.AnnotatedString("12"))
+        assertEquals("12", result2.text.text)
+
+        // Three digits - slash inserted
+        val result3 = transformation.filter(androidx.compose.ui.text.AnnotatedString("123"))
+        assertEquals("12/3", result3.text.text)
+
+        // Four digits - full display
+        val result4 = transformation.filter(androidx.compose.ui.text.AnnotatedString("1225"))
+        assertEquals("12/25", result4.text.text)
+    }
+
+    @Test
+    fun `ExpiryDateVisualTransformation offset mapping should be correct`() {
+        val transformation = ExpiryDateVisualTransformation()
+        val result = transformation.filter(androidx.compose.ui.text.AnnotatedString("1225"))
+        val mapping = result.offsetMapping
+
+        // originalToTransformed: raw position -> display position
+        assertEquals(0, mapping.originalToTransformed(0)) // before '1'
+        assertEquals(1, mapping.originalToTransformed(1)) // before '2'
+        assertEquals(2, mapping.originalToTransformed(2)) // before '/' (position 2 in raw = position 2 in display)
+        assertEquals(4, mapping.originalToTransformed(3)) // before '5' (position 3 in raw = position 4 in display, after '/')
+        assertEquals(5, mapping.originalToTransformed(4)) // end
+
+        // transformedToOriginal: display position -> raw position
+        assertEquals(0, mapping.transformedToOriginal(0)) // '1'
+        assertEquals(1, mapping.transformedToOriginal(1)) // '2'
+        assertEquals(2, mapping.transformedToOriginal(2)) // '/' maps back to position 2
+        assertEquals(2, mapping.transformedToOriginal(3)) // '2' in year (display pos 3 -> raw pos 2)
+        assertEquals(3, mapping.transformedToOriginal(4)) // '5' in year (display pos 4 -> raw pos 3)
+        assertEquals(4, mapping.transformedToOriginal(5)) // end
     }
 
     @Test
@@ -138,7 +178,7 @@ class ExpiryDateUtilsTest {
         assertEquals(12, month1)
         assertEquals(2025, year1)
 
-        // Valid input without slash
+        // Valid input without slash (raw digits from new format)
         val (month2, year2) = "1225".createExpiryMonthAndYear() ?: throw IllegalStateException()
         assertEquals(12, month2)
         assertEquals(2025, year2)

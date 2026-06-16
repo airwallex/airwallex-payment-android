@@ -24,6 +24,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -49,6 +50,7 @@ fun StandardTextField(
     onComplete: (() -> Unit)? = null,
     textStyle: TextStyle = MaterialTheme.typography.bodyMedium,
     shape: Shape = RoundedCornerShape(8.dp),
+    visualTransformation: VisualTransformation = VisualTransformation.None,
 ) {
     AirwallexTheme {
         OutlinedTextField(
@@ -74,6 +76,7 @@ fun StandardTextField(
             textStyle = textStyle,
             colors = textFieldColors(),
             shape = shape,
+            visualTransformation = visualTransformation,
         )
     }
 }

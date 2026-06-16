@@ -26,9 +26,9 @@ import com.airwallex.android.R
 import com.airwallex.android.ui.composables.StandardTextField
 import com.airwallex.android.ui.composables.StandardTextFieldOptions
 import com.airwallex.android.view.composables.common.FocusState
-import com.airwallex.android.view.util.ExpiryDateUtils.VALID_INPUT_LENGTH
-import com.airwallex.android.view.util.ExpiryDateUtils.formatExpiryDate
-import com.airwallex.android.view.util.ExpiryDateUtils.formatExpiryDateWhenDeleting
+import com.airwallex.android.view.util.ExpiryDateUtils.VALID_RAW_LENGTH
+import com.airwallex.android.view.util.ExpiryDateUtils.formatRawExpiryInput
+import com.airwallex.android.view.util.ExpiryDateVisualTransformation
 import com.airwallex.risk.AirwallexRisk
 
 @Suppress("LongMethod", "LongParameterList")
@@ -52,33 +52,14 @@ fun CardExpiryTextField(
         hint = stringResource(R.string.airwallex_expires_hint),
         text = textFieldValue,
         onTextChanged = { newText ->
-            // Don't format while IME is composing to prevent conflicts on Android 9 devices
-            if (newText.composition != null) {
-                textFieldValue = newText
-                onTextChanged(textFieldValue)
-                return@StandardTextField
-            }
-
-            val isDeleteAction = newText.text.length < (textFieldValue.text.length)
-            if (isDeleteAction) {
-                val formattedText = formatExpiryDateWhenDeleting(newText.text)
-                textFieldValue = TextFieldValue(
-                    text = formattedText.take(VALID_INPUT_LENGTH),
-                    selection = TextRange(formattedText.length),
-                )
-                showClearButton = textFieldValue.text.isNotEmpty()
-                onTextChanged(textFieldValue)
-                return@StandardTextField
-            }
-
-            val formattedDate = formatExpiryDate(newText.text)
+            val rawDigits = formatRawExpiryInput(newText.text).take(VALID_RAW_LENGTH)
             textFieldValue = TextFieldValue(
-                text = formattedDate.take(VALID_INPUT_LENGTH),
-                selection = TextRange(formattedDate.length),
+                text = rawDigits,
+                selection = TextRange(rawDigits.length),
             )
             showClearButton = textFieldValue.text.isNotEmpty()
             onTextChanged(textFieldValue)
-            if (textFieldValue.text.length == VALID_INPUT_LENGTH) {
+            if (textFieldValue.text.length == VALID_RAW_LENGTH) {
                 onComplete(textFieldValue.text)
                 showClearButton = false
             }
@@ -134,5 +115,6 @@ fun CardExpiryTextField(
             }
         },
         shape = shape,
+        visualTransformation = ExpiryDateVisualTransformation(),
     )
 }

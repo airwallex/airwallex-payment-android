@@ -1,6 +1,10 @@
 package com.airwallex.android.view.util
 
 import androidx.annotation.Size
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.input.OffsetMapping
+import androidx.compose.ui.text.input.TransformedText
+import androidx.compose.ui.text.input.VisualTransformation
 import java.util.Calendar
 import java.util.TimeZone
 
@@ -8,6 +12,7 @@ object ExpiryDateUtils {
 
     private const val MAX_VALID_YEAR = 99
     const val VALID_INPUT_LENGTH = 5
+    const val VALID_RAW_LENGTH = 4
 
     fun isValidMonth(monthString: String?): Boolean {
         return try {
@@ -28,48 +33,20 @@ object ExpiryDateUtils {
         }
     }
 
-    fun formatExpiryDate(rawInput: String): String {
-        val formattedDateBuilder = StringBuilder()
-        when (rawInput.length) {
-            0 -> return ""
-            1 -> {
-                when (rawInput) {
-                    "0",
-                    "1" -> formattedDateBuilder.append(rawInput)
-                    else -> formattedDateBuilder.append("0$rawInput/")
-                }
-            }
-            2 -> formattedDateBuilder.append("$rawInput/")
-            else -> {
-                if (rawInput[2] == '/') {
-                    formattedDateBuilder.append(rawInput)
-                } else {
-                    formattedDateBuilder.append("${rawInput.substring(0, 2)}/${rawInput.substring(2)}")
-                }
-            }
+    fun formatRawExpiryInput(rawDigits: String): String {
+        val digits = rawDigits.filter { it.isDigit() }
+        if (digits.isEmpty()) return ""
+        if (digits.length == 1 && digits[0] != '0' && digits[0] != '1') {
+            return "0$digits"
         }
-        return formattedDateBuilder.toString()
-    }
-
-    fun formatExpiryDateWhenDeleting(rawInput: String): String {
-        val formattedDateBuilder = StringBuilder()
-        when (rawInput.length) {
-            3 -> {
-                if (rawInput[2] == '/') {
-                    formattedDateBuilder.append(rawInput.substring(0, 2))
-                } else {
-                    formattedDateBuilder.append(rawInput)
-                }
-            }
-            else -> formattedDateBuilder.append(rawInput)
-        }
-        return formattedDateBuilder.toString()
+        return digits
     }
 
     fun isValidExpiryDate(rawInput: String): Boolean {
-        if (rawInput.length != VALID_INPUT_LENGTH) return false
+        val digits = rawInput.replace("/", "")
+        if (digits.length != VALID_RAW_LENGTH) return false
 
-        val dateParts = separateDateInput(rawInput.replace("/", ""))
+        val dateParts = separateDateInput(digits)
         if (dateParts.any { it.length != 2 }) return false
 
         val month = dateParts[0]
@@ -108,6 +85,27 @@ object ExpiryDateUtils {
                 expiryMonth >= readableMonth
             }
         }
+    }
+}
+
+class ExpiryDateVisualTransformation : VisualTransformation {
+    override fun filter(text: AnnotatedString): TransformedText {
+        val raw = text.text
+        val out = buildString {
+            raw.forEachIndexed { index, c ->
+                if (index == 2) append('/')
+                append(c)
+            }
+        }
+        val offsetMapping = object : OffsetMapping {
+            override fun originalToTransformed(offset: Int): Int {
+                return if (offset <= 2) offset else offset + 1
+            }
+            override fun transformedToOriginal(offset: Int): Int {
+                return if (offset <= 2) offset else offset - 1
+            }
+        }
+        return TransformedText(AnnotatedString(out), offsetMapping)
     }
 }
 
