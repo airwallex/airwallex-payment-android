@@ -23,8 +23,10 @@ private fun isValidCountryCode(code: String?): Boolean = code != null && code in
  * - `NAME`: `firstName` must be non-blank.
  * - `EMAIL`: must match the SDK's email regex.
  * - `PHONE`: must match the E.164 shape (`+?[1-9]\d{1,14}`); the leading `+` is optional
- * - `ADDRESS`: street, city, state, postcode all non-blank, plus a 2-letter
- *   uppercase ISO country code.
+ * - `ADDRESS`: street non-blank, plus a 2-letter uppercase ISO country code. The
+ *   state, city, and postcode checks are conditional — they only apply when the
+ *   country's [AddressSpec] declares that field, since the UI hides any field
+ *   the country doesn't collect (e.g. AE has no city/postcode, JP has no city).
  * - `COUNTRY_CODE`: 2-letter uppercase ISO country code (suppressed when ADDRESS
  *   is also required — ADDRESS already covers it).
  */
@@ -58,20 +60,21 @@ fun Billing?.validateForRequiredFields(
     }
 
     if (RequiredBillingContactField.ADDRESS in requiredFields) {
+        val countryCode = address?.countryCode
+        if (countryCode == null || countryCode !in ISO_COUNTRY_CODES) {
+            return InvalidParamsException(message = "Billing country code is required")
+        }
         when {
-            !isValidCountryCode(address?.countryCode) ->
-                return InvalidParamsException(message = "Billing country code is required")
-
-            address?.street.isNullOrBlank() ->
+            address.street.isNullOrBlank() ->
                 return InvalidParamsException(message = "Billing street is required")
 
-            address?.city.isNullOrBlank() ->
+            AddressSpec.hasCity(countryCode) && address.city.isNullOrBlank() ->
                 return InvalidParamsException(message = "Billing city is required")
 
-            address?.state.isNullOrBlank() ->
+            AddressSpec.hasState(countryCode) && address.state.isNullOrBlank() ->
                 return InvalidParamsException(message = "Billing state is required")
 
-            address?.postcode.isNullOrBlank() ->
+            AddressSpec.hasPostcode(countryCode) && address.postcode.isNullOrBlank() ->
                 return InvalidParamsException(message = "Billing postcode is required")
         }
     } else if (RequiredBillingContactField.COUNTRY_CODE in requiredFields &&

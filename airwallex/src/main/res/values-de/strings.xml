@@ -8,13 +8,37 @@
     <string name="airwallex_shipping_email_hint">E-Mail (optional)</string>
     <string name="airwallex_contact_phone_number_hint">Telefonnummer (optional)</string>
     <string name="airwallex_zip_code_hint">Postleitzahl</string>
+
+    <!-- Country-specific billing address labels (APAM-771) -->
+    <!-- State field variants -->
+    <string name="airwallex_billing_label_state">Bundesland</string>
+    <string name="airwallex_billing_label_province">Provinz</string>
+    <string name="airwallex_billing_label_prefecture">Präfektur</string>
+    <string name="airwallex_billing_label_do_si">Do Si</string>
+    <string name="airwallex_billing_label_county">Bezirk</string>
+    <string name="airwallex_billing_label_parish">Gemeinde</string>
+    <string name="airwallex_billing_label_department">Departement</string>
+    <string name="airwallex_billing_label_district">Bezirk</string>
+    <string name="airwallex_billing_label_emirate">Emirat</string>
+    <string name="airwallex_billing_label_oblast">Oblast</string>
+    <string name="airwallex_billing_label_area">Gebiet</string>
+    <string name="airwallex_billing_label_island">Insel</string>
+    <!-- City field variants -->
+    <string name="airwallex_billing_label_city">Stadt</string>
+    <string name="airwallex_billing_label_town">Ort</string>
+    <string name="airwallex_billing_label_suburb">Vorort</string>
+    <!-- Postcode field variants -->
+    <string name="airwallex_billing_label_postal_code">Postleitzahl</string>
+    <string name="airwallex_billing_label_zip_code">Postleitzahl</string>
+    <string name="airwallex_billing_label_pin">PIN</string>
+    <string name="airwallex_billing_label_eircode">Eircode</string>
+    <!-- Wraps a label with the (optional) suffix, e.g. "Postal code (optional)" -->
+    <string name="airwallex_field_optional">%1$s (optional)</string>
     <string name="airwallex_phone_number_hint">Telefonnummer</string>
     <string name="airwallex_shipping_country_name_hint">Land / Region</string>
     <string name="airwallex_empty_country">Bitte geben Sie Ihr Land ein</string>
-    <string name="airwallex_empty_state">Bitte geben Sie Ihr Bundesland ein</string>
-    <string name="airwallex_empty_city">Bitte geben Sie Ihre Stadt ein</string>
-    <string name="airwallex_empty_street">Bitte geben Sie Ihre Straße ein</string>
-    <string name="airwallex_empty_postcode">Bitte geben Sie Ihre Postleitzahl ein</string>
+    <string name="airwallex_required">Erforderlich</string>
+    <string name="airwallex_please_enter_valid_value">Bitte geben Sie einen gültigen Wert ein</string>
     <string name="airwallex_empty_phone">Bitte geben Sie Ihre Telefonnummer ein</string>
     <string name="airwallex_invalid_phone">Bitte geben Sie eine gültige Telefonnummer ein</string>
     <string name="airwallex_empty_country_code">Bitte wählen Sie ein Land aus</string>

@@ -8,12 +8,37 @@
     <string name="airwallex_shipping_email_hint">电子邮件（可选）</string>
     <string name="airwallex_contact_phone_number_hint">电话号码（可选）</string>
     <string name="airwallex_zip_code_hint">邮政编码</string>
+
+    <!-- Country-specific billing address labels (APAM-771) -->
+    <!-- State field variants -->
+    <string name="airwallex_billing_label_state">州</string>
+    <string name="airwallex_billing_label_province">省</string>
+    <string name="airwallex_billing_label_prefecture">都道府县</string>
+    <string name="airwallex_billing_label_do_si">道</string>
+    <string name="airwallex_billing_label_county">县</string>
+    <string name="airwallex_billing_label_parish">教区</string>
+    <string name="airwallex_billing_label_department">省</string>
+    <string name="airwallex_billing_label_district">区</string>
+    <string name="airwallex_billing_label_emirate">酋长国</string>
+    <string name="airwallex_billing_label_oblast">州</string>
+    <string name="airwallex_billing_label_area">地区</string>
+    <string name="airwallex_billing_label_island">岛</string>
+    <!-- City field variants -->
+    <string name="airwallex_billing_label_city">城市</string>
+    <string name="airwallex_billing_label_town">镇</string>
+    <string name="airwallex_billing_label_suburb">郊区</string>
+    <!-- Postcode field variants -->
+    <string name="airwallex_billing_label_postal_code">邮政编码</string>
+    <string name="airwallex_billing_label_zip_code">邮政编码</string>
+    <string name="airwallex_billing_label_pin">PIN</string>
+    <string name="airwallex_billing_label_eircode">Eircode</string>
+    <!-- Wraps a label with the (optional) suffix, e.g. "Postal code (optional)" -->
+    <string name="airwallex_field_optional">%1$s（可选）</string>
     <string name="airwallex_phone_number_hint">电话号码</string>
     <string name="airwallex_shipping_country_name_hint">国家/地区</string>
     <string name="airwallex_empty_country">请输入您的国家</string>
-    <string name="airwallex_empty_city">请输入您的城市</string>
-    <string name="airwallex_empty_street">请输入您的街道</string>
-    <string name="airwallex_empty_postcode">请输入您的邮政编码</string>
+    <string name="airwallex_required">必填</string>
+    <string name="airwallex_please_enter_valid_value">请输入有效值</string>
     <string name="airwallex_empty_phone">请输入您的电话号码</string>
     <string name="airwallex_invalid_phone">请输入有效的电话号码</string>
     <string name="airwallex_empty_country_code">请选择一个国家</string>
@@ -53,7 +78,6 @@
     <string name="airwallex_select_your_bank">选择您的银行</string>
     <string name="airwallex_invalid_field">无效的 %s</string>
     <string name="airwallex_card_information_title">卡信息</string>
-    <string name="airwallex_empty_state">请输入您的省/州</string>
     <string name="airwallex_delete_payment_method_prompt_title">您要删除此支付授权吗？</string>
     <string name="airwallex_delete_payment_method_positive">删除</string>
     <string name="airwallex_new_card">卡片</string>
