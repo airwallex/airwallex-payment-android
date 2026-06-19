@@ -2,7 +2,7 @@
 
 **Purpose**: At-a-glance view of all tested combinations (what we actually test, not what we don't test)
 
-**Last Updated**: 2026-04-17
+**Last Updated**: 2026-06-19
 
 ---
 
@@ -79,6 +79,7 @@ Tests use these defaults from `flow_update_settings.yaml` unless explicitly over
 | HPP | Auth | recurring+payment | Yes | Auto-saved | Customer | Yes | Tab | Auth express recurring+payment customer | test_user_express_checkout_recurring_with_payment_customer | Session/test_user_express_checkout_recurring_with_payment_customer |
 | HPP | Auth | recurring+payment | Yes | Auto-saved | Merchant | Yes | Tab | Auth express recurring+payment merchant | test_user_express_checkout_recurring_with_payment_merchant | Session/test_user_express_checkout_recurring_with_payment_merchant |
 | HPP | Guest | one-off | N/A | N/A | Customer | No | Tab | New-card form renders only merchant-configured billing fields (UI-only, no payment; 8 cycles cover unset/empty/each-field-alone/ADDRESS+COUNTRY_CODE mutex) | test_hpp_billing_fields_visibility | - (UI only) |
+| HPP | Guest | one-off | N/A | N/A | Customer | No | Tab | AddressSpec country switch rewires billing block (UI-only, no payment; 3 cycles: US dropdown + ZIP, UK Town + state hidden, AO postcode hidden). Anchor on US state list top entry "Alabama". | test_hpp_country_billing_fields | - (UI only) |
 | Embedded | Auth | one-off | No | Disabled | Customer | No | Tab | Embedded tab single payment | test_embedded_element_tab_card | - |
 | Embedded | Auth | one-off | No | Enabled (saves) | Customer | No | Accordion | Embedded accordion single payment | test_embedded_element_accordion_card | Session/test_embedded_element_accordion_card |
 | Embedded | Auth | one-off | No | Enabled (saves) | Customer | No | Accordion + Schema | Embedded accordion schema variant | test_embedded_element_accordion_schema | Session/test_embedded_element_accordion_schema |
@@ -109,8 +110,8 @@ Tests use these defaults from `flow_update_settings.yaml` unless explicitly over
 | API | Auth | recurring+payment | Yes | Auto | Merchant | No | N/A | Merchant 3DS consent+payment (Visa 0088) | Api/test_api_merchant_recurring_with_payment | Api/test_api_merchant_recurring_with_payment |
 | API | Auth | recurring+payment | No | N/A | Merchant | No | N/A | Merchant redirect payment (Authorize Now) | Api/test_api_merchant_recurring_with_payment | Api/test_api_merchant_recurring_with_payment |
 
-**Total Test Permutations: 50** (HPP: 21, Embedded: 5, API: 24)  
-**Total Test Files: 47** (33 legacy + 14 new session)  
+**Total Test Permutations: 51** (HPP: 22, Embedded: 5, API: 24)  
+**Total Test Files: 48** (34 legacy + 14 new session)  
 **Note**: API test files contain multiple scenarios each (3-4 per file)
 
 ---
@@ -401,6 +402,6 @@ These are **untested but important** combinations:
 
 ---
 
-**Last Updated**: 2026-04-17  
+**Last Updated**: 2026-06-19  
 **Next Review**: After implementing P0 missing scenarios  
 **Maintained By**: QA Architecture Team

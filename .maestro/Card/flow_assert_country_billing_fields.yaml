@@ -1,0 +1,96 @@
+appId: com.airwallex.paymentacceptance
+env:
+  # Whether the current country's AddressSpec entry collects a state. When
+  # "false" we assert the default "State" label is absent — our smoke set
+  # picks countries whose hidden-state path matches that assumption.
+  EXPECT_STATE: ${EXPECT_STATE || "true"}
+
+  # Label rendered above the state field for this country (default "State";
+  # JP "Prefecture"; etc.). Only consulted when EXPECT_STATE=true.
+  STATE_LABEL: ${STATE_LABEL || "State"}
+
+  # First entry in the country's STATE_LISTS (sorted as defined in
+  # AddressSpec.kt). Anchor assertion proves the dropdown populated from the
+  # right country — full list contents are unit-tested. Empty string skips
+  # opening the dropdown.
+  STATE_FIRST_ENTRY: ${STATE_FIRST_ENTRY || ""}
+
+  # City label override. GB/NO/SE/SJ → "Town"; AU → "Suburb"; HK/PE/TR →
+  # "District"; otherwise "City".
+  CITY_LABEL: ${CITY_LABEL || "City"}
+
+  # Whether the country collects a postcode. AO and the other countries in
+  # AddressSpec.COUNTRIES_WITHOUT_POSTCODE render no postcode field.
+  EXPECT_POSTCODE: ${EXPECT_POSTCODE || "true"}
+
+  # Postcode label override. US/GU/PR → "ZIP code"; IN → "PIN"; IE →
+  # "Eircode"; otherwise "Postal code". Only consulted when EXPECT_POSTCODE=true.
+  POSTCODE_LABEL: ${POSTCODE_LABEL || "Postal code"}
+---
+# Precondition: AddCardSection is the foreground screen, "Same as shipping
+# address" has been UNCHECKED, and the country selection is already in the
+# state this flow should assert against. Country switching is the caller's
+# job — see test_hpp_country_billing_fields.yaml.
+- assertVisible: "Card information"
+
+# Bring the billing block into view from wherever the form is scrolled.
+- scrollUntilVisible:
+    element: "Billing info"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# State field
+# ─────────────────────────────────────────────────────────────────────────────
+- runFlow:
+    when:
+      true: ${EXPECT_STATE == 'true'}
+    commands:
+      - scrollUntilVisible:
+          element: ${STATE_LABEL}
+      # When STATE_FIRST_ENTRY is set, open the dropdown and anchor on the
+      # first entry. Proves the StateSelectRow rendered (not the freetext
+      # fallback) and that the list populated from this country's options.
+      - runFlow:
+          when:
+            true: ${STATE_FIRST_ENTRY != ''}
+          commands:
+            - tapOn: ${STATE_LABEL}
+            - assertVisible: ${STATE_FIRST_ENTRY}
+            # Press back to dismiss the bottom sheet without picking a value.
+            - back
+            - assertVisible: ${STATE_LABEL}
+
+- runFlow:
+    when:
+      true: ${EXPECT_STATE == 'false'}
+    commands:
+      # When state is hidden the default "State" label should not be on the
+      # form. Our smoke countries (GB, AO) don't carry an alternate state
+      # label, so this single check is sufficient. NOTE: this would falsely
+      # fail if the visible country name contained "State" as a substring
+      # (e.g. "United States"); we only call EXPECT_STATE=false for non-US
+      # countries.
+      - assertNotVisible: "State"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# City field
+# ─────────────────────────────────────────────────────────────────────────────
+- scrollUntilVisible:
+    element: ${CITY_LABEL}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Postcode field
+# ─────────────────────────────────────────────────────────────────────────────
+- runFlow:
+    when:
+      true: ${EXPECT_POSTCODE == 'true'}
+    commands:
+      - scrollUntilVisible:
+          element: ${POSTCODE_LABEL}
+
+- runFlow:
+    when:
+      true: ${EXPECT_POSTCODE == 'false'}
+    commands:
+      # When postcode is hidden, neither label variant should be on the form.
+      - assertNotVisible: "Postal code"
+      - assertNotVisible: "ZIP code"

@@ -1,13 +1,8 @@
 appId: com.airwallex.paymentacceptance
 env:
-  # Configuration action:
-  #   UNSET — tap the "Unset" neutral button (selectedBillingFields = null → legacy
-  #            derivation by setRequireBillingInformation / setRequireEmail flags)
-  #   SET   — toggle individual checkboxes to match HAS_* and tap OK (empty set is
-  #            valid: all checkboxes off + OK == "hide billing section")
-  ACTION: ${ACTION}
-
-  # Desired state of each checkbox when ACTION=SET. Use string "true"/"false".
+  # Desired state of each checkbox in the "Required Billing Fields" dialog.
+  # All five default to "false" (empty set), which the SDK treats as a valid
+  # "hide every billing-related row" config.
   HAS_NAME: ${HAS_NAME || "false"}
   HAS_EMAIL: ${HAS_EMAIL || "false"}
   HAS_PHONE: ${HAS_PHONE || "false"}
@@ -31,141 +26,21 @@ env:
 # Precondition: we're on the HPP options screen ("Integrate with Airwallex UI" tile
 # has been tapped previously and the screen exposes the "setting" entry + "Launch
 # payment list" button).
-- assertVisible: "Launch payment list"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Step 1 — Configure billing fields via the Settings screen
 # ─────────────────────────────────────────────────────────────────────────────
-- tapOn: setting
-- assertVisible: "Settings"
-- scrollUntilVisible:
-    element: "Required Billing Fields"
-- tapOn: "Required Billing Fields"
-
-# Branch on ACTION
+# Delegated to flow_set_required_billing_fields.yaml so other tests (e.g.
+# test_hpp_country_billing_fields) can apply a config without paying for the
+# per-config visibility assertions below.
 - runFlow:
-    when:
-      true: ${ACTION == 'UNSET'}
-    commands:
-      - tapOn: "Unset"
-
-- runFlow:
-    when:
-      true: ${ACTION == 'SET'}
-    commands:
-      # Idempotent toggling: tap only when the current state disagrees with the
-      # desired state. Relies on Android's CheckedTextView exposing `checked`.
-      - runFlow:
-          when:
-            true: ${HAS_NAME == 'true'}
-            visible:
-              text: "NAME"
-              checked: false
-          commands:
-            - tapOn:
-                text: "NAME"
-                checked: false
-      - runFlow:
-          when:
-            true: ${HAS_NAME == 'false'}
-            visible:
-              text: "NAME"
-              checked: true
-          commands:
-            - tapOn:
-                text: "NAME"
-                checked: true
-      - runFlow:
-          when:
-            true: ${HAS_EMAIL == 'true'}
-            visible:
-              text: "EMAIL"
-              checked: false
-          commands:
-            - tapOn:
-                text: "EMAIL"
-                checked: false
-      - runFlow:
-          when:
-            true: ${HAS_EMAIL == 'false'}
-            visible:
-              text: "EMAIL"
-              checked: true
-          commands:
-            - tapOn:
-                text: "EMAIL"
-                checked: true
-      - runFlow:
-          when:
-            true: ${HAS_PHONE == 'true'}
-            visible:
-              text: "PHONE"
-              checked: false
-          commands:
-            - tapOn:
-                text: "PHONE"
-                checked: false
-      - runFlow:
-          when:
-            true: ${HAS_PHONE == 'false'}
-            visible:
-              text: "PHONE"
-              checked: true
-          commands:
-            - tapOn:
-                text: "PHONE"
-                checked: true
-      - runFlow:
-          when:
-            true: ${HAS_ADDRESS == 'true'}
-            visible:
-              text: "ADDRESS"
-              checked: false
-          commands:
-            - tapOn:
-                text: "ADDRESS"
-                checked: false
-      - runFlow:
-          when:
-            true: ${HAS_ADDRESS == 'false'}
-            visible:
-              text: "ADDRESS"
-              checked: true
-          commands:
-            - tapOn:
-                text: "ADDRESS"
-                checked: true
-      - runFlow:
-          when:
-            true: ${HAS_COUNTRY_CODE == 'true'}
-            visible:
-              text: "COUNTRY_CODE"
-              checked: false
-          commands:
-            - tapOn:
-                text: "COUNTRY_CODE"
-                checked: false
-      - runFlow:
-          when:
-            true: ${HAS_COUNTRY_CODE == 'false'}
-            visible:
-              text: "COUNTRY_CODE"
-              checked: true
-          commands:
-            - tapOn:
-                text: "COUNTRY_CODE"
-                checked: true
-      - tapOn: "OK"
-
-# Save settings — returns us to the HPP options screen
-- scrollUntilVisible:
-    element:
-      id: "com.airwallex.paymentacceptance:id/btnSave"
-- tapOn:
-    id: "com.airwallex.paymentacceptance:id/btnSave"
-- assertVisible: "settings saved"
-- tapOn: "OK"
-- assertVisible: "Launch payment list"
+    file: flow_set_required_billing_fields.yaml
+    env:
+      HAS_NAME: ${HAS_NAME}
+      HAS_EMAIL: ${HAS_EMAIL}
+      HAS_PHONE: ${HAS_PHONE}
+      HAS_ADDRESS: ${HAS_ADDRESS}
+      HAS_COUNTRY_CODE: ${HAS_COUNTRY_CODE}
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Step 2 — Open the new-card form

@@ -264,12 +264,45 @@ Feature: Card Payment - HPP Integration
     # ADDRESS wins and renders the full address block (street + state + city + postcode).
     # Maestro: test_hpp_billing_fields_visibility.yaml
 
+  # ───────────────────────────────────────────────────────────────────────────
+  # Regression coverage for APAM-771 / PR #338 — `AddressSpec` drives per-country
+  # billing-field rendering (state visibility + label, city label, postcode
+  # visibility + label, state dropdown contents). Per-country label text and
+  # state-list contents are exhaustively unit-tested in `AddressSpecTest` and
+  # `BillingValidationTest`; this Maestro smoke proves the spec is actually
+  # wired into `AddCardSection` — a regression where the spec exists but the
+  # composable ignores it would pass every unit test.
+  #
+  # SCOPE GUARDRAIL: three countries cover the distinct render branches (state
+  # dropdown populated, state hidden + city renamed, postcode hidden). Adding
+  # a fourth country for another label variant (e.g. JP "Prefecture") is
+  # anti-pattern — that's data-table content, owned by unit tests.
+  #
+  @hpp @one-off @guest @billing-config @ui-only @covered
+  Scenario Outline: AddressSpec rewires the billing block when the country changes
+    Given I am a guest
+    And the checkout mode is "one-off"
+    And `requiredBillingContactFields` is unset (legacy: full address)
+
+    When I open the new-card form
+    And I select country "<country>"
+    Then I see the state field is <state>
+    And I see the city field labelled "<city_label>"
+    And I see the postcode field is <postcode>
+
+    Examples:
+      | country        | state                                    | city_label | postcode                       |
+      | United States  | a dropdown populated with US states      | City       | visible labelled "ZIP code"    |
+      | United Kingdom | hidden                                   | Town       | visible labelled "Postal code" |
+      | Angola         | hidden                                   | City       | hidden                         |
+    # Maestro: test_hpp_country_billing_fields.yaml
+
   # ═══════════════════════════════════════════════════════════════════════════
   # COVERAGE SUMMARY - HPP
   # ═══════════════════════════════════════════════════════════════════════════
   #
-  # Total Scenarios: 11 (10 payment + 1 UI-only regression)
-  # Total Tests: 17
+  # Total Scenarios: 12 (10 payment + 2 UI-only regressions)
+  # Total Tests: 18
   #
   # By Checkout Mode:
   # - One-off: 12 tests (7 guest + 5 auth)

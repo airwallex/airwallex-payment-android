@@ -3,7 +3,7 @@
 > **Source-of-truth for `/maestro-author` skill decisions.**
 > Trust this file when it conflicts with anything else in this folder.
 >
-> Last updated: 2026-05-14
+> Last updated: 2026-06-19
 
 ---
 
@@ -89,6 +89,7 @@ These don't change code paths — extra coverage just slows the suite.
 | **Card numbers** | Pick one per "behavior class" — e.g. one no-3DS card, one 3DS card. Don't write a variant per PAN. |
 | **3DS Types** (Combined / Challenge / Data Collection) | Same SDK code path. **One success test + one cancel test is enough.** The existing 4 guest 3DS tests are over-coverage and could be consolidated to 2. |
 | **Customer IDs** | The literal value doesn't matter; just needs to exist when `IS_GUEST=false` |
+| **Billing-address country variations** (state visibility, state/city/postcode labels, postcode regex, state dropdown options) | Driven by `AddressSpec` and exhaustively covered by `AddressSpecTest` + `BillingValidationTest` + `AddPaymentMethodViewModelTest`. The single Maestro smoke `test_hpp_country_billing_fields.yaml` proves the spec is wired into `AddCardSection` (3 countries: US, UK, AO). Don't add a country per label or per hidden-field permutation. |
 
 ---
 
@@ -99,6 +100,7 @@ These don't change code paths — extra coverage just slows the suite.
 - ❌ Don't write a separate test for each test card number when the only difference is the PAN.
 - ❌ Don't put logic in `test_*.yaml`. Tests should be thin parameter-passers; flows hold logic.
 - ❌ Don't make a strict assertion tolerant just to make a flaky run pass — that masks real bugs (we did this twice in the 3DS and redirect helpers; both reverted). Only relax when the variability is **by-design and you can state why**.
+- ❌ Don't add a Maestro test per country to validate billing-address field rendering — labels, state visibility, postcode regex, state dropdown contents are pure `AddressSpec` data-table lookups owned by unit tests. The 3-country smoke (`test_hpp_country_billing_fields.yaml`) already pins the wiring; extra countries add wall-clock minutes per run and break on label string tweaks without catching anything unit tests miss.
 
 ---
 
