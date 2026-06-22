@@ -1,0 +1,11 @@
+<resources>
+    <string name="airwallex_select_your_currency">Pilih mata wang anda</string>
+    <string name="airwallex_select_your_currency_title">Pilih mata wang yang anda ingin gunakan untuk membayar</string>
+    <string name="airwallex_card_empty_cvc">Sila masukkan CVC/CVV kad anda</string>
+    <string name="airwallex_card_invalid_cvc">Sila masukkan kod keselamatan yang sah</string>
+    <string name="airwallex_card_enter_cvv">Masukkan CVC/CVV untuk\n%s</string>
+    <string name="airwallex_card_pay_now">Bayar</string>
+    <string name="airwallex_card_total">Jumlah %s</string>
+    <string name="airwallex_rate">1 %1$s = %2$f %3$s</string>
+    <string name="airwallex_confirm_payment">Sahkan pembayaran</string>
+</resources>
