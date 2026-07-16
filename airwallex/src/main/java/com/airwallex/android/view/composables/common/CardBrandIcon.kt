@@ -49,6 +49,11 @@ internal fun CardBrandIcon(
             contentDescription = "card",
             modifier = modifier,
         )
+        CardBrand.Maestro -> Image(
+            painter = painterResource(id = R.drawable.airwallex_ic_maestro),
+            contentDescription = "card",
+            modifier = modifier,
+        )
         CardBrand.Unknown -> Image(
             painter = painterResource(id = R.drawable.airwallex_ic_unsupported),
             contentDescription = "card",
