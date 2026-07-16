@@ -16,6 +16,7 @@ import com.airwallex.android.core.AirwallexSession
 import com.airwallex.android.core.PaymentMethodsLayoutType
 import com.airwallex.android.core.Session
 import com.airwallex.android.core.model.PaymentMethodType
+import com.airwallex.android.core.model.withMaestroIfMasterCard
 import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.view.PaymentFlowListener
 import com.airwallex.android.view.PaymentFlowViewModel
@@ -54,6 +55,7 @@ internal fun PaymentElementComponent(
                                 com.airwallex.android.core.model.CardScheme(it.brandName)
                             }
                         }
+                        .withMaestroIfMasterCard()
 
                 val isSinglePaymentMethod =
                     availablePaymentMethods.getSinglePaymentMethodOrNull(availablePaymentConsents) != null
