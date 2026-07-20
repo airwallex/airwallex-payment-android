@@ -26,6 +26,7 @@ import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardText
 import com.airwallex.android.view.composables.common.CardBrandIcon
+import com.airwallex.android.view.util.resolvedBrandName
 import java.util.Locale
 
 @Composable
@@ -36,6 +37,7 @@ internal fun ConsentItem(
 ) {
     val method = consent.paymentMethod ?: return
     val card = method.card ?: return
+    val brandName = card.resolvedBrandName()
 
     Surface(
         modifier = Modifier
@@ -55,7 +57,7 @@ internal fun ConsentItem(
                 .padding(vertical = 12.dp)
                 .fillMaxWidth(),
         ) {
-            card.brand?.let { name ->
+            brandName?.let { name ->
                 CardBrand.fromName(name)?.let { brand ->
                     CardBrandIcon(brand = brand)
 
@@ -66,7 +68,7 @@ internal fun ConsentItem(
             StandardText(
                 text = String.format(
                     "%s •••• %s",
-                    card.brand?.replaceFirstChar {
+                    brandName?.replaceFirstChar {
                         if (it.isLowerCase()) {
                             it.titlecase(
                                 Locale.getDefault()

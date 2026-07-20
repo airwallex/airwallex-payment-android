@@ -17,6 +17,7 @@ import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.composables.ScreenView
 import com.airwallex.android.ui.composables.StandardAlertDialog
+import com.airwallex.android.view.util.resolvedBrandName
 import java.util.Locale
 
 @Composable
@@ -49,7 +50,7 @@ internal fun ConsentListSection(
     if (localConsentToBeDeleted != null) {
         val cardDisplay = String.format(
             "%s •••• %s",
-            localConsentToBeDeleted?.paymentMethod?.card?.brand?.uppercase(Locale.ROOT)
+            localConsentToBeDeleted?.paymentMethod?.card?.resolvedBrandName()?.uppercase(Locale.ROOT)
                 .orEmpty(),
             localConsentToBeDeleted?.paymentMethod?.card?.last4.orEmpty(),
         )

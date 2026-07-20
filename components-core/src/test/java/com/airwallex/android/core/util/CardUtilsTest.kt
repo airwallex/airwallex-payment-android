@@ -17,6 +17,8 @@ class CardUtilsTest {
         assertEquals(CardBrand.JCB, CardUtils.getPossibleCardBrand("3540 1234 5678 9012", true))
         assertEquals(CardBrand.DISCOVER, CardUtils.getPossibleCardBrand("6011016011016011", false))
         assertEquals(CardBrand.DINERS, CardUtils.getPossibleCardBrand("36438936438936", false))
+        assertEquals(CardBrand.Maestro, CardUtils.getPossibleCardBrand("5018 0000 0000 0000", true))
+        assertEquals(CardBrand.Maestro, CardUtils.getPossibleCardBrand("6759000000000000", false))
         assertEquals(CardBrand.Unknown, CardUtils.getPossibleCardBrand("12345", false))
     }
 

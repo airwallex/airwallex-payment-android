@@ -725,6 +725,7 @@ class AirwallexTest {
         // Mock payment methods
         val cardMethod = mockk<AvailablePaymentMethodType> {
             every { name } returns PaymentMethodType.CARD.value
+            every { this@mockk.cardSchemes } returns null
         }
         val wechatMethod = mockk<AvailablePaymentMethodType> {
             every { name } returns "wechatpay"
@@ -775,6 +776,7 @@ class AirwallexTest {
         // Mock payment methods
         val cardMethod = mockk<AvailablePaymentMethodType> {
             every { name } returns PaymentMethodType.CARD.value
+            every { this@mockk.cardSchemes } returns null
         }
         val paymentMethods = listOf(cardMethod)
 
@@ -806,6 +808,7 @@ class AirwallexTest {
         // Mock payment methods
         val cardMethod = mockk<AvailablePaymentMethodType> {
             every { name } returns PaymentMethodType.CARD.value
+            every { this@mockk.cardSchemes } returns null
         }
         val paymentMethods = listOf(cardMethod)
 
@@ -833,6 +836,7 @@ class AirwallexTest {
         // Mock payment methods
         val cardMethod = mockk<AvailablePaymentMethodType> {
             every { name } returns PaymentMethodType.CARD.value
+            every { this@mockk.cardSchemes } returns null
         }
         val paymentMethods = listOf(cardMethod)
 
@@ -864,6 +868,7 @@ class AirwallexTest {
         // Mock payment methods - include one that should be filtered out
         val cardMethod = mockk<AvailablePaymentMethodType> {
             every { name } returns PaymentMethodType.CARD.value
+            every { this@mockk.cardSchemes } returns null
         }
         val wechatMethod = mockk<AvailablePaymentMethodType> {
             every { name } returns "wechatpay"
@@ -892,6 +897,87 @@ class AirwallexTest {
     }
 
     @Test
+    fun `fetchAvailablePaymentMethodsAndConsents adds maestro when mastercard is present`() = runTest {
+        val airwallexSpy = spyk(airwallex)
+
+        every { mockPaymentSession.customerId } returns null
+        every { mockPaymentSession.paymentMethods } returns null
+
+        val cardMethod = AvailablePaymentMethodType(
+            name = PaymentMethodType.CARD.value,
+            cardSchemes = listOf(
+                com.airwallex.android.core.model.CardScheme("visa"),
+                com.airwallex.android.core.model.CardScheme("mastercard"),
+            ),
+        )
+
+        coEvery {
+            airwallexSpy["retrieveAvailablePaymentMethodsPaged"](mockPaymentSession, testPaymentIntent.clientSecret)
+        } returns listOf(cardMethod)
+
+        val result = airwallexSpy.fetchAvailablePaymentMethodsAndConsents(mockPaymentSession)
+
+        assertEquals(true, result.isSuccess)
+        val (methods, _) = result.getOrThrow()
+        val schemeNames = methods.first { it.name == PaymentMethodType.CARD.value }
+            .cardSchemes.orEmpty().map { it.name }
+        assertEquals(listOf("visa", "mastercard", "maestro"), schemeNames)
+    }
+
+    @Test
+    fun `fetchAvailablePaymentMethodsAndConsents does not add maestro when mastercard is absent`() = runTest {
+        val airwallexSpy = spyk(airwallex)
+
+        every { mockPaymentSession.customerId } returns null
+        every { mockPaymentSession.paymentMethods } returns null
+
+        val cardMethod = AvailablePaymentMethodType(
+            name = PaymentMethodType.CARD.value,
+            cardSchemes = listOf(com.airwallex.android.core.model.CardScheme("visa")),
+        )
+
+        coEvery {
+            airwallexSpy["retrieveAvailablePaymentMethodsPaged"](mockPaymentSession, testPaymentIntent.clientSecret)
+        } returns listOf(cardMethod)
+
+        val result = airwallexSpy.fetchAvailablePaymentMethodsAndConsents(mockPaymentSession)
+
+        assertEquals(true, result.isSuccess)
+        val (methods, _) = result.getOrThrow()
+        val schemeNames = methods.first { it.name == PaymentMethodType.CARD.value }
+            .cardSchemes.orEmpty().map { it.name }
+        assertEquals(listOf("visa"), schemeNames)
+    }
+
+    @Test
+    fun `fetchAvailablePaymentMethodsAndConsents does not duplicate maestro when already present`() = runTest {
+        val airwallexSpy = spyk(airwallex)
+
+        every { mockPaymentSession.customerId } returns null
+        every { mockPaymentSession.paymentMethods } returns null
+
+        val cardMethod = AvailablePaymentMethodType(
+            name = PaymentMethodType.CARD.value,
+            cardSchemes = listOf(
+                com.airwallex.android.core.model.CardScheme("mastercard"),
+                com.airwallex.android.core.model.CardScheme("maestro"),
+            ),
+        )
+
+        coEvery {
+            airwallexSpy["retrieveAvailablePaymentMethodsPaged"](mockPaymentSession, testPaymentIntent.clientSecret)
+        } returns listOf(cardMethod)
+
+        val result = airwallexSpy.fetchAvailablePaymentMethodsAndConsents(mockPaymentSession)
+
+        assertEquals(true, result.isSuccess)
+        val (methods, _) = result.getOrThrow()
+        val schemeNames = methods.first { it.name == PaymentMethodType.CARD.value }
+            .cardSchemes.orEmpty().map { it.name }
+        assertEquals(listOf("mastercard", "maestro"), schemeNames)
+    }
+
+    @Test
     fun `fetchAvailablePaymentMethodsAndConsents filters consents to only card type for payment session`() = runTest {
         // Create spy to mock private methods
         val airwallexSpy = spyk(airwallex)
@@ -902,6 +988,7 @@ class AirwallexTest {
         // Mock payment methods - include card
         val cardMethod = mockk<AvailablePaymentMethodType> {
             every { name } returns PaymentMethodType.CARD.value
+            every { this@mockk.cardSchemes } returns null
         }
         val paymentMethods = listOf(cardMethod)
 
@@ -1016,6 +1103,7 @@ class AirwallexTest {
         // Mock payment methods
         val cardMethod = mockk<AvailablePaymentMethodType> {
             every { name } returns PaymentMethodType.CARD.value
+            every { this@mockk.cardSchemes } returns null
         }
         val paymentMethods = listOf(cardMethod)
 
@@ -1061,6 +1149,7 @@ class AirwallexTest {
         // Mock payment methods
         val cardMethod = mockk<AvailablePaymentMethodType> {
             every { name } returns PaymentMethodType.CARD.value
+            every { this@mockk.cardSchemes } returns null
         }
         val paymentMethods = listOf(cardMethod)
 
@@ -1095,6 +1184,7 @@ class AirwallexTest {
         // Mock payment methods
         val cardMethod = mockk<AvailablePaymentMethodType> {
             every { name } returns PaymentMethodType.CARD.value
+            every { this@mockk.cardSchemes } returns null
         }
         val paymentMethods = listOf(cardMethod)
 
@@ -1127,6 +1217,7 @@ class AirwallexTest {
         // Mock payment methods
         val cardMethod = mockk<AvailablePaymentMethodType> {
             every { name } returns PaymentMethodType.CARD.value
+            every { this@mockk.cardSchemes } returns null
         }
         val paymentMethods = listOf(cardMethod)
 
@@ -1157,6 +1248,7 @@ class AirwallexTest {
         // Mock payment methods
         val cardMethod = mockk<AvailablePaymentMethodType> {
             every { name } returns PaymentMethodType.CARD.value
+            every { this@mockk.cardSchemes } returns null
         }
         val paymentMethods = listOf(cardMethod)
 
@@ -1221,6 +1313,7 @@ class AirwallexTest {
         // Mock payment methods
         val cardMethod = mockk<AvailablePaymentMethodType> {
             every { name } returns PaymentMethodType.CARD.value
+            every { this@mockk.cardSchemes } returns null
         }
         coEvery {
             airwallexSpy["retrieveAvailablePaymentMethodsPaged"](mockPaymentSession, testPaymentIntent.clientSecret)
@@ -1297,6 +1390,7 @@ class AirwallexTest {
         // Mock payment methods
         val cardMethod = mockk<AvailablePaymentMethodType> {
             every { name } returns PaymentMethodType.CARD.value
+            every { this@mockk.cardSchemes } returns null
         }
         coEvery {
             airwallexSpy["retrieveAvailablePaymentMethodsPaged"](mockPaymentSession, testPaymentIntent.clientSecret)
@@ -1338,6 +1432,7 @@ class AirwallexTest {
         // Mock payment methods
         val cardMethod = mockk<AvailablePaymentMethodType> {
             every { name } returns PaymentMethodType.CARD.value
+            every { this@mockk.cardSchemes } returns null
         }
         coEvery {
             airwallexSpy["retrieveAvailablePaymentMethodsPaged"](mockPaymentSession, testPaymentIntent.clientSecret)
@@ -1434,6 +1529,7 @@ class AirwallexTest {
         // Mock payment methods
         val cardMethod = mockk<AvailablePaymentMethodType> {
             every { name } returns PaymentMethodType.CARD.value
+            every { this@mockk.cardSchemes } returns null
         }
         coEvery {
             airwallexSpy["retrieveAvailablePaymentMethodsPaged"](mockPaymentSession, testPaymentIntent.clientSecret)
@@ -1471,6 +1567,7 @@ class AirwallexTest {
         // Mock payment methods
         val cardMethod = mockk<AvailablePaymentMethodType> {
             every { name } returns PaymentMethodType.CARD.value
+            every { this@mockk.cardSchemes } returns null
         }
         coEvery {
             airwallexSpy["retrieveAvailablePaymentMethodsPaged"](mockPaymentSession, testPaymentIntent.clientSecret)
@@ -1516,6 +1613,7 @@ class AirwallexTest {
     private fun setupPaymentMethodMocks(spy: Airwallex) {
         val cardMethod = mockk<AvailablePaymentMethodType> {
             every { name } returns PaymentMethodType.CARD.value
+            every { this@mockk.cardSchemes } returns null
         }
         coEvery {
             spy["retrieveAvailablePaymentMethodsPaged"](mockPaymentSession, testPaymentIntent.clientSecret)
