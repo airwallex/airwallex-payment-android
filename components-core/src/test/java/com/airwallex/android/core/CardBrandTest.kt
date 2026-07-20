@@ -35,6 +35,10 @@ class CardBrandTest {
         assertEquals(R.drawable.airwallex_ic_diners, CardBrand.DINERS.icon)
         assertEquals(listOf(4, 6, 9), CardBrand.DINERS.spacingPattern)
 
+        assertEquals("maestro", CardBrand.Maestro.type)
+        assertEquals(R.drawable.airwallex_ic_maestro, CardBrand.Maestro.icon)
+        assertEquals(listOf(4, 4, 4, 4), CardBrand.Maestro.spacingPattern)
+
         assertEquals("unknown", CardBrand.Unknown.type)
         assertEquals(R.drawable.airwallex_ic_card_default, CardBrand.Unknown.icon)
         assertEquals(listOf(4, 4, 4, 4), CardBrand.Unknown.spacingPattern)
@@ -43,6 +47,7 @@ class CardBrandTest {
     @Test
     fun `test fromType`() {
         assertEquals(CardBrand.fromType("mastercard"), CardBrand.MasterCard)
+        assertEquals(CardBrand.fromType("maestro"), CardBrand.Maestro)
     }
 
     @Test

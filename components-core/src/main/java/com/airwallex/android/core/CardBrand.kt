@@ -24,7 +24,7 @@ enum class CardBrand(
         prefixes = setOf(
             "2221", "2222", "2223", "2224", "2225", "2226", "2227", "2228", "2229", "223", "224",
             "225", "226", "227", "228", "229", "23", "24", "25", "26", "270", "271", "2720",
-            "50", "51", "52", "53", "54", "55", "67"
+            "51", "52", "53", "54", "55"
         ),
     ),
     Amex(
@@ -60,6 +60,14 @@ enum class CardBrand(
         prefixes = setOf("300", "301", "302", "303", "304", "305", "36", "38", "39"),
         spacingPattern = listOf(4, 6, 9),
         lengths = setOf(14, 16, 19),
+    ),
+    Maestro(
+        type = "maestro",
+        icon = R.drawable.airwallex_ic_maestro,
+        prefixes = setOf(
+            "493698", "50", "56", "57", "58", "59", "63", "67", "6"
+        ),
+        lengths = setOf(12, 13, 14, 15, 16, 17, 18, 19),
     ),
     Unknown(
         type = "unknown",

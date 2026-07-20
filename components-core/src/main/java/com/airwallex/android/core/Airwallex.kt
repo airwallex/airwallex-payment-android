@@ -60,6 +60,7 @@ import com.airwallex.android.core.model.RetrievePaymentMethodTypeInfoParams
 import com.airwallex.android.core.model.ThreeDSecure
 import com.airwallex.android.core.model.TransactionMode
 import com.airwallex.android.core.model.VerifyPaymentConsentParams
+import com.airwallex.android.core.model.withMaestroIfMasterCard
 import com.airwallex.android.core.util.BuildConfigHelper
 import com.airwallex.android.core.util.SessionUtils.getIntentId
 import com.airwallex.risk.AirwallexRisk
@@ -556,8 +557,10 @@ class Airwallex internal constructor(
             }
             val retrieveMethods = async { retrieveAvailablePaymentMethodsPaged(session, secret) }
             try {
-                val methods = filterPaymentMethodsBySession(
-                    retrieveMethods.await(), session.paymentMethods
+                val methods = addMaestroWhenMasterCardPresent(
+                    filterPaymentMethodsBySession(
+                        retrieveMethods.await(), session.paymentMethods
+                    )
                 )
                 val consents = retrieveConsents.await()
                 Result.success(
@@ -636,6 +639,17 @@ class Airwallex internal constructor(
         if (filterList.isNullOrEmpty()) return sourceList
         return filterList.mapNotNull { name ->
             sourceList.find { it.name.equals(name, ignoreCase = true) }
+        }
+    }
+
+    private fun addMaestroWhenMasterCardPresent(
+        methods: List<AvailablePaymentMethodType>,
+    ): List<AvailablePaymentMethodType> {
+        return methods.map { method ->
+            if (method.name != PaymentMethodType.CARD.value) return@map method
+            val schemes = method.cardSchemes
+            if (schemes.isNullOrEmpty()) return@map method
+            method.copy(cardSchemes = schemes.withMaestroIfMasterCard())
         }
     }
 
