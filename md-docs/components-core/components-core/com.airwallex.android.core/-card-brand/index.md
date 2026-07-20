@@ -18,6 +18,7 @@ All card brands supported by Airwallex. Only support Visa, Mastercard & American
 | [JCB](-j-c-b/index.md) | [androidJvm]<br>[JCB](-j-c-b/index.md) |
 | [DISCOVER](-d-i-s-c-o-v-e-r/index.md) | [androidJvm]<br>[DISCOVER](-d-i-s-c-o-v-e-r/index.md) |
 | [DINERS](-d-i-n-e-r-s/index.md) | [androidJvm]<br>[DINERS](-d-i-n-e-r-s/index.md) |
+| [Maestro](-maestro/index.md) | [androidJvm]<br>[Maestro](-maestro/index.md) |
 | [Unknown](-unknown/index.md) | [androidJvm]<br>[Unknown](-unknown/index.md) |
 
 ## Types
