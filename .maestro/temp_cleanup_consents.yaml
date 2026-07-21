@@ -1,0 +1,13 @@
+appId: com.airwallex.paymentacceptance
+---
+- tapOn: "Integrate with Airwallex UI"
+- tapOn: "Launch payment list"
+- runFlow:
+    file: Card/flow_remove_all_consents.yaml
+- back
+- runFlow:
+    when:
+      visible: "Payment cancelled"
+    commands:
+      - tapOn: "OK"
+- back

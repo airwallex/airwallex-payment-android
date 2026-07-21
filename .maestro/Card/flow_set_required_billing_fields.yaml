@@ -1,0 +1,135 @@
+appId: com.airwallex.paymentacceptance
+env:
+  # Desired checkbox state in the "Required Billing Fields" dialog. Toggles
+  # are idempotent — we only tap when the current state disagrees with the
+  # desired state, so callers can pass any combination safely.
+  HAS_NAME: ${HAS_NAME || "false"}
+  HAS_EMAIL: ${HAS_EMAIL || "false"}
+  HAS_PHONE: ${HAS_PHONE || "false"}
+  HAS_ADDRESS: ${HAS_ADDRESS || "false"}
+  HAS_COUNTRY_CODE: ${HAS_COUNTRY_CODE || "false"}
+---
+# Precondition: HPP options screen visible ("Launch payment list" button +
+# the "setting" cog visible).
+- assertVisible: "Launch payment list"
+
+# Open Settings → Required Billing Fields dialog.
+- tapOn: setting
+- assertVisible: "Settings"
+- scrollUntilVisible:
+    element: "Required Billing Fields"
+- tapOn: "Required Billing Fields"
+
+# Idempotent checkbox toggling: only tap when current state disagrees with
+# desired. Relies on the dialog's CheckedTextView exposing `checked`.
+- runFlow:
+    when:
+      true: ${HAS_NAME == 'true'}
+      visible:
+        text: "NAME"
+        checked: false
+    commands:
+      - tapOn:
+          text: "NAME"
+          checked: false
+- runFlow:
+    when:
+      true: ${HAS_NAME == 'false'}
+      visible:
+        text: "NAME"
+        checked: true
+    commands:
+      - tapOn:
+          text: "NAME"
+          checked: true
+- runFlow:
+    when:
+      true: ${HAS_EMAIL == 'true'}
+      visible:
+        text: "EMAIL"
+        checked: false
+    commands:
+      - tapOn:
+          text: "EMAIL"
+          checked: false
+- runFlow:
+    when:
+      true: ${HAS_EMAIL == 'false'}
+      visible:
+        text: "EMAIL"
+        checked: true
+    commands:
+      - tapOn:
+          text: "EMAIL"
+          checked: true
+- runFlow:
+    when:
+      true: ${HAS_PHONE == 'true'}
+      visible:
+        text: "PHONE"
+        checked: false
+    commands:
+      - tapOn:
+          text: "PHONE"
+          checked: false
+- runFlow:
+    when:
+      true: ${HAS_PHONE == 'false'}
+      visible:
+        text: "PHONE"
+        checked: true
+    commands:
+      - tapOn:
+          text: "PHONE"
+          checked: true
+- runFlow:
+    when:
+      true: ${HAS_ADDRESS == 'true'}
+      visible:
+        text: "ADDRESS"
+        checked: false
+    commands:
+      - tapOn:
+          text: "ADDRESS"
+          checked: false
+- runFlow:
+    when:
+      true: ${HAS_ADDRESS == 'false'}
+      visible:
+        text: "ADDRESS"
+        checked: true
+    commands:
+      - tapOn:
+          text: "ADDRESS"
+          checked: true
+- runFlow:
+    when:
+      true: ${HAS_COUNTRY_CODE == 'true'}
+      visible:
+        text: "COUNTRY_CODE"
+        checked: false
+    commands:
+      - tapOn:
+          text: "COUNTRY_CODE"
+          checked: false
+- runFlow:
+    when:
+      true: ${HAS_COUNTRY_CODE == 'false'}
+      visible:
+        text: "COUNTRY_CODE"
+        checked: true
+    commands:
+      - tapOn:
+          text: "COUNTRY_CODE"
+          checked: true
+- tapOn: "OK"
+
+# Save settings — returns us to the HPP options screen.
+- scrollUntilVisible:
+    element:
+      id: "com.airwallex.paymentacceptance:id/btnSave"
+- tapOn:
+    id: "com.airwallex.paymentacceptance:id/btnSave"
+- assertVisible: "settings saved"
+- tapOn: "OK"
+- assertVisible: "Launch payment list"

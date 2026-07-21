@@ -1,0 +1,59 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./gradlew:*)",
+
+      "Bash(cd:*)",
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(cat)",
+      "Bash(echo:*)",
+      "Bash(chmod +x:*)",
+      "Bash(awk:*)",
+      "Bash(sed -i:*)",
+      "Bash(tee:*)",
+      "Bash(tail -f:*)",
+      "Bash(tail -F:*)",
+      "Bash(ps:*)",
+      "Bash(kill:*)",
+      "Bash(pkill:*)",
+      "Bash(nc:*)",
+      "Bash(lsof:*)",
+
+      "Bash(git:*)",
+      "Bash(gh:*)",
+
+      "Bash(adb:*)",
+
+      "Bash(maestro:*)",
+      "Bash(.maestro/scripts/ensure-env.sh:*)",
+
+      "mcp__maestro__run_flow",
+      "mcp__maestro__run_flow_files",
+      "mcp__maestro__list_devices",
+      "mcp__maestro__start_device",
+      "mcp__maestro__launch_app",
+      "mcp__maestro__stop_app",
+      "mcp__maestro__take_screenshot",
+      "mcp__maestro__inspect_view_hierarchy",
+      "mcp__maestro__tap_on",
+      "mcp__maestro__back",
+      "mcp__maestro__check_flow_syntax",
+      "mcp__maestro__cheat_sheet",
+      "mcp__maestro__query_docs",
+
+      "Skill(maestro-run)",
+      "Skill(maestro-test)",
+      "Skill(maestro-heal)",
+      "Skill(maestro-author)",
+
+      "Read(//tmp/**)",
+      "Read(//private/tmp/**)",
+
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:maestro.dev)",
+      "WebSearch"
+    ]
+  }
+}

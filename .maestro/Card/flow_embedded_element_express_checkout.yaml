@@ -51,6 +51,7 @@ env:
     duration: 400
 - scrollUntilVisible:
     element: "^(Pay|Confirm)$"
+    centerElement: true # Center so the button isn't cut off at the bottom edge and stays tappable
 # Assert AlipayHK is NOT visible (Express Checkout hides other payment methods)
 - assertNotVisible: "AlipayHK"
 # Tap Pay/Confirm button

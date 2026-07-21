@@ -1,0 +1,185 @@
+appId: com.airwallex.paymentacceptance
+tags:
+  - card
+  - hpp
+  - billing-config
+  - ui-only
+platform:
+  android:
+    disableAnimations: true
+---
+# Verifies that AddressSpec (PR #338) is wired into AddCardSection — country
+# selection actually drives state visibility, city/postcode labels, and the
+# state-dropdown contents. Per-country label text + state-list contents are
+# unit-tested in AddressSpecTest; this smoke proves the spec reaches the UI.
+#
+# Three country cycles exercise the distinct render paths:
+#   1. US    → state visible (dropdown populated, anchor "Alabama"), city
+#              labeled "City", postcode labeled "ZIP code"
+#   2. UK    → state hidden, city labeled "Town", postcode "Postal code"
+#   3. AO    → state hidden, city labeled "City", postcode hidden entirely
+#
+# Adding country #4 to cover another label permutation (e.g. JP "Prefecture")
+# is anti-pattern — that's data-table content, covered by unit tests.
+- runFlow:
+    when:
+      true: ${IS_RECORDING}
+    commands:
+      - startRecording: test_hpp_country_billing_fields
+- launchApp
+- runScript: cards.js
+- runScript: ../Common/settings.js
+
+# HPP, one-off, guest — simplest path to AddCardSection.
+- tapOn: "Integrate with Airwallex UI"
+- runFlow:
+    file: ../Common/flow_update_checkout_mode.yaml
+    env:
+      CHECKOUT_MODE: ${output.settings.checkoutMode.oneOff}
+- tapOn: setting
+- runFlow:
+    file: ../Common/flow_update_settings.yaml
+    env:
+      LAYOUT: ${output.settings.layout.tab}
+      IS_GUEST: "true"
+      USE_NEW_SESSION: "false"
+
+# Force RequiredBillingFields = { ADDRESS } so AddCardSection renders the
+# country picker + state/city/postcode block this test exercises. Only the
+# config step — we open AddCardSection ourselves below, no need to also pay
+# for flow_billing_fields_cycle's per-config visibility assertions.
+- runFlow:
+    file: flow_set_required_billing_fields.yaml
+    env:
+      HAS_ADDRESS: "true"
+
+# Open the new-card form once. All three cycles run on the same screen.
+- tapOn: "Launch payment list"
+- runFlow:
+    when:
+      visible: "Choose a card"
+    commands:
+      - tapOn: "Add new"
+- assertVisible: "Card information"
+
+# "Same as shipping address" is checked by default and disables the country
+# selector. Uncheck it once so subsequent country taps actually open the
+# picker.
+- scrollUntilVisible:
+    element: "Same as shipping address"
+- tapOn: "Same as shipping address"
+
+# Re-select United States so AddCardSection's onCountrySelected branch clears
+# every prefilled address field. With empty fields, the BillingTextField /
+# StateSelectRow floating labels ("State", "City", "ZIP code") render as
+# real text nodes — without this step they're hidden behind the prefilled
+# shipping values ("California", "San Francisco", "94103") and the flow's
+# label-based assertions can't find them.
+#
+# Use the picker's search bar (~250-entry list; scrolling is impractical).
+# The StandardSearchBar inside the bottom sheet has no id/contentDescription,
+# but it's the only element positioned directly below the "Country / Region"
+# sheet title — Maestro's `below:` matcher resolves it on any screen size.
+#
+# Typing one letter SHORT of the full country name keeps the search bar's
+# text distinct from the list item's text — otherwise `tapOn` would match
+# the search bar EditText (which contains the country name we just typed)
+# instead of the list row we want to select.
+- tapOn: "United States"
+- extendedWaitUntil:
+    visible: "Country / Region"
+    timeout: 5000
+- tapOn:
+    below: "Country / Region"
+- inputText: "United State"
+- tapOn: "United States"
+# Picker dismissal auto-hides the keyboard (the focused search bar is gone).
+# Do NOT call `hideKeyboard` here — on Android it issues a back-key event,
+# which would close AddCardSection and trigger the "Payment cancelled" popup.
+- extendedWaitUntil:
+    visible: "Card information"
+    timeout: 5000
+
+# ─── Cycle 1: US (default) → state dropdown populated, ZIP code label ───
+- runFlow:
+    file: flow_assert_country_billing_fields.yaml
+    env:
+      EXPECT_STATE: "true"
+      STATE_LABEL: "State"
+      STATE_FIRST_ENTRY: "Alabama"
+      CITY_LABEL: "City"
+      EXPECT_POSTCODE: "true"
+      POSTCODE_LABEL: "ZIP code"
+
+# ─── Cycle 2: switch US → UK ───
+# Find the country row (we're scrolled down to postcode after cycle 1) and
+# tap the currently-displayed name to open the picker.
+- scrollUntilVisible:
+    element: "United States"
+    direction: UP
+- tapOn: "United States"
+- extendedWaitUntil:
+    visible: "Country / Region"
+    timeout: 5000
+- tapOn:
+    below: "Country / Region"
+- inputText: "United Kingdo"
+- tapOn: "United Kingdom"
+- extendedWaitUntil:
+    visible: "Card information"
+    timeout: 5000
+- runFlow:
+    file: flow_assert_country_billing_fields.yaml
+    env:
+      EXPECT_STATE: "false"
+      CITY_LABEL: "Town"
+      EXPECT_POSTCODE: "true"
+      POSTCODE_LABEL: "Postal code"
+
+# ─── Cycle 3: switch UK → AO ───
+- scrollUntilVisible:
+    element: "United Kingdom"
+    direction: UP
+- tapOn: "United Kingdom"
+- extendedWaitUntil:
+    visible: "Country / Region"
+    timeout: 5000
+- tapOn:
+    below: "Country / Region"
+- inputText: "Angol"
+- tapOn: "Angola"
+- extendedWaitUntil:
+    visible: "Card information"
+    timeout: 5000
+- runFlow:
+    file: flow_assert_country_billing_fields.yaml
+    env:
+      EXPECT_STATE: "false"
+      CITY_LABEL: "City"
+      EXPECT_POSTCODE: "false"
+
+# Back out of AddCardSection → PaymentMethodsActivity → HPP options. Each
+# back step triggers the SDK "Payment cancelled" popup once.
+- back
+- runFlow:
+    when:
+      visible: "Payment cancelled"
+    commands:
+      - tapOn: "OK"
+- runFlow:
+    when:
+      notVisible: "Launch payment list"
+    commands:
+      - back
+      - runFlow:
+          when:
+            visible: "Payment cancelled"
+          commands:
+            - tapOn: "OK"
+- assertVisible: "Launch payment list"
+
+- runFlow:
+    when:
+      true: ${IS_RECORDING}
+    commands:
+      - stopRecording

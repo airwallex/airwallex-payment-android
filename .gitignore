@@ -41,6 +41,8 @@ tmp/
 # vim temp files
 *.swp
 
+.claude/settings.local.json
+
 
 # Output
 airwallex/target
