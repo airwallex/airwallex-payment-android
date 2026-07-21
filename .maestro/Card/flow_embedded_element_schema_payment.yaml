@@ -29,6 +29,7 @@ env:
 # Click Pay button
 - scrollUntilVisible:
     element: "^(Pay|Confirm)$"
+    centerElement: true # Center so the button isn't cut off at the bottom edge and stays tappable
 - tapOn: "^(Pay|Confirm)$"
 - runFlow:
     file: ../Common/flow_handle_redirect.yaml

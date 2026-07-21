@@ -70,6 +70,7 @@ env:
 # Scroll to the Pay/Confirm button
 - scrollUntilVisible:
     element: "^(Pay|Confirm)$"
+    centerElement: true # Center so the button isn't cut off at the bottom edge and stays tappable
 - tapOn: "^(Pay|Confirm)$"
 # Handle payment result
 - runFlow:
@@ -117,6 +118,7 @@ env:
       - inputText: "333"
 - scrollUntilVisible:
     element: "^(Pay|Confirm)$"
+    centerElement: true # Center so the button isn't cut off at the bottom edge and stays tappable
 - tapOn: "^(Pay|Confirm)$"
 # Handle payment result
 - runFlow:
