@@ -25,6 +25,7 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.focusTarget
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -46,6 +47,7 @@ import com.airwallex.android.ui.composables.StandardCheckBox
 import com.airwallex.android.ui.composables.StandardSolidButton
 import com.airwallex.android.ui.composables.StandardText
 import com.airwallex.android.ui.composables.StandardTextFieldOptions
+import com.airwallex.android.ui.extension.currentAirwallexLocale
 import com.airwallex.android.view.AddPaymentMethodViewModel
 import com.airwallex.android.view.PaymentFlowListener
 import com.airwallex.android.view.PaymentFlowViewModel
@@ -73,6 +75,10 @@ internal fun AddCardSection(
     checkoutButtonTitle: String? = null,
 ) {
     val focusManager = LocalFocusManager.current
+    val locale = LocalContext.current.currentAirwallexLocale()
+    val countryOptions = remember(locale) {
+        CountryUtils.countryList(locale).map { it.name to it.code }
+    }
     val expiryFocusRequester = remember { FocusRequester() }
     val cvvFocusRequester = remember { FocusRequester() }
     val nameFocusRequest = remember { FocusRequester() }
@@ -447,7 +453,7 @@ internal fun AddCardSection(
                     val isCityPostcodeRow = !showState && showCity && showPostcode
 
                     CountrySelectRow(
-                        options = CountryUtils.countryList.map { it.name to it.code },
+                        options = countryOptions,
                         default = selectedCountryCode,
                         onOptionSelected = {
                             viewModel.updateSelectedCountryCode(it.second)
@@ -673,7 +679,7 @@ internal fun AddCardSection(
                     }
                 } else if (viewModel.showCountryCodeOnly) {
                     CountrySelectRow(
-                        options = CountryUtils.countryList.map { it.name to it.code },
+                        options = countryOptions,
                         default = selectedCountryCode,
                         onOptionSelected = {
                             viewModel.updateSelectedCountryCode(it.second)

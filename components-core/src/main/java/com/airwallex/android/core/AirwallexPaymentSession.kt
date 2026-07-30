@@ -9,6 +9,7 @@ import com.airwallex.android.core.model.Shipping
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
+import java.util.Locale
 
 /**
  * For one-off payment
@@ -106,7 +107,13 @@ class AirwallexPaymentSession internal constructor(
      * preserves legacy behavior (derived from [isBillingInformationRequired] /
      * [isEmailRequired]).
      */
-    override val requiredBillingContactFields: Set<RequiredBillingContactField>? = null
+    override val requiredBillingContactFields: Set<RequiredBillingContactField>? = null,
+
+    /**
+     * Locale used by Airwallex-owned UI.
+     * `null` inherits the host application's current locale.
+     */
+    override val locale: Locale? = null
 
 ) : AirwallexSession(), PaymentIntentResolvableSession, Parcelable {
 
@@ -193,6 +200,7 @@ class AirwallexPaymentSession internal constructor(
         private var paymentMethods: List<String>? = null
         private var shipping: Shipping? = null
         private var requiredBillingContactFields: Set<RequiredBillingContactField>? = null
+        private var locale: Locale? = null
 
         @Deprecated(
             message = "Use setRequiredBillingContactFields(...) and include " +
@@ -248,10 +256,15 @@ class AirwallexPaymentSession internal constructor(
             this.requiredBillingContactFields = fields
         }
 
+        fun setLocale(locale: Locale?): Builder = apply {
+            this.locale = locale
+        }
+
         override fun build(): AirwallexPaymentSession {
             require(paymentIntent != null || paymentIntentProvider != null) {
                 "Either paymentIntent or paymentIntentProvider must be provided"
             }
+            LocaleValidator.validate(locale)
 
             val session = AirwallexPaymentSession(
                 paymentIntent = paymentIntent,
@@ -268,6 +281,7 @@ class AirwallexPaymentSession internal constructor(
                 hidePaymentConsents = hidePaymentConsents,
                 paymentMethods = paymentMethods,
                 requiredBillingContactFields = requiredBillingContactFields,
+                locale = locale,
             ).apply {
                 // Set the provider directly on the session (transient field, won't be parceled)
                 paymentIntentProvider = this@Builder.paymentIntentProvider

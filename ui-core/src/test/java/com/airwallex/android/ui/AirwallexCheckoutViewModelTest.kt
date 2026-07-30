@@ -216,6 +216,7 @@ class AirwallexCheckoutViewModelTest {
         every { airwallexPaymentSession.paymentIntent } returns paymentIntent
         every { paymentIntent.clientSecret } returns "client_secret"
         every { airwallexPaymentSession.countryCode } returns "AU"
+        every { airwallexPaymentSession.locale } returns null
 
         val viewModel = AirwallexCheckoutViewModel(application, airwallex, airwallexPaymentSession)
 
@@ -243,6 +244,7 @@ class AirwallexCheckoutViewModelTest {
         every { airwallexPaymentSession.paymentIntent } returns paymentIntent
         every { paymentIntent.clientSecret } returns "client_secret"
         every { airwallexPaymentSession.countryCode } returns "AU"
+        every { airwallexPaymentSession.locale } returns null
 
         val viewModel = AirwallexCheckoutViewModel(application, airwallex, airwallexPaymentSession)
 
@@ -282,6 +284,7 @@ class AirwallexCheckoutViewModelTest {
 
         every { airwallexPaymentSession.paymentIntent } returns paymentIntent
         every { paymentIntent.clientSecret } returns "client_secret"
+        every { airwallexPaymentSession.locale } returns null
 
         val viewModel = AirwallexCheckoutViewModel(application, airwallex, airwallexPaymentSession)
 
@@ -308,6 +311,7 @@ class AirwallexCheckoutViewModelTest {
 
         every { airwallexPaymentSession.paymentIntent } returns paymentIntent
         every { paymentIntent.clientSecret } returns "client_secret"
+        every { airwallexPaymentSession.locale } returns null
 
         val viewModel = AirwallexCheckoutViewModel(application, airwallex, airwallexPaymentSession)
 
@@ -385,6 +389,7 @@ class AirwallexCheckoutViewModelTest {
         val session = mockk<AirwallexPaymentSession> {
             every { countryCode } returns "US"
             every { this@mockk.paymentIntent } returns paymentIntent
+            every { locale } returns null
         }
 
         val expectedBankResponse = mockk<BankResponse>()
@@ -410,6 +415,7 @@ class AirwallexCheckoutViewModelTest {
         }
         val session = mockk<AirwallexPaymentSession> {
             every { this@mockk.paymentIntent } returns paymentIntent
+            every { locale } returns null
         }
 
         val expectedTypeInfo = mockk<PaymentMethodTypeInfo>()
@@ -435,6 +441,7 @@ class AirwallexCheckoutViewModelTest {
         }
         val session = mockk<AirwallexRecurringWithIntentSession> {
             every { this@mockk.paymentIntent } returns paymentIntent
+            every { locale } returns null
         }
 
         val expectedTypeInfo = mockk<PaymentMethodTypeInfo>()

@@ -321,14 +321,16 @@ class PaymentElement private constructor(
      */
     @Composable
     fun Content() {
-        AirwallexTheme {
-            PaymentElementComponent(
-                session = session,
-                airwallex = airwallex,
-                configuration = configuration,
-                paymentFlowListener = paymentFlowListener,
-                flowViewModel = flowViewModel
-            )
+        AirwallexLocalizedContent(session.locale) {
+            AirwallexTheme {
+                PaymentElementComponent(
+                    session = session,
+                    airwallex = airwallex,
+                    configuration = configuration,
+                    paymentFlowListener = paymentFlowListener,
+                    flowViewModel = flowViewModel
+                )
+            }
         }
     }
 }

@@ -9,6 +9,7 @@ import androidx.core.content.res.ResourcesCompat
 import com.airwallex.android.card.databinding.WidgetCurrencyBinding
 import com.airwallex.android.core.util.CurrencyUtils
 import com.airwallex.android.core.util.CurrencyUtils.formatPrice
+import com.airwallex.android.ui.extension.currentAirwallexLocale
 import java.math.BigDecimal
 import java.util.*
 
@@ -33,7 +34,7 @@ class CurrencyWidget(context: Context, attrs: AttributeSet?) :
 
     fun updateCurrency(currency: String, amount: BigDecimal) {
         viewBinding.tvCurrency.text = currency
-        viewBinding.tvPrice.text = formatPrice(currency, amount)
+        viewBinding.tvPrice.text = formatPrice(currency, amount, context.currentAirwallexLocale())
 
         try {
             val country = CurrencyUtils.currencyToCountryMap[currency]

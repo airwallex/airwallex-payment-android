@@ -24,6 +24,7 @@ proguard/
 
 # Android Studio / IntelliJ
 .idea/
+.cursor/
 *.iml
 *.ipr
 *.iws

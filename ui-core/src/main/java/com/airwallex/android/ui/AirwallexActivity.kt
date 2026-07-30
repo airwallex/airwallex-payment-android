@@ -13,6 +13,8 @@ import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.TrackablePage
 import com.airwallex.android.ui.databinding.ActivityAirwallexBinding
+import com.airwallex.android.ui.extension.toAirwallexOverrideConfiguration
+import java.util.Locale
 
 abstract class AirwallexActivity : AppCompatActivity(), AirwallexInternalActivity {
 
@@ -84,6 +86,10 @@ abstract class AirwallexActivity : AppCompatActivity(), AirwallexInternalActivit
 
     override fun onCreate(savedInstanceState: Bundle?) {
         restoreLaunchBundleIfNeeded(savedInstanceState)
+        intent.getStringExtra(AirwallexActivityLaunch.Args.AIRWALLEX_LOCALE_EXTRA)
+            ?.let(Locale::forLanguageTag)
+            ?.let(Locale::toAirwallexOverrideConfiguration)
+            ?.let(::applyOverrideConfiguration)
         super.onCreate(savedInstanceState)
         try {
             setContentView(viewBinding.root)

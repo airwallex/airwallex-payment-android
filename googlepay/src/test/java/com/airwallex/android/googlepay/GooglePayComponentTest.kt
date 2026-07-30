@@ -55,7 +55,9 @@ class GooglePayComponentTest {
 
         every { anyConstructed<GooglePayActivityLaunch>().launchForResult(any(), any()) } just runs
         @Suppress("DEPRECATION")
-        val session = mockk<AirwallexPaymentSession>(relaxed = true)
+        val session = mockk<AirwallexPaymentSession>(relaxed = true) {
+            every { locale } returns null
+        }
         component.session = session
         component.paymentMethodType = mockResponse.items.first()
         activity = mockk()

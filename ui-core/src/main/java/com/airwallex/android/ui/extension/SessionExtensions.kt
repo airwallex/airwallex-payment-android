@@ -20,6 +20,7 @@ fun Session.toParcelableSession(): ParcelableSession {
         paymentMethods = paymentMethods,
         autoCapture = autoCapture,
         hidePaymentConsents = hidePaymentConsents,
-        requiredBillingContactFields = requiredBillingContactFields
+        requiredBillingContactFields = requiredBillingContactFields,
+        localeLanguageTag = locale?.toLanguageTag()
     )
 }

@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -32,6 +33,7 @@ import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardText
+import com.airwallex.android.ui.extension.currentAirwallexLocale
 import com.airwallex.android.view.AddPaymentMethodViewModel
 import com.airwallex.android.view.PaymentFlowListener
 import com.airwallex.android.view.PaymentFlowViewModel
@@ -41,7 +43,6 @@ import com.airwallex.android.view.composables.consent.ConsentListSection
 import com.airwallex.android.view.util.AnalyticsConstants.PAYMENT_METHOD
 import com.airwallex.android.view.util.AnalyticsConstants.TAP_PAY_BUTTON
 import com.airwallex.risk.AirwallexRisk
-import java.util.Locale
 
 @Suppress("ComplexMethod", "LongMethod", "LongParameterList")
 @Composable
@@ -53,6 +54,7 @@ internal fun CardSection(
     paymentFlowListener: PaymentFlowListener,
     checkoutButtonTitle: String? = null,
 ) {
+    val locale = LocalContext.current.currentAirwallexLocale()
     val paymentFlowViewModel: PaymentFlowViewModel = viewModel(
         factory = PaymentFlowViewModel.Factory(
             airwallex = airwallex,
@@ -208,7 +210,7 @@ internal fun CardSection(
                             card.brand?.replaceFirstChar {
                                 if (it.isLowerCase()) {
                                     it.titlecase(
-                                        Locale.getDefault()
+                                        locale
                                     )
                                 } else it.toString()
                             },

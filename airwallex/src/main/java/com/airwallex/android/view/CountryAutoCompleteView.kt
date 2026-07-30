@@ -18,6 +18,7 @@ import com.airwallex.android.databinding.CountryAutocompleteViewBinding
 import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.util.EditTextColorUtil
 import com.airwallex.android.view.util.CountryUtils
+import com.airwallex.android.ui.extension.currentAirwallexLocale
 import java.util.Locale
 
 class CountryAutoCompleteView constructor(
@@ -40,7 +41,7 @@ class CountryAutoCompleteView constructor(
         }
 
     private val countryAdapter: CountryAdapter by lazy {
-        CountryAdapter(getContext(), CountryUtils.countryList)
+        CountryAdapter(getContext(), CountryUtils.countryList(context.currentAirwallexLocale()))
     }
 
     /**
@@ -51,12 +52,17 @@ class CountryAutoCompleteView constructor(
     var country: String? = null
         set(value) {
             value?.let {
-                viewBinding.actCountry.setText(CountryUtils.getCountryByCode(it)?.name)
+                viewBinding.actCountry.setText(
+                    CountryUtils.getCountryByCode(it, context.currentAirwallexLocale())?.name
+                )
             }
             field = value
         }
         get() {
-            return CountryUtils.getCountryByName(viewBinding.actCountry.text.toString())?.code
+            return CountryUtils.getCountryByName(
+                viewBinding.actCountry.text.toString(),
+                context.currentAirwallexLocale()
+            )?.code
         }
 
     init {
@@ -105,7 +111,10 @@ class CountryAutoCompleteView constructor(
                 null
             } else {
                 val enteredCountry = viewBinding.actCountry.text.toString()
-                val country = CountryUtils.getCountryByName(enteredCountry)
+                val country = CountryUtils.getCountryByName(
+                    enteredCountry,
+                    context.currentAirwallexLocale()
+                )
 
                 val displayCountry = country?.let {
                     updatedSelectedCountryCode(it)
@@ -125,7 +134,10 @@ class CountryAutoCompleteView constructor(
 
     internal fun setInitCountry(countryCode: String?) {
         countryCode?.let {
-            selectedCountry = CountryUtils.getCountryByCode(it)
+            selectedCountry = CountryUtils.getCountryByCode(
+                it,
+                context.currentAirwallexLocale()
+            )
             selectedCountry?.let { country ->
                 viewBinding.actCountry.setText(country.name)
                 countryChangeCallback.invoke(country)

@@ -90,6 +90,7 @@ private suspend fun Session.recurringWithIntentSession(
         googlePayOptions?.let { setGooglePayOptions(it) }
         paymentMethods?.let { setPaymentMethods(it) }
         shipping?.let { setShipping(it) }
+        setLocale(locale)
     }.build()
 }
 
@@ -115,6 +116,7 @@ private suspend fun Session.recurringSession(
         googlePayOptions?.let { setGooglePayOptions(it) }
         returnUrl?.let { setReturnUrl(it) }
         paymentMethods?.let { setPaymentMethods(it) }
+        setLocale(locale)
     }.build()
 }
 
@@ -154,6 +156,7 @@ private suspend fun Session.oneOffPaymentSession(): AirwallexPaymentSession {
         setHidePaymentConsents(hidePaymentConsents)
         paymentMethods?.let { setPaymentMethods(it) }
         shipping?.let { setShipping(it) }
+        setLocale(locale)
     }.build()
 }
 
@@ -201,7 +204,8 @@ fun AirwallexPaymentSession.convertToSession(): Session {
         googlePayOptions = googlePayOptions,
         paymentMethods = paymentMethods,
         shipping = shipping,
-        requiredBillingContactFields = requiredBillingContactFields
+        requiredBillingContactFields = requiredBillingContactFields,
+        locale = locale
     ).also {
         // Preserve the transient provider field (not parceled, must be set manually)
         it.paymentIntentProvider = (this as? PaymentIntentResolvableSession)?.paymentIntentProvider
@@ -234,7 +238,8 @@ fun AirwallexRecurringWithIntentSession.convertToSession(): Session {
         googlePayOptions = googlePayOptions,
         paymentMethods = paymentMethods,
         shipping = shipping,
-        requiredBillingContactFields = requiredBillingContactFields
+        requiredBillingContactFields = requiredBillingContactFields,
+        locale = locale
     ).also {
         it.paymentIntentProvider = (this as? PaymentIntentResolvableSession)?.paymentIntentProvider
     }

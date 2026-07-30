@@ -86,7 +86,11 @@ sealed class Options(
         /**
          * The supported country code
          */
-        internal val countryCode: String?
+        internal val countryCode: String?,
+        /**
+         * Language code used to localize payment method resources.
+         */
+        internal val languageCode: String? = null
     ) : Options(clientSecret = clientSecret)
 
     data class RetrievePaymentMethodTypeInfoOptions(
@@ -110,7 +114,11 @@ sealed class Options(
         /**
          * Open Id
          */
-        internal val openId: String?
+        internal val openId: String?,
+        /**
+         * Language code used to localize payment method details.
+         */
+        internal val languageCode: String? = null
     ) : Options(clientSecret = clientSecret)
 
     data class RetrieveBankOptions(
@@ -135,6 +143,10 @@ sealed class Options(
         /**
          * Open Id
          */
-        internal val openId: String?
+        internal val openId: String?,
+        /**
+         * Language code used to localize bank information.
+         */
+        internal val languageCode: String? = null
     ) : Options(clientSecret = clientSecret)
 }

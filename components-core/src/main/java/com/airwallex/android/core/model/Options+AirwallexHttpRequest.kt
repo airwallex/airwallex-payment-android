@@ -133,21 +133,24 @@ fun Options.getUrl(): String {
             active,
             transactionCurrency,
             transactionMode,
-            countryCode
+            countryCode,
+            languageCode
         )
         is Options.RetrievePaymentMethodTypeInfoOptions -> retrievePaymentMethodTypeInfoUrl(
             AirwallexPlugins.environment.baseUrl(),
             paymentMethodType,
             countryCode,
             flow,
-            openId
+            openId,
+            languageCode
         )
         is Options.RetrieveBankOptions -> retrieveBanksUrl(
             AirwallexPlugins.environment.baseUrl(),
             paymentMethodType,
             countryCode,
             flow,
-            openId
+            openId,
+            languageCode
         )
     }
 }

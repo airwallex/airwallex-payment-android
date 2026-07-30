@@ -66,6 +66,7 @@ internal fun SchemaSection(
 
     // Update activity reference in ViewModel after rotation
     schemaPaymentViewModel.updateActivity(airwallex.activity)
+    schemaPaymentViewModel.updateSession(session)
 
     var fieldsToSubmit by remember { mutableStateOf<Map<String, String>>(emptyMap()) }
     var validateFields: (() -> Unit)? by remember { mutableStateOf(null) }
@@ -75,7 +76,7 @@ internal fun SchemaSection(
 
     ScreenView { schemaPaymentViewModel.trackScreenViewed(type.name) }
 
-    LaunchedEffect(type) {
+    LaunchedEffect(type, session) {
         val cachedResult = schemaPaymentViewModel.retrieveSchemaDataFromCache(type)
         if (cachedResult != null) {
             schemaData = cachedResult

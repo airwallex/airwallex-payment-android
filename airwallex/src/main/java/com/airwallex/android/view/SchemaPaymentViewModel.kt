@@ -35,7 +35,7 @@ import kotlinx.coroutines.launch
 class SchemaPaymentViewModel(
     application: Application,
     airwallex: Airwallex,
-    private val session: AirwallexSession
+    session: AirwallexSession
 ) : AirwallexCheckoutViewModel(application, airwallex, session) {
     // Cache for schema data by payment method type
     @VisibleForTesting
@@ -47,6 +47,14 @@ class SchemaPaymentViewModel(
     // Channel for payment result - one-time event stream
     private val _paymentResult = Channel<AirwallexPaymentStatus>(capacity = Channel.CONFLATED)
     val paymentResult: Flow<AirwallexPaymentStatus> = _paymentResult.receiveAsFlow()
+
+    fun updateSession(newSession: AirwallexSession) {
+        if (currentSession === newSession) return
+
+        currentSession = newSession
+        schemaDataCache.clear()
+        additionalParams.clear()
+    }
 
     fun retrieveSchemaDataFromCache(paymentMethodType: AvailablePaymentMethodType): SchemaData? {
         return schemaDataCache[paymentMethodType]
@@ -70,7 +78,7 @@ class SchemaPaymentViewModel(
             }
             // Ad hoc. Aligned with BE that we do not show Enum types in UI, instead we pass fixed values when we have the field.
             listOf(
-                COUNTRY_CODE to session.countryCode,
+                COUNTRY_CODE to currentSession.countryCode,
                 OS_TYPE to OS_NAME,
                 FLOW to AirwallexPaymentRequestFlow.IN_APP.value
             ).forEach { (key, value) ->
@@ -165,12 +173,13 @@ class SchemaPaymentViewModel(
         _paymentResult.send(status)
     }
 
-    @StringRes
-    val ctaRes: Int = if (session is AirwallexRecurringSession) {
-        R.string.airwallex_confirm
-    } else {
-        R.string.airwallex_pay_now
-    }
+    @get:StringRes
+    val ctaRes: Int
+        get() = if (currentSession is AirwallexRecurringSession) {
+            R.string.airwallex_confirm
+        } else {
+            R.string.airwallex_pay_now
+        }
 
     private fun requireHandleSchemaFields(paymentMethodType: AvailablePaymentMethodType) =
         paymentMethodType.resources?.hasSchema == true

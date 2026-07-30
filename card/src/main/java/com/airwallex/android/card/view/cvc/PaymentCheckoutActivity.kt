@@ -22,10 +22,10 @@ import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.WeChat
 import com.airwallex.android.core.util.CurrencyUtils.formatPrice
+import com.airwallex.android.ui.extension.currentAirwallexLocale
 import com.airwallex.android.ui.checkout.AirwallexCheckoutBaseActivity
 import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.extension.getExtraArgs
-import java.util.*
 
 /**
  * Activity to confirm payment intent
@@ -87,6 +87,7 @@ class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val locale = currentAirwallexLocale()
         viewBinding.root.setBackgroundColor(AirwallexColor.backgroundPrimary.toArgb())
         viewBinding.header.text = getString(
             R.string.airwallex_card_enter_cvv,
@@ -95,7 +96,7 @@ class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
                 paymentMethod.card?.brand?.replaceFirstChar {
                     if (it.isLowerCase()) {
                         it.titlecase(
-                            Locale.getDefault()
+                            locale
                         )
                     } else it.toString()
                 },
@@ -106,7 +107,10 @@ class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
 
         viewBinding.atlCardCvc.setCardNumber(paymentMethod.card?.number)
         viewBinding.tvTotalPrice.text =
-            getString(R.string.airwallex_card_total, formatPrice(session.currency, session.amount))
+            getString(
+                R.string.airwallex_card_total,
+                formatPrice(session.currency, session.amount, locale)
+            )
         viewBinding.tvTotalPrice.setTextColor(AirwallexColor.textSecondary.toArgb())
 
         setupButtonColors()
