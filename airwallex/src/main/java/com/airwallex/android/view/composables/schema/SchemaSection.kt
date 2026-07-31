@@ -179,6 +179,7 @@ internal fun SchemaSection(
                         // No fields to validate
                         onDirectPayOperation(type, schemaPaymentViewModel, paymentFlowListener, airwallex)
                     } else {
+                        isValidated = false
                         validateFields?.invoke()
                         if (isValidated) {
                             val paymentMethod = schemaData?.paymentMethod

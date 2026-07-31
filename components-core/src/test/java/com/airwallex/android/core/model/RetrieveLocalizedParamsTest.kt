@@ -3,7 +3,6 @@ package com.airwallex.android.core.model
 import org.junit.Test
 import java.util.Locale
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
 
 class RetrieveLocalizedParamsTest {
@@ -31,26 +30,26 @@ class RetrieveLocalizedParamsTest {
     }
 
     @Test
-    fun `bank params reject malformed locale`() {
-        assertFailsWith<IllegalArgumentException> {
-            RetrieveBankParams.Builder(
-                clientSecret = "secret",
-                paymentMethodType = "online_banking"
-            )
-                .setLocale(Locale("en-US"))
-                .build()
-        }
+    fun `bank params fall back to null for malformed locale`() {
+        val params = RetrieveBankParams.Builder(
+            clientSecret = "secret",
+            paymentMethodType = "online_banking"
+        )
+            .setLocale(Locale("en-US"))
+            .build()
+
+        assertNull(params.locale)
     }
 
     @Test
-    fun `payment method type info params reject malformed locale`() {
-        assertFailsWith<IllegalArgumentException> {
-            RetrievePaymentMethodTypeInfoParams.Builder(
-                clientSecret = "secret",
-                paymentMethodType = "card"
-            )
-                .setLocale(Locale("en-US"))
-                .build()
-        }
+    fun `payment method type info params fall back to null for malformed locale`() {
+        val params = RetrievePaymentMethodTypeInfoParams.Builder(
+            clientSecret = "secret",
+            paymentMethodType = "card"
+        )
+            .setLocale(Locale("en-US"))
+            .build()
+
+        assertNull(params.locale)
     }
 }

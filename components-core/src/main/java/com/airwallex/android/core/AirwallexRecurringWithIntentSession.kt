@@ -301,7 +301,7 @@ class AirwallexRecurringWithIntentSession internal constructor(
             require(paymentIntent != null || paymentIntentProvider != null) {
                 "Either paymentIntent or paymentIntentProvider must be provided"
             }
-            LocaleValidator.validate(locale)
+            val validatedLocale = LocaleValidator.validatedOrNull(locale)
 
             val session = AirwallexRecurringWithIntentSession(
                 paymentIntent = paymentIntent,
@@ -321,7 +321,7 @@ class AirwallexRecurringWithIntentSession internal constructor(
                 googlePayOptions = googlePayOptions,
                 merchantTriggerReason = merchantTriggerReason,
                 requiredBillingContactFields = requiredBillingContactFields,
-                locale = locale
+                locale = validatedLocale
             ).apply {
                 // Set the provider directly on the session (transient field, won't be parceled)
                 paymentIntentProvider = this@Builder.paymentIntentProvider

@@ -18,7 +18,6 @@ import java.math.BigDecimal
 import java.util.Locale
 import kotlinx.coroutines.test.runTest
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -88,15 +87,15 @@ class SessionTest {
     }
 
     @Test
-    fun `build rejects malformed locale`() {
-        assertFailsWith<IllegalArgumentException> {
-            Session.Builder(
-                PaymentIntentFixtures.PAYMENT_INTENT,
-                "US"
-            )
-                .setLocale(Locale("en-US"))
-                .build()
-        }
+    fun `build falls back to null for malformed locale`() {
+        val session = Session.Builder(
+            PaymentIntentFixtures.PAYMENT_INTENT,
+            "US"
+        )
+            .setLocale(Locale("en-US"))
+            .build()
+
+        assertNull(session.locale)
     }
 
     @Test

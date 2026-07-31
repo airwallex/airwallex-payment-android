@@ -209,7 +209,7 @@ class AirwallexRecurringSession internal constructor(
         }
 
         override fun build(): AirwallexRecurringSession {
-            LocaleValidator.validate(locale)
+            val validatedLocale = LocaleValidator.validatedOrNull(locale)
             return AirwallexRecurringSession(
                 nextTriggerBy = nextTriggerBy,
                 requiresCVC = requiresCVC,
@@ -226,7 +226,7 @@ class AirwallexRecurringSession internal constructor(
                 clientSecret = clientSecret,
                 googlePayOptions = googlePayOptions,
                 requiredBillingContactFields = requiredBillingContactFields,
-                locale = locale,
+                locale = validatedLocale,
             )
         }
     }

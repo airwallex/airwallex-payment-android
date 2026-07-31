@@ -47,7 +47,7 @@ data class RetrieveBankParams internal constructor(
         }
 
         override fun build(): RetrieveBankParams {
-            LocaleValidator.validate(locale)
+            val validatedLocale = LocaleValidator.validatedOrNull(locale)
             return RetrieveBankParams(
                 clientSecret = clientSecret,
                 paymentMethodType = paymentMethodType,
@@ -55,7 +55,7 @@ data class RetrieveBankParams internal constructor(
                 transactionMode = transactionMode,
                 countryCode = countryCode,
                 openId = openId,
-                locale = locale
+                locale = validatedLocale
             )
         }
     }

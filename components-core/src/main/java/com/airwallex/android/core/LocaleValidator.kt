@@ -1,17 +1,22 @@
 package com.airwallex.android.core
 
+import com.airwallex.android.core.log.AirwallexLogger
 import java.util.IllformedLocaleException
 import java.util.Locale
 
 internal object LocaleValidator {
 
-    fun validate(locale: Locale?) {
-        if (locale == null) return
+    fun validatedOrNull(locale: Locale?): Locale? {
+        if (locale == null) return null
 
-        try {
+        return try {
             Locale.Builder().setLocale(locale).build()
         } catch (exception: IllformedLocaleException) {
-            throw IllegalArgumentException("Invalid locale: $locale", exception)
+            AirwallexLogger.error(
+                "Invalid locale supplied; using host locale",
+                exception
+            )
+            null
         }
     }
 }
