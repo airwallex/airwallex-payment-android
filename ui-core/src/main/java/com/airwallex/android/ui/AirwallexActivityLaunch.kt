@@ -123,10 +123,11 @@ abstract class AirwallexActivityLaunch<TargetActivity : Activity, ArgsType : Air
         }
         val intent = Intent(originalActivity, targetActivity).apply {
             putExtra(Args.AIRWALLEX_BUNDLE_EXTRA, bundle)
-            args.localeTag?.let { localeTag ->
-                putExtra(Args.AIRWALLEX_LOCALE_EXTRA, localeTag)
-            }
         }
+        AirwallexLocalePrefs.setLocaleTag(
+            originalActivity.applicationContext,
+            args.localeTag
+        )
         setResultCallBack(originalActivity, requestCode, resultCallBack)
         getActivityResultLauncher(originalActivity)?.launch(intent)
     }
@@ -138,7 +139,6 @@ abstract class AirwallexActivityLaunch<TargetActivity : Activity, ArgsType : Air
         companion object {
             const val AIRWALLEX_BUNDLE_EXTRA: String = "airwallex_bundle_args"
             const val AIRWALLEX_EXTRA: String = "airwallex_activity_args"
-            const val AIRWALLEX_LOCALE_EXTRA: String = "airwallex_locale"
         }
     }
 

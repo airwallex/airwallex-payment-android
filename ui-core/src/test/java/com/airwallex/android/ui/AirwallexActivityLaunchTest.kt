@@ -18,11 +18,10 @@ import kotlin.test.assertEquals
 class AirwallexActivityLaunchTest {
 
     @Test
-    fun `launchForResult propagates locale tag to intent`() {
+    fun `launchForResult stores locale tag before launch`() {
         val activity = Robolectric.buildActivity(Activity::class.java).setup().get()
         val resultLauncher = mockk<ActivityResultLauncher<Intent>>()
-        val launchedIntent = mutableListOf<Intent>()
-        every { resultLauncher.launch(capture(launchedIntent)) } just runs
+        every { resultLauncher.launch(any()) } just runs
         resultLauncherMap()[activity] = resultLauncher
 
         try {
@@ -30,11 +29,10 @@ class AirwallexActivityLaunchTest {
 
             assertEquals(
                 "fr-CA",
-                launchedIntent.single().getStringExtra(
-                    AirwallexActivityLaunch.Args.AIRWALLEX_LOCALE_EXTRA
-                )
+                AirwallexLocalePrefs.getLocale(activity.applicationContext)?.toLanguageTag()
             )
         } finally {
+            AirwallexLocalePrefs.setLocaleTag(activity.applicationContext, null)
             resultLauncherMap().remove(activity)
         }
     }

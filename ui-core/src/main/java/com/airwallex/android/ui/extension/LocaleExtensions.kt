@@ -8,16 +8,6 @@ import androidx.annotation.RestrictTo
 import java.util.Locale
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-fun Locale.toAirwallexOverrideConfiguration(): Configuration =
-    Configuration().apply {
-        setLocale(this@toAirwallexOverrideConfiguration)
-        setLayoutDirection(this@toAirwallexOverrideConfiguration)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            setLocales(LocaleList(this@toAirwallexOverrideConfiguration))
-        }
-    }
-
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 fun Context.localizedForAirwallex(locale: Locale?): Context {
     if (locale == null) return this
 
