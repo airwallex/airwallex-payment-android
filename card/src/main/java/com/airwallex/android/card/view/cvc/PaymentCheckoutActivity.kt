@@ -22,7 +22,7 @@ import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.WeChat
 import com.airwallex.android.core.util.CurrencyUtils.formatPrice
-import com.airwallex.android.ui.extension.currentAirwallexLocale
+import com.airwallex.android.ui.extension.airwallexLocale
 import com.airwallex.android.ui.checkout.AirwallexCheckoutBaseActivity
 import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.extension.getExtraArgs
@@ -87,7 +87,7 @@ class PaymentCheckoutActivity : AirwallexCheckoutBaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val locale = currentAirwallexLocale()
+        val locale = airwallexLocale()
         viewBinding.root.setBackgroundColor(AirwallexColor.backgroundPrimary.toArgb())
         viewBinding.header.text = getString(
             R.string.airwallex_card_enter_cvv,

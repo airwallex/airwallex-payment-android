@@ -26,7 +26,7 @@ import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardText
-import com.airwallex.android.ui.extension.currentAirwallexLocale
+import com.airwallex.android.ui.extension.airwallexLocale
 import com.airwallex.android.view.composables.common.CardBrandIcon
 import com.airwallex.android.view.util.resolvedBrandName
 
@@ -36,7 +36,7 @@ internal fun ConsentItem(
     onSelectCard: (PaymentConsent) -> Unit,
     onDeleteCard: (PaymentConsent) -> Unit,
 ) {
-    val locale = LocalContext.current.currentAirwallexLocale()
+    val locale = LocalContext.current.airwallexLocale()
     val method = consent.paymentMethod ?: return
     val card = method.card ?: return
     val brandName = card.resolvedBrandName()

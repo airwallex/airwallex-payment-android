@@ -22,7 +22,7 @@ fun Context.localizedForAirwallex(locale: Locale?): Context {
 }
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-fun Context.currentAirwallexLocale(): Locale {
+fun Context.airwallexLocale(): Locale {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
         resources.configuration.locales[0]
     } else {

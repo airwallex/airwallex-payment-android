@@ -18,7 +18,7 @@ import com.airwallex.android.databinding.CountryAutocompleteViewBinding
 import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.util.EditTextColorUtil
 import com.airwallex.android.view.util.CountryUtils
-import com.airwallex.android.ui.extension.currentAirwallexLocale
+import com.airwallex.android.ui.extension.airwallexLocale
 import java.util.Locale
 
 class CountryAutoCompleteView constructor(
@@ -41,7 +41,7 @@ class CountryAutoCompleteView constructor(
         }
 
     private val countryAdapter: CountryAdapter by lazy {
-        CountryAdapter(getContext(), CountryUtils.countryList(context.currentAirwallexLocale()))
+        CountryAdapter(getContext(), CountryUtils.countryList(context.airwallexLocale()))
     }
 
     /**
@@ -53,7 +53,7 @@ class CountryAutoCompleteView constructor(
         set(value) {
             value?.let {
                 viewBinding.actCountry.setText(
-                    CountryUtils.getCountryByCode(it, context.currentAirwallexLocale())?.name
+                    CountryUtils.getCountryByCode(it, context.airwallexLocale())?.name
                 )
             }
             field = value
@@ -61,7 +61,7 @@ class CountryAutoCompleteView constructor(
         get() {
             return CountryUtils.getCountryByName(
                 viewBinding.actCountry.text.toString(),
-                context.currentAirwallexLocale()
+                context.airwallexLocale()
             )?.code
         }
 
@@ -113,7 +113,7 @@ class CountryAutoCompleteView constructor(
                 val enteredCountry = viewBinding.actCountry.text.toString()
                 val country = CountryUtils.getCountryByName(
                     enteredCountry,
-                    context.currentAirwallexLocale()
+                    context.airwallexLocale()
                 )
 
                 val displayCountry = country?.let {
@@ -136,7 +136,7 @@ class CountryAutoCompleteView constructor(
         countryCode?.let {
             selectedCountry = CountryUtils.getCountryByCode(
                 it,
-                context.currentAirwallexLocale()
+                context.airwallexLocale()
             )
             selectedCountry?.let { country ->
                 viewBinding.actCountry.setText(country.name)

@@ -33,7 +33,7 @@ import com.airwallex.android.core.model.PaymentMethodType
 import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardText
-import com.airwallex.android.ui.extension.currentAirwallexLocale
+import com.airwallex.android.ui.extension.airwallexLocale
 import com.airwallex.android.view.AddPaymentMethodViewModel
 import com.airwallex.android.view.PaymentFlowListener
 import com.airwallex.android.view.PaymentFlowViewModel
@@ -54,7 +54,7 @@ internal fun CardSection(
     paymentFlowListener: PaymentFlowListener,
     checkoutButtonTitle: String? = null,
 ) {
-    val locale = LocalContext.current.currentAirwallexLocale()
+    val locale = LocalContext.current.airwallexLocale()
     val paymentFlowViewModel: PaymentFlowViewModel = viewModel(
         factory = PaymentFlowViewModel.Factory(
             airwallex = airwallex,

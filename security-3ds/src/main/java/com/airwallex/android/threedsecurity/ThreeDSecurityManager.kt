@@ -16,7 +16,7 @@ import com.airwallex.android.threedsecurity.exception.ThreeDSException
 import com.airwallex.android.threedsecurity.exception.WebViewConnectionException
 import com.airwallex.android.ui.AirwallexActivity
 import com.airwallex.android.ui.AirwallexWebView
-import com.airwallex.android.ui.extension.currentAirwallexLocale
+import com.airwallex.android.ui.extension.airwallexLocale
 import com.airwallex.android.ui.destroyWebView
 import java.lang.StringBuilder
 import java.net.URLEncoder
@@ -79,7 +79,7 @@ object ThreeDSecurityManager {
                     ),
                     localeTag = (
                         cardNextActionModel.locale
-                            ?: cardNextActionModel.activityProvider().currentAirwallexLocale()
+                            ?: cardNextActionModel.activityProvider().airwallexLocale()
                         ).toLanguageTag()
                 )
             ) { _, result ->
@@ -138,7 +138,7 @@ object ThreeDSecurityManager {
                                                 localeTag = (
                                                     cardNextActionModel.locale
                                                         ?: cardNextActionModel.activityProvider()
-                                                            .currentAirwallexLocale()
+                                                            .airwallexLocale()
                                                     ).toLanguageTag()
                                             )
                                         ) { _, _ ->

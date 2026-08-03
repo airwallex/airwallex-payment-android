@@ -47,7 +47,7 @@ import com.airwallex.android.ui.composables.StandardCheckBox
 import com.airwallex.android.ui.composables.StandardSolidButton
 import com.airwallex.android.ui.composables.StandardText
 import com.airwallex.android.ui.composables.StandardTextFieldOptions
-import com.airwallex.android.ui.extension.currentAirwallexLocale
+import com.airwallex.android.ui.extension.airwallexLocale
 import com.airwallex.android.view.AddPaymentMethodViewModel
 import com.airwallex.android.view.PaymentFlowListener
 import com.airwallex.android.view.PaymentFlowViewModel
@@ -75,7 +75,7 @@ internal fun AddCardSection(
     checkoutButtonTitle: String? = null,
 ) {
     val focusManager = LocalFocusManager.current
-    val locale = LocalContext.current.currentAirwallexLocale()
+    val locale = LocalContext.current.airwallexLocale()
     val countryOptions = remember(locale) {
         CountryUtils.countryList(locale).map { it.name to it.code }
     }
