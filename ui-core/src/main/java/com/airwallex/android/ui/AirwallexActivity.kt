@@ -85,6 +85,9 @@ abstract class AirwallexActivity : AppCompatActivity(), AirwallexInternalActivit
     open fun addObserver() = Unit
 
     override fun attachBaseContext(newBase: Context) {
+        // Apply the locale while attaching the base context, before AppCompat or the
+        // Activity accesses resources. Applying an override configuration in onCreate()
+        // can be too late and cause "getResources() or getAssets() has already been called".
         val locale = AirwallexLocalePrefs.getLocale(newBase)
         super.attachBaseContext(newBase.localizedForAirwallex(locale))
     }
