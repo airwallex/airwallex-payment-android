@@ -7,6 +7,7 @@ import androidx.preference.PreferenceManager
 import com.airwallex.android.core.AirwallexCheckoutMode
 import com.airwallex.android.core.Environment
 import com.airwallex.android.core.RequiredBillingContactField
+import java.util.Locale
 import kotlin.properties.Delegates
 import androidx.core.content.edit
 
@@ -157,6 +158,25 @@ object Settings {
             )
                 ?: defaultPaymentLayout
         }
+
+    var sdkLanguage: String
+        set(value) {
+            sharedPreferences.edit {
+                putString(context.getString(R.string.sdk_language), value)
+            }
+        }
+        get() {
+            val defaultSdkLanguage =
+                SampleApplication.instance.resources.getStringArray(R.array.array_sdk_language)[0]
+            return sharedPreferences.getString(
+                context.getString(R.string.sdk_language),
+                defaultSdkLanguage
+            )
+                ?: defaultSdkLanguage
+        }
+
+    fun resolveSdkLocale(): Locale? =
+        if (sdkLanguage == "default") null else Locale.forLanguageTag(sdkLanguage)
 
     /**
      * Required billing contact fields for the new-card UI / headless validation.

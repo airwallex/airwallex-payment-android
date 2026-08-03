@@ -59,4 +59,20 @@
         <item>False</item>
         <item>True</item>
     </string-array>
+
+    <string-array name="array_sdk_language">
+        <item>default</item>
+        <item>de</item>
+        <item>en</item>
+        <item>es</item>
+        <item>fr</item>
+        <item>ja</item>
+        <item>ko</item>
+        <item>pt-BR</item>
+        <item>pt-PT</item>
+        <item>ru</item>
+        <item>th</item>
+        <item>zh-Hans</item>
+        <item>zh-Hant</item>
+    </string-array>
 </resources>
