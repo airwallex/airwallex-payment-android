@@ -101,8 +101,8 @@ Airwallex Android SDK 提供了一套完整的工具包，用于在 Android 应�
 
 ### 本地化
 
-默认情况下，Airwallex UI 使用宿主 Android Activity 的区域设置。如需只为某个支付
-Session 指定区域设置，并且不修改宿主应用的全局区域设置，可以进行以下配置：
+默认情况下，Airwallex UI 使用宿主 Android Activity 的 Locale。如需只为某个支付
+Session 指定 Locale，并且不修改宿主应用的全局 Locale，可以进行以下配置：
 
 ```kotlin
 val session = Session.Builder(
@@ -113,7 +113,7 @@ val session = Session.Builder(
     .build()
 ```
 
-该区域设置会应用于 Airwallex 自有的原生 UI。更改区域设置时需要创建新的 Session。Google Pay、外部浏览器、支付应用和发卡行
+该 Locale 会应用于 Airwallex 自有的原生 UI。更改 Locale 时需要创建新的 Session。Google Pay、外部浏览器、支付应用和发卡行
 托管的 3DS 页面使用其各自的语言设置。
 
 Locale 必须符合规范。使用语言标签时，请使用 `Locale.forLanguageTag("fr-FR")`，
