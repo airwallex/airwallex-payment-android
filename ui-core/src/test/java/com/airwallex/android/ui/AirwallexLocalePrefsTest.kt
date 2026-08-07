@@ -1,26 +1,37 @@
 package com.airwallex.android.ui
 
-import android.app.Activity
-import org.junit.After
+import android.content.Context
+import android.content.SharedPreferences
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
+import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.Robolectric
-import org.robolectric.RobolectricTestRunner
 import java.util.Locale
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
-@RunWith(RobolectricTestRunner::class)
 class AirwallexLocalePrefsTest {
 
-    private val context = Robolectric.buildActivity(Activity::class.java)
-        .setup()
-        .get()
-        .applicationContext
+    private val context = mockk<Context>()
+    private val preferences = mockk<SharedPreferences>()
+    private val editor = mockk<SharedPreferences.Editor>(relaxed = true)
+    private var storedLocaleTag: String? = null
 
-    @After
-    fun tearDown() {
-        AirwallexLocalePrefs.setLocaleTag(context, null)
+    @Before
+    fun setUp() {
+        storedLocaleTag = null
+        every {
+            context.getSharedPreferences("airwallex-locale-prefs", Context.MODE_PRIVATE)
+        } returns preferences
+        every { preferences.edit() } returns editor
+        every { editor.putString("airwallex-locale-tag", any()) } answers {
+            storedLocaleTag = secondArg()
+            editor
+        }
+        every {
+            preferences.getString("airwallex-locale-tag", null)
+        } answers { storedLocaleTag }
     }
 
     @Test
@@ -28,6 +39,7 @@ class AirwallexLocalePrefsTest {
         AirwallexLocalePrefs.setLocaleTag(context, "fr-CA")
 
         assertEquals(Locale.CANADA_FRENCH, AirwallexLocalePrefs.getLocale(context))
+        verify { editor.apply() }
     }
 
     @Test
@@ -36,5 +48,6 @@ class AirwallexLocalePrefsTest {
         AirwallexLocalePrefs.setLocaleTag(context, null)
 
         assertNull(AirwallexLocalePrefs.getLocale(context))
+        verify(exactly = 2) { editor.apply() }
     }
 }
