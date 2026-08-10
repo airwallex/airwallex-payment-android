@@ -102,7 +102,7 @@ class GooglePayLauncherActivity : ComponentActivity() {
     }
 
     private fun finishWithResult(result: GooglePayActivityLaunch.Result) {
-        AirwallexLogger.info("GooglePayLauncherActivity finishWithResult")
+        AirwallexLogger.info("GooglePayLauncherActivity finishWithResult: ${result::class.simpleName}")
         setResult(
             RESULT_OK,
             Intent()
