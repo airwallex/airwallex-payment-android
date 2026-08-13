@@ -16,21 +16,31 @@ open class AirwallexCheckoutViewModel(
     val airwallex: Airwallex,
     session: AirwallexSession
 ) : AndroidViewModel(application) {
-    protected var currentSession: AirwallexSession = session
+    protected var session: AirwallexSession = session
+        private set
 
     internal val retainedSession: AirwallexSession
-        get() = currentSession
+        get() = session
 
     companion object {
         private const val EVENT_PAYMENT_CANCELLED = "payment_canceled"
     }
 
     val transactionMode: TransactionMode
-        get() = when (val session = currentSession) {
+        get() = when (val session = session) {
             is Session -> if (session.isOneOffPayment) TransactionMode.ONE_OFF else TransactionMode.RECURRING
             is AirwallexRecurringSession, is AirwallexRecurringWithIntentSession -> TransactionMode.RECURRING
             else -> TransactionMode.ONE_OFF
         }
+
+    fun updateSession(newSession: AirwallexSession) {
+        if (session === newSession) return
+
+        session = newSession
+        clearSessionCaches()
+    }
+
+    protected open fun clearSessionCaches() = Unit
 
     /**
      * Update the Airwallex instance when the activity is recreated.
@@ -48,7 +58,7 @@ open class AirwallexCheckoutViewModel(
         additionalInfo: Map<String, String>? = null,
         flow: AirwallexPaymentRequestFlow? = null
     ): LiveData<AirwallexPaymentStatus> {
-        if (currentSession is AirwallexRecurringSession) {
+        if (session is AirwallexRecurringSession) {
             return MutableLiveData(
                 AirwallexPaymentStatus.Failure(
                     AirwallexCheckoutException(
@@ -64,7 +74,7 @@ open class AirwallexCheckoutViewModel(
             }
         }
         airwallex.checkout(
-            session = currentSession,
+            session = session,
             paymentMethod = paymentMethod,
             paymentConsent = paymentConsent,
             cvc = cvc,
@@ -83,7 +93,7 @@ open class AirwallexCheckoutViewModel(
     ): AirwallexPaymentStatus {
         return suspendCancellableCoroutine { continuation ->
             airwallex.checkout(
-                session = currentSession,
+                session = session,
                 paymentMethod = paymentMethod,
                 additionalInfo = additionalInfo,
                 flow = flow,
@@ -99,7 +109,7 @@ open class AirwallexCheckoutViewModel(
     suspend fun checkoutGooglePay(): AirwallexPaymentStatus {
         return suspendCancellableCoroutine { continuation ->
             airwallex.startGooglePay(
-                session = currentSession,
+                session = session,
                 listener = object : Airwallex.PaymentResultListener {
                     override fun onCompleted(status: AirwallexPaymentStatus) {
                         continuation.resume(status)
@@ -111,7 +121,7 @@ open class AirwallexCheckoutViewModel(
 
     suspend fun retrieveBanks(paymentMethodTypeName: String): Result<BankResponse> {
         return suspendCancellableCoroutine { continuation ->
-            when (val session = currentSession) {
+            when (val session = session) {
                 is Session, is AirwallexPaymentSession -> {
                     session.resolvePaymentIntent(object :
                         PaymentIntentProvider.PaymentIntentCallback {
@@ -163,7 +173,7 @@ open class AirwallexCheckoutViewModel(
                         paymentMethodType = paymentMethodTypeName
                     )
                         .setFlow(AirwallexPaymentRequestFlow.IN_APP)
-                        .setLocale(currentSession.locale)
+                        .setLocale(session.locale)
                         .build(),
                     object : Airwallex.PaymentListener<PaymentMethodTypeInfo> {
                         override fun onFailed(exception: AirwallexException) {
@@ -177,7 +187,7 @@ open class AirwallexCheckoutViewModel(
                 )
             }
 
-            when (val session = currentSession) {
+            when (val session = session) {
                 is Session, is AirwallexPaymentSession, is AirwallexRecurringWithIntentSession -> {
                     session.resolvePaymentIntent(object :
                         PaymentIntentProvider.PaymentIntentCallback {

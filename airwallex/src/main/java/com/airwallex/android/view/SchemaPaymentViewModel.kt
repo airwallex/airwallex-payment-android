@@ -48,10 +48,7 @@ class SchemaPaymentViewModel(
     private val _paymentResult = Channel<AirwallexPaymentStatus>(capacity = Channel.CONFLATED)
     val paymentResult: Flow<AirwallexPaymentStatus> = _paymentResult.receiveAsFlow()
 
-    fun updateSession(newSession: AirwallexSession) {
-        if (currentSession === newSession) return
-
-        currentSession = newSession
+    override fun clearSessionCaches() {
         schemaDataCache.clear()
         additionalParams.clear()
     }
@@ -78,7 +75,7 @@ class SchemaPaymentViewModel(
             }
             // Ad hoc. Aligned with BE that we do not show Enum types in UI, instead we pass fixed values when we have the field.
             listOf(
-                COUNTRY_CODE to currentSession.countryCode,
+                COUNTRY_CODE to session.countryCode,
                 OS_TYPE to OS_NAME,
                 FLOW to AirwallexPaymentRequestFlow.IN_APP.value
             ).forEach { (key, value) ->
@@ -175,7 +172,7 @@ class SchemaPaymentViewModel(
 
     @get:StringRes
     val ctaRes: Int
-        get() = if (currentSession is AirwallexRecurringSession) {
+        get() = if (session is AirwallexRecurringSession) {
             R.string.airwallex_confirm
         } else {
             R.string.airwallex_pay_now
