@@ -18,6 +18,9 @@ open class AirwallexCheckoutViewModel(
 ) : AndroidViewModel(application) {
     protected var currentSession: AirwallexSession = session
 
+    internal val retainedSession: AirwallexSession
+        get() = currentSession
+
     companion object {
         private const val EVENT_PAYMENT_CANCELLED = "payment_canceled"
     }

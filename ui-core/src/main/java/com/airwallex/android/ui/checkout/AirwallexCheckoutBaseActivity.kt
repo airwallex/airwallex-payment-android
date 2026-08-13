@@ -27,6 +27,9 @@ abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
         )[AirwallexCheckoutViewModel::class.java]
     }
 
+    protected val retainedSession: AirwallexSession
+        get() = viewModel.retainedSession
+
     override fun onCreate(savedInstanceState: Bundle?) {
         // Restore the launch bundle into intent first so the args lazy that
         // viewModel depends on can resolve after process death.
