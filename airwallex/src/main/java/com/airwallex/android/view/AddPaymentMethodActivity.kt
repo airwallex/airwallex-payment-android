@@ -118,7 +118,7 @@ internal class AddPaymentMethodActivity : AirwallexCheckoutBaseActivity(), Track
         LaunchedEffect(Unit) {
             setLoadingProgress(loading = true, cancelable = false)
             PaymentElement.create(
-                session = session,
+                session = retainedSession,
                 airwallex = airwallex,
                 configuration = args.configuration,
                 launchType = AnalyticsLogger.LaunchType.HPP,

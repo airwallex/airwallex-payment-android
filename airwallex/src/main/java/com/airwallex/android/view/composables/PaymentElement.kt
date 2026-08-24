@@ -2,6 +2,7 @@ package com.airwallex.android.view.composables
 
 import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.lifecycle.ViewModelProvider
@@ -323,13 +324,15 @@ class PaymentElement private constructor(
     fun Content() {
         AirwallexLocalizedContent(session.locale) {
             AirwallexTheme {
-                PaymentElementComponent(
-                    session = session,
-                    airwallex = airwallex,
-                    configuration = configuration,
-                    paymentFlowListener = paymentFlowListener,
-                    flowViewModel = flowViewModel
-                )
+                key(session) {
+                    PaymentElementComponent(
+                        session = session,
+                        airwallex = airwallex,
+                        configuration = configuration,
+                        paymentFlowListener = paymentFlowListener,
+                        flowViewModel = flowViewModel
+                    )
+                }
             }
         }
     }

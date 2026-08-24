@@ -31,6 +31,7 @@ import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
 class AirwallexCheckoutViewModelTest {
@@ -55,6 +56,52 @@ class AirwallexCheckoutViewModelTest {
             )
         } just runs
         viewModel = AirwallexCheckoutViewModel(application, airwallex, session)
+    }
+
+    @Test
+    fun `updateSession with same reference is a no-op`() {
+        val trackingViewModel = TrackingCheckoutViewModel(application, airwallex, session)
+
+        trackingViewModel.updateSession(session)
+
+        assertSame(session, trackingViewModel.retainedSession)
+        assertEquals(0, trackingViewModel.cacheClearCount)
+    }
+
+    @Test
+    fun `updateSession with replacement updates checkout session and clears cache once`() {
+        val replacementSession = mockk<AirwallexPaymentSession>()
+        val trackingViewModel = TrackingCheckoutViewModel(application, airwallex, session)
+        every {
+            airwallex.checkout(
+                replacementSession,
+                paymentMethod,
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+            )
+        } just runs
+
+        trackingViewModel.updateSession(replacementSession)
+        trackingViewModel.checkout(paymentMethod, paymentConsent = null, cvc = null)
+
+        assertSame(replacementSession, trackingViewModel.retainedSession)
+        assertEquals(1, trackingViewModel.cacheClearCount)
+        verify(exactly = 1) {
+            airwallex.checkout(
+                replacementSession,
+                paymentMethod,
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+            )
+        }
     }
 
     @Test
@@ -475,6 +522,19 @@ class AirwallexCheckoutViewModelTest {
         assertTrue(result.isFailure)
         assertIs<AirwallexCheckoutException>(result.exceptionOrNull()).apply {
             assertEquals("Neither paymentIntent nor paymentIntentProvider available", message)
+        }
+    }
+
+    private class TrackingCheckoutViewModel(
+        application: Application,
+        airwallex: Airwallex,
+        session: AirwallexSession
+    ) : AirwallexCheckoutViewModel(application, airwallex, session) {
+        var cacheClearCount = 0
+            private set
+
+        override fun clearSessionCaches() {
+            cacheClearCount++
         }
     }
 }

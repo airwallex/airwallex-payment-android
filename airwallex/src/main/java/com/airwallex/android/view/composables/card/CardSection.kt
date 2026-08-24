@@ -73,9 +73,10 @@ internal fun CardSection(
         ),
         viewModelStoreOwner = airwallex.activity
     )
-    val deletedConsents by addPaymentMethodViewModel.deletedCardList.collectAsState()
-
+    addPaymentMethodViewModel.updateSession(session)
     addPaymentMethodViewModel.updateSupportedCardSchemes(cardSchemes)
+
+    val deletedConsents by addPaymentMethodViewModel.deletedCardList.collectAsState()
 
     // Observe delete consent results
     LaunchedEffect(Unit) {
