@@ -159,6 +159,13 @@
                 android:layout_marginTop="25dp"
                 app:etHint="Return URL" />
 
+            <com.airwallex.paymentacceptance.ui.widget.DropdownPickerView
+                android:id="@+id/selectSdkLanguage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                app:titleContent="SDK Language" />
+
         </LinearLayout>
     </ScrollView>
 

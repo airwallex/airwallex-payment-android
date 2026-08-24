@@ -62,5 +62,6 @@ class SettingViewModel : BaseViewModel() {
         Settings.sdkEnv = "DEMO"
         Settings.nextTriggerBy = "Merchant"
         Settings.returnUrl = ""
+        Settings.sdkLanguage = "default"
     }
 }
