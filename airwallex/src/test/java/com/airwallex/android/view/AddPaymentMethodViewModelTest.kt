@@ -688,6 +688,48 @@ class AddPaymentMethodViewModelTest {
     }
 
     @Test
+    fun `updateSession resets session state from replacement and preserves card schemes`() {
+        val cardSchemes = listOf(CardScheme("visa"), CardScheme("mastercard"))
+        val viewModel = createViewModel(createBasicMockSession(), cardSchemes)
+        viewModel.updateCardNumber(visaCardNumber, CardBrand.Visa)
+        viewModel.updateExpiryDate("12/30")
+        viewModel.updateCvv("123")
+        viewModel.updateCardHolderName("Old Name")
+        viewModel.updateEmail("old@example.com")
+        viewModel.updateSaveCardChecked(false)
+        viewModel.updateSameAddressChecked(false)
+        viewModel.updateSelectedCountryCode("GB")
+        viewModel.updateStreet("Old Street")
+        viewModel.updateState("Old State")
+        viewModel.updateCity("Old City")
+        viewModel.updateZipCode("OLD")
+        viewModel.updatePhoneNumber("+44000000000")
+        viewModel.deleteCardSuccess(mockk(relaxed = true))
+
+        viewModel.updateSession(createReplacementSession())
+
+        assertEquals("", viewModel.cardNumber.value)
+        assertEquals("", viewModel.expiryDate.value)
+        assertEquals("", viewModel.cvv.value)
+        assertEquals(CardBrand.Unknown, viewModel.cardBrand.value)
+        assertEquals("Jane Doe", viewModel.cardHolderNameState.value)
+        assertEquals("jane@example.com", viewModel.email.value)
+        assertTrue(viewModel.isSaveCardChecked.value)
+        assertTrue(viewModel.isSameAddressChecked.value)
+        assertEquals("CA", viewModel.selectedCountryCode.value)
+        assertEquals("1 New Street", viewModel.street.value)
+        assertEquals("ON", viewModel.state.value)
+        assertEquals("Toronto", viewModel.city.value)
+        assertEquals("M5V 2T6", viewModel.zipCode.value)
+        assertEquals("+14165550123", viewModel.phoneNumber.value)
+        assertTrue(viewModel.deletedCardList.value.isEmpty())
+        assertEquals(
+            mapOf("supportedSchemes" to listOf("visa", "mastercard")),
+            viewModel.additionalInfo
+        )
+    }
+
+    @Test
     fun `test updateCardNumber updates both card number and brand`() {
         val viewModel = createSimpleViewModelForStateTests()
 
@@ -1177,6 +1219,29 @@ class AddPaymentMethodViewModelTest {
             every { countryCode } returns "US"
         }
         return createViewModel(mockSession)
+    }
+
+    private fun createReplacementSession(): AirwallexPaymentSession {
+        val shipping = mockk<Shipping>(relaxed = true) {
+            every { firstName } returns "Jane"
+            every { lastName } returns "Doe"
+            every { email } returns "jane@example.com"
+            every { phoneNumber } returns "+14165550123"
+            every { address } returns mockk(relaxed = true) {
+                every { street } returns "1 New Street"
+                every { state } returns "ON"
+                every { city } returns "Toronto"
+                every { postcode } returns "M5V 2T6"
+            }
+        }
+        return mockk(relaxed = true) {
+            every { this@mockk.shipping } returns shipping
+            every { customerId } returns "customer_replacement"
+            every { countryCode } returns "CA"
+            every { requiredBillingContactFields } returns setOf(
+                RequiredBillingContactField.ADDRESS
+            )
+        }
     }
 
     private fun createBasicMockSession(): AirwallexSession {

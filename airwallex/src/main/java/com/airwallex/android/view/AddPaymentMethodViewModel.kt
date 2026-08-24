@@ -36,7 +36,7 @@ import kotlinx.coroutines.flow.update
 class AddPaymentMethodViewModel(
     application: Application,
     airwallex: Airwallex,
-    private val session: AirwallexSession,
+    session: AirwallexSession,
     private val supportedCardSchemes: List<CardScheme>
 ) : AirwallexCheckoutViewModel(application, airwallex, session) {
     val pageName: String = "card_payment_view"
@@ -50,18 +50,25 @@ class AddPaymentMethodViewModel(
     val additionalInfo: Map<String, List<String>>
         get() = mapOf("supportedSchemes" to cardSchemes.map { it.name })
 
-    @StringRes
-    val ctaRes: Int = if (session is AirwallexRecurringSession) {
-        R.string.airwallex_confirm
-    } else {
-        R.string.airwallex_pay_now
-    }
+    @get:StringRes
+    val ctaRes: Int
+        get() = if (session is AirwallexRecurringSession) {
+            R.string.airwallex_confirm
+        } else {
+            R.string.airwallex_pay_now
+        }
 
-    val shipping: Shipping? by lazy {
-        session.shipping
-    }
+    val shipping: Shipping?
+        get() = session.shipping
 
-    val canSaveCard: Boolean by lazy { (session is AirwallexPaymentSession || (session is Session && session.isOneOffPayment)) && !session.customerId.isNullOrEmpty() }
+    val canSaveCard: Boolean
+        get() {
+            val activeSession = session
+            return (
+                activeSession is AirwallexPaymentSession ||
+                    (activeSession is Session && activeSession.isOneOffPayment)
+                ) && !activeSession.customerId.isNullOrEmpty()
+        }
 
     /**
      * Resolved (non-null) set of billing-contact fields to render on this screen.
@@ -69,44 +76,38 @@ class AddPaymentMethodViewModel(
      * raw nullable merchant configuration; here we've already collapsed the
      * "null → derive from legacy booleans" rule via [resolvedRequiredBillingContactFields].
      */
-    val resolvedBillingFields: Set<RequiredBillingContactField> by lazy {
-        session.resolvedRequiredBillingContactFields
-    }
+    val resolvedBillingFields: Set<RequiredBillingContactField>
+        get() = session.resolvedRequiredBillingContactFields
 
-    val showName: Boolean by lazy {
-        RequiredBillingContactField.NAME in resolvedBillingFields
-    }
-    val showEmail: Boolean by lazy {
-        RequiredBillingContactField.EMAIL in resolvedBillingFields
-    }
-    val showPhone: Boolean by lazy {
-        RequiredBillingContactField.PHONE in resolvedBillingFields
-    }
-    val showAddress: Boolean by lazy {
-        RequiredBillingContactField.ADDRESS in resolvedBillingFields
-    }
+    val showName: Boolean
+        get() = RequiredBillingContactField.NAME in resolvedBillingFields
+
+    val showEmail: Boolean
+        get() = RequiredBillingContactField.EMAIL in resolvedBillingFields
+
+    val showPhone: Boolean
+        get() = RequiredBillingContactField.PHONE in resolvedBillingFields
+
+    val showAddress: Boolean
+        get() = RequiredBillingContactField.ADDRESS in resolvedBillingFields
+
     /** Country picker without the rest of the address. ADDRESS suppresses this. */
-    val showCountryCodeOnly: Boolean by lazy {
-        !showAddress && RequiredBillingContactField.COUNTRY_CODE in resolvedBillingFields
-    }
+    val showCountryCodeOnly: Boolean
+        get() = !showAddress && RequiredBillingContactField.COUNTRY_CODE in resolvedBillingFields
+
     /** Whether the "Billing information" header / section block should appear. */
-    val showBillingSection: Boolean by lazy {
-        showAddress || showCountryCodeOnly
-    }
+    val showBillingSection: Boolean
+        get() = showAddress || showCountryCodeOnly
+
     /** Whether the "Same as shipping" prefill toggle should appear. */
-    val showSameAsShippingToggle: Boolean by lazy {
-        showAddress && shipping != null
-    }
+    val showSameAsShippingToggle: Boolean
+        get() = showAddress && shipping != null
 
-    val cardHolderName: String by lazy {
-        if (shipping == null) {
-            ""
-        } else {
-            listOfNotNull(shipping?.firstName, shipping?.lastName).joinToString(" ").ifEmpty { "" }
-        }
-    }
+    val cardHolderName: String
+        get() = listOfNotNull(shipping?.firstName, shipping?.lastName).joinToString(" ")
 
-    val countryCode: String by lazy { session.countryCode }
+    val countryCode: String
+        get() = session.countryCode
 
     private val _deletedCardList = MutableStateFlow<MutableList<PaymentConsent>>(mutableListOf())
     val deletedCardList: StateFlow<MutableList<PaymentConsent>> = _deletedCardList.asStateFlow()
@@ -154,6 +155,24 @@ class AddPaymentMethodViewModel(
 
     private val _phoneNumber = MutableStateFlow(shipping?.phoneNumber.orEmpty())
     val phoneNumber: StateFlow<String> = _phoneNumber.asStateFlow()
+
+    override fun clearSessionCaches() {
+        _deletedCardList.value = mutableListOf()
+        _cardNumber.value = ""
+        _expiryDate.value = ""
+        _cvv.value = ""
+        _cardBrand.value = CardBrand.Unknown
+        _cardHolderName.value = cardHolderName
+        _email.value = shipping?.email.orEmpty()
+        _isSaveCardChecked.value = canSaveCard
+        _isSameAddressChecked.value = showSameAsShippingToggle
+        _selectedCountryCode.value = countryCode
+        _street.value = shipping?.address?.street.orEmpty()
+        _state.value = shipping?.address?.state.orEmpty()
+        _city.value = shipping?.address?.city.orEmpty()
+        _zipCode.value = shipping?.address?.postcode.orEmpty()
+        _phoneNumber.value = shipping?.phoneNumber.orEmpty()
+    }
 
     // Update functions
     fun updateCardNumber(value: String, brand: CardBrand) {

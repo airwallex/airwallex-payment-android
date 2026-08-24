@@ -330,6 +330,26 @@ class AirwallexApiRepositoryTest {
     }
 
     @Test
+    fun retrieveAvailablePaymentMethodsUrl_usesExplicitLanguageCode() {
+        mockUri()
+        val url = AirwallexApiRepository.retrieveAvailablePaymentMethodsUrl(
+            baseUrl = "https://api.airwallex.com",
+            pageNum = 1,
+            pageSize = 20,
+            active = true,
+            transactionCurrency = "EUR",
+            transactionMode = TransactionMode.ONE_OFF,
+            countryCode = "FR",
+            languageCode = "fr"
+        )
+
+        assertEquals(
+            "https://api.airwallex.com/api/v1/pa/config/payment_method_types?__resources=true&os_type=android&lang=fr&page_num=1&page_size=20&active=true&transaction_currency=EUR&transaction_mode=oneoff&country_code=FR",
+            url
+        )
+    }
+
+    @Test
     fun getApiUrlTest() {
         val url =
             AirwallexApiRepository.getApiUrl("https://api.airwallex.com", "abc")
@@ -345,12 +365,18 @@ class AirwallexApiRepositoryTest {
             Triple(Locale("pt", "BR"), "pt-BR", "pt-BR"),
             Triple(Locale("pt", "PT"), "pt-PT", "pt-PT"),
             Triple(Locale("fr"), "fr", "fr"),
-            Triple(Locale("zh", "CN"), "zh", "zh"), // fallback if script not set
+            Triple(Locale("zh", "CN"), "zh-Hans", "zh-CN"),
+            Triple(Locale("zh", "SG"), "zh-Hans", "zh-SG"),
+            Triple(Locale("zh", "HK"), "zh-Hant", "zh-HK"),
+            Triple(Locale("zh", "TW"), "zh-Hant", "zh-TW"),
+            Triple(Locale("zh", "MO"), "zh-Hant", "zh-MO"),
             Triple(Locale("pt"), "pt", "pt"),
             Triple(Locale("ja"), "ja", "ja"),
             Triple(Locale("ko"), "ko", "ko"),
             Triple(Locale("ru"), "ru", "ru"),
-            Triple(Locale("th"), "th", "th")
+            Triple(Locale("th"), "th", "th"),
+            Triple(Locale.ITALIAN, "en", "unsupported fallback"),
+            Triple(Locale.ROOT, "en", "root fallback")
         )
         val defaultLocale = Locale.getDefault()
         try {
@@ -445,6 +471,24 @@ class AirwallexApiRepositoryTest {
     }
 
     @Test
+    fun retrievePaymentMethodTypeInfoUrl_usesExplicitLanguageCode() {
+        mockUri()
+        val url = AirwallexApiRepository.retrievePaymentMethodTypeInfoUrl(
+            baseUrl = "https://api.airwallex.com",
+            paymentMethodType = "card",
+            countryCode = "HK",
+            flow = null,
+            openId = null,
+            languageCode = "zh-Hant"
+        )
+
+        assertEquals(
+            "https://api.airwallex.com/api/v1/pa/config/payment_method_types/card?country_code=HK&os_type=android&lang=zh-Hant",
+            url
+        )
+    }
+
+    @Test
     fun retrieveBanksUrlTest_allParameters() {
         mockUri()
         val defaultLocale = Locale.getDefault()
@@ -486,6 +530,24 @@ class AirwallexApiRepositoryTest {
         } finally {
             Locale.setDefault(defaultLocale)
         }
+    }
+
+    @Test
+    fun retrieveBanksUrl_usesExplicitLanguageCode() {
+        mockUri()
+        val url = AirwallexApiRepository.retrieveBanksUrl(
+            baseUrl = "https://api.airwallex.com",
+            paymentMethodType = "online_banking",
+            countryCode = "BR",
+            flow = null,
+            openId = null,
+            languageCode = "pt-BR"
+        )
+
+        assertEquals(
+            "https://api.airwallex.com/api/v1/pa/config/banks?payment_method_type=online_banking&__all_logos=true&country_code=BR&os_type=android&lang=pt-BR",
+            url
+        )
     }
 
     @Test

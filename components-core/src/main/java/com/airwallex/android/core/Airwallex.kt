@@ -3,6 +3,7 @@ package com.airwallex.android.core
 import android.app.Application
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import androidx.activity.ComponentActivity
 import androidx.annotation.UiThread
 import androidx.annotation.VisibleForTesting
@@ -73,6 +74,7 @@ import kotlinx.coroutines.supervisorScope
 import java.math.BigDecimal
 import java.util.Collections
 import java.util.UUID
+import java.util.Locale
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.cancellation.CancellationException
 
@@ -499,7 +501,8 @@ class Airwallex internal constructor(
                 active = params.active,
                 transactionCurrency = params.transactionCurrency,
                 transactionMode = transactionMode,
-                countryCode = params.countryCode
+                countryCode = params.countryCode,
+                languageCode = resolveLanguageCode(session.locale)
             )
         )
         response.items = response.items.filter { paymentMethod ->
@@ -709,6 +712,20 @@ class Airwallex internal constructor(
         params: VerifyPaymentConsentParams,
         listener: PaymentResultListener
     ) {
+        verifyPaymentConsent(
+            device = device,
+            params = params,
+            locale = null,
+            listener = listener
+        )
+    }
+
+    private fun verifyPaymentConsent(
+        device: Device,
+        params: VerifyPaymentConsentParams,
+        locale: Locale?,
+        listener: PaymentResultListener
+    ) {
         AirwallexLogger.info("Airwallex verifyPaymentConsent: type = ${params.paymentMethodType}")
         val paymentMethodType = params.paymentMethodType
         // Wrap listener at entry point to log payment result once
@@ -753,6 +770,7 @@ class Airwallex internal constructor(
                         response = response,
                         params = params,
                         paymentMethodType = paymentMethodType,
+                        locale = locale,
                         loggingListener = loggingListener
                     )
                 }
@@ -760,10 +778,12 @@ class Airwallex internal constructor(
         )
     }
 
+    @Suppress("LongMethod")
     private fun handlePaymentConsentVerifySuccess(
         response: PaymentConsent,
         params: VerifyPaymentConsentParams,
         paymentMethodType: String,
+        locale: Locale?,
         loggingListener: PaymentResultListener
     ) {
         // for redirect, initialPaymentIntentId is empty now. so we don support recurring in redirect flow
@@ -804,7 +824,11 @@ class Airwallex internal constructor(
                     return
                 }
 
-                val nextActionModel = createCardNextActionModel(params, paymentIntentId)
+                val nextActionModel = createCardNextActionModel(
+                    params = params,
+                    paymentIntentId = paymentIntentId,
+                    locale = locale
+                )
 
                 provider.get().handlePaymentIntentResponse(
                     paymentIntentId,
@@ -834,7 +858,8 @@ class Airwallex internal constructor(
 
     private fun createCardNextActionModel(
         params: VerifyPaymentConsentParams,
-        paymentIntentId: String
+        paymentIntentId: String,
+        locale: Locale?
     ): CardNextActionModel {
         return CardNextActionModel(
             paymentManager = paymentManager,
@@ -843,7 +868,8 @@ class Airwallex internal constructor(
             paymentIntentId = paymentIntentId,
             currency = requireNotNull(params.currency),
             amount = requireNotNull(params.amount),
-            activityProvider = { activity }
+            activityProvider = { activity },
+            locale = locale
         )
     }
 
@@ -869,6 +895,18 @@ class Airwallex internal constructor(
         )
     }
 
+    private fun resolveLanguageCode(locale: Locale?): String {
+        val effectiveLocale = locale ?: runCatching {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                activity.resources.configuration.locales[0]
+            } else {
+                @Suppress("DEPRECATION")
+                activity.resources.configuration.locale
+            }
+        }.getOrNull() ?: Locale.getDefault()
+        return AirwallexApiRepository.getLanguageCode(effectiveLocale)
+    }
+
     /**
      * Retrieve available banks
      *
@@ -887,7 +925,8 @@ class Airwallex internal constructor(
                 flow = params.flow,
                 transactionMode = params.transactionMode,
                 countryCode = params.countryCode,
-                openId = params.openId
+                openId = params.openId,
+                languageCode = resolveLanguageCode(params.locale)
             ),
             listener
         )
@@ -911,7 +950,8 @@ class Airwallex internal constructor(
                 flow = params.flow,
                 transactionMode = params.transactionMode,
                 countryCode = params.countryCode,
-                openId = params.openId
+                openId = params.openId,
+                languageCode = resolveLanguageCode(params.locale)
             ),
             listener
         )
@@ -1449,7 +1489,7 @@ class Airwallex internal constructor(
             }
         }
 
-        confirmPaymentIntent(params, listener)
+        confirmPaymentIntent(params, listener, session.locale)
     }
 
     @UiThread
@@ -1478,6 +1518,7 @@ class Airwallex internal constructor(
                             AirwallexPlugins.environment.threeDsReturnUrl()
                         } else session.returnUrl,
                         autoCapture = session.autoCapture,
+                        locale = session.locale,
                         listener = listener
                     )
                 }
@@ -1550,6 +1591,7 @@ class Airwallex internal constructor(
                                 amount = session.amount,
                                 cvc = cvc,
                                 returnUrl = if (paymentMethod.type == PaymentMethodType.CARD.value) AirwallexPlugins.environment.threeDsReturnUrl() else session.returnUrl,
+                                locale = session.locale,
                                 listener = listener
                             )
                         }
@@ -1583,6 +1625,7 @@ class Airwallex internal constructor(
                                                 paymentConsentId = response.id,
                                                 returnUrl = AirwallexPlugins.environment.threeDsReturnUrl(),
                                                 autoCapture = session.autoCapture,
+                                                locale = session.locale,
                                                 listener = listener
                                             )
                                         }
@@ -1594,6 +1637,7 @@ class Airwallex internal constructor(
                                                 currency = session.currency,
                                                 amount = session.amount,
                                                 returnUrl = session.returnUrl,
+                                                locale = session.locale,
                                                 listener = listener
                                             )
                                         }
@@ -1644,6 +1688,7 @@ class Airwallex internal constructor(
                         amount = session.amount,
                         cvc = null,
                         returnUrl = AirwallexPlugins.environment.threeDsReturnUrl(),
+                        locale = session.locale,
                         listener = listener
                     )
                 }
@@ -1804,6 +1849,7 @@ class Airwallex internal constructor(
         )
     }
 
+    @Suppress("LongParameterList")
     private fun confirmPaymentIntent(
         paymentIntentId: String,
         clientSecret: String,
@@ -1816,6 +1862,7 @@ class Airwallex internal constructor(
         returnUrl: String? = null,
         autoCapture: Boolean = true,
         flow: AirwallexPaymentRequestFlow? = null,
+        locale: Locale? = null,
         listener: PaymentResultListener
     ) {
         val params = when (val paymentMethodType = requireNotNull(paymentMethod.type)) {
@@ -1859,12 +1906,13 @@ class Airwallex internal constructor(
                 )
             }
         }
-        confirmPaymentIntent(params, listener)
+        confirmPaymentIntent(params, listener, locale)
     }
 
     private fun confirmPaymentIntent(
         params: ConfirmPaymentIntentParams,
-        listener: PaymentResultListener
+        listener: PaymentResultListener,
+        locale: Locale? = null
     ) {
         val paymentMethodType = params.paymentMethodType
         try {
@@ -1886,6 +1934,7 @@ class Airwallex internal constructor(
             confirmPaymentIntentWithDevice(
                 device = device,
                 params = params,
+                locale = locale,
                 listener = listener
             )
         } catch (e: Exception) {
@@ -1911,6 +1960,20 @@ class Airwallex internal constructor(
     fun confirmPaymentIntentWithDevice(
         device: Device? = null,
         params: ConfirmPaymentIntentParams,
+        listener: PaymentResultListener
+    ) {
+        confirmPaymentIntentWithDevice(
+            device = device,
+            params = params,
+            locale = null,
+            listener = listener
+        )
+    }
+
+    private fun confirmPaymentIntentWithDevice(
+        device: Device?,
+        params: ConfirmPaymentIntentParams,
+        locale: Locale?,
         listener: PaymentResultListener
     ) {
         // Wrap listener at entry point to log payment result once
@@ -1962,7 +2025,8 @@ class Airwallex internal constructor(
                             paymentIntentId = response.id,
                             currency = response.currency,
                             amount = response.amount,
-                            activityProvider = { activity }
+                            activityProvider = { activity },
+                            locale = locale
                         )
 
                         else -> null
@@ -2233,12 +2297,14 @@ class Airwallex internal constructor(
         )
     }
 
+    @Suppress("LongParameterList")
     private fun verifyPaymentConsent(
         paymentConsent: PaymentConsent,
         currency: String,
         amount: BigDecimal? = null,
         cvc: String? = null,
         returnUrl: String? = null,
+        locale: Locale? = null,
         listener: PaymentResultListener
     ) {
         if (paymentConsent.requiresCvc && cvc == null) {
@@ -2273,7 +2339,7 @@ class Airwallex internal constructor(
                 returnUrl = returnUrl
             )
             val device = paymentManager.buildDeviceInfo(AirwallexRisk.sessionId.toString())
-            verifyPaymentConsent(device, params, listener)
+            verifyPaymentConsent(device, params, locale, listener)
         } catch (e: Exception) {
             listener.onCompleted(
                 AirwallexPaymentStatus.Failure(AirwallexCheckoutException(e = e))

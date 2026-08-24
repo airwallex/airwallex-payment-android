@@ -76,7 +76,7 @@ class PaymentMethodsActivity : AirwallexCheckoutBaseActivity(), TrackablePage {
 
         lifecycleScope.launch {
             PaymentElement.create(
-                session = session,
+                session = retainedSession,
                 airwallex = airwallex,
                 configuration = args.configuration,
                 launchType = AnalyticsLogger.LaunchType.HPP,

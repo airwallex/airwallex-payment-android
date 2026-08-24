@@ -31,7 +31,8 @@ class ThreeDSecurityActivityLaunch : AirwallexActivityLaunch<ThreeDSecurityActiv
     data class Args internal constructor(
         val url: String,
         val body: String,
-        val options: Options.ContinuePaymentIntentOptions
+        val options: Options.ContinuePaymentIntentOptions,
+        override val localeTag: String? = null
     ) : AirwallexActivityLaunch.Args
 
     @Parcelize

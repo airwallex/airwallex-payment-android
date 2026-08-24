@@ -9,6 +9,7 @@ import io.mockk.every
 import io.mockk.mockk
 import org.junit.Test
 import java.math.BigDecimal
+import java.util.Locale
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
@@ -38,6 +39,7 @@ class SessionExtensionsTest {
             every { this@mockk.paymentMethods } returns paymentMethods
             every { autoCapture } returns false
             every { hidePaymentConsents } returns true
+            every { locale } returns Locale.FRANCE
         }
 
         val result = session.toParcelableSession()
@@ -57,6 +59,7 @@ class SessionExtensionsTest {
         assertEquals(paymentMethods, result.paymentMethods)
         assertEquals(false, result.autoCapture)
         assertEquals(true, result.hidePaymentConsents)
+        assertEquals("fr-FR", result.localeLanguageTag)
     }
 
     @Test
@@ -77,6 +80,7 @@ class SessionExtensionsTest {
             every { paymentMethods } returns null
             every { autoCapture } returns true
             every { hidePaymentConsents } returns false
+            every { locale } returns null
         }
 
         val result = session.toParcelableSession()
@@ -96,5 +100,6 @@ class SessionExtensionsTest {
         assertNull(result.paymentMethods)
         assertEquals(true, result.autoCapture)
         assertEquals(false, result.hidePaymentConsents)
+        assertNull(result.localeLanguageTag)
     }
 }

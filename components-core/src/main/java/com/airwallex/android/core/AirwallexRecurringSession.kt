@@ -8,6 +8,7 @@ import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.Shipping
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
+import java.util.Locale
 
 /**
  * For recurring payment (without create payment intent)
@@ -104,6 +105,12 @@ class AirwallexRecurringSession internal constructor(
      */
     override val requiredBillingContactFields: Set<RequiredBillingContactField>? = null,
 
+    /**
+     * Locale used by Airwallex-owned UI.
+     * `null` inherits the host application's current locale.
+     */
+    override val locale: Locale? = null,
+
 ) : AirwallexSession(), Parcelable {
 
     /**
@@ -132,6 +139,7 @@ class AirwallexRecurringSession internal constructor(
         private var paymentMethods: List<String>? = null
         private var googlePayOptions: GooglePayOptions? = null
         private var requiredBillingContactFields: Set<RequiredBillingContactField>? = null
+        private var locale: Locale? = null
 
         init {
             TokenManager.updateClientSecret(clientSecret)
@@ -196,7 +204,12 @@ class AirwallexRecurringSession internal constructor(
             this.requiredBillingContactFields = fields
         }
 
+        fun setLocale(locale: Locale?): Builder = apply {
+            this.locale = locale
+        }
+
         override fun build(): AirwallexRecurringSession {
+            val validatedLocale = LocaleValidator.validatedOrNull(locale)
             return AirwallexRecurringSession(
                 nextTriggerBy = nextTriggerBy,
                 requiresCVC = requiresCVC,
@@ -213,6 +226,7 @@ class AirwallexRecurringSession internal constructor(
                 clientSecret = clientSecret,
                 googlePayOptions = googlePayOptions,
                 requiredBillingContactFields = requiredBillingContactFields,
+                locale = validatedLocale,
             )
         }
     }

@@ -31,6 +31,7 @@ import com.airwallex.android.core.log.TrackablePage
 import com.airwallex.android.databinding.DialogAddCardBinding
 import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.composables.AirwallexTheme
+import com.airwallex.android.ui.extension.localizedForAirwallex
 import com.airwallex.android.view.composables.PaymentElement
 import com.airwallex.android.view.composables.PaymentElementConfiguration
 import com.airwallex.android.view.util.AnalyticsConstants.CARD_PAYMENT_VIEW
@@ -47,7 +48,11 @@ class AirwallexAddPaymentDialog @JvmOverloads constructor(
     private val configuration: PaymentElementConfiguration.Card = PaymentElementConfiguration.Card(),
     private val paymentResultListener: Airwallex.PaymentResultListener,
     private val dialogHeight: Int? = null,
-) : BottomSheetDialog(activity, R.style.AirwallexBottomSheetDialog), TrackablePage {
+) : BottomSheetDialog(
+    activity.localizedForAirwallex(session.locale),
+    R.style.AirwallexBottomSheetDialog
+),
+    TrackablePage {
 
     /**
      * Deprecated constructor with supportedCardBrands parameter

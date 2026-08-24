@@ -30,24 +30,34 @@ internal object CountryUtils {
         )
     }
 
-    val countryList = Locale.getISOCountries()
-        .filter { code -> legalCountries.indexOf(code) >= 0 }
-        .map { code ->
-            CountryAutoCompleteView.Country(code, Locale("", code).displayCountry)
-        }
-        .sortedBy { it.name.lowercase(Locale.ROOT) }
+    fun countryList(locale: Locale): List<CountryAutoCompleteView.Country> =
+        Locale.getISOCountries()
+            .filter { code -> legalCountries.indexOf(code) >= 0 }
+            .map { code ->
+                CountryAutoCompleteView.Country(
+                    code,
+                    Locale.Builder().setRegion(code).build().getDisplayCountry(locale)
+                )
+            }
+            .sortedBy { it.name.lowercase(locale) }
 
     /**
      * Return the [CountryAutoCompleteView.Country] via [countryName]
      */
-    fun getCountryByName(countryName: String): CountryAutoCompleteView.Country? {
-        return countryList.firstOrNull { it.name == countryName }
+    fun getCountryByName(
+        countryName: String,
+        locale: Locale
+    ): CountryAutoCompleteView.Country? {
+        return countryList(locale).firstOrNull { it.name == countryName }
     }
 
     /**
      * Return the [CountryAutoCompleteView.Country] via [countryCode]
      */
-    fun getCountryByCode(countryCode: String): CountryAutoCompleteView.Country? {
-        return countryList.firstOrNull { it.code == countryCode }
+    fun getCountryByCode(
+        countryCode: String,
+        locale: Locale
+    ): CountryAutoCompleteView.Country? {
+        return countryList(locale).firstOrNull { it.code == countryCode }
     }
 }

@@ -309,6 +309,7 @@ class AirwallexApiRepository : ApiRepository {
         /**
          *  `/api/v1/pa/config/payment_method_types`
          */
+        @Suppress("LongParameterList")
         internal fun retrieveAvailablePaymentMethodsUrl(
             baseUrl: String,
             pageNum: Int?,
@@ -316,7 +317,8 @@ class AirwallexApiRepository : ApiRepository {
             active: Boolean?,
             transactionCurrency: String?,
             transactionMode: TransactionMode?,
-            countryCode: String?
+            countryCode: String?,
+            languageCode: String? = null
         ): String {
             val url = getApiUrl(
                 baseUrl,
@@ -326,7 +328,7 @@ class AirwallexApiRepository : ApiRepository {
             val builder = Uri.parse(url).buildUpon()
             builder.appendQueryParameter("__resources", "true")
             builder.appendQueryParameter("os_type", "android")
-            builder.appendQueryParameter("lang", getLanguageCode())
+            builder.appendQueryParameter("lang", languageCode ?: getLanguageCode())
             pageNum?.let {
                 builder.appendQueryParameter("page_num", it.toString())
             }
@@ -351,12 +353,14 @@ class AirwallexApiRepository : ApiRepository {
         /**
          * `/api/v1/pa/config/payment_method_types/{payment_method_type}?flow={flow}`
          */
+        @Suppress("LongParameterList")
         internal fun retrievePaymentMethodTypeInfoUrl(
             baseUrl: String,
             paymentMethodType: String,
             countryCode: String?,
             flow: AirwallexPaymentRequestFlow?,
-            openId: String?
+            openId: String?,
+            languageCode: String? = null
         ): String {
             val url = getApiUrl(
                 baseUrl,
@@ -375,19 +379,21 @@ class AirwallexApiRepository : ApiRepository {
                 builder.appendQueryParameter("open_id", it)
             }
             builder.appendQueryParameter("os_type", "android")
-            builder.appendQueryParameter("lang", getLanguageCode())
+            builder.appendQueryParameter("lang", languageCode ?: getLanguageCode())
             return builder.build().toString()
         }
 
         /**
          * `/api/v1/pa/config/banks?payment_method_type={payment_method_type}&country_code={TH}&lang={zh}`
          */
+        @Suppress("LongParameterList")
         internal fun retrieveBanksUrl(
             baseUrl: String,
             paymentMethodType: String,
             countryCode: String?,
             flow: AirwallexPaymentRequestFlow?,
-            openId: String?
+            openId: String?,
+            languageCode: String? = null
         ): String {
             val url = getApiUrl(
                 baseUrl,
@@ -406,7 +412,7 @@ class AirwallexApiRepository : ApiRepository {
                 builder.appendQueryParameter("open_id", it)
             }
             builder.appendQueryParameter("os_type", "android")
-            builder.appendQueryParameter("lang", getLanguageCode())
+            builder.appendQueryParameter("lang", languageCode ?: getLanguageCode())
             return builder.build().toString()
         }
 
@@ -416,11 +422,16 @@ class AirwallexApiRepository : ApiRepository {
         }
 
         internal fun getLanguageCode(): String {
-            val locale = Locale.getDefault()
+            return getLanguageCode(Locale.getDefault())
+        }
+
+        internal fun getLanguageCode(locale: Locale): String {
             val code = when (locale.language) {
-                "zh" -> when (locale.script) {
-                    "Hans" -> "zh-Hans"
-                    "Hant" -> "zh-Hant"
+                "zh" -> when {
+                    locale.script.equals("Hans", ignoreCase = true) -> "zh-Hans"
+                    locale.script.equals("Hant", ignoreCase = true) -> "zh-Hant"
+                    locale.country.uppercase() in setOf("TW", "HK", "MO") -> "zh-Hant"
+                    locale.country.uppercase() in setOf("CN", "SG") -> "zh-Hans"
                     else -> "zh"
                 }
                 "pt" -> when (locale.country) {
@@ -428,7 +439,8 @@ class AirwallexApiRepository : ApiRepository {
                     "PT" -> "pt-PT"
                     else -> "pt"
                 }
-                else -> locale.language
+                "en", "de", "es", "fr", "ja", "ko", "ru", "th" -> locale.language
+                else -> "en"
             }
             return code
         }

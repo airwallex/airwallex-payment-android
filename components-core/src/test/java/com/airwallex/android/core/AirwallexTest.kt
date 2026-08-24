@@ -11,6 +11,7 @@ import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.Address
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.Billing
+import com.airwallex.android.core.model.Options
 import com.airwallex.android.core.model.Page
 import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.core.model.PaymentIntent
@@ -37,6 +38,7 @@ import io.mockk.slot
 import io.mockk.spyk
 import io.mockk.unmockkAll
 import io.mockk.verify
+import java.util.Locale
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -163,14 +165,17 @@ class AirwallexTest {
         // Set up session mocks - Only properties needed for our tests
         every { mockPaymentSession.paymentIntent } returns testPaymentIntent
         every { mockPaymentSession.hidePaymentConsents } returns false
+        every { mockPaymentSession.locale } returns null
 
         every { mockRecurringSession.clientSecret } returns testClientSecret
         every { mockRecurringSession.hidePaymentConsents } returns true
+        every { mockRecurringSession.locale } returns null
 
         every { mockRecurringWithIntentSession.paymentIntent } returns testPaymentIntent
         val clientSecret = testPaymentIntent.clientSecret ?: ""
         every { mockRecurringWithIntentSession.clientSecret } returns clientSecret
         every { mockRecurringWithIntentSession.hidePaymentConsents } returns false
+        every { mockRecurringWithIntentSession.locale } returns null
         every { mockPaymentSession.clientSecret } returns clientSecret
 
         // Create Airwallex instance with mocked dependencies
@@ -1782,7 +1787,7 @@ class AirwallexTest {
 
     // Tests for retrieveBanks
     @Test
-    fun `retrieveBanks calls paymentManager startOperation`() {
+    fun `retrieveBanks propagates locale language code`() {
         val params = mockk<com.airwallex.android.core.model.RetrieveBankParams> {
             every { clientSecret } returns testClientSecret
             every { paymentMethodType } returns "online_banking"
@@ -1790,19 +1795,25 @@ class AirwallexTest {
             every { transactionMode } returns null
             every { countryCode } returns "TH"
             every { openId } returns null
+            every { locale } returns Locale.forLanguageTag("zh-HK")
         }
         val listener = mockk<Airwallex.PaymentListener<com.airwallex.android.core.model.BankResponse>>(relaxed = true)
+        val options = slot<Options>()
 
         airwallex.retrieveBanks(params, listener)
 
         coVerify {
-            mockPaymentManager.startOperation(any(), eq(listener))
+            mockPaymentManager.startOperation(capture(options), eq(listener))
         }
+        assertEquals(
+            "zh-Hant",
+            (options.captured as Options.RetrieveBankOptions).languageCode
+        )
     }
 
     // Tests for retrievePaymentMethodTypeInfo
     @Test
-    fun `retrievePaymentMethodTypeInfo calls paymentManager startOperation`() {
+    fun `retrievePaymentMethodTypeInfo propagates locale language code`() {
         val params = mockk<com.airwallex.android.core.model.RetrievePaymentMethodTypeInfoParams> {
             every { clientSecret } returns testClientSecret
             every { paymentMethodType } returns "card"
@@ -1810,14 +1821,20 @@ class AirwallexTest {
             every { transactionMode } returns null
             every { countryCode } returns null
             every { openId } returns null
+            every { locale } returns Locale.FRANCE
         }
         val listener = mockk<Airwallex.PaymentListener<com.airwallex.android.core.model.PaymentMethodTypeInfo>>(relaxed = true)
+        val options = slot<Options>()
 
         airwallex.retrievePaymentMethodTypeInfo(params, listener)
 
         coVerify {
-            mockPaymentManager.startOperation(any(), eq(listener))
+            mockPaymentManager.startOperation(capture(options), eq(listener))
         }
+        assertEquals(
+            "fr",
+            (options.captured as Options.RetrievePaymentMethodTypeInfoOptions).languageCode
+        )
     }
 
     // Tests for confirmPaymentIntentWithDevice

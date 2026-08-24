@@ -1,8 +1,9 @@
 package com.airwallex.android.core
 
-import androidx.core.app.ComponentActivity
+import androidx.activity.ComponentActivity
 import com.airwallex.android.core.model.Device
 import java.math.BigDecimal
+import java.util.Locale
 
 /**
  * Model containing necessary information for handling card payment next actions,
@@ -30,5 +31,6 @@ class CardNextActionModel(
     val paymentIntentId: String?,
     val currency: String,
     val amount: BigDecimal,
-    val activityProvider: (() -> ComponentActivity)
+    val activityProvider: (() -> ComponentActivity),
+    val locale: Locale? = null
 )

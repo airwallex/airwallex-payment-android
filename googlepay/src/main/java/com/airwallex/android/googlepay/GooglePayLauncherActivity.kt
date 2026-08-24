@@ -1,5 +1,6 @@
 package com.airwallex.android.googlepay
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -9,7 +10,9 @@ import com.airwallex.android.core.extension.putIfNotNull
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.AnalyticsLogger.Field
+import com.airwallex.android.ui.AirwallexLocalePrefs
 import com.airwallex.android.ui.extension.getExtraArgsOrNull
+import com.airwallex.android.ui.extension.localizedForAirwallex
 import com.airwallex.risk.AirwallexRisk
 import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.wallet.PaymentData
@@ -31,6 +34,11 @@ class GooglePayLauncherActivity : ComponentActivity() {
 
     private val googlePayLauncher = registerForActivityResult(GetPaymentDataResult()) {
         onGooglePayResult(it)
+    }
+
+    override fun attachBaseContext(newBase: Context) {
+        val locale = AirwallexLocalePrefs.getLocale(newBase)
+        super.attachBaseContext(newBase.localizedForAirwallex(locale))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

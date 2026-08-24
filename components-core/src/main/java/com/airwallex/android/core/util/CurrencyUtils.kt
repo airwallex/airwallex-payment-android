@@ -57,9 +57,10 @@ object CurrencyUtils {
 
     fun formatPrice(
         currency: String,
-        amount: BigDecimal
+        amount: BigDecimal,
+        locale: Locale = Locale.getDefault()
     ): String {
-        val currencyFormat = NumberFormat.getCurrencyInstance()
+        val currencyFormat = NumberFormat.getCurrencyInstance(locale)
         val decimalFormatSymbols = (currencyFormat as DecimalFormat)
             .decimalFormatSymbols
         var symbol = getCurrencySymbol(currency)

@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.semantics
@@ -25,9 +26,9 @@ import com.airwallex.android.core.model.PaymentConsent
 import com.airwallex.android.ui.composables.AirwallexColor
 import com.airwallex.android.ui.composables.AirwallexTypography
 import com.airwallex.android.ui.composables.StandardText
+import com.airwallex.android.ui.extension.airwallexLocale
 import com.airwallex.android.view.composables.common.CardBrandIcon
 import com.airwallex.android.view.util.resolvedBrandName
-import java.util.Locale
 
 @Composable
 internal fun ConsentItem(
@@ -35,6 +36,7 @@ internal fun ConsentItem(
     onSelectCard: (PaymentConsent) -> Unit,
     onDeleteCard: (PaymentConsent) -> Unit,
 ) {
+    val locale = LocalContext.current.airwallexLocale()
     val method = consent.paymentMethod ?: return
     val card = method.card ?: return
     val brandName = card.resolvedBrandName()
@@ -71,7 +73,7 @@ internal fun ConsentItem(
                     brandName?.replaceFirstChar {
                         if (it.isLowerCase()) {
                             it.titlecase(
-                                Locale.getDefault()
+                                locale
                             )
                         } else it.toString()
                     },

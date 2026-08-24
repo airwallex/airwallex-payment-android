@@ -137,18 +137,21 @@ class SchemaPaymentViewModelTest {
         every { mockPaymentSession.currency } returns testCurrency
         every { mockPaymentSession.countryCode } returns testCountryCode
         every { mockPaymentSession.paymentIntent } returns mockPaymentIntent
+        every { mockPaymentSession.locale } returns null
 
         // Setup mock recurring session
         every { mockRecurringSession.customerId } returns testCustomerId
         every { mockRecurringSession.clientSecret } returns testClientSecret
         every { mockRecurringSession.currency } returns testCurrency
         every { mockRecurringSession.countryCode } returns testCountryCode
+        every { mockRecurringSession.locale } returns null
 
         // Setup mock recurring with intent session
         every { mockRecurringWithIntentSession.customerId } returns testCustomerId
         every { mockRecurringWithIntentSession.currency } returns testCurrency
         every { mockRecurringWithIntentSession.countryCode } returns testCountryCode
         every { mockRecurringWithIntentSession.paymentIntent } returns mockPaymentIntent
+        every { mockRecurringWithIntentSession.locale } returns null
 
         viewModel = createViewModel()
     }
@@ -169,6 +172,13 @@ class SchemaPaymentViewModelTest {
         )
     }
 
+    @Suppress("UNCHECKED_CAST")
+    private fun additionalParams(viewModel: SchemaPaymentViewModel): MutableMap<String, String> {
+        val field = SchemaPaymentViewModel::class.java.getDeclaredField("additionalParams")
+        field.isAccessible = true
+        return field.get(viewModel) as MutableMap<String, String>
+    }
+
     // Helper method to create ViewModel based on transaction mode
     private fun mockViewModel(
         transactionMode: TransactionMode = TransactionMode.ONE_OFF
@@ -184,6 +194,30 @@ class SchemaPaymentViewModelTest {
     fun `test ctaRes returns pay_now for AirwallexPaymentSession`() {
         val testViewModel = mockViewModel(transactionMode = TransactionMode.ONE_OFF)
         assertEquals(R.string.airwallex_pay_now, testViewModel.ctaRes)
+    }
+
+    @Test
+    fun `updateSession retains schema caches for same session reference`() {
+        val paymentMethodType = mockk<AvailablePaymentMethodType>()
+        val schemaData = SchemaPaymentViewModel.SchemaData()
+        viewModel.schemaDataCache[paymentMethodType] = schemaData
+        additionalParams(viewModel)["country_code"] = testCountryCode
+
+        viewModel.updateSession(mockPaymentSession)
+
+        assertEquals(schemaData, viewModel.schemaDataCache[paymentMethodType])
+        assertEquals(testCountryCode, additionalParams(viewModel)["country_code"])
+    }
+
+    @Test
+    fun `updateSession clears schema caches for replacement session`() {
+        viewModel.schemaDataCache[mockk()] = SchemaPaymentViewModel.SchemaData()
+        additionalParams(viewModel)["country_code"] = testCountryCode
+
+        viewModel.updateSession(mockk<AirwallexPaymentSession>(relaxed = true))
+
+        assertTrue(viewModel.schemaDataCache.isEmpty())
+        assertTrue(additionalParams(viewModel).isEmpty())
     }
 
     @Test
