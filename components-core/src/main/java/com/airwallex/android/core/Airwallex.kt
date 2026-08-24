@@ -72,32 +72,28 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.cancellation.CancellationException
 
 @Suppress("LongMethod, LargeClass, LongParameterList")
-class Airwallex internal constructor(
+class Airwallex @Suppress("LongParameterList") internal constructor(
     private val fragment: Fragment?,
     var activity: ComponentActivity,
     private val paymentManager: PaymentManager,
     private val applicationContext: Context,
-) {
-
-    private val checkoutRouter = AirwallexSessionCheckoutRouter()
-
+    private val checkoutRouter: AirwallexSessionCheckoutRouter = AirwallexSessionCheckoutRouter(),
     private val confirmPaymentService: ConfirmPaymentService = DefaultConfirmPaymentService(
         paymentManager = paymentManager,
         fragment = fragment,
         activityProvider = { activity },
         applicationContext = applicationContext,
-    )
-
-    private val googlePayCheckoutDelegate = GooglePayCheckoutDelegate(
+    ),
+    private val googlePayCheckoutDelegate: GooglePayCheckoutDelegate = GooglePayCheckoutDelegate(
         fragment = fragment,
         activityProvider = { activity },
         applicationContext = applicationContext,
-    )
-
-    private val unifiedCheckoutExecutor = UnifiedCheckoutExecutor(
+    ),
+    private val unifiedCheckoutExecutor: UnifiedCheckoutExecutor = UnifiedCheckoutExecutor(
         confirmPaymentService = confirmPaymentService,
         googlePayDelegate = googlePayCheckoutDelegate,
-    )
+    ),
+) {
 
     interface PaymentListener<T> {
         fun onSuccess(response: T)
