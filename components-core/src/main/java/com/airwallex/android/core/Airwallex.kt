@@ -18,7 +18,6 @@ import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.exception.InvalidParamsException
 import com.airwallex.android.core.extension.confirmGooglePayIntent
 import com.airwallex.android.core.extension.convertToLegacySession
-import com.airwallex.android.core.extension.convertToSession
 import com.airwallex.android.core.extension.createCardPaymentMethod
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
@@ -85,6 +84,8 @@ class Airwallex internal constructor(
     private val paymentManager: PaymentManager,
     private val applicationContext: Context,
 ) {
+
+    private val checkoutRouter = AirwallexSessionCheckoutRouter()
 
     interface PaymentListener<T> {
         fun onSuccess(response: T)
@@ -1022,16 +1023,8 @@ class Airwallex internal constructor(
         listener: PaymentResultListener,
         saveCard: Boolean = false,
     ) {
-        // PUBLIC ENTRY POINT: Consolidates session routing logic
-        // DECISION LOGIC: Use old flow if:
-        // 1. session is AirwallexRecurringSession (no unified flow support yet)
-        // 2. OR paymentMethod.type is NOT card/googlepay (LPMs use legacy flow)
-        // Otherwise: use new unified flow with Session
         val loggingListener = wrapListenerWithLogging(listener, paymentMethod.type ?: "unknown")
         setupAnalyticsLoggerAsApiIfNotSet(session)
-        val isCardOrGooglePay = paymentMethod.type == PaymentMethodType.GOOGLEPAY.value ||
-                paymentMethod.type == PaymentMethodType.CARD.value
-        val useOldFlow = session is AirwallexRecurringSession || !isCardOrGooglePay
 
         // Low-level billing-field validation for the new-card flow only.
         // Google Pay billing is configured via GooglePayOptions and validated by the
@@ -1048,62 +1041,27 @@ class Airwallex internal constructor(
         // Log payment_launched for API integration
         logPaymentLaunchedIfNeeded(paymentConsent?.id, paymentMethod.type)
 
-        // Saved-card via API: capture CVC through the card provider before continuing if PAN.
-        if (isCheckoutApiWithCvc(paymentMethod, paymentConsent)) {
-            handleCheckoutApiWithCvc(paymentMethod, session, paymentConsent, loggingListener)
-            return
-        }
-
-        if (useOldFlow) {
-            checkoutOldFlowRouting(
-                session,
-                paymentMethod,
-                cvc,
-                additionalInfo,
-                flow,
-                loggingListener
-            )
-            return
-        }
-
-        // NEW FLOW: Use unified Session flow for card/googlepay
-        val unifiedSession = toUnifiedSession(session)
-        if (unifiedSession == null) {
-            loggingListener.onCompleted(
-                AirwallexPaymentStatus.Failure(
-                    AirwallexCheckoutException(message = "Unknown session type: ${session.javaClass}")
-                )
-            )
-            return
-        }
-        checkoutUnified(
-            unifiedSession,
-            paymentMethod,
-            cvc,
-            saveCard,
-            paymentConsent,
-            loggingListener
+        val route = checkoutRouter.route(
+            session = session,
+            paymentMethod = paymentMethod,
+            paymentConsent = paymentConsent,
+            launchType = AnalyticsLogger.getLaunchType(),
+            isAirwallexUIActivity = isAirwallexUIActivity,
         )
-    }
-
-    private fun toUnifiedSession(session: AirwallexSession): Session? {
-        return session as? Session
-            ?: when (session) {
-                is AirwallexPaymentSession -> session.convertToSession()
-                is AirwallexRecurringWithIntentSession -> session.convertToSession()
-                else -> null
-            }
-    }
-
-    private fun isCheckoutApiWithCvc(
-        paymentMethod: PaymentMethod,
-        paymentConsent: PaymentConsent?,
-    ): Boolean {
-        val isFromApi = !isAirwallexUIActivity &&
-                AnalyticsLogger.getLaunchType() == AnalyticsLogger.LaunchType.API
-        return paymentConsent != null &&
-                paymentMethod.card?.numberType == PaymentMethod.Card.NumberType.PAN &&
-                isFromApi
+        when (route) {
+            AirwallexSessionCheckoutRoute.CvcRequired ->
+                handleCheckoutApiWithCvc(paymentMethod, session, paymentConsent, loggingListener)
+            AirwallexSessionCheckoutRoute.OldFlow ->
+                checkoutOldFlowRouting(session, paymentMethod, cvc, additionalInfo, flow, loggingListener)
+            is AirwallexSessionCheckoutRoute.NewFlow ->
+                checkoutUnified(route.unifiedSession, paymentMethod, cvc, saveCard, paymentConsent, loggingListener)
+            is AirwallexSessionCheckoutRoute.UnknownSession ->
+                loggingListener.onCompleted(
+                    AirwallexPaymentStatus.Failure(
+                        AirwallexCheckoutException(message = "Unknown session type: ${route.session.javaClass}")
+                    )
+                )
+        }
     }
 
     private fun handleCheckoutApiWithCvc(
