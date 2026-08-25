@@ -3,7 +3,7 @@
 # CardNextActionModel
 
 [androidJvm]\
-constructor(paymentManager: [PaymentManager](../-payment-manager/index.md), clientSecret: [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html), device: [Device](../../com.airwallex.android.core.model/-device/index.md)?, paymentIntentId: [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html)?, currency: [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html), amount: [BigDecimal](https://developer.android.com/reference/kotlin/java/math/BigDecimal.html), activityProvider: () -&gt; [ComponentActivity](https://developer.android.com/reference/kotlin/androidx/core/app/ComponentActivity.html))
+constructor(paymentManager: [PaymentManager](../-payment-manager/index.md), clientSecret: [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html), device: [Device](../../com.airwallex.android.core.model/-device/index.md)?, paymentIntentId: [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html)?, currency: [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html), amount: [BigDecimal](https://developer.android.com/reference/kotlin/java/math/BigDecimal.html), activityProvider: () -&gt; [ComponentActivity](https://developer.android.com/reference/kotlin/androidx/activity/ComponentActivity.html), locale: [Locale](https://developer.android.com/reference/kotlin/java/util/Locale.html)? = null)
 
 #### Parameters
 

@@ -26,7 +26,7 @@ ViewModel for managing payment operations data. Handles fetching and storing pay
 | Name | Summary |
 |---|---|
 | [airwallex](index.md#927325292%2FProperties%2F1201863744) | [androidJvm]<br>val [airwallex](index.md#927325292%2FProperties%2F1201863744): [Airwallex](../../../../components-core/components-core/com.airwallex.android.core/-airwallex/index.md) |
-| [ctaRes](cta-res.md) | [androidJvm]<br>@[StringRes](https://developer.android.com/reference/kotlin/androidx/annotation/StringRes.html)<br>val [ctaRes](cta-res.md): [Int](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html) |
+| [ctaRes](cta-res.md) | [androidJvm]<br>@get:[StringRes](https://developer.android.com/reference/kotlin/androidx/annotation/StringRes.html)<br>val [ctaRes](cta-res.md): [Int](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html) |
 | [paymentResult](payment-result.md) | [androidJvm]<br>val [paymentResult](payment-result.md): Flow&lt;[AirwallexPaymentStatus](../../../../components-core/components-core/com.airwallex.android.core/-airwallex-payment-status/index.md)&gt; |
 | [transactionMode](index.md#621021522%2FProperties%2F1201863744) | [androidJvm]<br>val [transactionMode](index.md#621021522%2FProperties%2F1201863744): [TransactionMode](../../../../components-core/components-core/com.airwallex.android.core.model/-transaction-mode/index.md) |
 
@@ -48,3 +48,4 @@ ViewModel for managing payment operations data. Handles fetching and storing pay
 | [trackPaymentCancelled](index.md#1995500221%2FFunctions%2F1201863744) | [androidJvm]<br>fun [trackPaymentCancelled](index.md#1995500221%2FFunctions%2F1201863744)() |
 | [trackScreenViewed](index.md#-2070256920%2FFunctions%2F1201863744) | [androidJvm]<br>fun [trackScreenViewed](index.md#-2070256920%2FFunctions%2F1201863744)(eventName: [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html), params: [Map](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-map/index.html)&lt;[String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html), [Any](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html)&gt;) |
 | [updateActivity](index.md#1909542689%2FFunctions%2F1201863744) | [androidJvm]<br>fun [updateActivity](index.md#1909542689%2FFunctions%2F1201863744)(newActivity: [ComponentActivity](https://developer.android.com/reference/kotlin/androidx/activity/ComponentActivity.html)) |
+| [updateSession](index.md#513551985%2FFunctions%2F1201863744) | [androidJvm]<br>fun [updateSession](index.md#513551985%2FFunctions%2F1201863744)(newSession: [AirwallexSession](../../../../components-core/components-core/com.airwallex.android.core/-airwallex-session/index.md)) |

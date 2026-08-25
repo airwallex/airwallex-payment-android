@@ -3,7 +3,7 @@
 # activityProvider
 
 [androidJvm]\
-val [activityProvider](activity-provider.md): () -&gt; [ComponentActivity](https://developer.android.com/reference/kotlin/androidx/core/app/ComponentActivity.html)
+val [activityProvider](activity-provider.md): () -&gt; [ComponentActivity](https://developer.android.com/reference/kotlin/androidx/activity/ComponentActivity.html)
 
 #### Parameters
 

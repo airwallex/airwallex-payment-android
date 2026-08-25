@@ -16,6 +16,7 @@ data class [Args](index.md) : [AirwallexActivityLaunch.Args](../../../../../ui-c
 | Name | Summary |
 |---|---|
 | [cvc](cvc.md) | [androidJvm]<br>val [cvc](cvc.md): [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html)? |
+| [localeTag](locale-tag.md) | [androidJvm]<br>open override val [localeTag](locale-tag.md): [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html)? |
 | [paymentConsent](payment-consent.md) | [androidJvm]<br>val [paymentConsent](payment-consent.md): [PaymentConsent](../../../../../components-core/components-core/com.airwallex.android.core.model/-payment-consent/index.md)? |
 | [paymentMethod](payment-method.md) | [androidJvm]<br>val [paymentMethod](payment-method.md): [PaymentMethod](../../../../../components-core/components-core/com.airwallex.android.core.model/-payment-method/index.md) |
 | [session](session.md) | [androidJvm]<br>val [session](session.md): [AirwallexSession](../../../../../components-core/components-core/com.airwallex.android.core/-airwallex-session/index.md) |

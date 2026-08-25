@@ -15,5 +15,5 @@ object [CurrencyUtils](index.md)
 
 | Name | Summary |
 |---|---|
-| [formatPrice](format-price.md) | [androidJvm]<br>fun [formatPrice](format-price.md)(currency: [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html), amount: [BigDecimal](https://developer.android.com/reference/kotlin/java/math/BigDecimal.html)): [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html) |
+| [formatPrice](format-price.md) | [androidJvm]<br>fun [formatPrice](format-price.md)(currency: [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html), amount: [BigDecimal](https://developer.android.com/reference/kotlin/java/math/BigDecimal.html), locale: [Locale](https://developer.android.com/reference/kotlin/java/util/Locale.html) = Locale.getDefault()): [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html) |
 | [getCurrencySymbol](get-currency-symbol.md) | [androidJvm]<br>@[VisibleForTesting](https://developer.android.com/reference/kotlin/androidx/annotation/VisibleForTesting.html)<br>fun [getCurrencySymbol](get-currency-symbol.md)(currencyCode: [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html)?): [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html) |

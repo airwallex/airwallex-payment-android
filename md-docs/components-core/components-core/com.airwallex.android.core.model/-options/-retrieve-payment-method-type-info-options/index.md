@@ -3,13 +3,13 @@
 # RetrievePaymentMethodTypeInfoOptions
 
 [androidJvm]\
-data class [RetrievePaymentMethodTypeInfoOptions](index.md)(val clientSecret: [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html), paymentMethodType: [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html), flow: [AirwallexPaymentRequestFlow](../../-airwallex-payment-request-flow/index.md)?, transactionMode: [TransactionMode](../../-transaction-mode/index.md)?, countryCode: [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html)?, openId: [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html)?) : [Options](../index.md)
+data class [RetrievePaymentMethodTypeInfoOptions](index.md)(val clientSecret: [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html), paymentMethodType: [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html), flow: [AirwallexPaymentRequestFlow](../../-airwallex-payment-request-flow/index.md)?, transactionMode: [TransactionMode](../../-transaction-mode/index.md)?, countryCode: [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html)?, openId: [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html)?, languageCode: [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html)? = null) : [Options](../index.md)
 
 ## Constructors
 
 | | |
 |---|---|
-| [RetrievePaymentMethodTypeInfoOptions](-retrieve-payment-method-type-info-options.md) | [androidJvm]<br>constructor(clientSecret: [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html), paymentMethodType: [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html), flow: [AirwallexPaymentRequestFlow](../../-airwallex-payment-request-flow/index.md)?, transactionMode: [TransactionMode](../../-transaction-mode/index.md)?, countryCode: [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html)?, openId: [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html)?) |
+| [RetrievePaymentMethodTypeInfoOptions](-retrieve-payment-method-type-info-options.md) | [androidJvm]<br>constructor(clientSecret: [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html), paymentMethodType: [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html), flow: [AirwallexPaymentRequestFlow](../../-airwallex-payment-request-flow/index.md)?, transactionMode: [TransactionMode](../../-transaction-mode/index.md)?, countryCode: [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html)?, openId: [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html)?, languageCode: [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html)? = null) |
 
 ## Properties
 

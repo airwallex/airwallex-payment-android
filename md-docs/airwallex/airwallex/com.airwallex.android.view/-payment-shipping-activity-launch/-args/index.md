@@ -11,6 +11,12 @@ data class [Args](index.md) : [AirwallexActivityLaunch.Args](../../../../../ui-c
 |---|---|
 | [Builder](-builder/index.md) | [androidJvm]<br>class [Builder](-builder/index.md) : [ObjectBuilder](../../../../../components-core/components-core/com.airwallex.android.core.model/-object-builder/index.md)&lt;[PaymentShippingActivityLaunch.Args](index.md)&gt; |
 
+## Properties
+
+| Name | Summary |
+|---|---|
+| [localeTag](index.md#-1125560158%2FProperties%2F1201863744) | [androidJvm]<br>open val [localeTag](index.md#-1125560158%2FProperties%2F1201863744): [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html)? |
+
 ## Functions
 
 | Name | Summary |

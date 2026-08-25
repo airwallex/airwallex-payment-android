@@ -11,6 +11,12 @@ interface [Args](index.md) : [Parcelable](https://developer.android.com/referenc
 |---|---|
 | [Companion](-companion/index.md) | [androidJvm]<br>object [Companion](-companion/index.md) |
 
+## Properties
+
+| Name | Summary |
+|---|---|
+| [localeTag](locale-tag.md) | [androidJvm]<br>open val [localeTag](locale-tag.md): [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html)? |
+
 ## Functions
 
 | Name | Summary |

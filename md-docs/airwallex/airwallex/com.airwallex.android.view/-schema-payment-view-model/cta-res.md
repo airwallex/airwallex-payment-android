@@ -4,6 +4,6 @@
 
 [androidJvm]\
 
-@[StringRes](https://developer.android.com/reference/kotlin/androidx/annotation/StringRes.html)
+@get:[StringRes](https://developer.android.com/reference/kotlin/androidx/annotation/StringRes.html)
 
 val [ctaRes](cta-res.md): [Int](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html)

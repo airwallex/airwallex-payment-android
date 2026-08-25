@@ -10,6 +10,7 @@ data class [Args](index.md) : [AirwallexActivityLaunch.Args](../../../../../ui-c
 | Name | Summary |
 |---|---|
 | [body](body.md) | [androidJvm]<br>val [body](body.md): [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html) |
+| [localeTag](locale-tag.md) | [androidJvm]<br>open override val [localeTag](locale-tag.md): [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html)? = null |
 | [options](options.md) | [androidJvm]<br>val [options](options.md): [Options.ContinuePaymentIntentOptions](../../../../../components-core/components-core/com.airwallex.android.core.model/-options/-continue-payment-intent-options/index.md) |
 | [url](url.md) | [androidJvm]<br>val [url](url.md): [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html) |
 

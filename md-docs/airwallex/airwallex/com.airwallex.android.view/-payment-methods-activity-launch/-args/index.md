@@ -16,6 +16,7 @@ data class [Args](index.md) : [AirwallexActivityLaunch.Args](../../../../../ui-c
 | Name | Summary |
 |---|---|
 | [configuration](configuration.md) | [androidJvm]<br>val [configuration](configuration.md): [PaymentElementConfiguration.PaymentSheet](../../../com.airwallex.android.view.composables/-payment-element-configuration/-payment-sheet/index.md) |
+| [localeTag](locale-tag.md) | [androidJvm]<br>open override val [localeTag](locale-tag.md): [String](https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html)? |
 | [session](session.md) | [androidJvm]<br>val [session](session.md): [AirwallexSession](../../../../../components-core/components-core/com.airwallex.android.core/-airwallex-session/index.md) |
 
 ## Functions
