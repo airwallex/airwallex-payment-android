@@ -96,6 +96,27 @@ For testing, you can use the [test card numbers](https://www.airwallex.com/docs/
 - Android API level 21 (Lollipop) and above
 - Approximate SDK size: ~3.1 MB
 
+## Localization
+
+By default, Airwallex UI follows the locale of the host Android Activity. To enforce a
+locale for one payment session without changing the host application locale, configure
+the session:
+
+```kotlin
+val session = Session.Builder(
+    paymentIntent = paymentIntent,
+    countryCode = "FR",
+)
+    .setLocale(Locale.FRANCE)
+    .build()
+```
+
+The locale applies to Airwallex-owned native UI. Create a new session to change locale. Google Pay, external
+browsers, payment apps, and issuer-hosted 3DS content control their own language.
+
+Locale values must be structurally valid. For a language tag, use
+`Locale.forLanguageTag("fr-FR")` rather than `Locale("fr-FR")`.
+
 # UI Integration - Hosted Payment Page (HPP)
 The Airwallex Android SDK provides prebuilt UI components to simplify payment integration in your Android application.
 

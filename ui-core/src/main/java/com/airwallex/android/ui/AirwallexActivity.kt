@@ -1,5 +1,6 @@
 package com.airwallex.android.ui
 
+import android.content.Context
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.ViewStub
@@ -13,6 +14,7 @@ import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.TrackablePage
 import com.airwallex.android.ui.databinding.ActivityAirwallexBinding
+import com.airwallex.android.ui.extension.localizedForAirwallex
 
 abstract class AirwallexActivity : AppCompatActivity(), AirwallexInternalActivity {
 
@@ -81,6 +83,14 @@ abstract class AirwallexActivity : AppCompatActivity(), AirwallexInternalActivit
     }
 
     open fun addObserver() = Unit
+
+    override fun attachBaseContext(newBase: Context) {
+        // Apply the locale while attaching the base context, before AppCompat or the
+        // Activity accesses resources. Applying an override configuration in onCreate()
+        // can be too late and cause "getResources() or getAssets() has already been called".
+        val locale = AirwallexLocalePrefs.getLocale(newBase)
+        super.attachBaseContext(newBase.localizedForAirwallex(locale))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         restoreLaunchBundleIfNeeded(savedInstanceState)

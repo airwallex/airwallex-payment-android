@@ -17,7 +17,7 @@
         <attr name="actionLabel" format="string"/>
     </declare-styleable>
 
-    <declare-styleable name="DropdownSelectView">
+    <declare-styleable name="DropdownPickerView">
         <attr name="titleContent" format="string" />
     </declare-styleable>
 </resources>

@@ -50,6 +50,9 @@ internal class AddPaymentMethodActivityLaunch :
                 ?: recurringSession
                 ?: error("No session provided in Args")
 
+        override val localeTag: String?
+            get() = session.locale?.toLanguageTag()
+
         class Builder : ObjectBuilder<Args> {
             private var parcelableSession: ParcelableSession? = null
             @Suppress("DEPRECATION")

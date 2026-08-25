@@ -27,7 +27,8 @@ class ParcelableSession(
     val paymentMethods: List<String>?,
     val autoCapture: Boolean,
     val hidePaymentConsents: Boolean,
-    val requiredBillingContactFields: Set<RequiredBillingContactField>?
+    val requiredBillingContactFields: Set<RequiredBillingContactField>?,
+    val localeLanguageTag: String? = null
 ) : Parcelable {
 
     @Suppress("DEPRECATION")
@@ -51,7 +52,8 @@ class ParcelableSession(
             paymentMethods = paymentMethods,
             autoCapture = autoCapture,
             hidePaymentConsents = hidePaymentConsents,
-            requiredBillingContactFields = requiredBillingContactFields
+            requiredBillingContactFields = requiredBillingContactFields,
+            locale = localeLanguageTag?.let(java.util.Locale::forLanguageTag)
         ).also {
             it.paymentIntentProvider = provider
         }

@@ -1,5 +1,6 @@
 package com.airwallex.android.googlepay
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -9,10 +10,11 @@ import com.airwallex.android.core.extension.putIfNotNull
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.log.AnalyticsLogger.Field
+import com.airwallex.android.ui.AirwallexLocalePrefs
 import com.airwallex.android.ui.extension.getExtraArgsOrNull
+import com.airwallex.android.ui.extension.localizedForAirwallex
 import com.airwallex.risk.AirwallexRisk
 import com.google.android.gms.common.api.CommonStatusCodes
-import com.google.android.gms.wallet.AutoResolveHelper
 import com.google.android.gms.wallet.PaymentData
 import com.google.android.gms.wallet.contract.ApiTaskResult
 import com.google.android.gms.wallet.contract.TaskResultContracts.GetPaymentDataResult
@@ -34,6 +36,11 @@ class GooglePayLauncherActivity : ComponentActivity() {
         onGooglePayResult(it)
     }
 
+    override fun attachBaseContext(newBase: Context) {
+        val locale = AirwallexLocalePrefs.getLocale(newBase)
+        super.attachBaseContext(newBase.localizedForAirwallex(locale))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (args == null) {
@@ -52,7 +59,6 @@ class GooglePayLauncherActivity : ComponentActivity() {
         task.addOnCompleteListener(googlePayLauncher::launch)
     }
 
-    @Suppress("LongMethod")
     private fun onGooglePayResult(taskResult: ApiTaskResult<PaymentData>) {
         fun logError(exception: AirwallexCheckoutException) {
             AnalyticsLogger.logError(
@@ -91,19 +97,12 @@ class GooglePayLauncherActivity : ComponentActivity() {
                 GooglePayActivityLaunch.Result.Cancel
             )
 
-            AutoResolveHelper.RESULT_ERROR -> {
-                val status = taskResult.status
-                val statusMessage = status.statusMessage.orEmpty()
-                val statusCode = status.statusCode.toString()
-                val exception =
-                    AirwallexCheckoutException(message = "Google Pay failed with error $statusCode: $statusMessage")
-                logError(exception)
-                finishWithResult(GooglePayActivityLaunch.Result.Failure(exception))
-            }
-
             else -> {
-                val exception =
-                    AirwallexCheckoutException(message = "Google Pay returned an unexpected result code.")
+                val status = taskResult.status
+                val message =
+                    "Google Pay failed with error ${status.statusCode}: ${status.statusMessage.orEmpty()}"
+                AirwallexLogger.error(message)
+                val exception = AirwallexCheckoutException(message = message)
                 logError(exception)
                 finishWithResult(GooglePayActivityLaunch.Result.Failure(exception))
             }
@@ -111,7 +110,7 @@ class GooglePayLauncherActivity : ComponentActivity() {
     }
 
     private fun finishWithResult(result: GooglePayActivityLaunch.Result) {
-        AirwallexLogger.info("GooglePayLauncherActivity finishWithResult")
+        AirwallexLogger.info("GooglePayLauncherActivity finishWithResult: ${result::class.simpleName}")
         setResult(
             RESULT_OK,
             Intent()

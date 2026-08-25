@@ -359,6 +359,7 @@ abstract class BaseViewModel : ViewModel() {
         .setHidePaymentConsents(false)
         .setPaymentMethods(paymentMethods)
         .setShipping(shipping)
+        .setLocale(Settings.resolveSdkLocale())
         .build()
 
     /**
@@ -387,6 +388,7 @@ abstract class BaseViewModel : ViewModel() {
         .setGooglePayOptions(googlePayOptions)
         .setReturnUrl(returnUrl.fullUrl)
         .setPaymentMethods(paymentMethods)
+        .setLocale(Settings.resolveSdkLocale())
         .build()
 
     /**
@@ -411,6 +413,7 @@ abstract class BaseViewModel : ViewModel() {
         .setGooglePayOptions(googlePayOptions)
         .setPaymentMethods(paymentMethods)
         .setShipping(shipping)
+        .setLocale(Settings.resolveSdkLocale())
         .build()
 
     /**
@@ -440,6 +443,7 @@ abstract class BaseViewModel : ViewModel() {
         .setHidePaymentConsents(false)
         .setPaymentMethods(paymentMethods)
         .setShipping(shipping)
+        .setLocale(Settings.resolveSdkLocale())
         .build()
 
     /**
@@ -470,6 +474,7 @@ abstract class BaseViewModel : ViewModel() {
         .setGooglePayOptions(googlePayOptions)
         .setPaymentMethods(paymentMethods)
         .setShipping(shipping)
+        .setLocale(Settings.resolveSdkLocale())
         .build()
 
 
@@ -519,6 +524,7 @@ abstract class BaseViewModel : ViewModel() {
             .setPaymentMethods(paymentMethods)
             .setShipping(shipping)
             .setPaymentConsentOptions(paymentConsentOptions)
+            .setLocale(Settings.resolveSdkLocale())
             .build()
     }
 
@@ -571,6 +577,7 @@ abstract class BaseViewModel : ViewModel() {
             .setPaymentMethods(paymentMethods)
             .setShipping(shipping)
             .setPaymentConsentOptions(paymentConsentOptions)
+            .setLocale(Settings.resolveSdkLocale())
             .build()
     }
 

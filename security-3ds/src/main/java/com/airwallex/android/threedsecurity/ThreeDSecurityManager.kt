@@ -16,6 +16,7 @@ import com.airwallex.android.threedsecurity.exception.ThreeDSException
 import com.airwallex.android.threedsecurity.exception.WebViewConnectionException
 import com.airwallex.android.ui.AirwallexActivity
 import com.airwallex.android.ui.AirwallexWebView
+import com.airwallex.android.ui.extension.airwallexLocale
 import com.airwallex.android.ui.destroyWebView
 import java.lang.StringBuilder
 import java.net.URLEncoder
@@ -75,7 +76,11 @@ object ThreeDSecurityManager {
                             .setAcsResponse(payload)
                             .setReturnUrl(AirwallexPlugins.environment.threeDsReturnUrl())
                             .build()
-                    )
+                    ),
+                    localeTag = (
+                        cardNextActionModel.locale
+                            ?: cardNextActionModel.activityProvider().airwallexLocale()
+                        ).toLanguageTag()
                 )
             ) { _, result ->
                 handleThreeDSActivityResult(
@@ -129,7 +134,12 @@ object ThreeDSecurityManager {
                                             ThreeDSecurityActivityLaunch.Args(
                                                 url = url,
                                                 body = postResult.toString(),
-                                                options = options
+                                                options = options,
+                                                localeTag = (
+                                                    cardNextActionModel.locale
+                                                        ?: cardNextActionModel.activityProvider()
+                                                            .airwallexLocale()
+                                                    ).toLanguageTag()
                                             )
                                         ) { _, _ ->
                                             // The result will be handled in onWebViewConfirmation callback

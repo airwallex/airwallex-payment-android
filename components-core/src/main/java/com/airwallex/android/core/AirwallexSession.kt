@@ -2,6 +2,7 @@ package com.airwallex.android.core
 
 import com.airwallex.android.core.model.Shipping
 import java.math.BigDecimal
+import java.util.Locale
 
 abstract class AirwallexSession {
 
@@ -87,6 +88,13 @@ abstract class AirwallexSession {
      * See [resolvedRequiredBillingContactFields] for the effective set.
      */
     open val requiredBillingContactFields: Set<RequiredBillingContactField>?
+        get() = null
+
+    /**
+     * Locale used by Airwallex-owned UI.
+     * `null` means the SDK inherits the host application's current locale.
+     */
+    open val locale: Locale?
         get() = null
 }
 

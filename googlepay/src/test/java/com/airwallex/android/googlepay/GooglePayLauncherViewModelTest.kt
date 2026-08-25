@@ -26,7 +26,9 @@ class GooglePayLauncherViewModelTest {
 
         val application = mockk<Application>()
         @Suppress("DEPRECATION")
-        val session = mockk<AirwallexPaymentSession>(relaxed = true)
+        val session = mockk<AirwallexPaymentSession>(relaxed = true) {
+            every { locale } returns null
+        }
         val googlePayOptions = GooglePayOptions()
         val paymentMethodType = mockk<AvailablePaymentMethodType>(relaxed = true)
         val mockClient = mockk<PaymentsClient>()

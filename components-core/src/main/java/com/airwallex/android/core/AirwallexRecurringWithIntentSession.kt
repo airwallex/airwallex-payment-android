@@ -10,6 +10,7 @@ import com.airwallex.android.core.model.Shipping
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
+import java.util.Locale
 
 /**
  * For recurring payment (need create payment intent)
@@ -125,7 +126,13 @@ class AirwallexRecurringWithIntentSession internal constructor(
      * preserves legacy behavior (derived from [isBillingInformationRequired] /
      * [isEmailRequired]).
      */
-    override val requiredBillingContactFields: Set<RequiredBillingContactField>? = null
+    override val requiredBillingContactFields: Set<RequiredBillingContactField>? = null,
+
+    /**
+     * Locale used by Airwallex-owned UI.
+     * `null` inherits the host application's current locale.
+     */
+    override val locale: Locale? = null
 
 ) : AirwallexSession(), PaymentIntentResolvableSession, Parcelable {
 
@@ -217,6 +224,7 @@ class AirwallexRecurringWithIntentSession internal constructor(
         private var googlePayOptions: GooglePayOptions? = null
         private var shipping: Shipping? = null
         private var requiredBillingContactFields: Set<RequiredBillingContactField>? = null
+        private var locale: Locale? = null
 
         @Deprecated(
             message = "Use setRequiredBillingContactFields(...) and include " +
@@ -285,10 +293,15 @@ class AirwallexRecurringWithIntentSession internal constructor(
             this.requiredBillingContactFields = fields
         }
 
+        fun setLocale(locale: Locale?): Builder = apply {
+            this.locale = locale
+        }
+
         override fun build(): AirwallexRecurringWithIntentSession {
             require(paymentIntent != null || paymentIntentProvider != null) {
                 "Either paymentIntent or paymentIntentProvider must be provided"
             }
+            val validatedLocale = LocaleValidator.validatedOrNull(locale)
 
             val session = AirwallexRecurringWithIntentSession(
                 paymentIntent = paymentIntent,
@@ -307,7 +320,8 @@ class AirwallexRecurringWithIntentSession internal constructor(
                 paymentMethods = paymentMethods,
                 googlePayOptions = googlePayOptions,
                 merchantTriggerReason = merchantTriggerReason,
-                requiredBillingContactFields = requiredBillingContactFields
+                requiredBillingContactFields = requiredBillingContactFields,
+                locale = validatedLocale
             ).apply {
                 // Set the provider directly on the session (transient field, won't be parceled)
                 paymentIntentProvider = this@Builder.paymentIntentProvider

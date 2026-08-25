@@ -23,6 +23,7 @@ class ParcelableSessionTest {
         paymentIntentProviderId: String? = null,
         requiredBillingContactFields: Set<RequiredBillingContactField>? = null,
         shipping: Shipping? = testShipping,
+        localeLanguageTag: String? = null,
     ) = ParcelableSession(
         paymentIntent = paymentIntent,
         paymentIntentProviderId = paymentIntentProviderId,
@@ -40,6 +41,7 @@ class ParcelableSessionTest {
         autoCapture = true,
         hidePaymentConsents = false,
         requiredBillingContactFields = requiredBillingContactFields,
+        localeLanguageTag = localeLanguageTag,
     )
 
     @After
@@ -58,6 +60,7 @@ class ParcelableSessionTest {
         )
         val parcelable = makeParcelableSession(
             requiredBillingContactFields = explicitFields,
+            localeLanguageTag = "fr-FR",
         )
 
         val session = parcelable.toSession()
@@ -76,6 +79,14 @@ class ParcelableSessionTest {
         assertEquals(listOf("card", "googlepay"), session.paymentMethods)
         assertTrue(session.autoCapture)
         assertEquals(explicitFields, session.requiredBillingContactFields)
+        assertEquals("fr-FR", session.locale?.toLanguageTag())
+    }
+
+    @Test
+    fun `toSession preserves locale script and region from language tag`() {
+        val session = makeParcelableSession(localeLanguageTag = "zh-Hant-HK").toSession()
+
+        assertEquals("zh-Hant-HK", session.locale?.toLanguageTag())
     }
 
     @Test

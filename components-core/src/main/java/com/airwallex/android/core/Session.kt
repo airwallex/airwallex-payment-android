@@ -5,6 +5,7 @@ import com.airwallex.android.core.model.PaymentConsentOptions
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.Shipping
 import java.math.BigDecimal
+import java.util.Locale
 
 /**
  * Unified session for payment with payment consent options.
@@ -101,7 +102,13 @@ class Session internal constructor(
      * [isEmailRequired]). See [RequiredBillingContactField] and
      * [resolvedRequiredBillingContactFields].
      */
-    override val requiredBillingContactFields: Set<RequiredBillingContactField>? = null
+    override val requiredBillingContactFields: Set<RequiredBillingContactField>? = null,
+
+    /**
+     * Locale used by Airwallex-owned UI.
+     * `null` inherits the host application's current locale.
+     */
+    override val locale: Locale? = null
 
 ) : AirwallexSession(), PaymentIntentResolvableSession {
 
@@ -188,6 +195,7 @@ class Session internal constructor(
         private var paymentMethods: List<String>? = null
         private var shipping: Shipping? = null
         private var requiredBillingContactFields: Set<RequiredBillingContactField>? = null
+        private var locale: Locale? = null
 
         fun setPaymentConsentOptions(paymentConsentOptions: PaymentConsentOptions?): Builder =
             apply {
@@ -248,10 +256,19 @@ class Session internal constructor(
             this.requiredBillingContactFields = fields
         }
 
+        /**
+         * Enforce a locale for Airwallex-owned UI.
+         * Pass `null` to inherit the host application's current locale.
+         */
+        fun setLocale(locale: Locale?): Builder = apply {
+            this.locale = locale
+        }
+
         override fun build(): Session {
             require(paymentIntent != null || paymentIntentProvider != null) {
                 "Either paymentIntent or paymentIntentProvider must be provided"
             }
+            val validatedLocale = LocaleValidator.validatedOrNull(locale)
 
             val session = Session(
                 paymentIntent = paymentIntent,
@@ -268,7 +285,8 @@ class Session internal constructor(
                 autoCapture = autoCapture,
                 hidePaymentConsents = hidePaymentConsents,
                 paymentMethods = paymentMethods,
-                requiredBillingContactFields = requiredBillingContactFields
+                requiredBillingContactFields = requiredBillingContactFields,
+                locale = validatedLocale
             ).apply {
                 // Set the provider directly on the session (transient field, won't be parceled)
                 paymentIntentProvider = this@Builder.paymentIntentProvider

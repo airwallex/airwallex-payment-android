@@ -49,6 +49,9 @@ internal class GooglePayActivityLaunch :
                 ?: recurringSession
                 ?: error("No session provided in Args")
 
+        override val localeTag: String?
+            get() = session.locale?.toLanguageTag()
+
         companion object {
             @Suppress("DEPRECATION")
             fun create(

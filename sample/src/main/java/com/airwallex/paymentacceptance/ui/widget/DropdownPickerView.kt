@@ -2,10 +2,10 @@ package com.airwallex.paymentacceptance.ui.widget
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.LayoutInflater
+import android.view.Gravity
+import android.widget.ArrayAdapter
 import android.widget.LinearLayout
-import android.widget.PopupWindow
-import android.widget.TextView
+import androidx.appcompat.widget.ListPopupWindow
 import androidx.core.content.withStyledAttributes
 import com.airwallex.paymentacceptance.R
 
@@ -16,7 +16,7 @@ class DropdownPickerView @JvmOverloads constructor(
 ) : LinearLayout(context, attrs, defStyleAttr) {
 
     private var selectedTextView: DropdownLabelView
-    private var dropdownPopup: PopupWindow? = null
+    private var listPopup: ListPopupWindow? = null
     private var options = emptyList<String>()
     private var callback: ((String) -> Unit)? = null
     var currentOption: String = ""
@@ -30,8 +30,8 @@ class DropdownPickerView @JvmOverloads constructor(
         }
         addView(selectedTextView)
 
-        context.withStyledAttributes(attrs, R.styleable.DropdownSelectView) {
-            val titleText = getString(R.styleable.DropdownSelectView_titleContent)
+        context.withStyledAttributes(attrs, R.styleable.DropdownPickerView) {
+            val titleText = getString(R.styleable.DropdownPickerView_titleContent)
             titleText?.let {
                 selectedTextView.setTitleText(it)
             }
@@ -55,37 +55,42 @@ class DropdownPickerView @JvmOverloads constructor(
 
     private fun showDropdown() {
         selectedTextView.post {
-            val inflater = LayoutInflater.from(context)
-            val dropdownView = inflater.inflate(R.layout.dropdown_item, null, false) as LinearLayout
-            dropdownPopup = PopupWindow(
-                dropdownView,
-                selectedTextView.measuredWidth,
-                LayoutParams.WRAP_CONTENT,
-                true
-            ).apply {
-                setBackgroundDrawable(context.getDrawable(R.color.color_white))
-                val container = LinearLayout(context)
-                container.orientation = LinearLayout.VERTICAL
-                options.forEach { option ->
-                    val itemView = inflater.inflate(R.layout.dropdown_item, container, false)
-                    val textView = itemView.findViewById<TextView>(R.id.itemText)
-                    textView.text = option
-                    textView.setOnClickListener {
-                        selectedTextView.setSelectedText(option)
-                        dismiss()
-                        currentOption = option
-                        callback?.invoke(option)
-                    }
-                    container.addView(itemView)
-                }
-                contentView = container
+            listPopup?.dismiss()
+
+            val adapter = ArrayAdapter(
+                context,
+                R.layout.dropdown_item,
+                R.id.itemText,
+                options,
+            )
+
+            listPopup = ListPopupWindow(context).apply {
+                anchorView = this@DropdownPickerView
+                setAdapter(adapter)
                 width = selectedTextView.width
-                showAsDropDown(this@DropdownPickerView)
+                isModal = true
+                setDropDownGravity(Gravity.START)
+
+                setOnItemClickListener { _, _, position, _ ->
+                    val option = options[position]
+                    selectedTextView.setSelectedText(option)
+                    currentOption = option
+                    callback?.invoke(option)
+                    dismiss()
+                }
+
+                show()
             }
         }
     }
 
     fun setOnOptionSelectedCallback(callback: (String) -> Unit) {
         this.callback = callback
+    }
+
+    override fun onDetachedFromWindow() {
+        listPopup?.dismiss()
+        listPopup = null
+        super.onDetachedFromWindow()
     }
 }

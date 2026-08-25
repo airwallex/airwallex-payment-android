@@ -15,6 +15,7 @@ import io.mockk.runs
 import org.junit.Before
 import org.junit.Test
 import java.math.BigDecimal
+import java.util.Locale
 import kotlinx.coroutines.test.runTest
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -74,6 +75,30 @@ class SessionTest {
     }
 
     @Test
+    fun `build stores explicit locale`() {
+        val session = Session.Builder(
+            PaymentIntentFixtures.PAYMENT_INTENT,
+            "US"
+        )
+            .setLocale(Locale.FRANCE)
+            .build()
+
+        assertEquals(Locale.FRANCE, session.locale)
+    }
+
+    @Test
+    fun `build falls back to null for malformed locale`() {
+        val session = Session.Builder(
+            PaymentIntentFixtures.PAYMENT_INTENT,
+            "US"
+        )
+            .setLocale(Locale("en-US"))
+            .build()
+
+        assertNull(session.locale)
+    }
+
+    @Test
     fun `build with payment consent options`() {
         val paymentConsentOptions = PaymentConsentOptions(
             nextTriggeredBy = PaymentConsent.NextTriggeredBy.MERCHANT,
@@ -128,6 +153,7 @@ class SessionTest {
         assertNull(session.shipping)
         assertNull(session.returnUrl)
         assertNull(session.paymentMethods)
+        assertNull(session.locale)
     }
 
     // ========== convertToLegacySession Tests ==========
@@ -144,6 +170,7 @@ class SessionTest {
             .setReturnUrl("test://return")
             .setAutoCapture(false)
             .setHidePaymentConsents(true)
+            .setLocale(Locale.FRANCE)
             .build()
 
         // Act
@@ -159,6 +186,7 @@ class SessionTest {
         assertEquals("test://return", paymentSession.returnUrl)
         assertEquals(false, paymentSession.autoCapture)
         assertEquals(true, paymentSession.hidePaymentConsents)
+        assertEquals(Locale.FRANCE, paymentSession.locale)
     }
 
     @Test
@@ -184,6 +212,7 @@ class SessionTest {
             .setPaymentConsentOptions(paymentConsentOptions)
             .setRequireEmail(true)
             .setAutoCapture(false)
+            .setLocale(Locale.JAPAN)
             .build()
 
         // Act
@@ -200,6 +229,7 @@ class SessionTest {
         assertEquals(PaymentConsent.NextTriggeredBy.MERCHANT, recurringSession.nextTriggerBy)
         assertEquals(PaymentConsent.MerchantTriggerReason.SCHEDULED, recurringSession.merchantTriggerReason)
         assertEquals(true, recurringSession.isEmailRequired)
+        assertEquals(Locale.JAPAN, recurringSession.locale)
     }
 
     @Test
@@ -219,6 +249,7 @@ class SessionTest {
             .setRequireEmail(true)
             .setReturnUrl("test://return")
             .setAutoCapture(true)
+            .setLocale(Locale.UK)
             .build()
 
         // Act
@@ -236,6 +267,7 @@ class SessionTest {
         assertEquals(true, recurringWithIntentSession.isEmailRequired)
         assertEquals("test://return", recurringWithIntentSession.returnUrl)
         assertEquals(true, recurringWithIntentSession.autoCapture)
+        assertEquals(Locale.UK, recurringWithIntentSession.locale)
     }
 
     @Test
@@ -333,6 +365,7 @@ class SessionTest {
             .setRequireBillingInformation(false)
             .setRequireEmail(true)
             .setReturnUrl("legacy://return")
+            .setLocale(Locale.FRANCE)
             .build()
 
         // Act
@@ -348,6 +381,7 @@ class SessionTest {
         assertEquals(true, session.isEmailRequired)
         assertEquals("legacy://return", session.returnUrl)
         assertNull(session.paymentConsentOptions) // One-off payment
+        assertEquals(Locale.FRANCE, session.locale)
         // Verify transient provider field was preserved
         assertTrue(session is PaymentIntentResolvableSession)
         val resolvableSession = session as PaymentIntentResolvableSession
@@ -374,6 +408,7 @@ class SessionTest {
             .setRequireEmail(true)
             .setMerchantTriggerReason(PaymentConsent.MerchantTriggerReason.SCHEDULED)
             .setAutoCapture(false)
+            .setLocale(Locale.UK)
             .build()
 
         // Act
@@ -387,6 +422,7 @@ class SessionTest {
         assertEquals("cus_recurring_789", session.customerId)
         assertEquals(true, session.isEmailRequired)
         assertEquals(false, session.autoCapture)
+        assertEquals(Locale.UK, session.locale)
         // Verify payment consent options were preserved
         val consentOptions = session.paymentConsentOptions
         assertNotNull(consentOptions)
