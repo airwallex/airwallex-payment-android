@@ -90,7 +90,6 @@ sonarqube {
                 '**/AirwallexSupportedCard.kt',
                 '**/*ScreenEvent.*',
                 '**/*ActivityLaunch*.*',
-                '**/core/Airwallex.kt',
                 '**/AirwallexHttpClient.kt',
                 '**/AirwallexStarter.kt',
                 '**/*InputLayout.kt',

@@ -7,7 +7,6 @@ import android.os.Build
 import androidx.activity.ComponentActivity
 import androidx.annotation.UiThread
 import androidx.annotation.VisibleForTesting
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.airwallex.android.core.Airwallex.Companion.initialize
@@ -55,7 +54,7 @@ import com.airwallex.risk.AirwallexRisk
 import com.airwallex.risk.RiskConfiguration
 import com.airwallex.risk.Tenant
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.util.UUID
 import java.util.Locale
@@ -88,6 +87,9 @@ class Airwallex @Suppress("LongParameterList") internal constructor(
         confirmPaymentService = confirmPaymentService,
         googlePayDelegate = googlePayCheckoutDelegate,
     ),
+    private val checkoutScopeProvider: () -> CoroutineScope = {
+        fragment?.lifecycleScope ?: activity.lifecycleScope
+    },
     availablePaymentMethodsService: AvailablePaymentMethodsService? = null,
     legacyFlowCheckoutExecutor: LegacyFlowCheckoutExecutor? = null,
 ) {
@@ -382,14 +384,7 @@ class Airwallex @Suppress("LongParameterList") internal constructor(
         val loggingListener = wrapListenerWithLogging(listener, PaymentMethodType.GOOGLEPAY.value)
         val googlePayProvider = AirwallexPlugins.getProvider(ActionComponentProviderType.GOOGLEPAY)
         if (googlePayProvider != null) {
-            val coroutineScope = fragment?.lifecycleScope
-                ?: if (activity is AppCompatActivity) {
-                    activity.lifecycleScope
-                } else {
-                    MainScope()
-                }
-
-            coroutineScope.launch {
+            checkoutScopeProvider().launch {
                 val cardSchemes = (
                         session.googlePayOptions?.allowedCardNetworks.takeIf { !it.isNullOrEmpty() }
                             ?: googlePaySupportedNetworks()
@@ -484,7 +479,7 @@ class Airwallex @Suppress("LongParameterList") internal constructor(
         params: RetrieveAvailablePaymentConsentsParams,
         callback: AirwallexCallback<Page<PaymentConsent>>
     ) {
-        activity.lifecycleScope.launch {
+        checkoutScopeProvider().launch {
             try {
                 val result = retrieveAvailablePaymentConsents(params)
                 callback.onSuccess(result)
@@ -518,7 +513,7 @@ class Airwallex @Suppress("LongParameterList") internal constructor(
         params: RetrieveAvailablePaymentMethodParams,
         callback: AirwallexCallback<Page<AvailablePaymentMethodType>>
     ) {
-        activity.lifecycleScope.launch {
+        checkoutScopeProvider().launch {
             try {
                 val result = retrieveAvailablePaymentMethods(session, params)
                 callback.onSuccess(result)

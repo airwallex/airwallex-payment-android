@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import androidx.activity.ComponentActivity
 import com.airwallex.android.core.exception.AirwallexCheckoutException
+import com.airwallex.android.core.exception.AirwallexComponentDependencyException
 import com.airwallex.android.core.exception.AirwallexException
 import com.airwallex.android.core.exception.InvalidParamsException
 import com.airwallex.android.core.log.AirwallexLogger
@@ -11,6 +12,7 @@ import com.airwallex.android.core.log.AnalyticsLogger
 import com.airwallex.android.core.model.Address
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.Billing
+import com.airwallex.android.core.model.CreatePaymentConsentParams
 import com.airwallex.android.core.model.Options
 import com.airwallex.android.core.model.Page
 import com.airwallex.android.core.model.PaymentConsent
@@ -38,6 +40,8 @@ import io.mockk.slot
 import io.mockk.unmockkAll
 import io.mockk.verify
 import java.util.Locale
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -48,6 +52,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 
 @Suppress("LargeClass")
@@ -1228,5 +1233,438 @@ class AirwallexTest {
             )
         }
         assertTrue(true)
+    }
+
+    // Shared builder for tests that need to observe routing / scope-driven behavior.
+    private fun buildAirwallex(
+        router: AirwallexSessionCheckoutRouter = AirwallexSessionCheckoutRouter(),
+        unified: UnifiedCheckoutExecutor = mockk(relaxed = true),
+        legacy: LegacyFlowCheckoutExecutor = mockk(relaxed = true),
+        availablePaymentMethodsService: AvailablePaymentMethodsService? = null,
+    ): Airwallex = Airwallex(
+        fragment = null,
+        activity = mockActivity,
+        paymentManager = mockPaymentManager,
+        applicationContext = mockApplicationContext,
+        checkoutRouter = router,
+        unifiedCheckoutExecutor = unified,
+        legacyFlowCheckoutExecutor = legacy,
+        checkoutScopeProvider = { CoroutineScope(testDispatcher) },
+        availablePaymentMethodsService = availablePaymentMethodsService,
+    )
+
+    private fun googlePayMethod(): PaymentMethod =
+        PaymentMethod(type = PaymentMethodType.GOOGLEPAY.value)
+
+    private fun stubRoute(route: AirwallexSessionCheckoutRoute): AirwallexSessionCheckoutRouter =
+        mockk<AirwallexSessionCheckoutRouter>().apply {
+            every { route(any(), any(), any(), any(), any()) } returns route
+        }
+
+    // Tests for checkout() routing to each flow
+
+    @Test
+    fun `checkout routes CvcRequired to card cvc handler and fails when card provider missing`() {
+        val router = stubRoute(AirwallexSessionCheckoutRoute.CvcRequired)
+        every { AirwallexPlugins.getProvider(ActionComponentProviderType.CARD) } returns null
+        val listener = mockk<Airwallex.PaymentResultListener>(relaxed = true)
+
+        buildAirwallex(router = router).checkout(
+            session = createRealPaymentSession(),
+            paymentMethod = googlePayMethod(),
+            listener = listener,
+        )
+
+        verify {
+            listener.onCompleted(
+                match {
+                    it is AirwallexPaymentStatus.Failure &&
+                        it.exception is AirwallexComponentDependencyException
+                }
+            )
+        }
+    }
+
+    @Test
+    fun `checkout routes OldFlow to legacy executor`() {
+        val router = stubRoute(AirwallexSessionCheckoutRoute.OldFlow)
+        val legacy = mockk<LegacyFlowCheckoutExecutor>(relaxed = true)
+
+        buildAirwallex(router = router, legacy = legacy).checkout(
+            session = createRealPaymentSession(),
+            paymentMethod = googlePayMethod(),
+            listener = mockk(relaxed = true),
+        )
+
+        verify { legacy.checkout(any(), any(), any(), any(), any(), any()) }
+    }
+
+    @Test
+    fun `checkout routes NewFlow to unified executor with the unified session`() {
+        val unifiedSession = createRealSession()
+        val router = stubRoute(AirwallexSessionCheckoutRoute.NewFlow(unifiedSession))
+        val unified = mockk<UnifiedCheckoutExecutor>(relaxed = true)
+
+        buildAirwallex(router = router, unified = unified).checkout(
+            session = unifiedSession,
+            paymentMethod = googlePayMethod(),
+            listener = mockk(relaxed = true),
+        )
+
+        verify { unified.checkout(unifiedSession, any(), any(), any(), any(), any()) }
+    }
+
+    @Test
+    fun `checkout reports failure for UnknownSession route`() {
+        val router = stubRoute(
+            AirwallexSessionCheckoutRoute.UnknownSession(createRealRecurringSession())
+        )
+        val listener = mockk<Airwallex.PaymentResultListener>(relaxed = true)
+
+        buildAirwallex(router = router).checkout(
+            session = createRealPaymentSession(),
+            paymentMethod = googlePayMethod(),
+            listener = listener,
+        )
+
+        verify {
+            listener.onCompleted(
+                match {
+                    it is AirwallexPaymentStatus.Failure &&
+                        it.exception is AirwallexCheckoutException &&
+                        it.exception.message?.contains("Unknown session type") == true
+                }
+            )
+        }
+    }
+
+    // Tests for confirmPaymentIntent(session, paymentConsent, listener)
+
+    @Test
+    fun `confirmPaymentIntent with consent fails for unsupported session type`() {
+        val listener = mockk<Airwallex.PaymentResultListener>(relaxed = true)
+
+        airwallex.confirmPaymentIntent(
+            session = createRealRecurringSession(),
+            paymentConsent = PaymentConsent(
+                id = testPaymentConsentId,
+                paymentMethod = PaymentMethod(type = PaymentMethodType.CARD.value),
+            ),
+            listener = listener,
+        )
+
+        verify {
+            listener.onCompleted(
+                match {
+                    it is AirwallexPaymentStatus.Failure &&
+                        it.exception.message?.contains("only support AirwallexPaymentSession or Session") == true
+                }
+            )
+        }
+    }
+
+    @Test
+    fun `confirmPaymentIntent with consent fails when paymentMethod is null`() {
+        val listener = mockk<Airwallex.PaymentResultListener>(relaxed = true)
+
+        airwallex.confirmPaymentIntent(
+            session = createRealPaymentSession(),
+            paymentConsent = PaymentConsent(id = testPaymentConsentId),
+            listener = listener,
+        )
+
+        verify {
+            listener.onCompleted(
+                match {
+                    it is AirwallexPaymentStatus.Failure &&
+                        it.exception.message?.contains("paymentMethod is required") == true
+                }
+            )
+        }
+    }
+
+    @Test
+    fun `confirmPaymentIntent with consent fails when consent id is empty`() {
+        val listener = mockk<Airwallex.PaymentResultListener>(relaxed = true)
+
+        airwallex.confirmPaymentIntent(
+            session = createRealPaymentSession(),
+            paymentConsent = PaymentConsent(
+                id = "",
+                paymentMethod = PaymentMethod(type = PaymentMethodType.CARD.value),
+            ),
+            listener = listener,
+        )
+
+        verify {
+            listener.onCompleted(
+                match {
+                    it is AirwallexPaymentStatus.Failure &&
+                        it.exception.message?.contains("paymentConsentId is required") == true
+                }
+            )
+        }
+    }
+
+    @Test
+    fun `confirmPaymentIntent with valid consent proceeds to checkout`() {
+        val unified = mockk<UnifiedCheckoutExecutor>(relaxed = true)
+
+        buildAirwallex(unified = unified).confirmPaymentIntent(
+            session = createRealPaymentSession(),
+            paymentConsent = PaymentConsent(
+                id = testPaymentConsentId,
+                paymentMethod = PaymentMethod(type = PaymentMethodType.CARD.value),
+            ),
+            listener = mockk(relaxed = true),
+        )
+
+        verify { unified.checkout(any(), any(), any(), any(), any(), any()) }
+    }
+
+    // Tests for confirmPaymentIntent(session, paymentConsentId, listener)
+
+    @Test
+    fun `confirmPaymentIntent with consent id proceeds to checkout for oneoff session`() {
+        val unified = mockk<UnifiedCheckoutExecutor>(relaxed = true)
+
+        buildAirwallex(unified = unified).confirmPaymentIntent(
+            session = createRealPaymentSession(),
+            paymentConsentId = testPaymentConsentId,
+            listener = mockk(relaxed = true),
+        )
+
+        verify { unified.checkout(any(), any(), any(), any(), any(), any()) }
+    }
+
+    @Test
+    fun `confirmPaymentIntent with consent id fails for non oneoff session`() {
+        val listener = mockk<Airwallex.PaymentResultListener>(relaxed = true)
+
+        airwallex.confirmPaymentIntent(
+            session = createRealRecurringSession(),
+            paymentConsentId = testPaymentConsentId,
+            listener = listener,
+        )
+
+        verify {
+            listener.onCompleted(
+                match {
+                    it is AirwallexPaymentStatus.Failure &&
+                        it.exception.message?.contains("only support oneoff payment") == true
+                }
+            )
+        }
+    }
+
+    // Tests for buildCreatePaymentConsentOptions nextTriggeredBy branch via createPaymentConsent
+
+    private fun consentParams(paymentMethodType: String): CreatePaymentConsentParams =
+        CreatePaymentConsentParams.Builder(
+            clientSecret = testClientSecret,
+            customerId = testCustomerId,
+            paymentMethodType = paymentMethodType,
+            nextTriggeredBy = PaymentConsent.NextTriggeredBy.CUSTOMER,
+        ).build()
+
+    @Test
+    fun `createPaymentConsent keeps requested nextTriggeredBy for card`() = runTest {
+        val optionsSlot = slot<Options.CreatePaymentConsentOptions>()
+        coEvery { mockPaymentManager.createPaymentConsent(capture(optionsSlot)) } returns mockk(relaxed = true)
+
+        airwallex.createPaymentConsent(consentParams(PaymentMethodType.CARD.value))
+
+        assertEquals(
+            PaymentConsent.NextTriggeredBy.CUSTOMER,
+            optionsSlot.captured.request.nextTriggeredBy
+        )
+    }
+
+    @Test
+    fun `createPaymentConsent keeps requested nextTriggeredBy for google pay`() = runTest {
+        val optionsSlot = slot<Options.CreatePaymentConsentOptions>()
+        coEvery { mockPaymentManager.createPaymentConsent(capture(optionsSlot)) } returns mockk(relaxed = true)
+
+        airwallex.createPaymentConsent(consentParams(PaymentMethodType.GOOGLEPAY.value))
+
+        assertEquals(
+            PaymentConsent.NextTriggeredBy.CUSTOMER,
+            optionsSlot.captured.request.nextTriggeredBy
+        )
+    }
+
+    @Test
+    fun `createPaymentConsent forces MERCHANT nextTriggeredBy for other methods`() = runTest {
+        val optionsSlot = slot<Options.CreatePaymentConsentOptions>()
+        coEvery { mockPaymentManager.createPaymentConsent(capture(optionsSlot)) } returns mockk(relaxed = true)
+
+        airwallex.createPaymentConsent(consentParams("alipaycn"))
+
+        assertEquals(
+            PaymentConsent.NextTriggeredBy.MERCHANT,
+            optionsSlot.captured.request.nextTriggeredBy
+        )
+    }
+
+    // Tests for handlePaymentData(requestCode, resultCode, data)
+
+    @Test
+    fun `handlePaymentData returns true when card provider handles the result`() {
+        val cardComponent = mockk<ActionComponent>(relaxed = true)
+        every { cardComponent.handleActivityResult(any(), any(), any(), any()) } returns true
+        every { mockCardProvider.get() } returns cardComponent
+        every { AirwallexPlugins.getProvider(ActionComponentProviderType.CARD) } returns mockCardProvider
+        every { AirwallexPlugins.getProvider(ActionComponentProviderType.GOOGLEPAY) } returns mockGooglePayProvider
+
+        assertTrue(airwallex.handlePaymentData(1, 2, null))
+    }
+
+    @Test
+    fun `handlePaymentData returns true when google pay provider handles the result`() {
+        val cardComponent = mockk<ActionComponent>(relaxed = true)
+        val googlePayComponent = mockk<ActionComponent>(relaxed = true)
+        every { googlePayComponent.handleActivityResult(any(), any(), any(), any()) } returns true
+        every { mockCardProvider.get() } returns cardComponent
+        every { mockGooglePayProvider.get() } returns googlePayComponent
+        every { AirwallexPlugins.getProvider(ActionComponentProviderType.CARD) } returns mockCardProvider
+        every { AirwallexPlugins.getProvider(ActionComponentProviderType.GOOGLEPAY) } returns mockGooglePayProvider
+
+        assertTrue(airwallex.handlePaymentData(1, 2, null))
+    }
+
+    @Test
+    fun `handlePaymentData returns false when no provider handles the result`() {
+        val cardComponent = mockk<ActionComponent>(relaxed = true)
+        val googlePayComponent = mockk<ActionComponent>(relaxed = true)
+        every { mockCardProvider.get() } returns cardComponent
+        every { mockGooglePayProvider.get() } returns googlePayComponent
+        every { AirwallexPlugins.getProvider(ActionComponentProviderType.CARD) } returns mockCardProvider
+        every { AirwallexPlugins.getProvider(ActionComponentProviderType.GOOGLEPAY) } returns mockGooglePayProvider
+
+        assertFalse(airwallex.handlePaymentData(1, 2, null))
+    }
+
+    // Tests for startGooglePay(session, listener)
+
+    @Test
+    fun `startGooglePay fails when google pay provider missing`() {
+        every { AirwallexPlugins.getProvider(ActionComponentProviderType.GOOGLEPAY) } returns null
+        val listener = mockk<Airwallex.PaymentResultListener>(relaxed = true)
+
+        airwallex.startGooglePay(mockPaymentSession, listener)
+
+        verify {
+            listener.onCompleted(
+                match {
+                    it is AirwallexPaymentStatus.Failure &&
+                        it.exception is AirwallexComponentDependencyException
+                }
+            )
+        }
+    }
+
+    @Test
+    fun `startGooglePay proceeds to checkout when google pay is supported`() {
+        every { AirwallexPlugins.getProvider(ActionComponentProviderType.GOOGLEPAY) } returns mockGooglePayProvider
+        coEvery { mockGooglePayProvider.canHandleSessionAndPaymentMethod(any(), any(), any()) } returns true
+        val legacy = mockk<LegacyFlowCheckoutExecutor>(relaxed = true)
+        val router = stubRoute(AirwallexSessionCheckoutRoute.OldFlow)
+
+        buildAirwallex(router = router, legacy = legacy)
+            .startGooglePay(mockPaymentSession, mockk(relaxed = true))
+
+        verify { legacy.checkout(any(), any(), any(), any(), any(), any()) }
+    }
+
+    @Test
+    fun `startGooglePay fails when google pay is not supported`() {
+        every { AirwallexPlugins.getProvider(ActionComponentProviderType.GOOGLEPAY) } returns mockGooglePayProvider
+        coEvery { mockGooglePayProvider.canHandleSessionAndPaymentMethod(any(), any(), any()) } returns false
+        val legacy = mockk<LegacyFlowCheckoutExecutor>(relaxed = true)
+        val listener = mockk<Airwallex.PaymentResultListener>(relaxed = true)
+
+        buildAirwallex(legacy = legacy).startGooglePay(mockPaymentSession, listener)
+
+        verify {
+            listener.onCompleted(
+                match {
+                    it is AirwallexPaymentStatus.Failure &&
+                        it.exception.message?.contains("Payment not supported via Google Pay.") == true
+                }
+            )
+        }
+        verify(exactly = 0) { legacy.checkout(any(), any(), any(), any(), any(), any()) }
+    }
+
+    // Tests for retrieveAvailablePaymentConsents / retrieveAvailablePaymentMethods callbacks
+
+    @Test
+    fun `retrieveAvailablePaymentConsents callback reports success`() {
+        val service = mockk<AvailablePaymentMethodsService>()
+        val params = mockk<RetrieveAvailablePaymentConsentsParams>(relaxed = true)
+        val page = mockk<Page<PaymentConsent>>()
+        val callback = mockk<AirwallexCallback<Page<PaymentConsent>>>(relaxed = true)
+        coEvery { service.retrieveAvailablePaymentConsents(params) } returns page
+
+        buildAirwallex(availablePaymentMethodsService = service)
+            .retrieveAvailablePaymentConsents(params, callback)
+
+        verify { callback.onSuccess(page) }
+    }
+
+    @Test
+    fun `retrieveAvailablePaymentConsents callback reports wrapped failure`() {
+        val service = mockk<AvailablePaymentMethodsService>()
+        val params = mockk<RetrieveAvailablePaymentConsentsParams>(relaxed = true)
+        val callback = mockk<AirwallexCallback<Page<PaymentConsent>>>(relaxed = true)
+        coEvery { service.retrieveAvailablePaymentConsents(params) } throws RuntimeException("boom")
+
+        buildAirwallex(availablePaymentMethodsService = service)
+            .retrieveAvailablePaymentConsents(params, callback)
+
+        verify { callback.onFailure(match { it is AirwallexCheckoutException }) }
+    }
+
+    @Test
+    fun `retrieveAvailablePaymentConsents callback rethrows cancellation without reporting`() {
+        val service = mockk<AvailablePaymentMethodsService>()
+        val params = mockk<RetrieveAvailablePaymentConsentsParams>(relaxed = true)
+        val callback = mockk<AirwallexCallback<Page<PaymentConsent>>>(relaxed = true)
+        coEvery { service.retrieveAvailablePaymentConsents(params) } throws CancellationException("cancelled")
+
+        buildAirwallex(availablePaymentMethodsService = service)
+            .retrieveAvailablePaymentConsents(params, callback)
+
+        verify(exactly = 0) { callback.onFailure(any()) }
+        verify(exactly = 0) { callback.onSuccess(any()) }
+    }
+
+    @Test
+    fun `retrieveAvailablePaymentMethods callback reports success`() {
+        val service = mockk<AvailablePaymentMethodsService>()
+        val params = mockk<RetrieveAvailablePaymentMethodParams>(relaxed = true)
+        val page = mockk<Page<AvailablePaymentMethodType>>()
+        val callback = mockk<AirwallexCallback<Page<AvailablePaymentMethodType>>>(relaxed = true)
+        coEvery { service.retrieveAvailablePaymentMethods(mockPaymentSession, params) } returns page
+
+        buildAirwallex(availablePaymentMethodsService = service)
+            .retrieveAvailablePaymentMethods(mockPaymentSession, params, callback)
+
+        verify { callback.onSuccess(page) }
+    }
+
+    @Test
+    fun `retrieveAvailablePaymentMethods callback reports wrapped failure`() {
+        val service = mockk<AvailablePaymentMethodsService>()
+        val params = mockk<RetrieveAvailablePaymentMethodParams>(relaxed = true)
+        val callback = mockk<AirwallexCallback<Page<AvailablePaymentMethodType>>>(relaxed = true)
+        coEvery {
+            service.retrieveAvailablePaymentMethods(mockPaymentSession, params)
+        } throws RuntimeException("boom")
+
+        buildAirwallex(availablePaymentMethodsService = service)
+            .retrieveAvailablePaymentMethods(mockPaymentSession, params, callback)
+
+        verify { callback.onFailure(match { it is AirwallexCheckoutException }) }
     }
 }
