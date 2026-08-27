@@ -12,7 +12,11 @@ platform:
 # AddCardSection composable's conditional rendering. UI-only, no payment.
 #
 # Eight cycles exercise the distinct render paths:
-#   1. UNSET            → legacy: NAME + ADDRESS + PHONE (isBillingInformationRequired=true)
+#   1. SET / NAME+PHONE+ADDRESS → NAME + PHONE + full ADDRESS (the classic
+#      three-field billing render; identical to what the legacy null-derivation
+#      resolves to). The pure null → legacy derivation is unreachable through the
+#      settings dialog (it always writes a concrete set) and is covered instead by
+#      AirwallexSessionTest.resolvedRequiredBillingContactFields.
 #   2. SET / empty      → entire billing section + name/email/phone hidden
 #   3. SET / NAME       → only "Name on card" row
 #   4. SET / EMAIL      → only "Email" row
@@ -46,11 +50,14 @@ platform:
       IS_GUEST: "true"
       USE_NEW_SESSION: "false"
 
-# ─── Cycle 1: UNSET → legacy fallback (NAME + ADDRESS + PHONE visible) ───
+# ─── Cycle 1: SET / NAME+PHONE+ADDRESS → NAME + PHONE + full ADDRESS visible ───
 - runFlow:
     file: flow_billing_fields_cycle.yaml
     env:
-      ACTION: UNSET
+      ACTION: SET
+      HAS_NAME: "true"
+      HAS_PHONE: "true"
+      HAS_ADDRESS: "true"
       EXPECT_NAME_FIELD: "true"
       EXPECT_EMAIL_FIELD: "false"
       EXPECT_PHONE_FIELD: "true"

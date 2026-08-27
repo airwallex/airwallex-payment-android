@@ -222,6 +222,7 @@ Recap: driver wedges don't count against the heal budget. Real failures do. Trac
 
 ## Hard rules (don't break these)
 
+- ❌ Never run Google Pay tests on the emulator — the emulator has no Google Pay, so they can't pass. If `test=` resolves to a Google Pay test (or a glob that includes one), skip it and report it as "skipped — no Google Pay on emulator" rather than running it or treating the failure as real.
 - ❌ Never use `launchApp` in the YAML at run-time on this app — temporarily comment out per step 4.
 - ❌ Never `pm clear` or `clearState` outside of a controlled "simulate fresh install" experiment — wipes the Environment preference and all per-env caches.
 - ❌ Never `pkill maestro`, `pkill UiAutomation`, or `bash .maestro/free-port.sh` — severs the MCP tool channel for the rest of the session. Recovery without killing MCP is in `/maestro-heal` Branch A.

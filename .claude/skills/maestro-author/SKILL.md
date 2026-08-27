@@ -44,7 +44,7 @@ gh api repos/airwallex/airwallex-payment-android/compare/<base>...<head> \
 ```
 
 Use the result to:
-- Identify the SDK surface(s) touched (card form? consent flow? Google Pay? new setter on `Session.Builder`?).
+- Identify the SDK surface(s) touched (card form? consent flow? new setter on `Session.Builder`?). **If the only surface touched is Google Pay, stop — don't author a Maestro test for it** (see "What NOT to do"); the emulator has no Google Pay so the test could never run here.
 - Decide which integration(s) need new/updated coverage and whether scope is "All" on any dimension.
 - Skim the diff for *user-visible* behavior changes — UI-only restyling doesn't justify a new test (see AUTHORING_RULES.md).
 - Pre-fill the four input questions from the PR rather than asking the user to re-state context that's already in the diff.
@@ -285,6 +285,7 @@ If a device is connected, suggest invoking `/maestro-run test=<the-new-yaml>` to
 
 ## What NOT to do
 
+- ❌ **Don't author Google Pay tests.** The emulator has no Google Pay, so a Google Pay test can't run or pass here — there's nothing to smoke-run (Step 12) and no coverage to gain. If a request or PR touches only Google Pay, say so and skip; if it touches Google Pay among other surfaces, author for the other surfaces only.
 - ❌ Don't add tab + accordion variants of the same scenario (UI-only per AUTHORING_RULES.md)
 - ❌ Don't write 4 different 3DS-type tests for the same scenario — same SDK code path
 - ❌ Don't create a separate test per test card — pick one per behavior class

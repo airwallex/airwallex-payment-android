@@ -30,6 +30,7 @@ When in doubt, **fail loudly and ask the user** rather than silently relax an as
 
 - **Max 3 retries on the same fix approach.** If the same fix attempt fails 3 times, stop and surface to the user — there's a deeper issue (test logic problem or app bug).
 - **The composer caps you at 1 retry per distinct error fingerprint for ASSERTION/STATE failures (Branches B-onward).** A genuinely new failure after a fix is progress and gets a fresh heal cycle; the same fingerprint repeating is a sign the fix missed.
+- **Before declaring a repeating assertion a real bug, read the source code first (Branch B6).** When an `ASSERTION_VISIBLE` / `ASSERTION_NOT_VISIBLE` / `ELEMENT_NOT_FOUND` fingerprint repeats after a fix (the composer's A→A / K=1 case), do ONE code-inspection pass: read the SDK code that renders (or gates) the anchor element and derive what the UI *actually* shows for this test's exact config. A test whose expectation contradicts the code is a **test bug** — fix it and retry once (that is a resolution, not a loop). Only when the code confirms the assertion should hold is the repeat a real bug. This pass runs **at most once per fingerprint** — reading code terminates, so it cannot itself loop.
 - **Loop detection runs before budget reset.** Repeating cycles (A→B→A→B, or A→B→C→A→B→C, …) waste budget regardless of how "different" each event looks. See `/maestro-test`'s "Budget reset and loop detection" section for the period-K algorithm.
 - **Branch A (connection-wedge recovery) has its own budget: up to 3 reboot+rebootstrap retries per `/maestro-test` invocation, separate from the assertion-heal cycle.** Driver wedges are MCP infra hiccups, not test signal. Don't burn the heal budget on them.
 - **Never add cleanup to the start of a test.** Cleanup must happen separately (manually or via the temp wrapper in Branch B4). Tests should assume clean state — adding cleanup to test start masks real issues and makes tests fragile.
@@ -69,6 +70,8 @@ mcp__maestro__take_screenshot { device_id: <emulator> }
 adb -s <emulator> shell dumpsys window | grep mCurrentFocus
 ```
 The error message alone is rarely enough — the screen state tells you whether it's a state leak, a real assertion failure, or a driver wedge.
+
+**GooglePay pre-check (skip, don't triage).** If the failing test is a Google Pay test, stop here: on the emulator there is no Google Pay, so its failure is expected and is **not** a real bug to chase, a state leak, or a driver wedge. Don't apply the triage tree, don't read SDK source (B6), don't reboot. Report it as skipped/not-applicable-on-emulator and move on.
 
 For long-running heals, run a parallel `Monitor` tailing the log so you see live signals:
 ```bash
@@ -204,6 +207,31 @@ Symptoms:
 
 Fix: pass the correct customer ID for the current env. DEMO canonical: `cus_hkdmgg5nhhhl60k7r7r`. PREVIEW canonical (if explicitly used): `cus_sgpvth9jjhig6lzfpst`. Customer IDs are env-bound and won't work cross-env.
 
+#### B6: Same assertion still fails after a retry — read the source before calling it a real bug
+<!-- REPO-SPECIFIC: SDK render code is the source of truth -->
+
+Trigger: an `ASSERTION_VISIBLE` / `ASSERTION_NOT_VISIBLE` / `ELEMENT_NOT_FOUND` fingerprint **repeats after a fix attempt** (the composer's A→A / K=1 case). The `.feature` check in B3 says what's *intended*, but the test's own encoding of that intent can be wrong while the SDK is correct. Before concluding "real bug, stop," verify the assertion against the code that produces it — whether that's the **render code** (for a visibility/text/element assertion) or the **session/payment logic** (for a flow/behavior assertion). This branch is scoped to these assertion-class repeats only; it does not apply to wedge / state-leak / wrong-customer-id / popup / scroll classes, where reading SDK source is useless or misleading (see A, B1, B4, B5, C).
+
+**Do this once per fingerprint** (reading code terminates — it cannot loop):
+
+1. **Find the code that is authoritative for the asserted behavior.** What "authoritative" means depends on what the assertion claims:
+   - **Visibility / text / element presence** (the anchor is a label, field, or screen) → the **render code**: the composable / view / ViewModel that renders or gates the anchor. Start from the anchor text: `grep` the string resource, then the `R.string.*` usage.
+     ```bash
+     grep -rn "Billing info" airwallex/src/main/res/values/strings.xml   # → airwallex_billing_info
+     grep -rn "airwallex_billing_info" airwallex/src/main/java           # → AddCardSection.kt
+     ```
+   - **Flow / behavior** (the anchor is a *consequence* of logic — "3DS should trigger", "consent should be rejected", "PAY-on-saved-consent is disabled") → the **session / payment logic** that decides it (the relevant `Airwallex*Session` / provider / ViewModel branch), cross-referenced with `reference_payment_flow_rules.md` and Steps 6–7 of `maestro-author` (session type × user type × mode matrix). The render code only tells you what a screen looks like; it can't tell you whether the flow should have reached that screen.
+2. **Read the deciding condition and the logic feeding it.** Follow the gating flag / branch back to its source (ViewModel field → session/config resolution; or session type + user type + checkout mode → the behavior). Note every branch that changes the outcome for different configs.
+3. **Derive the actual expected UI *or behavior* for this test's exact config** (the `env:` values the failing cycle/step passes — `USE_NEW_SESSION`, `IS_GUEST`, `CHECKOUT_MODE`, `TRIGGER_BY_CUSTOMER`, the billing set, etc.).
+4. **Compare against what the test asserts:**
+   - **Test asserts something the code never produces for this config → TEST BUG.** Fix the test: correct the anchor text, branch the assertion on the config, add/remove the flow step the behavior requires (e.g. `flow_handle_3ds.yaml`), or fix the expected value. Then retry once. This is a legitimate resolution — not a masked assertion (you are making the test match verified behavior, not relaxing it).
+   - **Code confirms the behavior should hold but it doesn't → REAL BUG** (or state/infra). Stop and surface per the cardinal rule.
+5. If it still fails on the same anchor after the test-side fix, stop — the code read was inconclusive or the bug is real.
+
+Worked example — **visibility** (the billing-fields fix): `test_hpp_billing_fields_visibility` failed repeatedly on `No visible element found: "Billing info"`. Reading `AddCardSection.kt` showed the header is `airwallex_billing_info` ("Billing info") **only** for full ADDRESS; for the COUNTRY_CODE-only config (Cycle 7) it is `airwallex_billing_country_or_region` ("Billing country or region"). The shared helper scrolled for "Billing info" unconditionally → deterministic miss. Fix was test-side: key the header assertion off `EXPECT_FULL_ADDRESS`. The SDK was correct. See `reference_billing_fields_header.md`.
+
+Worked example — **behavior**: a merchant-triggered recurring test asserts the success popup right after `tapOn "PAY"`, but keeps failing because a 3DS challenge appears first. Here the authoritative source isn't a composable — it's the flow rule that *every* merchant-triggered `Pay with card → PAY` triggers 3DS even with a non-3DS card (`maestro-author` Step 6 / `reference_payment_flow_rules.md`). The test is missing `runFlow: flow_handle_3ds.yaml` between the tap and the assertion → TEST BUG, fix test-side. No amount of reading `AddCardSection.kt` would have shown this.
+
 ---
 
 ### Branch C — Wrong scrollUntilVisible direction
@@ -242,7 +270,7 @@ Some infra is known-broken in specific scenarios. Don't try to fix these in heal
 ## When to STOP and ask the user
 
 Stop and surface the situation rather than continuing if:
-- You've recovered from a wedge or state leak and the test still fails the same way (real bug suspected).
+- You've recovered from a wedge or state leak and the test still fails the same way — **but first, for an assertion / element-not-found repeat, run the Branch B6 source-code pass.** If the code shows the test's expectation was wrong, that's a test-side fix (apply and retry once), not a stop. Only stop here once the code confirms the assertion should hold (real bug suspected).
 - The failure looks like a real bug per Branch B3 — never silently mask it.
 - You've made 2+ retries (or 1 if invoked by composer) — looping retries hide intermittent failures, which are themselves bugs.
 - The failure is in shared infra (`flow_handle_3ds`, `flow_handle_redirect`, `flow_remove_all_consents`, `flow_update_settings`, `flow_update_checkout_mode`) — modifying these affects every test that uses them; require explicit confirmation before touching.

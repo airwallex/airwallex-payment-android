@@ -81,11 +81,13 @@ env:
       true: ${EXPECT_PHONE_FIELD == 'false'}
     commands:
       - assertNotVisible: "Phone number"
+# Billing section hidden → neither header variant renders.
 - runFlow:
     when:
       true: ${EXPECT_BILLING_SECTION == 'false'}
     commands:
       - assertNotVisible: "Billing info"
+      - assertNotVisible: "Billing country or region"
 - runFlow:
     when:
       true: ${EXPECT_FULL_ADDRESS == 'false'}
@@ -110,12 +112,22 @@ env:
     commands:
       - scrollUntilVisible:
           element: "Phone number"
+# Billing section header text depends on the resolved config:
+#   • full ADDRESS      → "Billing info"           (airwallex_billing_info)
+#   • COUNTRY_CODE only → "Billing country or region" (airwallex_billing_country_or_region)
+# EXPECT_FULL_ADDRESS distinguishes the two.
 - runFlow:
     when:
-      true: ${EXPECT_BILLING_SECTION == 'true'}
+      true: ${EXPECT_BILLING_SECTION == 'true' && EXPECT_FULL_ADDRESS == 'true'}
     commands:
       - scrollUntilVisible:
           element: "Billing info"
+- runFlow:
+    when:
+      true: ${EXPECT_BILLING_SECTION == 'true' && EXPECT_FULL_ADDRESS == 'false'}
+    commands:
+      - scrollUntilVisible:
+          element: "Billing country or region"
 - runFlow:
     when:
       true: ${EXPECT_FULL_ADDRESS == 'true'}

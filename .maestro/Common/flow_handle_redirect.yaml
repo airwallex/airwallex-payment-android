@@ -12,6 +12,8 @@ appId: com.airwallex.paymentacceptance
       - tapOn: "Use without an account"
 # New sandbox UI: "Action" dropdown + "Confirm" button (e.g. AlipayHK)
 # Distinguishes from legacy UI by checking the "Action" label is visible.
+# The dropdown offers a single action for the intent: "Pay" for one-off,
+# "Verify" for recurring/consent setup.
 - runFlow:
     when:
       visible: "Action"
@@ -19,27 +21,41 @@ appId: com.airwallex.paymentacceptance
     commands:
       - tapOn:
           id: "react-select-2-input"
-      - tapOn: "^Pay$"
+      - tapOn: "^(Pay|Verify)$"
       - tapOn: "Confirm"
       - extendedWaitUntil:
-          visible: "Return to Merchant|SUCCEED|Continue to Airwallex Sample"
+          visible: "VERIFIED|Return to Merchant|SUCCEED|Continue to Airwallex Sample"
           timeout: 30000
+      # Verify (recurring/consent): sandbox shows VERIFIED and the webview does
+      # not auto-close. Close it to reveal the app's loading overlay; the
+      # calling test dismisses that overlay with its own `- back`.
       - runFlow:
           when:
-            visible: "^Return to Merchant$"
+            visible: "VERIFIED"
           commands:
-            - tapOn: "^Return to Merchant$"
-      # Chrome may show a deep-link disambiguation banner before letting
-      # the redirect launch the app. Tap Continue if it's there.
+            - back
+      # Pay (one-off dropdown): sandbox completes into a payment-success dialog.
       - runFlow:
           when:
-            visible: "Continue to Airwallex Sample"
+            notVisible: "VERIFIED"
+            visible: "Return to Merchant|SUCCEED|Continue to Airwallex Sample"
           commands:
-            - tapOn: "Continue"
-      - extendedWaitUntil:
-          visible: "SUCCEED"
-          timeout: 30000
-      - tapOn: "OK"
+            - runFlow:
+                when:
+                  visible: "^Return to Merchant$"
+                commands:
+                  - tapOn: "^Return to Merchant$"
+            # Chrome may show a deep-link disambiguation banner before letting
+            # the redirect launch the app. Tap Continue if it's there.
+            - runFlow:
+                when:
+                  visible: "Continue to Airwallex Sample"
+                commands:
+                  - tapOn: "Continue"
+            - extendedWaitUntil:
+                visible: "SUCCEED"
+                timeout: 30000
+            - tapOn: "OK"
 # Handle two different redirect flows:
 # 1. One-off payment: "Pay Now" button (no checkbox)
 # 2. Recurring/RecurringWithIntent: "Authorize Now" button (with checkbox)

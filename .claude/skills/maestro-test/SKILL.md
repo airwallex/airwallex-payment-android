@@ -61,7 +61,7 @@ Two errors with the same triple = same root cause.
 - If any single fingerprint appears 3+ times anywhere in the history (regardless of period), pause and surface — the same root cause is resisting multiple fixes.
 
 **Edge cases**:
-- `K=1` immediate repeat (`A → A`): the fix didn't change the observable outcome. Could be "fix didn't apply" or "fix wrong." Pause without waiting for a 2nd repeat.
+- `K=1` immediate repeat (`A → A`): the fix didn't change the observable outcome. Could be "fix didn't apply" or "fix wrong." Before pausing, if the fingerprint is an assertion / element-not-found class, run **/maestro-heal Branch B6** (read the SDK code that renders the anchor, derive the expected UI for this exact config). A test whose expectation contradicts the code is a test bug — fix it and retry once; that's a resolution, not a loop. Only pause once the code confirms the assertion should hold (real bug). This code pass runs at most once per fingerprint.
 - Long-period loops (K=4 needs 8 events). Don't actually iterate that far — the soft signals above will pull the user in by event 5 or 6 anyway.
 - A confirmed loop on the wedge-recovery path (Branch A failing 3 times) — see Step 3 below; that's "host-side issue, ask user."
 
@@ -228,6 +228,7 @@ args: test=.maestro/temp_cleanup_consents.yaml
 
 ## What NOT to do
 
+- ❌ Don't run or heal Google Pay tests on the emulator. When a run-all / per-folder sweep resolves a Google Pay test, **skip it** — the emulator has no Google Pay so it can't pass. Don't spend a run, a heal cycle, or a wedge retry on it, and don't list it among the "failing tests to fix" — list it as skipped (not applicable on emulator).
 - ❌ Don't loop test-heal retries past a single cycle.
 - ❌ Don't count a connection-wedge recovery against the heal budget — they're orthogonal failure classes.
 - ❌ Don't run a full `mcp__maestro__run_flow_files` just to probe driver health — use `take_screenshot` for that (~1s vs. up to 120s).
