@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <TextView
+        android:id="@+id/titleText"
+        style="@style/BillingFieldTitle"
+        android:visibility="gone"
+        tools:text="Title"
+        tools:visibility="visible" />
+
+    <LinearLayout
+        android:id="@+id/box"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:background="@drawable/border_background"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp">
+
+        <TextView
+            android:id="@+id/selectedText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="#1A1D21"
+            android:textSize="16sp"
+            tools:text="option" />
+
+        <ImageView
+            android:id="@+id/arrowIcon"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:contentDescription="@string/expand"
+            android:src="@mipmap/ic_arrow_drop_down" />
+    </LinearLayout>
+
+</merge>
