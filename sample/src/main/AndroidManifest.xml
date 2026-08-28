@@ -107,6 +107,13 @@
             tools:ignore="LockedOrientationActivity" />
 
         <activity
+            android:name="com.airwallex.paymentacceptance.ui.PaymentIntegrationActivity"
+            tools:ignore="LockedOrientationActivity" />
+
+        <activity
+            android:name="com.airwallex.paymentacceptance.ui.BillingIntegrationActivity"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
             android:name=".ui.SettingActivity"
             tools:ignore="LockedOrientationActivity" />
 

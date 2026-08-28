@@ -5,44 +5,15 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
-    <LinearLayout
-        android:id="@+id/llContainer"
+    <com.airwallex.paymentacceptance.ui.widget.HeaderView
+        android:id="@+id/headerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:padding="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:layout_width="27dp"
-            android:layout_height="18dp"
-            android:src="@drawable/ic_airwallex" />
-
-        <View
-            android:layout_width="1dp"
-            android:layout_height="22dp"
-            android:layout_marginStart="20dp"
-            android:background="#D7D8E0" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:text="Airwallex SDK"
-            android:textColor="#1A1D21"
-            android:textSize="24sp"
-            android:textStyle="bold" />
-
-    </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#D7D8E0"
-        app:layout_constraintTop_toBottomOf="@+id/llContainer" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:showSettings="false"
+        app:titleText="Billing SDK" />
 
     <ScrollView
         android:id="@+id/scrollButtons"
@@ -53,7 +24,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/llContainer">
+        app:layout_constraintTop_toBottomOf="@+id/headerView">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -62,19 +33,35 @@
             android:paddingTop="40dp">
 
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnPaymentSdk"
+                android:id="@+id/btnHostedCheckout"
                 style="@style/AppButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Integrate Payment SDK" />
+                android:text="Hosted Checkout Page" />
 
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnBillingSdk"
+                android:id="@+id/btnExpressCheckout"
                 style="@style/AppButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="Integrate Billing SDK" />
+                android:text="Express Checkout" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnPaymentSheet"
+                style="@style/AppButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Payment Sheet" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnStandaloneApps"
+                style="@style/AppButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Standalone Apps" />
 
         </LinearLayout>
     </ScrollView>

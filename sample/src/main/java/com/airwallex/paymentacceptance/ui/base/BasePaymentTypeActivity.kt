@@ -42,9 +42,7 @@ abstract class BasePaymentTypeActivity<VM : BaseViewModel> :
     }
 
     override fun initListener() {
-        mBinding.flArrow.setOnClickListener { finish() }
-        mBinding.imSetting.setOnClickListener { openSettingPage() }
-        mBinding.titleView.setOnButtonClickListener { openSettingPage() }
+        mBinding.headerView.setOnSettingsClickListener { openSettingPage() }
         mBinding.dropdownView.setOnOptionSelectedCallback { mode ->
             handleDropdownSelection(mode)
         }
@@ -95,8 +93,7 @@ abstract class BasePaymentTypeActivity<VM : BaseViewModel> :
 
         val screenHeight = resources.displayMetrics.heightPixels
 
-        val topFixedHeight = mBinding.flArrow.measuredHeight +
-                mBinding.titleContainer.measuredHeight +
+        val topFixedHeight = mBinding.headerView.measuredHeight +
                 mBinding.dropdownView.measuredHeight +
                 44.dpToPx()
 

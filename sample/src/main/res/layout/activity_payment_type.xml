@@ -7,41 +7,12 @@
     android:orientation="vertical"
     android:paddingBottom="20dp">
 
-    <FrameLayout
-        android:id="@+id/flArrow"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="16dp">
-
-        <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:src="@drawable/airwallex_ic_back" />
-    </FrameLayout>
-
-    <FrameLayout
-        android:id="@+id/titleContainer"
+    <com.airwallex.paymentacceptance.ui.widget.HeaderView
+        android:id="@+id/headerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp">
-
-        <com.airwallex.paymentacceptance.ui.widget.TitleView
-            android:id="@+id/titleView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:buttonHeight="40dp"
-            app:buttonWidth="40dp"
-            app:titleText="Integrate with Airwallex UI" />
-
-        <ImageView
-            android:id="@+id/imSetting"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:layout_gravity="end|center_vertical"
-            android:layout_marginEnd="28dp"
-            android:contentDescription="setting"
-            android:src="@drawable/ic_menu" />
-    </FrameLayout>
+        app:showSettings="true"
+        app:titleText="Integrate with Airwallex UI" />
 
     <com.airwallex.paymentacceptance.ui.widget.DropdownPickerView
         android:id="@+id/dropdownView"

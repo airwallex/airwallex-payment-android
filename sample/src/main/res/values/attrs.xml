@@ -8,6 +8,11 @@
         <attr name="showRightBtn" format="boolean" />
     </declare-styleable>
 
+    <declare-styleable name="HeaderView">
+        <attr name="titleText" />
+        <attr name="showSettings" format="boolean" />
+    </declare-styleable>
+
     <declare-styleable name="SwitchView">
         <attr name="labelText" format="string" />
     </declare-styleable>
@@ -19,5 +24,19 @@
 
     <declare-styleable name="DropdownPickerView">
         <attr name="titleContent" format="string" />
+    </declare-styleable>
+
+    <declare-styleable name="LabeledDropdown">
+        <attr name="title" format="string" />
+    </declare-styleable>
+
+    <declare-styleable name="LabeledTextField">
+        <attr name="title" />
+        <attr name="fieldHint" format="string" />
+        <attr name="actionLabel" />
+        <attr name="fieldInputType" format="enum">
+            <enum name="text" value="0" />
+            <enum name="number" value="1" />
+        </attr>
     </declare-styleable>
 </resources>

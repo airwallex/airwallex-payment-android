@@ -33,7 +33,7 @@ class APIIntegrationActivity : BasePaymentTypeActivity<APIIntegrationViewModel>(
 
     override fun initView() {
         super.initView()
-        mBinding.titleView.setTitle("Integrate with low-level API")
+        mBinding.headerView.setTitle("Integrate with low-level API")
     }
 
     override fun getViewModelClass(): Class<APIIntegrationViewModel> {

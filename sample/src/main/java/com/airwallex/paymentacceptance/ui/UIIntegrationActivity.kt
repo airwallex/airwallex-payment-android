@@ -20,7 +20,7 @@ class UIIntegrationActivity :
 
     override fun initView() {
         super.initView()
-        mBinding.titleView.setTitle("Integrate with Airwallex UI")
+        mBinding.headerView.setTitle("Integrate with Airwallex UI")
     }
 
     override fun addObserver() {

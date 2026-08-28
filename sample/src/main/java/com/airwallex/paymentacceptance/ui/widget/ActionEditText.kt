@@ -71,6 +71,13 @@ class ActionEditText @JvmOverloads constructor(
         actionText.setOnClickListener(listener)
     }
 
+    fun setOnFieldClickListener(listener: OnClickListener) {
+        editText.isFocusable = false
+        editText.isFocusableInTouchMode = false
+        editText.isClickable = true
+        editText.setOnClickListener(listener)
+    }
+
     fun setText(text: String) {
         editText.setText(text)
     }

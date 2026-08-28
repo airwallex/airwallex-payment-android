@@ -26,9 +26,6 @@ class H5DemoActivity : AppCompatActivity() {
         viewBinding.airwallexUrl.setText("https://demo-pacheckoutdemo.airwallex.com/shopping-cart")
         viewBinding.refererUrl.setText("https://demo-pacheckoutdemo.airwallex.com")
 
-        viewBinding.flArrow.setOnClickListener {
-            finish()
-        }
         viewBinding.btnNext.setOnSingleClickListener {
             val url = viewBinding.airwallexUrl.text.toString()
             if (url.isEmpty()) {
