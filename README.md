@@ -12,9 +12,10 @@ EN | [中文](./README-zh.md)
     * [Integration Options](#integration-options)
     * [Demo](#demo)
     * [Platform Requirements](#platform-requirements)
+    * [Localization](#localization)
 * [UI Integration - Hosted Payment Page (HPP)](#ui-integration---hosted-payment-page-hpp)
     * [Installation](#installation)
-    * [Initialization](#sdk-configuration)
+    * [Initialization](#initialization)
     * [Customization](#customization)
     * [Payment Flow](#payment-flow)
     * [Google Pay Integration](#google-pay-integration)
@@ -32,11 +33,12 @@ EN | [中文](./README-zh.md)
     * [Available APIs](#available-apis)
         * [Launch payment via Google Pay](#launch-payment-via-google-pay)
         * [Pay by redirection](#pay-by-redirection)
-        * [Confirm payment with card and billing details](#confirm-payment-with-card-and-billing-details)
-        * [Confirm payment with Consent ID](#confirm-payment-with-consent-id)
-        * [Confirm payment with PaymentConsent](#confirm-payment-with-paymentconsent)
+        * [Checkout with card and billing details](#checkout-with-card-and-billing-details)
+        * [Checkout with Consent ID](#checkout-with-consent-id)
+        * [Checkout with PaymentConsent](#checkout-with-paymentconsent)
         * [Retrieve the list of payment methods](#retrieve-the-list-of-payment-methods)
         * [Retrieve the list of saved cards](#retrieve-the-list-of-saved-cards)
+* [Migration Guide](./MIGRATING.md)
 * [Contributing & Feedback](#contributing--feedback)
 
 # Overview
@@ -45,13 +47,15 @@ The Airwallex Android SDK provides a comprehensive toolkit for integrating payme
 
 This guide covers SDK setup, configuration, and integration. It assumes familiarity with Android development, Android Studio, and Gradle.
 
+Upgrading from an earlier version? See the [Migration Guide](./MIGRATING.md).
+
 ## Supported Payment Methods
 
 | Category | Methods | Notes |
 |----------|---------|-------|
-| Cards | [`Visa, Mastercard, UnionPay, Discover, JCB, Diners Club`](#cards) | PCI-DSS compliance is required when using Low-level API Integration |
-| Google Pay | [`Google Pay`](#google-pay-integration) | |
-| E-Wallets | [`Alipay`](#alipay), [`AlipayHK`](#alipayhk), [`DANA`](#dana), [`GCash`](#gcash), [`Kakao Pay`](#kakao-pay), [`Touch ‘n Go`](#touch-n-go), [`WeChat Pay`](#wechat-pay), and [more](https://www.airwallex.com/docs/payments/payment-methods/payment-methods-overview) | |
+| Cards | Visa, Mastercard, UnionPay, Discover, JCB, Diners Club | PCI-DSS compliance is required when using [Low-level API Integration](#low-level-api-integration) |
+| Google Pay | [Google Pay](#google-pay-integration) | Enable Google Pay on your Airwallex account |
+| E-Wallets | Alipay, AlipayHK, DANA, GCash, Kakao Pay, Touch ’n Go, WeChat Pay, and [more](https://www.airwallex.com/docs/payments/payment-methods/payment-methods-overview) | Redirect and wallet methods typically require the `payment-redirect` and/or `payment-wechat` modules |
 
 ## Integration Options
 
@@ -72,19 +76,24 @@ A fully functional demo application is available in the [sample](sample) directo
 To run the demo app:
 
 1. Clone the repository:
-`git clone git@github.com:airwallex/airwallex-payment-android.git`
+
+```
+git clone git@github.com:airwallex/airwallex-payment-android.git
+```
 
 2. Open Android Studio and import the project by selecting the `build.gradle` file from the cloned repository.
 
 3. (Optional) To test with your own API keys, go to [Airwallex Account settings > API keys](https://www.airwallex.com/app/settings/api), then copy `Client ID` and `API key` to [`Settings.kt`](sample/src/main/java/com/airwallex/paymentacceptance/Settings.kt):
-```
-    private const val API_KEY = replace_with_api_key
-    private const val CLIENT_ID = replace_with_client_id
+
+```kotlin
+private const val API_KEY = replace_with_api_key
+private const val CLIENT_ID = replace_with_client_id
 ```
 
 4. (Optional) To enable WeChat Pay, register your app on [WeChat Pay](https://pay.weixin.qq.com/index.php/public/wechatpay), then set your App ID in [`Settings.kt`](sample/src/main/java/com/airwallex/paymentacceptance/Settings.kt):
-```
-    private const val WECHAT_APP_ID = "put your WeChat app id here"
+
+```kotlin
+private const val WECHAT_APP_ID = "put your WeChat app id here"
 ```
 
 5. Run the `sample` project.
@@ -118,7 +127,8 @@ Locale values must be structurally valid. For a language tag, use
 `Locale.forLanguageTag("fr-FR")` rather than `Locale("fr-FR")`.
 
 # UI Integration - Hosted Payment Page (HPP)
-The Airwallex Android SDK provides prebuilt UI components to simplify payment integration in your Android application.
+
+The Airwallex Android SDK provides prebuilt UI components so you can present a complete checkout flow without building payment screens from scratch.
 
 ## Installation
 
@@ -173,18 +183,15 @@ AirwallexStarter.initialize(
 
 ## Customization
 
-You can customize the appearance of the Airwallex SDK UI including theme color and dark mode preferences. This applies to both Hosted Payment Page Integration and Embedded Element integration.
+You can customize theme color and dark mode for both Hosted Payment Page and Embedded Element.
 
-### Theme Color and Dark Mode
-### Theme Override
-
-You can override the default theme color using Android's theme system:
+Override the default tint via Android resources:
 
 ```xml
 <color name="airwallex_tint_color">@color/your_custom_color</color>
 ```
 
-Note: Alternatively, you can set theme color via `Appearance.themeColor` in your `PaymentElementConfiguration` (see configuration examples below). `Appearance` also supports dark mode configuration.
+Alternatively, set `Appearance.themeColor` and `Appearance.isDarkTheme` in `PaymentElementConfiguration` (see [Configuration Options](#configuration-options)).
 
 ## Payment Flow
 
@@ -445,7 +452,7 @@ airwallex.retrievePaymentIntent(
 1. Ensure Google Pay is enabled on your Airwallex account
 2. Include the Google Pay module when installing the SDK as per [Installation](#installation)
 
-### Customization
+### Google Pay options
 
 Configure Google Pay options to restrict as well as provide extra context. For more information, please refer to `GooglePayOptions` class:
 
@@ -471,7 +478,7 @@ The following card networks are supported for Google Pay:
 
 The Airwallex SDK provides `PaymentElement` - a flexible component that allows you to embed payment UI directly into your own activity or view. This gives you full control over the host UI while leveraging Airwallex's prebuilt payment components.
 
-## <a name="embedded-overview"></a>Overview
+## Embedded overview
 
 Unlike Hosted Payment Page Integration where the SDK launches its own activities (`PaymentMethodsActivity`, `AddPaymentActivity`), Embedded Element integration lets you:
 - Embed payment UI in your own activity/view
@@ -485,7 +492,7 @@ Both integration methods support the same customization options via `PaymentElem
 - **Hosted Payment Page (HPP)**: Create session in your calling activity → Pass to `AirwallexStarter` methods
 - **Embedded Element**: Create session in the activity that hosts `PaymentElement` (or its ViewModel) → Pass to `PaymentElement.create()`
 
-## <a name="embedded-installation"></a>Installation
+## Embedded installation
 
 Add the same dependencies as Hosted Payment Page Integration:
 
@@ -502,9 +509,9 @@ dependencies {
 }
 ```
 
-Configure the SDK in your Application class (same as Hosted Payment Page Integration - see [Initialization](#sdk-configuration)).
+Configure the SDK in your Application class (same as Hosted Payment Page — see [Initialization](#initialization)).
 
-## <a name="create-paymentelement"></a>Create PaymentElement
+## Create PaymentElement
 
 `PaymentElement.create()` is a suspending function that initializes and fetches required data for the payment UI. You can either use `PaymentFlowlistener` interface or lambda callbacks.
 
@@ -512,7 +519,7 @@ Both variants return `Result<PaymentElement>` which contains either:
 - `Success` with the `PaymentElement` instance
 - `Failure` with the error
 
-## <a name="configuration-options"></a>Configuration Options
+## Configuration Options
 
 Configure the payment UI using `PaymentElementConfiguration`:
 
@@ -576,7 +583,7 @@ val configuration = PaymentElementConfiguration.PaymentSheet(
 - `themeColor` - Custom theme color in ARGB format (e.g., `0xFF612FFF`), null for default
 - `isDarkTheme` - true (dark mode), false (light mode), null (follow system)
 
-## <a name="kotlin-example"></a>Kotlin Example
+## Kotlin Example
 
 Here's a complete example of embedding the payment element in your own activity:
 
@@ -586,8 +593,8 @@ import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.lifecycleScope
 import com.airwallex.android.core.Airwallex
-import com.airwallex.android.core.AirwallexPaymentSession
 import com.airwallex.android.core.AirwallexPaymentStatus
+import com.airwallex.android.core.Session
 import com.airwallex.android.core.PaymentMethodsLayoutType
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.view.composables.PaymentElement
@@ -624,7 +631,7 @@ class CheckoutActivity : ComponentActivity() {
                 currency = "USD"
             )
 
-            val session = AirwallexPaymentSession.Builder(
+            val session = Session.Builder(
                 paymentIntent = paymentIntent,
                 countryCode = "US"
             ).build()
@@ -739,8 +746,9 @@ class CheckoutActivity : ComponentActivity() {
 
 </LinearLayout>
 ```
-or you can check `EmbeddedElementActivity` in our demo app.
-## <a name="java-example"></a>Java Example
+You can also refer to `EmbeddedElementActivity` in the sample app.
+
+## Java Example
 
 For Java developers, `PaymentElement` provides Java-friendly static methods that handle Kotlin coroutines internally, using the familiar two-step pattern: **create** + **renderIn**.
 
@@ -831,14 +839,14 @@ PaymentElement.create(
 
 **Key Differences from Hosted Payment Page Integration:**
 
-| Feature | Hosted Payment Page Integration | Embedded Element Integration |
-|---------|----------------------|------------------------------|
-| Entry Point | `AirwallexStarter.presentPaymentFlow()` | `PaymentElement.create()` |
-| Activity Ownership | SDK owns the activity | You own the activity |
-| UI Container | SDK activities | Your ComposeView |
-| Layout Control | Limited (SDK-controlled) | Full (you control surrounding UI) |
-| Initialization | Launch activity | Suspending function |
-| Callbacks | `AirwallexCheckoutListener` | `PaymentFlowListener` or lambdas |
+| Feature | Hosted Payment Page | Embedded Element |
+|---------|---------------------|------------------|
+| Entry point | `AirwallexStarter.presentEntirePaymentFlow()` (or `presentCardPaymentFlow()`) | `PaymentElement.create()` |
+| Activity ownership | SDK owns the activity | You own the activity |
+| UI container | SDK activities | Your `ComposeView` |
+| Layout control | Limited (SDK-controlled) | Full (you control surrounding UI) |
+| Initialization | Launch activity | Suspending function (Kotlin) or callbacks (Java) |
+| Result callbacks | `Airwallex.PaymentResultListener` | `PaymentFlowListener` or lambdas |
 
 # Low-level API Integration
 You can build your own entirely custom UI on top of our low-level APIs.
@@ -852,22 +860,25 @@ The Airwallex Android SDK is compatible with apps supporting Android API level 2
 To install the SDK, in your app-level `build.gradle`, add the following:
 
 ```groovy
-    dependencies {
-        // It's required
-        implementation 'io.github.airwallex:payment-components-core:6.11.0'
+dependencies {
+    // Required
+    implementation 'io.github.airwallex:payment-components-core:6.11.0'
 
-       // Select the payment method you want to support, ignore the components you don't need.
-       implementation 'io.github.airwallex:payment-card:6.11.0'//only support card
-       implementation 'io.github.airwallex:payment-googlepay:6.11.0'//only support google pay
-       implementation 'io.github.airwallex:payment-redirect:6.11.0'//only support redirect
-    }
+    // Add only the payment methods you need
+    implementation 'io.github.airwallex:payment-card:6.11.0'
+    implementation 'io.github.airwallex:payment-googlepay:6.11.0'
+    implementation 'io.github.airwallex:payment-redirect:6.11.0'
+    implementation 'io.github.airwallex:payment-wechat:6.11.0'
+}
 ```
 
 ## Step 2: Configuration and preparation
-After setting up the SDK, you are required to config your SDK with some parameters. Before using Airwallex SDK to confirm payment intents and complete the payments, you shall create payment intents in your own server, to make sure you maintain information in your own system
-### Configuration the SDK
 
-We provide some parameters that can be used to debug the SDK, you can call it in Application
+Initialize the SDK, then create PaymentIntents on your server so you retain the source of truth for amounts and order state.
+
+### Configure the SDK
+
+Call this from your `Application` class:
 ```kotlin
     import com.airwallex.android.core.Airwallex
     import com.airwallex.android.core.AirwallexConfiguration
@@ -906,7 +917,7 @@ val airwallex = Airwallex(activity)
 The following APIs can be used independently depending on your payment scenario. They are not sequential steps.
 
 ### Launch payment via Google Pay
-Before invoking the payment API, you need to follow the steps to [Set up Google Pay](#set-up-google-pay)
+Before invoking the payment API, complete [Google Pay Integration](#google-pay-integration).
 ```kotlin
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexPaymentStatus
@@ -997,6 +1008,29 @@ airwallex.checkout(
 ```
 
 > **📝 Note:** Pass `null` to `setBilling(...)` only when the session's resolved `requiredBillingContactFields` is empty (i.e. the merchant has explicitly opted out of collecting billing). Otherwise the call will be rejected before it reaches the network.
+
+### Checkout with Consent ID
+
+> **⚠️ Deprecated:** Prefer [Checkout with PaymentConsent](#checkout-with-paymentconsent) and pass a `PaymentConsent` that includes at least `id` and `nextTriggeredBy`. The `paymentConsentId` parameter on `airwallex.checkout(...)` is retained only for backwards compatibility and should not be used in new code.
+
+```kotlin
+import com.airwallex.android.core.Airwallex
+import com.airwallex.android.core.AirwallexPaymentStatus
+import com.airwallex.android.core.model.PaymentMethod
+import com.airwallex.android.core.model.PaymentMethodType
+
+airwallex.checkout(
+    session = session,
+    paymentMethod = PaymentMethod(type = PaymentMethodType.CARD.value),
+    paymentConsentId = "cst_xxxxxxxxxx", // Deprecated — use `paymentConsent` instead
+    listener = object : Airwallex.PaymentResultListener {
+        override fun onCompleted(status: AirwallexPaymentStatus) {
+            // Handle the payment result
+        }
+    }
+)
+```
+
 ### Checkout with PaymentConsent
 ```kotlin
 import com.airwallex.android.core.Airwallex
@@ -1049,7 +1083,7 @@ airwallex.checkout(
      )
 ```
 
-## Contributing & Feedback
+# Contributing & Feedback
 
 We welcome contributions of any kind including new features, bug fixes, and documentation improvements. We also appreciate the time you take to try out our sample code and welcome your feedback.
 
