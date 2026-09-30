@@ -13,7 +13,7 @@ appId: com.airwallex.paymentacceptance
     file: ../Common/flow_update_settings.yaml
     env:
       LAYOUT: ${output.settings.layout.tab}
-      ENVIRONMENT: ${output.settings.environment.demo}
+      ENVIRONMENT: ${output.settings.environment.preview}
       NEXT_TRIGGERED_BY: ${NEXT_TRIGGERED_BY}
       IS_GUEST: false
       FORCE_3DS: ${FORCE_3DS}

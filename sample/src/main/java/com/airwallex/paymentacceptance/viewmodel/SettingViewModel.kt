@@ -59,7 +59,7 @@ class SettingViewModel : BaseViewModel() {
             RequiredBillingContactField.PHONE,
             RequiredBillingContactField.ADDRESS,
         )
-        Settings.sdkEnv = "DEMO"
+        Settings.sdkEnv = "PREVIEW"
         Settings.nextTriggerBy = "Merchant"
         Settings.returnUrl = ""
         Settings.sdkLanguage = "default"

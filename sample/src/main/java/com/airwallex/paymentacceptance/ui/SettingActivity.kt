@@ -117,7 +117,7 @@ class SettingActivity : BasePaymentActivity<ActivitySettingBinding, SettingViewM
             mBinding.swUseSession.setChecked(true)
             selectedBillingFields = defaultBillingFields
             renderBillingFieldsSummary()
-            mBinding.selectViewEnvironment.setSelectOption("DEMO")
+            mBinding.selectViewEnvironment.setSelectOption("PREVIEW")
             mBinding.selectViewTrigger.setSelectOption("Merchant")
             mBinding.selectPaymentLayout.setSelectOption("Tab")
             mBinding.selectSdkLanguage.setSelectOption("default")

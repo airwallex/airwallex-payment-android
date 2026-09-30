@@ -10,8 +10,9 @@
 #   .maestro/scripts/ensure-env.sh <TARGET_ENV> [DEVICE_ID]
 #
 # Required:
-#   TARGET_ENV   One of DEMO, PREVIEW, STAGING, PRODUCTION. No default — caller
+#   TARGET_ENV   One of PREVIEW, STAGING, PRODUCTION. No default — caller
 #                must be explicit so CI and local don't drift silently.
+#                DEMO is accepted and rewritten to PREVIEW.
 #
 # Optional:
 #   DEVICE_ID    adb device id (e.g. emulator-5554). If omitted, adb picks the
@@ -32,10 +33,11 @@ if [ "${1:-}" = "" ]; then
 ensure-env.sh — set Airwallex sample app SharedPreferences "Environment".
 
 usage:   $0 <TARGET_ENV> [DEVICE_ID]
-example: $0 DEMO emulator-5554
-         $0 PREVIEW
+example: $0 PREVIEW emulator-5554
+         $0 STAGING
 
-TARGET_ENV must be one of: DEMO PREVIEW STAGING PRODUCTION
+TARGET_ENV must be one of: PREVIEW STAGING PRODUCTION
+DEMO is accepted and rewritten to PREVIEW.
 EOF
   exit 2
 fi
@@ -46,9 +48,13 @@ PKG=com.airwallex.paymentacceptance
 PREFS=/data/data/$PKG/shared_prefs/${PKG}_preferences.xml
 
 case "$TARGET" in
-  DEMO|PREVIEW|STAGING|PRODUCTION) ;;
+  DEMO)
+    echo "[ensure-env] DEMO is no longer supported — using PREVIEW"
+    TARGET=PREVIEW
+    ;;
+  PREVIEW|STAGING|PRODUCTION) ;;
   *)
-    echo "[ensure-env] ERROR: unknown TARGET '$TARGET' (expected DEMO|PREVIEW|STAGING|PRODUCTION)" >&2
+    echo "[ensure-env] ERROR: unknown TARGET '$TARGET' (expected PREVIEW|STAGING|PRODUCTION)" >&2
     exit 2
     ;;
 esac

@@ -11,7 +11,6 @@ output.settings = {
     },
     environment: {
         staging: 'STAGING',
-        demo: 'DEMO',
         preview: 'PREVIEW',
     },
     nextTriggeredBy: {

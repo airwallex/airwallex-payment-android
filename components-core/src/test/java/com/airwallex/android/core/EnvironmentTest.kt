@@ -4,6 +4,7 @@ import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
+@Suppress("DEPRECATION")
 class EnvironmentTest {
 
     @Test
@@ -12,7 +13,8 @@ class EnvironmentTest {
         assertEquals("https://api-staging.airwallex.com", Environment.STAGING.baseUrl())
 
         assertNotNull(Environment.DEMO.baseUrl())
-        assertEquals("https://api-demo.airwallex.com", Environment.DEMO.baseUrl())
+        assertEquals("https://api.sandbox.airwallex.com", Environment.DEMO.baseUrl())
+        assertEquals(Environment.PREVIEW.baseUrl(), Environment.DEMO.baseUrl())
 
         assertNotNull(Environment.PRODUCTION.baseUrl())
         assertEquals("https://api.airwallex.com", Environment.PRODUCTION.baseUrl())
@@ -25,6 +27,7 @@ class EnvironmentTest {
     fun testThreeDsReturnUrl() {
         assertNotNull(Environment.STAGING.threeDsReturnUrl())
         assertNotNull(Environment.DEMO.threeDsReturnUrl())
+        assertEquals(Environment.PREVIEW.threeDsReturnUrl(), Environment.DEMO.threeDsReturnUrl())
         assertNotNull(Environment.PRODUCTION.threeDsReturnUrl())
         assertNotNull(Environment.PREVIEW.threeDsReturnUrl())
     }
@@ -32,7 +35,8 @@ class EnvironmentTest {
     @Test
     fun testRiskEnvironment() {
         assertEquals(Environment.STAGING.riskEnvironment, com.airwallex.risk.Environment.STAGING)
-        assertEquals(Environment.DEMO.riskEnvironment, com.airwallex.risk.Environment.DEMO)
+        assertEquals(Environment.DEMO.riskEnvironment, com.airwallex.risk.Environment.PREVIEW)
+        assertEquals(Environment.PREVIEW.riskEnvironment, Environment.DEMO.riskEnvironment)
         assertEquals(Environment.PRODUCTION.riskEnvironment, com.airwallex.risk.Environment.PRODUCTION)
         assertEquals(Environment.PREVIEW.riskEnvironment, com.airwallex.risk.Environment.PREVIEW)
     }
