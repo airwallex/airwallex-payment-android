@@ -94,21 +94,19 @@ object Settings {
             }
         }
         get() {
-            val defaultSdkEnv =
-                SampleApplication.instance.resources.getStringArray(R.array.array_sdk_env)[2]
-            return sharedPreferences.getString(
-                context.getString(R.string.sdk_env_id),
-                defaultSdkEnv
-            )
-                ?: defaultSdkEnv
+            val defaultSdkEnv = "PREVIEW"
+            val key = context.getString(R.string.sdk_env_id)
+            val stored = sharedPreferences.getString(key, defaultSdkEnv) ?: defaultSdkEnv
+            if (stored != "DEMO") return stored
+            sharedPreferences.edit { putString(key, defaultSdkEnv) }
+            return defaultSdkEnv
         }
 
     fun getEnvironment(): Environment {
-        val sdkEnvArray = context.resources.getStringArray(R.array.array_sdk_env)
         return when (sdkEnv) {
-            sdkEnvArray.getOrNull(0) -> Environment.STAGING
-            sdkEnvArray.getOrNull(1) -> Environment.DEMO
-            sdkEnvArray.getOrNull(2) -> Environment.PREVIEW
+            "STAGING" -> Environment.STAGING
+            "PREVIEW", "DEMO" -> Environment.PREVIEW
+            "PRODUCTION" -> Environment.PRODUCTION
             else -> Environment.PRODUCTION
         }
     }

@@ -6,6 +6,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class EnvironmentExtensionTest {
+    @Suppress("DEPRECATION")
     @Test
     fun `test googlePayEnvironment if demo`() {
         val environment = Environment.DEMO

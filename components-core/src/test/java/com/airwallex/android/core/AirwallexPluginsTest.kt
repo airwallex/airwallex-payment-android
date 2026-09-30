@@ -72,11 +72,11 @@ class AirwallexPluginsTest {
         AirwallexPlugins.initialize(
             AirwallexConfiguration.Builder()
                 .enableLogging(true)
-                .setEnvironment(Environment.DEMO)
+                .setEnvironment(Environment.PREVIEW)
                 .build()
         )
         assertEquals(true, AirwallexPlugins.enableLogging)
-        assertEquals(Environment.DEMO, AirwallexPlugins.environment)
+        assertEquals(Environment.PREVIEW, AirwallexPlugins.environment)
     }
 
     @Test

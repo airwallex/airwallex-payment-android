@@ -5,7 +5,6 @@ import com.airwallex.android.AirwallexStarter
 import com.airwallex.android.card.CardComponent
 import com.airwallex.android.core.Airwallex
 import com.airwallex.android.core.AirwallexConfiguration
-import com.airwallex.android.core.Environment
 import com.airwallex.android.core.RedirectMode
 import com.airwallex.android.googlepay.GooglePayComponent
 import com.airwallex.android.redirect.RedirectComponent
@@ -30,12 +29,7 @@ class SampleApplication : Application() {
      * The method demonstrates the initialization process with using the Airwallex UI plugin.
      */
     fun configAirwallex() {
-        val environment = when (Settings.sdkEnv) {
-            resources.getStringArray(R.array.array_sdk_env)[0] -> Environment.STAGING
-            resources.getStringArray(R.array.array_sdk_env)[1] -> Environment.DEMO
-            resources.getStringArray(R.array.array_sdk_env)[2] -> Environment.PREVIEW
-            else -> Environment.PRODUCTION
-        }
+        val environment = Settings.getEnvironment()
         Airwallex.initialize(
             this,
             AirwallexConfiguration.Builder()
@@ -58,12 +52,7 @@ class SampleApplication : Application() {
      * The method demonstrates the initialization process without using the Airwallex UI plugin.
      */
     fun configAirwallexStarter() {
-        val environment = when (Settings.sdkEnv) {
-            resources.getStringArray(R.array.array_sdk_env)[0] -> Environment.STAGING
-            resources.getStringArray(R.array.array_sdk_env)[1] -> Environment.DEMO
-            resources.getStringArray(R.array.array_sdk_env)[2] -> Environment.PREVIEW
-            else -> Environment.PRODUCTION
-        }
+        val environment = Settings.getEnvironment()
         AirwallexStarter.initialize(
             this,
             AirwallexConfiguration.Builder()

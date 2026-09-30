@@ -3,6 +3,7 @@ package com.airwallex.android.googlepay
 import com.airwallex.android.core.Environment
 import com.google.android.gms.wallet.WalletConstants
 
+@Suppress("DEPRECATION")
 fun Environment.googlePayEnvironment(): Int {
     return when (this) {
         Environment.STAGING, Environment.DEMO, Environment.PREVIEW -> WalletConstants.ENVIRONMENT_TEST

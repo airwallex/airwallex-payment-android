@@ -333,12 +333,12 @@ object AnalyticsLogger {
 
     // region Private Helpers
 
+    @Suppress("DEPRECATION")
     private fun AirwallexEnvironment.toTrackerEnvironment(): Environment {
         return when (this) {
             AirwallexEnvironment.STAGING -> Environment.STAGING
-            AirwallexEnvironment.DEMO -> Environment.DEMO
+            AirwallexEnvironment.DEMO, AirwallexEnvironment.PREVIEW -> Environment.PREVIEW
             AirwallexEnvironment.PRODUCTION -> Environment.PROD
-            AirwallexEnvironment.PREVIEW -> Environment.PREVIEW
         }
     }
 

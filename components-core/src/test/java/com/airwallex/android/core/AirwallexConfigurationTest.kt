@@ -6,12 +6,13 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
+@Suppress("DEPRECATION")
 class AirwallexConfigurationTest {
 
     @Test
     fun configurationTest() {
         val enableLogging = true
-        val demoBaseUrl = "https://api-demo.airwallex.com"
+        val previewBaseUrl = "https://api.sandbox.airwallex.com"
 
         val configuration = AirwallexConfiguration.Builder()
             .enableLogging(enableLogging)
@@ -19,7 +20,7 @@ class AirwallexConfigurationTest {
             .build()
 
         assertEquals(enableLogging, configuration.enableLogging)
-        assertEquals(demoBaseUrl, configuration.environment.baseUrl())
+        assertEquals(previewBaseUrl, configuration.environment.baseUrl())
     }
 
     @Test
