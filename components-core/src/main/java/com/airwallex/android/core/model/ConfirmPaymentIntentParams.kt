@@ -55,7 +55,7 @@ data class ConfirmPaymentIntentParams internal constructor(
     /**
      * AdditionalInfo (used by LPMs)
      */
-    val additionalInfo: Map<String, String>? = null,
+    val additionalInfo: Map<String, Any>? = null,
 
     /**
      * The URL to redirect your customer back to after they authenticate their payment on the PaymentMethod’s app or site. If you’d prefer to redirect to a mobile application, you can alternatively supply an application URI scheme.
@@ -83,7 +83,7 @@ data class ConfirmPaymentIntentParams internal constructor(
         private var paymentConsentOptions: PaymentConsentOptions? = null
         private var currency: String? = null
         private var countryCode: String? = null
-        private var additionalInfo: Map<String, String>? = null
+        private var additionalInfo: Map<String, Any>? = null
         private var returnUrl: String? = null
         private var flow: AirwallexPaymentRequestFlow? = null
 
@@ -95,7 +95,7 @@ data class ConfirmPaymentIntentParams internal constructor(
             this.autoCapture = autoCapture
         }
 
-        fun setAdditionalInfo(additionalInfo: Map<String, String>?): Builder = apply {
+        fun setAdditionalInfo(additionalInfo: Map<String, Any>?): Builder = apply {
             this.additionalInfo = additionalInfo
         }
 
@@ -174,7 +174,7 @@ data class ConfirmPaymentIntentParams internal constructor(
             paymentConsentId: String? = null,
             currency: String? = null,
             countryCode: String? = null,
-            additionalInfo: Map<String, String>? = null,
+            additionalInfo: Map<String, Any>? = null,
             returnUrl: String? = null,
             flow: AirwallexPaymentRequestFlow? = null
         ): ConfirmPaymentIntentParams {

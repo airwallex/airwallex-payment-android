@@ -63,7 +63,7 @@ abstract class AirwallexCheckoutBaseActivity : AirwallexActivity() {
         paymentMethod: PaymentMethod,
         paymentConsent: PaymentConsent? = null,
         cvc: String? = null,
-        additionalInfo: Map<String, String>? = null,
+        additionalInfo: Map<String, Any>? = null,
         flow: AirwallexPaymentRequestFlow? = null,
         observer: Observer<AirwallexPaymentStatus>
     ) {

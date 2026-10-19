@@ -55,7 +55,7 @@ open class AirwallexCheckoutViewModel(
         paymentMethod: PaymentMethod,
         paymentConsent: PaymentConsent?,
         cvc: String?,
-        additionalInfo: Map<String, String>? = null,
+        additionalInfo: Map<String, Any>? = null,
         flow: AirwallexPaymentRequestFlow? = null
     ): LiveData<AirwallexPaymentStatus> {
         if (session is AirwallexRecurringSession) {
@@ -88,7 +88,7 @@ open class AirwallexCheckoutViewModel(
 
     suspend fun checkout(
         paymentMethod: PaymentMethod,
-        additionalInfo: Map<String, String>? = null,
+        additionalInfo: Map<String, Any>? = null,
         flow: AirwallexPaymentRequestFlow? = null
     ): AirwallexPaymentStatus {
         return suspendCancellableCoroutine { continuation ->

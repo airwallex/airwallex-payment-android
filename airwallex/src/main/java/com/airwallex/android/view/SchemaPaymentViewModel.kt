@@ -41,8 +41,8 @@ class SchemaPaymentViewModel(
     @VisibleForTesting
     internal val schemaDataCache = mutableMapOf<AvailablePaymentMethodType, SchemaData?>()
 
-    // Map for additional params. Currently only used for country code in Enum type fields.
-    private val additionalParams = mutableMapOf<String, String>()
+    // Hidden schema values merged into the LPM payment method. Values may be nested objects.
+    private val additionalParams = mutableMapOf<String, Any>()
 
     // Channel for payment result - one-time event stream
     private val _paymentResult = Channel<AirwallexPaymentStatus>(capacity = Channel.CONFLATED)
@@ -82,6 +82,9 @@ class SchemaPaymentViewModel(
                 if (typeInfo.needHiddenParam(transactionMode, key)) {
                     additionalParams[key] = value
                 }
+            }
+            if (typeInfo.needHiddenParam(transactionMode, SHIPPING)) {
+                session.shipping?.let { additionalParams[SHIPPING] = it.toParamMap() }
             }
             val fields = typeInfo.filterRequiredFields(transactionMode)
                 ?: return Result.success(null)
@@ -145,13 +148,13 @@ class SchemaPaymentViewModel(
         }
     }
 
-    fun appendParamsToMapForSchemaSubmission(map: Map<String, String>): Map<String, String> {
+    fun appendParamsToMapForSchemaSubmission(map: Map<String, String>): Map<String, Any> {
         return map + additionalParams
     }
 
     fun checkoutWithSchema(
         paymentMethod: PaymentMethod,
-        additionalInfo: Map<String, String>,
+        additionalInfo: Map<String, Any>,
         typeInfo: PaymentMethodTypeInfo
     ) = viewModelScope.launch {
         AirwallexLogger.info("SchemaPaymentViewModel checkoutWithSchema, type = ${paymentMethod.type}")
@@ -191,6 +194,7 @@ class SchemaPaymentViewModel(
     companion object {
         const val COUNTRY_CODE = "country_code"
         const val FLOW = "flow"
+        private const val SHIPPING = "shipping"
         private const val OS_TYPE = "os_type"
         private const val OS_NAME = "android"
     }

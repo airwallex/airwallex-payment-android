@@ -970,7 +970,7 @@ class Airwallex internal constructor(
     fun startRedirectPay(
         session: AirwallexSession,
         paymentMethodName: String,
-        additionalInfo: Map<String, String>? = null,
+        additionalInfo: Map<String, Any>? = null,
         flow: AirwallexPaymentRequestFlow? = AirwallexPaymentRequestFlow.IN_APP,
         listener: PaymentResultListener,
     ) {
@@ -1017,7 +1017,7 @@ class Airwallex internal constructor(
         paymentMethod: PaymentMethod,
         paymentConsent: PaymentConsent? = null,
         cvc: String? = null,
-        additionalInfo: Map<String, String>? = null,
+        additionalInfo: Map<String, Any>? = null,
         flow: AirwallexPaymentRequestFlow? = null,
         listener: PaymentResultListener,
         saveCard: Boolean = false,
@@ -1149,7 +1149,7 @@ class Airwallex internal constructor(
         session: AirwallexSession,
         paymentMethod: PaymentMethod,
         cvc: String? = null,
-        additionalInfo: Map<String, String>? = null,
+        additionalInfo: Map<String, Any>? = null,
         flow: AirwallexPaymentRequestFlow? = null,
         listener: PaymentResultListener,
     ) {
@@ -1212,7 +1212,7 @@ class Airwallex internal constructor(
         session: Session,
         paymentMethod: PaymentMethod,
         cvc: String?,
-        additionalInfo: Map<String, String>?,
+        additionalInfo: Map<String, Any>?,
         flow: AirwallexPaymentRequestFlow?,
         listener: PaymentResultListener
     ) {
@@ -1253,7 +1253,7 @@ class Airwallex internal constructor(
         paymentConsentId: String? = null,
         paymentConsent: PaymentConsent? = null,
         cvc: String? = null,
-        additionalInfo: Map<String, String>? = null,
+        additionalInfo: Map<String, Any>? = null,
         flow: AirwallexPaymentRequestFlow? = null,
         listener: PaymentResultListener,
         saveCard: Boolean = false,
@@ -1858,7 +1858,7 @@ class Airwallex internal constructor(
         currency: String? = null,
         customerId: String? = null,
         paymentConsentId: String? = null,
-        additionalInfo: Map<String, String>? = null,
+        additionalInfo: Map<String, Any>? = null,
         returnUrl: String? = null,
         autoCapture: Boolean = true,
         flow: AirwallexPaymentRequestFlow? = null,

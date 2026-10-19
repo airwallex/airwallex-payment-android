@@ -13,6 +13,7 @@ import com.airwallex.android.core.TokenManager
 import com.airwallex.android.core.exception.AirwallexCheckoutException
 import com.airwallex.android.core.log.AirwallexLogger
 import com.airwallex.android.core.log.AnalyticsLogger
+import com.airwallex.android.core.model.Address
 import com.airwallex.android.core.model.AirwallexError
 import com.airwallex.android.core.model.AvailablePaymentMethodType
 import com.airwallex.android.core.model.Bank
@@ -24,6 +25,7 @@ import com.airwallex.android.core.model.DynamicSchemaFieldUIType
 import com.airwallex.android.core.model.PaymentIntent
 import com.airwallex.android.core.model.PaymentMethod
 import com.airwallex.android.core.model.PaymentMethodTypeInfo
+import com.airwallex.android.core.model.Shipping
 import com.airwallex.android.core.model.TransactionMode
 import com.airwallex.android.view.Constants.createAvailablePaymentMethodType
 import com.airwallex.android.view.Constants.createPaymentMethod
@@ -51,6 +53,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @Suppress("LargeClass")
@@ -173,10 +176,10 @@ class SchemaPaymentViewModelTest {
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun additionalParams(viewModel: SchemaPaymentViewModel): MutableMap<String, String> {
+    private fun additionalParams(viewModel: SchemaPaymentViewModel): MutableMap<String, Any> {
         val field = SchemaPaymentViewModel::class.java.getDeclaredField("additionalParams")
         field.isAccessible = true
-        return field.get(viewModel) as MutableMap<String, String>
+        return field.get(viewModel) as MutableMap<String, Any>
     }
 
     // Helper method to create ViewModel based on transaction mode
@@ -239,12 +242,13 @@ class SchemaPaymentViewModelTest {
     }
 
     @Test
+    @Suppress("UNCHECKED_CAST")
     fun `test appendParamsToMapForSchemaSubmission with additionalParams`() {
         // Use reflection to set private additionalParams field for testing
         val additionalParamsField =
             SchemaPaymentViewModel::class.java.getDeclaredField("additionalParams")
         additionalParamsField.isAccessible = true
-        val additionalParams = additionalParamsField.get(viewModel) as MutableMap<String, String>
+        val additionalParams = additionalParamsField.get(viewModel) as MutableMap<String, Any>
         additionalParams["country_code"] = "US"
         additionalParams["flow"] = "in_app"
 
@@ -644,6 +648,64 @@ class SchemaPaymentViewModelTest {
     }
 
     @Test
+    fun `test loadSchemaFields includes hidden shipping from session`() = runTest {
+        val shipping = Shipping.Builder()
+            .setFirstName("John")
+            .setLastName("Doe")
+            .setAddress(Address.Builder().setCountryCode("AU").build())
+            .build()
+        every { mockPaymentSession.shipping } returns shipping
+        val testViewModel = mockViewModel(TransactionMode.ONE_OFF)
+        val paymentMethodType = schemaPaymentMethodType()
+        val typeInfo = typeInfoWithFields(
+            visibleField("shopper_name", "Shopper Name"),
+            hiddenField("shipping", "Shipping")
+        )
+        stubPaymentMethodTypeInfo(typeInfo)
+
+        val result = testViewModel.loadSchemaFields(paymentMethodType)
+        advanceUntilIdle()
+
+        assertEquals(true, result.isSuccess)
+        assertEquals(listOf("shopper_name"), result.getOrNull()?.fields?.map { it.name })
+        assertEquals(
+            shipping.toParamMap(),
+            testViewModel.appendParamsToMapForSchemaSubmission(emptyMap())["shipping"]
+        )
+    }
+
+    @Test
+    fun `test loadSchemaFields omits hidden shipping when session shipping is null`() = runTest {
+        every { mockPaymentSession.shipping } returns null
+        val testViewModel = mockViewModel(TransactionMode.ONE_OFF)
+        val typeInfo = typeInfoWithFields(hiddenField("shipping", "Shipping"))
+        stubPaymentMethodTypeInfo(typeInfo)
+
+        val result = testViewModel.loadSchemaFields(schemaPaymentMethodType())
+        advanceUntilIdle()
+
+        assertEquals(true, result.isSuccess)
+        assertFalse(
+            testViewModel.appendParamsToMapForSchemaSubmission(emptyMap()).containsKey("shipping")
+        )
+    }
+
+    @Test
+    fun `test loadSchemaFields omits shipping when schema has no hidden shipping field`() = runTest {
+        val testViewModel = mockViewModel(TransactionMode.ONE_OFF)
+        val typeInfo = typeInfoWithFields(visibleField("shopper_name", "Shopper Name"))
+        stubPaymentMethodTypeInfo(typeInfo)
+
+        val result = testViewModel.loadSchemaFields(schemaPaymentMethodType())
+        advanceUntilIdle()
+
+        assertEquals(true, result.isSuccess)
+        assertFalse(
+            testViewModel.appendParamsToMapForSchemaSubmission(emptyMap()).containsKey("shipping")
+        )
+    }
+
+    @Test
     fun `test loadSchemaFields with non-bank fields`() = runTest {
         val testViewModel = mockViewModel(TransactionMode.ONE_OFF)
 
@@ -961,5 +1023,52 @@ class SchemaPaymentViewModelTest {
         // Then - Should return success with null when resources is null
         assertEquals(true, result.isSuccess)
         Assert.assertNull(result.getOrNull())
+    }
+
+    private fun schemaPaymentMethodType(): AvailablePaymentMethodType {
+        return mockk {
+            every { name } returns "upi"
+            every { resources } returns mockk { every { hasSchema } returns true }
+        }
+    }
+
+    private fun visibleField(name: String, displayName: String) = DynamicSchemaField(
+        name,
+        displayName,
+        DynamicSchemaFieldUIType.TEXT,
+        DynamicSchemaFieldType.STRING,
+        false,
+        null,
+        null
+    )
+
+    private fun hiddenField(name: String, displayName: String) = DynamicSchemaField(
+        name,
+        displayName,
+        DynamicSchemaFieldUIType.TEXT,
+        DynamicSchemaFieldType.STRING,
+        true,
+        null,
+        null
+    )
+
+    private fun typeInfoWithFields(vararg fields: DynamicSchemaField): PaymentMethodTypeInfo {
+        return mockk {
+            every { fieldSchemas } returns listOf(
+                DynamicSchema(
+                    transactionMode = TransactionMode.ONE_OFF,
+                    fields = fields.toList()
+                )
+            )
+        }
+    }
+
+    private fun stubPaymentMethodTypeInfo(typeInfo: PaymentMethodTypeInfo) {
+        every {
+            mockAirwallex.retrievePaymentMethodTypeInfo(any(), any())
+        } answers {
+            val listener = secondArg<Airwallex.PaymentListener<PaymentMethodTypeInfo>>()
+            listener.onSuccess(typeInfo)
+        }
     }
 }

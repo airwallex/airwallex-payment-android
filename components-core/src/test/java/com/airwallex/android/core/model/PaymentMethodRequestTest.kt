@@ -47,6 +47,36 @@ class PaymentMethodRequestTest {
     }
 
     @Test
+    fun testToParamsMapIncludesNestedShipping() {
+        val shipping = mapOf(
+            "first_name" to "John",
+            "last_name" to "Doe",
+            "address" to mapOf("country_code" to "AU")
+        )
+        val request = PaymentMethodRequest.Builder(type = "upi")
+            .setThirdPartyPaymentMethodRequest(
+                mapOf(
+                    "app_name" to "phonepe",
+                    "shipping" to shipping
+                )
+            )
+            .build()
+
+        assertEquals(
+            mapOf(
+                "type" to "upi",
+                "upi" to mapOf(
+                    "app_name" to "phonepe",
+                    "shipping" to shipping,
+                    "flow" to "inapp",
+                    "os_type" to "android"
+                )
+            ),
+            request.toParamMap()
+        )
+    }
+
+    @Test
     fun testGooglePayPaymentMethodRequest() {
         val googlePay = PaymentMethod.GooglePay.Builder()
             .setBilling(
