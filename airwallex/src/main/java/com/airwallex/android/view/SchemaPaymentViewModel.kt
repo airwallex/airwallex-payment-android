@@ -74,18 +74,7 @@ class SchemaPaymentViewModel(
                 return Result.failure<SchemaData>(exception)
             }
             // Ad hoc. Aligned with BE that we do not show Enum types in UI, instead we pass fixed values when we have the field.
-            listOf(
-                COUNTRY_CODE to session.countryCode,
-                OS_TYPE to OS_NAME,
-                FLOW to AirwallexPaymentRequestFlow.IN_APP.value
-            ).forEach { (key, value) ->
-                if (typeInfo.needHiddenParam(transactionMode, key)) {
-                    additionalParams[key] = value
-                }
-            }
-            if (typeInfo.needHiddenParam(transactionMode, SHIPPING)) {
-                session.shipping?.let { additionalParams[SHIPPING] = it.toParamMap() }
-            }
+            collectHiddenParams(typeInfo)
             val fields = typeInfo.filterRequiredFields(transactionMode)
                 ?: return Result.success(null)
             AirwallexLogger.info("PaymentMethodsViewModel loadSchemaFields: filterRequiredFields = $fields")
@@ -124,6 +113,21 @@ class SchemaPaymentViewModel(
         }
         // Default to null
         return Result.success(null)
+    }
+
+    private fun collectHiddenParams(typeInfo: PaymentMethodTypeInfo) {
+        listOf(
+            COUNTRY_CODE to session.countryCode,
+            OS_TYPE to OS_NAME,
+            FLOW to AirwallexPaymentRequestFlow.IN_APP.value
+        ).forEach { (key, value) ->
+            if (typeInfo.needHiddenParam(transactionMode, key)) {
+                additionalParams[key] = value
+            }
+        }
+        if (typeInfo.needHiddenParam(transactionMode, SHIPPING)) {
+            session.shipping?.let { additionalParams[SHIPPING] = it.toParamMap() }
+        }
     }
 
     private fun buildSchemaData(
