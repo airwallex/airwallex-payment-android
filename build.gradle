@@ -47,8 +47,9 @@ allprojects {
 }
 
 
-// Update the version field when a new version is released
-version = '6.11.0'
+// The canonical version lives in gradle.properties (`version=...`) so that the
+// GitLab CI create-release job can bump it via VERSION_FILE. Gradle assigns
+// project.version from that property automatically.
 
 ext {
     compileSdkVersion = 36

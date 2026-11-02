@@ -54,3 +54,5 @@ example/bin
 CLAUDE.md
 
 .vscode/
+# Node (release tooling: semantic-release)
+node_modules/

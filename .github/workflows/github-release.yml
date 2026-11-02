@@ -1,0 +1,42 @@
+name: Create GitHub Release
+
+# Releases are now cut in GitLab CI (semantic-release), which creates a GitLab
+# Release and a plain `X.Y.Z` tag. The GitLab -> GitHub mirror replicates the
+# tag (and commits) but NOT the Release object, so this workflow recreates the
+# GitHub Release from the mirrored tag to keep the public Releases tab current.
+on:
+  push:
+    tags:
+      - '*.*.*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to create a GitHub release for (e.g. 6.12.0)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  github-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Determine tag
+        id: tag
+        run: |
+          TAG="${{ github.event.inputs.tag || github.ref_name }}"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+      - name: Create GitHub release (idempotent)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.tag.outputs.tag }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          if gh release view "$TAG" --repo "$REPO" >/dev/null 2>&1; then
+            echo "GitHub release $TAG already exists; nothing to do."
+            exit 0
+          fi
+          echo "Creating GitHub release $TAG with auto-generated notes."
+          gh release create "$TAG" --repo "$REPO" --title "$TAG" --generate-notes --verify-tag
