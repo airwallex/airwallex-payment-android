@@ -1,14 +1,37 @@
 {
-    "branches": ["main"],
-    "repositoryUrl": "git@github.com:airwallex/airwallex-payment-android",
-    "tagFormat": "${version}",
-    "plugins": [
-        ["@semantic-release/commit-analyzer", {
-            "releaseRules": [
-                { "type": "chore", "release": "patch" },
-                { "type": "refactor", "release": "patch" }
-            ]
-        }],
-        "@semantic-release/release-notes-generator"
-    ]
+  "branches": ["main"],
+  "repositoryUrl": "https://gitlab.awx.im/acquiring/paymentacceptance-checkout-sdk-android.git",
+  "tagFormat": "${version}",
+  "plugins": [
+    [
+      "@semantic-release/commit-analyzer",
+      {
+        "preset": "conventionalcommits",
+        "releaseRules": [
+          { "type": "chore", "release": "patch" },
+          { "type": "refactor", "release": "patch" }
+        ]
+      }
+    ],
+    [
+      "@semantic-release/release-notes-generator",
+      {
+        "preset": "conventionalcommits"
+      }
+    ],
+    [
+      "@semantic-release/exec",
+      {
+        "prepareCmd": "sed -i -E 's/^version=.*/version=${nextRelease.version}/' gradle.properties && find . -type f -name '*.md' -print0 | xargs -0 sed -i -E 's@(io\\.github\\.airwallex:[A-Za-z0-9._-]+:)[A-Za-z0-9._-]+@\\1${nextRelease.version}@g'"
+      }
+    ],
+    [
+      "@semantic-release/git",
+      {
+        "assets": ["gradle.properties", "README.md", "README-zh.md"],
+        "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+      }
+    ],
+    "@semantic-release/gitlab"
+  ]
 }

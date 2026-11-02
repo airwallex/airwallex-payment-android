@@ -1,8 +1,14 @@
 name: Deploy Documentation
 
+# Releases are now cut in GitLab CI, which bumps the version and creates a
+# plain `X.Y.Z` tag. That tag is replicated here by the GitLab -> GitHub
+# mirror, but a mirrored tag push does NOT raise a `release: published`
+# event, so this workflow triggers on the tag push instead. `workflow_dispatch`
+# is kept for manual re-runs.
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - '*.*.*'
   workflow_dispatch:
 
 concurrency:
