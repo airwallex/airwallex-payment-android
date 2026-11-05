@@ -10,7 +10,7 @@ enum [Environment](index.md) : [Enum](https://kotlinlang.org/api/core/kotlin-std
 | | |
 |---|---|
 | [STAGING](-s-t-a-g-i-n-g/index.md) | [androidJvm]<br>[STAGING](-s-t-a-g-i-n-g/index.md) |
-| [DEMO](-d-e-m-o/index.md) | [androidJvm]<br>[DEMO](-d-e-m-o/index.md) |
+| [DEMO](-d-e-m-o/index.md) | [androidJvm]<br>[~~DEMO~~](-d-e-m-o/index.md) |
 | [PRODUCTION](-p-r-o-d-u-c-t-i-o-n/index.md) | [androidJvm]<br>[PRODUCTION](-p-r-o-d-u-c-t-i-o-n/index.md) |
 | [PREVIEW](-p-r-e-v-i-e-w/index.md) | [androidJvm]<br>[PREVIEW](-p-r-e-v-i-e-w/index.md) |
 

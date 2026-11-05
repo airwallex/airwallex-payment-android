@@ -3,7 +3,20 @@
 # DEMO
 
 [androidJvm]\
-[DEMO](index.md)
+[~~DEMO~~](index.md)
+
+---
+
+### Deprecated
+
+Demo environment is no longer supported. Use Environment.PREVIEW instead.
+
+#### Replace with
+
+```kotlin
+PREVIEW
+```
+---
 
 ## Properties
 
