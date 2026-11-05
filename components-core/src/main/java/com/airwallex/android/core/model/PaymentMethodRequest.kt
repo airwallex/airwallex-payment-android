@@ -99,7 +99,7 @@ class PaymentMethodRequest(
         }
 
         fun setThirdPartyPaymentMethodRequest(
-            additionalInfo: Map<String, String>? = null,
+            additionalInfo: Map<String, Any>? = null,
             flow: AirwallexPaymentRequestFlow? = null
         ): Builder = apply {
             if (type != PaymentMethodType.CARD.value && type != PaymentMethodType.GOOGLEPAY.value) {

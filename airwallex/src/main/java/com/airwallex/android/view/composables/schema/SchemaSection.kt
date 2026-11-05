@@ -222,7 +222,7 @@ private fun onDirectPayOperation(
 private fun onPayWithFieldsOperation(
     paymentMethod: PaymentMethod,
     info: PaymentMethodTypeInfo,
-    fieldMap: Map<String, String>,
+    fieldMap: Map<String, Any>,
     viewModel: SchemaPaymentViewModel,
     paymentFlowListener: PaymentFlowListener,
     airwallex: Airwallex,

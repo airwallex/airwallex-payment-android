@@ -2,13 +2,14 @@ package com.airwallex.android.core.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
+import kotlinx.parcelize.RawValue
 
 /**
  * Request for Bank
  */
 @Parcelize
 data class AirwallexPaymentRequest constructor(
-    val additionalInfo: Map<String, String>? = null,
+    val additionalInfo: @RawValue Map<String, Any>? = null,
     val flow: AirwallexPaymentRequestFlow? = null,
     val osType: String? = null
 ) : AirwallexModel, AirwallexRequestModel, Parcelable {
