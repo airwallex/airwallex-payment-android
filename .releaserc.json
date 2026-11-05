@@ -8,8 +8,9 @@
       {
         "preset": "conventionalcommits",
         "releaseRules": [
-          { "type": "chore", "release": "patch" },
-          { "type": "refactor", "release": "patch" }
+          { "breaking": true, "release": "major" },
+          { "type": "feat", "release": "minor" },
+          { "release": "patch" }
         ]
       }
     ],
