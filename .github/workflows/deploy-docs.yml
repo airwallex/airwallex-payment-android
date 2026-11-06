@@ -1,10 +1,10 @@
 name: Deploy Documentation
 
 # Deploys documentation when a release tag (X.Y.Z) is pushed.
-# Uses the `create` event; `create` has no tag filter, so the job guards on
-# ref_type == tag and a plain X.Y.Z tag name.
 on:
-  create:
+  push:
+    tags:
+      - '*.*.*'
   workflow_dispatch:
 
 concurrency:
@@ -17,59 +17,34 @@ permissions:
 jobs:
   generate-docs:
     runs-on: ubuntu-latest
-    # Only for tag creation (ref_type == tag) or a manual dispatch. The exact
-    # X.Y.Z check happens in the first step (if: expressions can't do regex).
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      github.event.ref_type == 'tag'
-    outputs:
-      proceed: ${{ steps.check.outputs.proceed }}
 
     steps:
-    - name: Check release tag
-      id: check
-      run: |
-        TAG="${{ github.ref_name }}"
-        if [ "${{ github.event_name }}" = "workflow_dispatch" ] || echo "$TAG" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
-          echo "proceed=true" >> "$GITHUB_OUTPUT"
-        else
-          echo "Tag '$TAG' is not a plain X.Y.Z release tag; skipping docs."
-          echo "proceed=false" >> "$GITHUB_OUTPUT"
-        fi
-
     - name: Checkout repository
-      if: steps.check.outputs.proceed == 'true'
       uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       with:
         ref: ${{ github.ref }}
 
     - name: Setup Java
-      if: steps.check.outputs.proceed == 'true'
       uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4.8.0
       with:
         distribution: 'temurin'
         java-version: '17'
 
     - name: Setup Gradle
-      if: steps.check.outputs.proceed == 'true'
       uses: gradle/gradle-build-action@a8f75513eafdebd8141bd1cd4e30fcd194af8dfa # v2.12.0
       with:
         cache-cleanup: always
 
     - name: Make gradlew executable
-      if: steps.check.outputs.proceed == 'true'
       run: chmod +x gradlew
 
     - name: Generate HTML documentation
-      if: steps.check.outputs.proceed == 'true'
       run: ./gradlew dokkaGeneratePublicationHtml
 
     - name: Generate Markdown documentation
-      if: steps.check.outputs.proceed == 'true'
       run: ./gradlew dokkaGeneratePublicationMarkdown
 
     - name: Upload markdown documentation
-      if: steps.check.outputs.proceed == 'true'
       uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
       with:
         name: markdown-docs
@@ -77,7 +52,6 @@ jobs:
         retention-days: 1
 
     - name: Deploy HTML to GitHub Pages
-      if: steps.check.outputs.proceed == 'true'
       uses: JamesIves/github-pages-deploy-action@d92aa235d04922e8f08b40ce78cc5442fcfbfa2f # v4.8.0
       with:
         folder: build/dokka/html
@@ -86,7 +60,6 @@ jobs:
 
   update-md-doc:
     needs: generate-docs
-    if: needs.generate-docs.outputs.proceed == 'true'
     runs-on: ubuntu-latest
 
     steps:
